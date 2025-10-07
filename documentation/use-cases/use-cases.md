@@ -1,0 +1,1 @@
+![Use Cases](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/DamienReichhart/BackTrade/refs/heads/feature/1-uses-cases/documentation/uml/use-cases/use-cases.iuml)
