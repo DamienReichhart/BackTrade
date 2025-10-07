@@ -1,0 +1,8 @@
+{
+  "extends": "@backtrade/tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false
+  },
+  "include": ["src"]
+}
