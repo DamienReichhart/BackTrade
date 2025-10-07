@@ -1,0 +1,37 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment name (used for secrets scoping)
+        required: false
+        default: production
+  push:
+    branches: [ main ]
+
+env:
+  DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+  DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+  DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+  DEPLOY_REMOTE_DIR: ${{ secrets.DEPLOY_REMOTE_DIR }}
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SCP and SSH
+        uses: ./.github/actions/deploy
+        with:
+          ssh_host: ${{ secrets.DEPLOY_SSH_HOST }}
+          ssh_port: ${{ secrets.DEPLOY_SSH_PORT }}
+          ssh_user: ${{ secrets.DEPLOY_SSH_USER }}
+          ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          remote_dir: ${{ secrets.DEPLOY_REMOTE_DIR }}
+          compose_file: docker-prod.yaml
+
