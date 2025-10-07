@@ -8,7 +8,7 @@ on:
         required: false
         default: production
   push:
-    branches: [ main, feature/** ]
+    branches: [ main ]
 
 env:
   DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
