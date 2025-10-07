@@ -10,8 +10,6 @@
 .PHONY: install dev test test-watch typecheck lint format build build-api build-web clean clean-install docker-dev docker-prod docker-stop docker-logs docker-clean db-reset check
 
 # Variables
-NODE_VERSION := 18
-PNPM_VERSION := 10.18.1
 DOCKER_COMPOSE_DEV := docker-compose -f docker-dev.yaml
 DOCKER_COMPOSE_PROD := docker-compose -f docker-prod.yaml
 
@@ -104,7 +102,7 @@ docker-clean: ## Clean Docker containers and images
 	@echo "Cleaning Docker resources..."
 	docker-compose -f docker-dev.yaml down -v --rmi all
 	docker-compose -f docker-prod.yaml down -v --rmi all
-	$(RMDIR) docker/datas/postgres
+	@if exist docker$(SEP)datas$(SEP)postgres $(RMDIR) docker$(SEP)datas$(SEP)postgres
 	docker system prune -f
 	@echo "Docker resources cleaned!"
 
@@ -140,8 +138,8 @@ clean-install: clean install ## Clean and reinstall dependencies
 db-reset: ## Reset database (development only)
 	@echo "Resetting database..."
 	$(DOCKER_COMPOSE_DEV) down -v
-	$(RMDIR) docker/datas/postgres
 	$(DOCKER_COMPOSE_DEV) up -d postgres
+	$(RMDIR) docker$(SEP)datas$(SEP)postgres
 	@echo "Database reset completed!"
 
 ##@ Utilities

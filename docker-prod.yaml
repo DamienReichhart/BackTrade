@@ -1,0 +1,63 @@
+services:
+  cloudflared:
+    build:
+      context: .
+      dockerfile: docker/images/cloudflared.prod.dockerfile
+    environment:
+      - TUNNEL_TOKEN=token
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.253
+    restart: always
+
+  proxy:
+    build:
+      context: .
+      dockerfile: docker/images/proxy.prod.dockerfile
+    ports:
+      - "80:80" # Only for testing purposes. Remove this on real production, no port opening, only cloudflare tunnel
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.1
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/images/backend.prod.dockerfile
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.2
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/images/frontend.prod.dockerfile
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.3
+    restart: always
+
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/images/postgres.dockerfile
+    volumes:
+      - backtrade_db:/var/lib/postgresql/data
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.4
+    restart: always
+
+volumes:
+  backtrade_db:
+    driver: local
+
+networks:
+  backtrade:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.250.0/24
+          gateway: 192.168.250.254

@@ -1,0 +1,51 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: /docker/images/dev.dockerfile
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+    volumes:
+      - ./apps:/app/apps
+      - ./packages:/app/packages
+      - ./assets:/app/assets
+      - ./documentation:/app/documentation
+      - ./eslint-config.cjs:/app/eslint-config.cjs
+      - ./LICENSE:/app/LICENSE
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
+      - ./turbo.json:/app/turbo.json
+      - ./README.md:/app/README.md
+      # Exclude node_modules from being overridden
+      - /app/node_modules
+      - /app/apps/api/node_modules
+      - /app/apps/web/node_modules
+      - /app/packages/config/node_modules
+      - /app/packages/eslint-config/node_modules
+      - /app/packages/tsconfig/node_modules
+      - /app/packages/types/node_modules
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.1
+
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/images/postgres.dockerfile
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/datas/postgres:/var/lib/postgresql/data
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.2
+
+networks:
+  backtrade:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.250.0/24
+          gateway: 192.168.250.254

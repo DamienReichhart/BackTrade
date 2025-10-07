@@ -1,6 +1,3 @@
-
-
-
 ```mermaid
 
 
@@ -85,9 +82,9 @@ erDiagram
     AUDIT_LOG {
       string id PK
       string user_id FK
-      enum entity_type        
+      enum entity_type
       string entity_id
-      enum audit_action 
+      enum audit_action
       json details
       string ip_address
       string user_agent
@@ -250,7 +247,7 @@ erDiagram
     SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
     USER ||--o{ SUPPORT_REQUEST : "create"
-    USER ||--o{ USER_PASSWORD_CHANGE_CODE : "ask"    
+    USER ||--o{ USER_PASSWORD_CHANGE_CODE : "ask"
     USER ||--o{ SUPPORT_MESSAGE : "send"
     SUPPORT_REQUEST ||--o{ SUPPORT_MESSAGE : "contains"
     SUPPORT_MESSAGE ||--o{ SUPPORT_MESSAGE_FILE : "contains"
