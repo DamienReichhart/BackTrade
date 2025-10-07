@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: docker/images/cloudflared.prod.dockerfile
     environment:
-      - TUNNEL_TOKEN=token
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    command: tunnel run
     networks:
       backtrade:
         ipv4_address: 192.168.250.253

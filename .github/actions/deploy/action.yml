@@ -1,0 +1,47 @@
+name: Deploy via SCP and SSH
+description: Copies repo files to a remote host and rebuilds the docker containers
+inputs:
+  ssh_host:
+    description: SSH host (hostname or IP)
+    required: true
+  ssh_port:
+    description: SSH port
+    required: true
+    default: '22'
+  ssh_user:
+    description: SSH username
+    required: true
+  ssh_key:
+    description: Private SSH key for authentication
+    required: true
+  remote_dir:
+    description: Remote directory to copy files into
+    required: true
+  compose_file:
+    description: Docker compose file to run
+    required: false
+    default: docker-prod.yaml
+runs:
+  using: composite
+  steps:
+    - name: Setup SSH key
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ inputs.ssh_key }}" > ~/.ssh/id_deploy
+        chmod 600 ~/.ssh/id_deploy
+        printf "Host remote\n  HostName %s\n  User %s\n  Port %s\n  IdentityFile ~/.ssh/id_deploy\n  StrictHostKeyChecking no\n" \
+          "${{ inputs.ssh_host }}" "${{ inputs.ssh_user }}" "${{ inputs.ssh_port }}" >> ~/.ssh/config
+
+    - name: Create remote directory
+      shell: bash
+      run: ssh remote "mkdir -p '${{ inputs.remote_dir }}'"
+
+    - name: Copy files to remote via scp
+      shell: bash
+      run: scp -r ./ remote:'${{ inputs.remote_dir }}'
+
+    - name: Compose up
+      shell: bash
+      run: ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
+
