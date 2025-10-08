@@ -4,6 +4,7 @@
     "build": { "outputs": ["dist/**"] },
     "typecheck": {},
     "lint": {},
-    "test": {}
+    "test": {},
+    "test:coverage": { "outputs": ["coverage/**"] }
   }
 }

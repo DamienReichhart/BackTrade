@@ -1,5 +1,5 @@
-name: Lint
-description: Run ESLint across the monorepo using pnpm
+name: Coverage
+description: Run tests with coverage across the monorepo using pnpm and Vitest
 inputs:
   working-directory:
     description: Directory to run the command in
@@ -8,7 +8,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Lint
+    - name: Test with coverage
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: pnpm lint
+      run: pnpm test:coverage

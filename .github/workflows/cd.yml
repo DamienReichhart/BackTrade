@@ -8,7 +8,7 @@ on:
         required: false
         default: production
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
@@ -34,4 +34,3 @@ jobs:
           ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
           remote_dir: ${{ secrets.DEPLOY_REMOTE_DIR }}
           compose_file: docker-prod.yaml
-
