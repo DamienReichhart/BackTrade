@@ -7,7 +7,7 @@ inputs:
   ssh_port:
     description: SSH port
     required: true
-    default: '22'
+    default: "22"
   ssh_user:
     description: SSH username
     required: true
@@ -44,4 +44,3 @@ runs:
     - name: Compose up
       shell: bash
       run: ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
-

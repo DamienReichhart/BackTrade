@@ -23,3 +23,6 @@ build
 .pnp.*
 docker/datas
 documentation
+
+
+covergae
