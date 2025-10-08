@@ -1,4 +1,4 @@
-FROM postgres:17
+FROM timescale/timescaledb:latest-pg17
 
 # Set environment variables for PostgreSQL
 ENV POSTGRES_USER=postgres
