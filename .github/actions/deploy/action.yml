@@ -33,14 +33,84 @@ runs:
         printf "Host remote\n  HostName %s\n  User %s\n  Port %s\n  IdentityFile ~/.ssh/id_deploy\n  StrictHostKeyChecking no\n" \
           "${{ inputs.ssh_host }}" "${{ inputs.ssh_user }}" "${{ inputs.ssh_port }}" >> ~/.ssh/config
 
-    - name: Create remote directory
+    - name: Create backup directory and backup .env
       shell: bash
-      run: ssh remote "mkdir -p '${{ inputs.remote_dir }}'"
+      run: |
+        echo "Creating backup directory and backing up .env file..."
+        ssh remote "
+          mkdir -p '${{ inputs.remote_dir }}' && \
+          mkdir -p /tmp/backtrade_deploy_backup && \
+          if [ -f '${{ inputs.remote_dir }}/.env' ]; then
+            cp '${{ inputs.remote_dir }}/.env' /tmp/backtrade_deploy_backup/.env
+            echo '.env file backed up'
+          else
+            echo 'No .env file found to backup'
+          fi
+        "
 
-    - name: Copy files to remote via scp
+    - name: Stop running containers
       shell: bash
-      run: scp -r ./ remote:'${{ inputs.remote_dir }}'
+      run: |
+        echo "Stopping running containers..."
+        ssh remote "
+          if [ -f '${{ inputs.remote_dir }}/${{ inputs.compose_file }}' ]; then
+            cd '${{ inputs.remote_dir }}' && docker compose -f ${{ inputs.compose_file }} down --remove-orphans || true
+            echo 'Containers stopped'
+          else
+            echo 'No compose file found, skipping container stop'
+          fi
+        "
 
-    - name: Compose up
+    - name: Complete directory cleanup
       shell: bash
-      run: ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
+      run: |
+        echo "Completely cleaning deployment directory..."
+        ssh remote "
+          cd '${{ inputs.remote_dir }}' && \
+          rm -rf ./* ./.[!.]* ./.??* 2>/dev/null || true && \
+          echo 'Directory cleaned'
+        "
+
+    - name: Copy files to remote
+      shell: bash
+      run: |
+        echo "Copying repository files to remote..."
+        # Create a clean tarball excluding development files and directories
+        tar --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='**/node_modules' \
+            --exclude='dist' \
+            --exclude='**/dist' \
+            --exclude='coverage' \
+            --exclude='**/coverage' \
+            --exclude='.env' \
+            --exclude='*.log' \
+            --exclude='.vscode' \
+            --exclude='.idea' \
+            --exclude='*.swp' \
+            --exclude='*.swo' \
+            --exclude='.DS_Store' \
+            --exclude='Thumbs.db' \
+            -czf - . | ssh remote "cd '${{ inputs.remote_dir }}' && tar -xzf -"
+        echo "Files copied successfully"
+
+    - name: Restore .env file
+      shell: bash
+      run: |
+        echo "Restoring .env file..."
+        ssh remote "
+          if [ -f /tmp/backtrade_deploy_backup/.env ]; then
+            cp /tmp/backtrade_deploy_backup/.env '${{ inputs.remote_dir }}/.env'
+            echo '.env file restored'
+          else
+            echo 'No .env backup found to restore'
+          fi
+          rm -rf /tmp/backtrade_deploy_backup
+        "
+
+    - name: Deploy application
+      shell: bash
+      run: |
+        echo "Deploying application..."
+        ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
