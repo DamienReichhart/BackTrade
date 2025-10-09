@@ -10,6 +10,7 @@ runs:
     - name: Run Semgrep scan
       shell: bash
       run: |
+        export PATH="$HOME/.local/bin:$PATH"
         pip3 install semgrep
         semgrep scan --config auto --sarif --output semgrep-report.sarif || true
       env:
