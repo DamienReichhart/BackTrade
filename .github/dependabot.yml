@@ -1,17 +1,20 @@
 version: 2
+
+# Configure Dependabot to use GitHub-hosted runners
+registries: {}
+
 updates:
   # Root package.json
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -34,15 +37,14 @@ updates:
   # API app
   - package-ecosystem: "npm"
     directory: "/apps/api"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(api)"
       include: "scope"
@@ -66,15 +68,14 @@ updates:
   # Web app
   - package-ecosystem: "npm"
     directory: "/apps/web"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(web)"
       include: "scope"
@@ -96,34 +97,14 @@ updates:
   # Packages
   - package-ecosystem: "npm"
     directory: "/packages/config"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 3
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
-    commit-message:
-      prefix: "chore(packages)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "packages"
-      - "security"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/eslint-config"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 3
-    reviewers:
-      - "REICHHART Damien"
-    assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(packages)"
       include: "scope"
@@ -134,15 +115,14 @@ updates:
 
   - package-ecosystem: "npm"
     directory: "/packages/tsconfig"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 3
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(packages)"
       include: "scope"
@@ -153,15 +133,14 @@ updates:
 
   - package-ecosystem: "npm"
     directory: "/packages/types"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 3
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(packages)"
       include: "scope"
@@ -172,16 +151,15 @@ updates:
 
   # Docker dependencies
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/docker/images"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "REICHHART Damien"
     assignees:
-      - "REICHHART Damien"
+      - "DamienReichhart"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
