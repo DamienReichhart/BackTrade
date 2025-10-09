@@ -2,14 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, feature/*]
   pull_request:
     branches: [main, dev]
 
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       node: ${{ steps.versions.outputs.node }}
       pnpm: ${{ steps.versions.outputs.pnpm }}
@@ -32,7 +32,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
 
   typecheck:
     name: Typecheck
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     steps:
       - uses: actions/checkout@v4
@@ -56,7 +56,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
 
   coverage:
     name: Coverage
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     steps:
       - name: Checkout
@@ -97,7 +97,7 @@ jobs:
 
   semgrep:
     name: Semgrep Security Scan
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     permissions:
       security-events: write
@@ -111,7 +111,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [lint, typecheck, test, coverage, semgrep]
     steps:
       - uses: actions/checkout@v4
