@@ -7,8 +7,11 @@ on:
         description: Environment name (used for secrets scoping)
         required: false
         default: production
+
+  pull_request:
+    branches: [main, test/*]
   push:
-    branches: [main]
+    branches: [main, test/*]
 
 jobs:
   deploy:
