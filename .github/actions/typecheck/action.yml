@@ -1,0 +1,14 @@
+name: Typecheck
+description: Run TypeScript type checking across the monorepo using pnpm
+inputs:
+  working-directory:
+    description: Directory to run the command in
+    required: false
+    default: "."
+runs:
+  using: composite
+  steps:
+    - name: Typecheck
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: pnpm typecheck

@@ -1,0 +1,12 @@
+{
+  "extends": "@backtrade/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@backtrade/types": ["../../packages/types/src/index.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

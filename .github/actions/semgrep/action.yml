@@ -1,0 +1,33 @@
+name: Semgrep Security Scan
+description: Run Semgrep security scan and generate SARIF report
+inputs:
+  semgrep-app-token:
+    description: Semgrep App Token for authentication
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run Semgrep scan
+      shell: bash
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        pip3 install semgrep
+        semgrep scan --config auto --sarif --output semgrep-report.sarif || true
+      env:
+        SEMGREP_APP_TOKEN: ${{ inputs.semgrep-app-token }}
+
+    - name: Upload Semgrep SARIF report to Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: semgrep-report.sarif
+        category: semgrep
+        wait-for-processing: true
+
+    - name: Upload Semgrep report as artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: semgrep-report
+        path: semgrep-report.sarif
+        retention-days: 30

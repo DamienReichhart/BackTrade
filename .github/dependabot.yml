@@ -1,0 +1,169 @@
+version: 2
+
+# Configure Dependabot to use GitHub-hosted runners
+registries: {}
+
+updates:
+  # Root package.json
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier*"
+          - "typescript*"
+          - "vitest*"
+          - "turbo*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # API app
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(api)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "api"
+      - "security"
+    groups:
+      api-dependencies:
+        patterns:
+          - "express*"
+          - "helmet*"
+          - "cors*"
+          - "compression*"
+          - "pino*"
+          - "zod*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Web app
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(web)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "web"
+      - "security"
+    groups:
+      web-dependencies:
+        patterns:
+          - "react*"
+          - "@tanstack/*"
+          - "react-router*"
+          - "vite*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Packages
+  - package-ecosystem: "npm"
+    directory: "/packages/config"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(packages)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "packages"
+      - "security"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/tsconfig"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(packages)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "packages"
+      - "security"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/types"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(packages)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "packages"
+      - "security"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/docker/images"
+    target-branch: "dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    assignees:
+      - "DamienReichhart"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "security"

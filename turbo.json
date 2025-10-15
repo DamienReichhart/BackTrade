@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "dev": { "cache": false },
+    "build": { "outputs": ["dist/**"] },
+    "typecheck": {},
+    "lint": {},
+    "test": {},
+    "test:coverage": { "outputs": ["coverage/**"] }
+  }
+}
