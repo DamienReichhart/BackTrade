@@ -38,7 +38,7 @@
     "globals": "^16.4.0",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.46.0",
+    "typescript-eslint": "^8.46.1",
     "vitest": "3.2.4"
   },
   "license": "PROPRIETARY",
