@@ -107,6 +107,9 @@ importers:
       "@backtrade/types":
         specifier: workspace:*
         version: link:../../packages/types
+      "@tanstack/react-query":
+        specifier: ^5.90.4
+        version: 5.90.4(react@19.2.0)
       react:
         specifier: ^19.1.1
         version: 19.2.0
@@ -119,6 +122,9 @@ importers:
       zod:
         specifier: 4.1.12
         version: 4.1.12
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       "@backtrade/tsconfig":
         specifier: workspace:*
@@ -1056,6 +1062,20 @@ packages:
       {
         integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==,
       }
+
+  "@tanstack/query-core@5.90.4":
+    resolution:
+      {
+        integrity: sha512-+IbzYym9wonJss2+ZXrQqdGhPozHV8BzgZRRHxkLtL2Oq+/wAuwkLMKXk6NbAbbj+Ipgd/kMjUenjGWfwKYDwA==,
+      }
+
+  "@tanstack/react-query@5.90.4":
+    resolution:
+      {
+        integrity: sha512-0XU3puEd6J/EFVc/myHKDyp5s0NpEP4xa8k1t4rXPxg/rDIM9EdSDfNdukwgPxxnAjzaMunF1Bhx4I4MaJdWVA==,
+      }
+    peerDependencies:
+      react: ^18 || ^19
 
   "@testing-library/dom@10.4.1":
     resolution:
@@ -5302,6 +5322,27 @@ packages:
         integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==,
       }
 
+  zustand@5.0.8:
+    resolution:
+      {
+        integrity: sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==,
+      }
+    engines: { node: ">=12.20.0" }
+    peerDependencies:
+      "@types/react": ">=18.0.0"
+      immer: ">=9.0.6"
+      react: ">=18.0.0"
+      use-sync-external-store: ">=1.2.0"
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
   "@adobe/css-tools@4.4.4": {}
 
@@ -5750,6 +5791,13 @@ snapshots:
     optional: true
 
   "@rtsao/scc@1.1.0": {}
+
+  "@tanstack/query-core@5.90.4": {}
+
+  "@tanstack/react-query@5.90.4(react@19.2.0)":
+    dependencies:
+      "@tanstack/query-core": 5.90.4
+      react: 19.2.0
 
   "@testing-library/dom@10.4.1":
     dependencies:
@@ -8705,3 +8753,8 @@ snapshots:
       zod: 4.1.12
 
   zod@4.1.12: {}
+
+  zustand@5.0.8(@types/react@19.2.2)(react@19.2.0):
+    optionalDependencies:
+      "@types/react": 19.2.2
+      react: 19.2.0
