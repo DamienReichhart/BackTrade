@@ -12,7 +12,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
 
-*A deterministic multi-session historical trading simulator for professional traders and quantitative analysts*
+_A deterministic multi-session historical trading simulator for professional traders and quantitative analysts_
 
 </div>
 
@@ -39,6 +39,7 @@ BackTrade is built as a modern, scalable monorepo:
 ### Technology Stack
 
 **Frontend:**
+
 - **React 19.1+** with TypeScript
 - **Vite** for fast development and building
 - **React Router** for client-side routing
@@ -46,12 +47,14 @@ BackTrade is built as a modern, scalable monorepo:
 - **Vitest** for testing
 
 **Backend:**
+
 - **Node.js 18+** with Express 5.1
 - **TypeScript** for type safety
 - **Zod** for schema validation
 - **Pino** for structured logging
 
 **Infrastructure:**
+
 - **Docker** containerization
 - **PostgreSQL** database
 - **Nginx** proxy
@@ -87,21 +90,24 @@ BackTrade/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd BackTrade
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Start development environment**
+
    ```bash
    # Using Makefile (recommended)
    make dev
-   
+
    # Or using pnpm directly
    pnpm dev
    ```
@@ -126,16 +132,16 @@ docker-compose -f docker-dev.yaml up -d
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `make dev` | Start development servers |
-| `make build` | Build all applications |
-| `make test` | Run all tests |
-| `make test:coverage` | Run tests with coverage |
-| `make lint` | Run ESLint |
-| `make format` | Format code with Prettier |
-| `make typecheck` | Run TypeScript type checking |
-| `make clean` | Clean build artifacts |
+| Command              | Description                  |
+| -------------------- | ---------------------------- |
+| `make dev`           | Start development servers    |
+| `make build`         | Build all applications       |
+| `make test`          | Run all tests                |
+| `make test:coverage` | Run tests with coverage      |
+| `make lint`          | Run ESLint                   |
+| `make format`        | Format code with Prettier    |
+| `make typecheck`     | Run TypeScript type checking |
+| `make clean`         | Clean build artifacts        |
 
 ### Code Quality
 
@@ -145,7 +151,7 @@ The project enforces high code quality standards:
 - **Prettier** for code formatting
 - **TypeScript** for type safety
 - **Vitest** for comprehensive testing
-- **Pre-Commit** for git hooks 
+- **Pre-Commit** for git hooks
 
 ### Testing
 
@@ -165,11 +171,13 @@ pnpm test:coverage
 ### Production Deployment
 
 1. **Build the application**
+
    ```bash
    make build
    ```
 
 2. **Deploy with Docker**
+
    ```bash
    make docker-prod
    ```
@@ -192,22 +200,26 @@ The production setup includes:
 ## Core Features
 
 ### Trading Sessions
+
 - Create sessions with custom instruments and timeframes
 - Configure initial balance, leverage, and risk parameters
 - Set spread, slippage, and commission models
 
 ### Real-Time Simulation
+
 - Interactive time controls (play/pause/speed)
 - Live candlestick chart visualization
 - Real-time position tracking and P&L updates
 
 ### Position Management
+
 - Market order execution (Buy/Sell)
 - Take Profit and Stop Loss levels
 - Dynamic TP/SL modification
 - Bulk position management
 
 ### Analytics & Reporting
+
 - Comprehensive performance metrics
 - Detailed session reports
 - Historical trade analysis
@@ -248,6 +260,7 @@ This project is licensed under a **Proprietary License**. See the [LICENSE](LICE
 ## 👨‍💻 Author
 
 **REICHHART Damien**
+
 - Email: contact@damien-reichhart.fr
 - Project: BackTrade Trading Platform
 

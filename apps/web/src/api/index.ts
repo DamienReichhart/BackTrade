@@ -1,8 +1,8 @@
-
 /**
  * API configuration and base URL
  */
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3001/api/v1";
 
 /**
  * API client for making HTTP requests
@@ -19,14 +19,14 @@ class ApiClient {
    */
   private async fetch<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...options.headers,
         },
         ...options,
@@ -44,22 +44,21 @@ class ApiClient {
     }
   }
 
-
   public get = async <T>(endpoint: string) => {
     return this.fetch<T>(endpoint, { method: "GET" });
-  }
+  };
 
   public post = async <T>(endpoint: string, body: any) => {
     return this.fetch<T>(endpoint, { method: "POST", body });
-  }
+  };
 
   public put = async <T>(endpoint: string, body: any) => {
     return this.fetch<T>(endpoint, { method: "PUT", body });
-  }
+  };
 
   public delete = async <T>(endpoint: string) => {
     return this.fetch<T>(endpoint, { method: "DELETE" });
-  }
+  };
 }
 
 // Export singleton instance
