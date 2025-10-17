@@ -1,21 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
-import { Health, HealthSchema } from "@backtrade/types";
+import { useEffect } from "react";
+import { useHealth } from "../../api/requests/health";
 
 export default function Home() {
-  const { data } = useQuery<Health>({
-    queryKey: ["health"],
-    queryFn: async (): Promise<Health> => {
-      const baseUrl = import.meta.env.VITE_API_URL ?? "";
-      const response = await fetch(`${baseUrl}/health`);
-      const json = await response.json();
-      return HealthSchema.parse(json);
-    },
-  });
+  const { result, error, loading, request } = useHealth();
+
+  useEffect(() => {
+    request();
+  }, []);
 
   return (
-    <main style={{ padding: 24 }}>
+    <main>
       <h1>BackTrade</h1>
-      <pre>{JSON.stringify(data ?? {}, null, 2)}</pre>
+
+      <div>
+        <h2>API Health Check</h2>
+
+        {loading ? "Checking..." : "Health: " + result?.status}
+
+        {error && (
+          <div>
+            <strong>Error:</strong> {error?.message}
+          </div>
+        )}
+
+        {result && (
+          <div>
+            <strong>Status:</strong> {result.status}
+            <br />
+            <strong>Time:</strong> {new Date(result.time).toLocaleString()}
+          </div>
+        )}
+      </div>
     </main>
   );
 }

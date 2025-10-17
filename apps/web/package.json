@@ -12,15 +12,16 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "start": "serve -s dist"
+    "start": "serve -s dist",
+    "fake-api": "json-server --watch db.json --port 3001 --routes routes.json"
   },
   "dependencies": {
     "@backtrade/types": "workspace:*",
-    "@tanstack/react-query": "^5.90.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "7.9.4",
-    "zod": "4.1.12"
+    "zod": "4.1.12",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@backtrade/tsconfig": "workspace:*",
@@ -37,6 +38,7 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "jsdom": "27.0.0",
+    "json-server": "0.17.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.1",
     "vite": "^7.1.10",
