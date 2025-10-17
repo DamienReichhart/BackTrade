@@ -1,31 +1,12 @@
-import { useState, useEffect } from "react";
-import { Health } from "@backtrade/types";
-import { getHealth } from "../../api/health";
+import { useEffect } from "react";
+import { useHealth } from "../../api/requests/health";
 
 export default function Home() {
-  const [health, setHealth] = useState<Health | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const checkHealth = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const healthData = await getHealth();
-      setHealth(healthData);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch health status",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { result, error, loading, request } = useHealth();
 
   useEffect(() => {
-    checkHealth();
-  }, []);
+    request();
+  }, [request]);
 
   return (
     <main>
@@ -34,19 +15,19 @@ export default function Home() {
       <div>
         <h2>API Health Check</h2>
 
-        {loading ? "Checking..." : "Health: " + health?.status}
+        {loading ? "Checking..." : "Health: " + result?.status}
 
         {error && (
           <div>
-            <strong>Error:</strong> {error}
+            <strong>Error:</strong> {error?.message}
           </div>
         )}
 
-        {health && (
+        {result && (
           <div>
-            <strong>Status:</strong> {health.status}
+            <strong>Status:</strong> {result.status}
             <br />
-            <strong>Time:</strong> {new Date(health.time).toLocaleString()}
+            <strong>Time:</strong> {new Date(result.time).toLocaleString()}
           </div>
         )}
       </div>
