@@ -22,9 +22,11 @@ export function useInstruments(query?: PaginationQuery) {
       }
     });
   }
-  
-  const url = query ? `/instruments?${searchParams.toString()}` : "/instruments";
-  
+
+  const url = query
+    ? `/instruments?${searchParams.toString()}`
+    : "/instruments";
+
   return useGet<InstrumentListResponse>(url, {
     outputSchema: InstrumentListResponseSchema,
   });

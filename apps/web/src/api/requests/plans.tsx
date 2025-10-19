@@ -16,9 +16,9 @@ export function usePlans(query?: PaginationQuery) {
       }
     });
   }
-  
+
   const url = query ? `/plans?${searchParams.toString()}` : "/plans";
-  
+
   return useGet<Plan[]>(url, {
     outputSchema: PlanSchema.array(),
   });

@@ -46,24 +46,28 @@ export const LoginRequestSchema = z.object({
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
-export const RegisterRequestSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const RegisterRequestSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 
-export const ChangePasswordRequestSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string().min(8),
-  confirmPassword: z.string().min(8),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const ChangePasswordRequestSchema = z
+  .object({
+    currentPassword: z.string(),
+    newPassword: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
 export const ForgotPasswordRequestSchema = z.object({
@@ -71,14 +75,16 @@ export const ForgotPasswordRequestSchema = z.object({
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
-export const ResetPasswordRequestSchema = z.object({
-  code: z.string(),
-  newPassword: z.string().min(8),
-  confirmPassword: z.string().min(8),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const ResetPasswordRequestSchema = z
+  .object({
+    code: z.string(),
+    newPassword: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({
@@ -175,7 +181,9 @@ export const CreateTransactionRequestSchema = z.object({
   amount: z.number(),
   balance_after: z.number(),
 });
-export type CreateTransactionRequest = z.infer<typeof CreateTransactionRequestSchema>;
+export type CreateTransactionRequest = z.infer<
+  typeof CreateTransactionRequestSchema
+>;
 
 export const TransactionListResponseSchema = z.object({
   transactions: z.array(TransactionSchema),
@@ -183,7 +191,9 @@ export const TransactionListResponseSchema = z.object({
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
 });
-export type TransactionListResponse = z.infer<typeof TransactionListResponseSchema>;
+export type TransactionListResponse = z.infer<
+  typeof TransactionListResponseSchema
+>;
 
 // Instrument Management
 export const CreateInstrumentRequestSchema = z.object({
@@ -192,14 +202,18 @@ export const CreateInstrumentRequestSchema = z.object({
   pip_size: z.number().positive(),
   enabled: z.boolean().default(true),
 });
-export type CreateInstrumentRequest = z.infer<typeof CreateInstrumentRequestSchema>;
+export type CreateInstrumentRequest = z.infer<
+  typeof CreateInstrumentRequestSchema
+>;
 
 export const UpdateInstrumentRequestSchema = z.object({
   display_name: z.string().optional(),
   pip_size: z.number().positive().optional(),
   enabled: z.boolean().optional(),
 });
-export type UpdateInstrumentRequest = z.infer<typeof UpdateInstrumentRequestSchema>;
+export type UpdateInstrumentRequest = z.infer<
+  typeof UpdateInstrumentRequestSchema
+>;
 
 export const InstrumentListResponseSchema = z.object({
   instruments: z.array(InstrumentSchema),
@@ -207,7 +221,9 @@ export const InstrumentListResponseSchema = z.object({
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
 });
-export type InstrumentListResponse = z.infer<typeof InstrumentListResponseSchema>;
+export type InstrumentListResponse = z.infer<
+  typeof InstrumentListResponseSchema
+>;
 
 // Dataset Management
 export const CreateDatasetRequestSchema = z.object({
@@ -285,7 +301,9 @@ export const SupportRequestListResponseSchema = z.object({
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
 });
-export type SupportRequestListResponse = z.infer<typeof SupportRequestListResponseSchema>;
+export type SupportRequestListResponse = z.infer<
+  typeof SupportRequestListResponseSchema
+>;
 
 // File Management
 export const CreateFileRequestSchema = z.object({

@@ -20,9 +20,9 @@ export function useReports(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/reports?${searchParams.toString()}` : "/reports";
-  
+
   return useGet<ReportListResponse>(url, {
     outputSchema: ReportListResponseSchema,
   });
@@ -43,11 +43,11 @@ export function useReportsBySession(sessionId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/sessions/${sessionId}/reports?${searchParams.toString()}` 
+
+  const url = query
+    ? `/sessions/${sessionId}/reports?${searchParams.toString()}`
     : `/sessions/${sessionId}/reports`;
-  
+
   return useGet<ReportListResponse>(url, {
     outputSchema: ReportListResponseSchema,
   });

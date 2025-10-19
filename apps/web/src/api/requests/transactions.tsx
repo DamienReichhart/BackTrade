@@ -20,9 +20,11 @@ export function useTransactions(query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query ? `/transactions?${searchParams.toString()}` : "/transactions";
-  
+
+  const url = query
+    ? `/transactions?${searchParams.toString()}`
+    : "/transactions";
+
   return useGet<TransactionListResponse>(url, {
     outputSchema: TransactionListResponseSchema,
   });
@@ -43,17 +45,20 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/users/${userId}/transactions?${searchParams.toString()}` 
+
+  const url = query
+    ? `/users/${userId}/transactions?${searchParams.toString()}`
     : `/users/${userId}/transactions`;
-  
+
   return useGet<TransactionListResponse>(url, {
     outputSchema: TransactionListResponseSchema,
   });
 }
 
-export function useTransactionsBySession(sessionId: string, query?: DateRangeQuery) {
+export function useTransactionsBySession(
+  sessionId: string,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -62,11 +67,11 @@ export function useTransactionsBySession(sessionId: string, query?: DateRangeQue
       }
     });
   }
-  
-  const url = query 
-    ? `/sessions/${sessionId}/transactions?${searchParams.toString()}` 
+
+  const url = query
+    ? `/sessions/${sessionId}/transactions?${searchParams.toString()}`
     : `/sessions/${sessionId}/transactions`;
-  
+
   return useGet<TransactionListResponse>(url, {
     outputSchema: TransactionListResponseSchema,
   });

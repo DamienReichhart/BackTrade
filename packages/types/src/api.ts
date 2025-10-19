@@ -43,10 +43,12 @@ export type SuccessResponse<T = unknown> = {
 export const ValidationErrorSchema = z.object({
   success: z.literal(false),
   message: z.literal("Validation failed"),
-  errors: z.array(z.object({
-    field: z.string(),
-    message: z.string(),
-  })),
+  errors: z.array(
+    z.object({
+      field: z.string(),
+      message: z.string(),
+    }),
+  ),
 });
 export type ValidationError = z.infer<typeof ValidationErrorSchema>;
 
@@ -80,10 +82,14 @@ export const BulkOperationResponseSchema = z.object({
   message: z.string(),
   processed: z.number().int().nonnegative(),
   failed: z.number().int().nonnegative(),
-  errors: z.array(z.object({
-    id: z.string(),
-    error: z.string(),
-  })).optional(),
+  errors: z
+    .array(
+      z.object({
+        id: z.string(),
+        error: z.string(),
+      }),
+    )
+    .optional(),
 });
 export type BulkOperationResponse = z.infer<typeof BulkOperationResponseSchema>;
 

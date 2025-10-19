@@ -22,9 +22,9 @@ export function useFiles(query?: PaginationQuery) {
       }
     });
   }
-  
+
   const url = query ? `/files?${searchParams.toString()}` : "/files";
-  
+
   return useGet<FileListResponse>(url, {
     outputSchema: FileListResponseSchema,
   });
@@ -45,11 +45,11 @@ export function useFilesByEntity(entityId: string, query?: PaginationQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/entities/${entityId}/files?${searchParams.toString()}` 
+
+  const url = query
+    ? `/entities/${entityId}/files?${searchParams.toString()}`
     : `/entities/${entityId}/files`;
-  
+
   return useGet<FileListResponse>(url, {
     outputSchema: FileListResponseSchema,
   });

@@ -22,9 +22,9 @@ export function useUsers(query?: SearchQuery) {
       }
     });
   }
-  
+
   const url = query ? `/users?${searchParams.toString()}` : "/users";
-  
+
   return useGet<UserListResponse>(url, {
     outputSchema: UserListResponseSchema,
   });

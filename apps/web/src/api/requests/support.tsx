@@ -24,9 +24,11 @@ export function useSupportRequests(query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query ? `/support/requests?${searchParams.toString()}` : "/support/requests";
-  
+
+  const url = query
+    ? `/support/requests?${searchParams.toString()}`
+    : "/support/requests";
+
   return useGet<SupportRequestListResponse>(url, {
     outputSchema: SupportRequestListResponseSchema,
   });
@@ -46,9 +48,12 @@ export function useCreateSupportRequest() {
 }
 
 export function useUpdateSupportRequest(id: string) {
-  return usePut<SupportRequest, Partial<CreateSupportRequest>>(`/support/requests/${id}`, {
-    outputSchema: SupportRequestSchema,
-  });
+  return usePut<SupportRequest, Partial<CreateSupportRequest>>(
+    `/support/requests/${id}`,
+    {
+      outputSchema: SupportRequestSchema,
+    },
+  );
 }
 
 export function useDeleteSupportRequest(id: string) {
@@ -71,11 +76,11 @@ export function useSupportMessages(requestId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/support/requests/${requestId}/messages?${searchParams.toString()}` 
+
+  const url = query
+    ? `/support/requests/${requestId}/messages?${searchParams.toString()}`
     : `/support/requests/${requestId}/messages`;
-  
+
   return useGet<SupportMessage[]>(url, {
     outputSchema: SupportMessageSchema.array(),
   });
@@ -95,9 +100,12 @@ export function useCreateSupportMessage() {
 }
 
 export function useUpdateSupportMessage(id: string) {
-  return usePut<SupportMessage, Partial<CreateSupportMessage>>(`/support/messages/${id}`, {
-    outputSchema: SupportMessageSchema,
-  });
+  return usePut<SupportMessage, Partial<CreateSupportMessage>>(
+    `/support/messages/${id}`,
+    {
+      outputSchema: SupportMessageSchema,
+    },
+  );
 }
 
 export function useDeleteSupportMessage(id: string) {

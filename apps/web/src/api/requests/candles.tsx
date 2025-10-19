@@ -20,9 +20,9 @@ export function useCandles(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/candles?${searchParams.toString()}` : "/candles";
-  
+
   return useGet<CandleListResponse>(url, {
     outputSchema: CandleListResponseSchema,
   });
@@ -35,13 +35,13 @@ export function useCandle(id: string) {
 }
 
 export function useCandlesByInstrument(
-  instrumentId: string, 
-  timeframe: string, 
-  query?: DateRangeQuery
+  instrumentId: string,
+  timeframe: string,
+  query?: DateRangeQuery,
 ) {
   const searchParams = new URLSearchParams();
   searchParams.append("timeframe", timeframe);
-  
+
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -49,9 +49,9 @@ export function useCandlesByInstrument(
       }
     });
   }
-  
+
   const url = `/instruments/${instrumentId}/candles?${searchParams.toString()}`;
-  
+
   return useGet<CandleListResponse>(url, {
     outputSchema: CandleListResponseSchema,
   });
@@ -66,11 +66,11 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/datasets/${datasetId}/candles?${searchParams.toString()}` 
+
+  const url = query
+    ? `/datasets/${datasetId}/candles?${searchParams.toString()}`
     : `/datasets/${datasetId}/candles`;
-  
+
   return useGet<CandleListResponse>(url, {
     outputSchema: CandleListResponseSchema,
   });

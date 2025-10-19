@@ -20,9 +20,9 @@ export function useDatasets(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/datasets?${searchParams.toString()}` : "/datasets";
-  
+
   return useGet<DatasetListResponse>(url, {
     outputSchema: DatasetListResponseSchema,
   });
@@ -34,7 +34,10 @@ export function useDataset(id: string) {
   });
 }
 
-export function useDatasetsByInstrument(instrumentId: string, query?: DateRangeQuery) {
+export function useDatasetsByInstrument(
+  instrumentId: string,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -43,11 +46,11 @@ export function useDatasetsByInstrument(instrumentId: string, query?: DateRangeQ
       }
     });
   }
-  
-  const url = query 
-    ? `/instruments/${instrumentId}/datasets?${searchParams.toString()}` 
+
+  const url = query
+    ? `/instruments/${instrumentId}/datasets?${searchParams.toString()}`
     : `/instruments/${instrumentId}/datasets`;
-  
+
   return useGet<DatasetListResponse>(url, {
     outputSchema: DatasetListResponseSchema,
   });

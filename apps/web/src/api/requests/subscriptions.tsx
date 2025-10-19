@@ -16,9 +16,11 @@ export function useSubscriptions(query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query ? `/subscriptions?${searchParams.toString()}` : "/subscriptions";
-  
+
+  const url = query
+    ? `/subscriptions?${searchParams.toString()}`
+    : "/subscriptions";
+
   return useGet<Subscription[]>(url, {
     outputSchema: SubscriptionSchema.array(),
   });
@@ -39,11 +41,11 @@ export function useSubscriptionsByUser(userId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/users/${userId}/subscriptions?${searchParams.toString()}` 
+
+  const url = query
+    ? `/users/${userId}/subscriptions?${searchParams.toString()}`
     : `/users/${userId}/subscriptions`;
-  
+
   return useGet<Subscription[]>(url, {
     outputSchema: SubscriptionSchema.array(),
   });
@@ -56,9 +58,12 @@ export function useCreateSubscription() {
 }
 
 export function useUpdateSubscription(id: string) {
-  return usePut<Subscription, Partial<Omit<Subscription, "id">>>(`/subscriptions/${id}`, {
-    outputSchema: SubscriptionSchema,
-  });
+  return usePut<Subscription, Partial<Omit<Subscription, "id">>>(
+    `/subscriptions/${id}`,
+    {
+      outputSchema: SubscriptionSchema,
+    },
+  );
 }
 
 export function useDeleteSubscription(id: string) {

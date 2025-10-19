@@ -44,7 +44,9 @@ export const UserPasswordChangeCodeSchema = z.object({
   user_id: z.number().int().positive(),
   created_at: z.string(),
 });
-export type UserPasswordChangeCode = z.infer<typeof UserPasswordChangeCodeSchema>;
+export type UserPasswordChangeCode = z.infer<
+  typeof UserPasswordChangeCodeSchema
+>;
 
 // User Session
 export const UserSessionSchema = z.object({

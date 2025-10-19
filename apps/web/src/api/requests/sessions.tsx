@@ -22,9 +22,9 @@ export function useSessions(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/sessions?${searchParams.toString()}` : "/sessions";
-  
+
   return useGet<SessionListResponse>(url, {
     outputSchema: SessionListResponseSchema,
   });

@@ -16,9 +16,9 @@ export function useAuditLogs(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/audit/logs?${searchParams.toString()}` : "/audit/logs";
-  
+
   return useGet<AuditLog[]>(url, {
     outputSchema: AuditLogSchema.array(),
   });
@@ -39,20 +39,20 @@ export function useAuditLogsByUser(userId: string, query?: DateRangeQuery) {
       }
     });
   }
-  
-  const url = query 
-    ? `/users/${userId}/audit-logs?${searchParams.toString()}` 
+
+  const url = query
+    ? `/users/${userId}/audit-logs?${searchParams.toString()}`
     : `/users/${userId}/audit-logs`;
-  
+
   return useGet<AuditLog[]>(url, {
     outputSchema: AuditLogSchema.array(),
   });
 }
 
 export function useAuditLogsByEntity(
-  entityType: string, 
-  entityId: string, 
-  query?: DateRangeQuery
+  entityType: string,
+  entityId: string,
+  query?: DateRangeQuery,
 ) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -62,11 +62,11 @@ export function useAuditLogsByEntity(
       }
     });
   }
-  
-  const url = query 
-    ? `/audit/entities/${entityType}/${entityId}?${searchParams.toString()}` 
+
+  const url = query
+    ? `/audit/entities/${entityType}/${entityId}?${searchParams.toString()}`
     : `/audit/entities/${entityType}/${entityId}`;
-  
+
   return useGet<AuditLog[]>(url, {
     outputSchema: AuditLogSchema.array(),
   });

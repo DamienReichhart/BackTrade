@@ -22,9 +22,9 @@ export function usePositions(query?: DateRangeQuery) {
       }
     });
   }
-  
+
   const url = query ? `/positions?${searchParams.toString()}` : "/positions";
-  
+
   return useGet<PositionListResponse>(url, {
     outputSchema: PositionListResponseSchema,
   });
@@ -36,7 +36,10 @@ export function usePosition(id: string) {
   });
 }
 
-export function usePositionsBySession(sessionId: string, query?: DateRangeQuery) {
+export function usePositionsBySession(
+  sessionId: string,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -45,11 +48,11 @@ export function usePositionsBySession(sessionId: string, query?: DateRangeQuery)
       }
     });
   }
-  
-  const url = query 
-    ? `/sessions/${sessionId}/positions?${searchParams.toString()}` 
+
+  const url = query
+    ? `/sessions/${sessionId}/positions?${searchParams.toString()}`
     : `/sessions/${sessionId}/positions`;
-  
+
   return useGet<PositionListResponse>(url, {
     outputSchema: PositionListResponseSchema,
   });
