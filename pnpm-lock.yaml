@@ -168,6 +168,8 @@ importers:
       "@vitejs/plugin-react":
         specifier: ^5.0.4
         version: 5.0.4(vite@7.1.11(@types/node@24.8.1)(tsx@4.20.6))
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
         version: 5.0.4(vite@7.1.10(@types/node@24.7.2)(tsx@4.20.6))
       "@vitest/coverage-v8":
         version: 5.0.4(vite@7.1.10(@types/node@24.8.1)(tsx@4.20.6))
@@ -4811,6 +4813,11 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  rollup@4.52.5:
+    resolution: {integrity: sha512-3GuObel8h7Kqdjt0gxkEzaifHTqLVW56Y/bjN7PSQtkKr0w3V/QYSdt6QWYtd7A1xUtYQigtdUfgj1RvWVtorw==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+    hasBin: true
+
   router@2.2.0:
     resolution:
       {
@@ -5633,6 +5640,46 @@ packages:
       yaml:
         optional: true
 
+  vite@7.1.11:
+    resolution: {integrity: sha512-uzcxnSDVjAopEUjljkWh8EIrg6tlzrjFUfMcR1EVsRDGwf/ccef0qQPRyOrROwhrTDaApueq+ja+KLPlzR/zdg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^20.19.0 || >=22.12.0
+      jiti: '>=1.21.0'
+      less: ^4.0.0
+      lightningcss: ^1.21.0
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
+        optional: true
+
   vitest@3.2.4:
     resolution:
       {
@@ -6282,6 +6329,9 @@ snapshots:
   '@rollup/rollup-android-arm-eabi@4.52.5':
     optional: true
 
+  '@rollup/rollup-android-arm-eabi@4.52.5':
+    optional: true
+
   '@rollup/rollup-android-arm64@4.52.4':
     optional: true
 
@@ -6758,6 +6808,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.8.1)(jsdom@27.0.1(postcss@8.5.6))(tsx@4.20.6))':
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.7.2)(jsdom@27.0.1(postcss@8.5.6))(tsx@4.20.6))':
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.8.1)(jsdom@27.0.1(postcss@8.5.6))(tsx@4.20.6))':
   "@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.7.2)(jsdom@27.0.0(postcss@8.5.6))(tsx@4.20.6))":
@@ -8233,6 +8284,34 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.52.5
       fsevents: 2.3.3
 
+  rollup@4.52.5:
+    dependencies:
+      '@types/estree': 1.0.8
+    optionalDependencies:
+      '@rollup/rollup-android-arm-eabi': 4.52.5
+      '@rollup/rollup-android-arm64': 4.52.5
+      '@rollup/rollup-darwin-arm64': 4.52.5
+      '@rollup/rollup-darwin-x64': 4.52.5
+      '@rollup/rollup-freebsd-arm64': 4.52.5
+      '@rollup/rollup-freebsd-x64': 4.52.5
+      '@rollup/rollup-linux-arm-gnueabihf': 4.52.5
+      '@rollup/rollup-linux-arm-musleabihf': 4.52.5
+      '@rollup/rollup-linux-arm64-gnu': 4.52.5
+      '@rollup/rollup-linux-arm64-musl': 4.52.5
+      '@rollup/rollup-linux-loong64-gnu': 4.52.5
+      '@rollup/rollup-linux-ppc64-gnu': 4.52.5
+      '@rollup/rollup-linux-riscv64-gnu': 4.52.5
+      '@rollup/rollup-linux-riscv64-musl': 4.52.5
+      '@rollup/rollup-linux-s390x-gnu': 4.52.5
+      '@rollup/rollup-linux-x64-gnu': 4.52.5
+      '@rollup/rollup-linux-x64-musl': 4.52.5
+      '@rollup/rollup-openharmony-arm64': 4.52.5
+      '@rollup/rollup-win32-arm64-msvc': 4.52.5
+      '@rollup/rollup-win32-ia32-msvc': 4.52.5
+      '@rollup/rollup-win32-x64-gnu': 4.52.5
+      '@rollup/rollup-win32-x64-msvc': 4.52.5
+      fsevents: 2.3.3
+
   router@2.2.0:
     dependencies:
       debug: 4.4.3
@@ -8663,6 +8742,19 @@ snapshots:
       tsx: 4.20.6
 
   vite@7.1.11(@types/node@24.8.1)(tsx@4.20.6):
+    dependencies:
+      esbuild: 0.25.11
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.52.5
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 24.8.1
+      fsevents: 2.3.3
+      tsx: 4.20.6
+
+  vitest@3.2.4(@types/node@24.8.1)(jsdom@27.0.1(postcss@8.5.6))(tsx@4.20.6):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
