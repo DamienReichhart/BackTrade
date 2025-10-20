@@ -229,7 +229,6 @@ export type InstrumentListResponse = z.infer<
 export const CreateDatasetRequestSchema = z.object({
   instrument_id: z.number().int().positive(),
   timeframe: TimeframeSchema,
-  source_label: z.string(),
   file_id: z.number().int().positive(),
   start_ts: z.iso.datetime(),
   end_ts: z.iso.datetime(),

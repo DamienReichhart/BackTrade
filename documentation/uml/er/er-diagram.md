@@ -11,7 +11,7 @@ erDiagram
     %% timeframe: M1 | M5 | M10 | M15 | M30 | H1 | H2 | H4 | D1 | W1
     %% side: BUY | SELL
     %% speed: 0.5x | 1x | 2x | 3x | 5x | 10x | 15x
-    %% suport_status: OPEN | CLOSED | PENDING APPROVAL
+    %% support_status: OPEN | CLOSED | PENDING APPROVAL
     %% transaction_type: DEPOSIT | WITHDRAWAL | COMMISSION | PNL | SLIPPAGE | SPREAD | ADJUSTMENT
     %% entity_type: USER | SESSION | TRANSACTION | SUBSCRIPTION | POSITION
     %% audit_action: CREATE | UPDATE | DELETE | LOGIN | LOGOUT | PASSWORD_CHANGE | ROLE_CHANGE | BAN | UNBAN
@@ -105,7 +105,6 @@ erDiagram
       string id PK
       string instrument_id FK
       enum timeframe
-      string source_label
       string uploaded_by_user_id FK
       datetime uploaded_at
       int records_count
@@ -194,7 +193,7 @@ erDiagram
     SUPPORT_REQUEST {
       string id PK
       string requester_id FK
-      enum suport_status
+      enum support_status
       datetime created_at
       datetime updated_at
     }

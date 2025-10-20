@@ -132,7 +132,6 @@ export const DatasetSchema = z.object({
   id: z.number().int().positive(),
   instrument_id: z.number().int().positive(),
   timeframe: TimeframeSchema,
-  source_label: z.string(),
   uploaded_by_user_id: z.number().int().positive(),
   uploaded_at: z.iso.datetime(),
   records_count: z.number().int().nonnegative(),
