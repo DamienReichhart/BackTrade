@@ -1,0 +1,10 @@
+/**
+ * InterfaceFeatures Component Styles
+ */
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+

@@ -1,0 +1,2 @@
+export { PricingHero } from "./PricingHero";
+

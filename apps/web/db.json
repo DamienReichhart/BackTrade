@@ -53,24 +53,24 @@
   "plans": [
     {
       "id": 1,
-      "code": "basic",
+      "code": "FREE",
       "stripe_product_id": "prod_basic",
-      "stripe_price_id": "price_basic_monthly",
-      "currency": "USD"
+      "stripe_price_id": "price_free_monthly",
+      "currency": "EUR"
     },
     {
       "id": 2,
-      "code": "pro",
+      "code": "TRADER",
       "stripe_product_id": "prod_pro",
-      "stripe_price_id": "price_pro_monthly",
-      "currency": "USD"
+      "stripe_price_id": "price_trader_monthly",
+      "currency": "EUR"
     },
     {
       "id": 3,
-      "code": "enterprise",
+      "code": "EXPERT",
       "stripe_product_id": "prod_enterprise",
-      "stripe_price_id": "price_enterprise_monthly",
-      "currency": "USD"
+      "stripe_price_id": "price_expert_monthly",
+      "currency": "EUR"
     }
   ],
   "subscriptions": [

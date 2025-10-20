@@ -1,0 +1,162 @@
+/**
+ * Pricing configuration
+ * 
+ * Defines pricing tiers, features, and comparison data
+ * Merged with API data to display complete pricing information
+ */
+
+/**
+ * Plan feature interface
+ */
+export interface PlanFeature {
+  text: string;
+  included: boolean;
+}
+
+/**
+ * Pricing tier interface
+ */
+export interface PricingTier {
+  code: string;
+  name: string;
+  price: number;
+  currency: string;
+  period: string;
+  description: string;
+  badge?: string;
+  badgeVariant?: "default" | "popular" | "premium";
+  features: PlanFeature[];
+  ctaText: string;
+  ctaVariant: "outline" | "primary" | "secondary";
+  highlighted?: boolean;
+}
+
+/**
+ * Comparison row interface
+ */
+export interface ComparisonRow {
+  feature: string;
+  free: string | boolean;
+  trader: string | boolean;
+  expert: string | boolean;
+}
+
+/**
+ * Pricing tiers configuration
+ */
+export const pricingTiers: PricingTier[] = [
+  {
+    code: "FREE",
+    name: "Free",
+    price: 0,
+    currency: "€",
+    period: "/month",
+    description: "Start",
+    features: [
+      { text: "1 active sessions", included: true },
+      { text: "Deterministic OHLCV engine", included: true },
+      { text: "Market entries only • immediate fills", included: true },
+      { text: "Fixed spread, slippage, commission", included: true },
+      { text: "Session reports + JSON export", included: true },
+    ],
+    ctaText: "Create account",
+    ctaVariant: "outline",
+  },
+  {
+    code: "TRADER",
+    name: "Trader",
+    price: 19,
+    currency: "€",
+    period: "/month",
+    description: "Scale",
+    badge: "Most popular",
+    badgeVariant: "popular",
+    features: [
+      { text: "10 active sessions", included: true },
+      { text: "All Free features", included: true },
+      { text: "Multi-session run", included: true },
+      { text: "Export equity curve and trades table", included: true },
+    ],
+    ctaText: "Choose Trader",
+    ctaVariant: "primary",
+    highlighted: true,
+  },
+  {
+    code: "EXPERT",
+    name: "Expert",
+    price: 49,
+    currency: "€",
+    period: "/month",
+    description: "Max",
+    features: [
+      { text: "30 active sessions", included: true },
+      { text: "All Trader features", included: true },
+      { text: "Highest parallelism within quota", included: true },
+    ],
+    ctaText: "Choose Expert",
+    ctaVariant: "primary",
+  },
+];
+
+/**
+ * Comparison table data
+ */
+export const comparisonData: ComparisonRow[] = [
+  {
+    feature: "Active sessions quota",
+    free: "1 session",
+    trader: "10 sessions",
+    expert: "30 sessions",
+  },
+  {
+    feature: "Session lifecycle",
+    free: "Draft → Running → Paused → Completed → Archived",
+    trader: "Draft → Running → Paused → Completed → Archived",
+    expert: "Draft → Running → Paused → Completed → Archived",
+  },
+  {
+    feature: "Entries and fills",
+    free: "Immediate market",
+    trader: "Immediate market",
+    expert: "Immediate market",
+  },
+  {
+    feature: "Costs model",
+    free: "Fixed spread • slippage • commission",
+    trader: "Fixed spread • slippage • commission",
+    expert: "Fixed spread • slippage • commission",
+  },
+  {
+    feature: "Pending/limit/stop orders",
+    free: "Not included",
+    trader: "Not included",
+    expert: "Not included",
+  },
+  {
+    feature: "Tick simulation",
+    free: "Not included",
+    trader: "Not included",
+    expert: "Not included",
+  },
+  {
+    feature: "Support",
+    free: "Community",
+    trader: "Standard",
+    expert: "Priority",
+  },
+];
+
+/**
+ * Get pricing tier by code
+ */
+export function getPricingTierByCode(code: string): PricingTier | undefined {
+  return pricingTiers.find((tier) => tier.code === code);
+}
+
+/**
+ * Format price with currency
+ */
+export function formatPrice(price: number, currency: string): string {
+  return `${currency}${price}`;
+}
+

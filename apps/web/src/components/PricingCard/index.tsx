@@ -1,0 +1,2 @@
+export { PricingCard } from "./PricingCard";
+
