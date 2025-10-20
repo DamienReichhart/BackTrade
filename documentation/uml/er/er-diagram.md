@@ -1,6 +1,7 @@
 ```mermaid
 
 
+
 erDiagram
     %% =========================
     %% ENUMS (defined in code)
@@ -24,14 +25,9 @@ erDiagram
       enum role
       boolean is_banned
       string stripe_customer_id UK
+      string password_reset_code
       datetime created_at
       datetime updated_at
-    }
-
-    USER_PASSWORD_CHANGE_CODE {
-        string code PK
-        string user_id
-        datetime created_at
     }
 
     USER_SESSION {
@@ -246,7 +242,6 @@ erDiagram
     SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
     USER ||--o{ SUPPORT_REQUEST : "create"
-    USER ||--o{ USER_PASSWORD_CHANGE_CODE : "ask"
     USER ||--o{ SUPPORT_MESSAGE : "send"
     SUPPORT_REQUEST ||--o{ SUPPORT_MESSAGE : "contains"
     SUPPORT_MESSAGE ||--o{ SUPPORT_MESSAGE_FILE : "contains"
