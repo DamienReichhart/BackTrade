@@ -157,6 +157,7 @@ User --> UC_EXPORT
 ' Support / Admin
 User --> UC_TICKET
 User --> UC_MSG
+UC_MSG --> UC_ATTACH
 Admin --> UC_BAN
 
 ' === Integrations (MIDDLE → RIGHT) ===
