@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+// Re-export all schemas and types
+export * from "./enums";
+export * from "./entities";
+export * from "./requests";
+export * from "./api";
+
+// Legacy schemas (keeping for backward compatibility)
 export const HealthSchema = z.object({
   status: z.literal("ok"),
   time: z.string(),
