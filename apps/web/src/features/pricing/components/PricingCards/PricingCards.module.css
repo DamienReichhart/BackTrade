@@ -1,0 +1,34 @@
+/**
+ * PricingCards Component Styles
+ */
+
+.pricingCards {
+  padding: var(--spacing-3xl) 0;
+}
+
+.container {
+  max-width: var(--container-xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  align-items: stretch;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pricingCards {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+}
