@@ -1,6 +1,7 @@
 ```mermaid
 
 
+
 erDiagram
     %% =========================
     %% ENUMS (defined in code)
@@ -11,7 +12,7 @@ erDiagram
     %% timeframe: M1 | M5 | M10 | M15 | M30 | H1 | H2 | H4 | D1 | W1
     %% side: BUY | SELL
     %% speed: 0.5x | 1x | 2x | 3x | 5x | 10x | 15x
-    %% suport_status: OPEN | CLOSED | PENDING APPROVAL
+    %% support_status: OPEN | CLOSED | PENDING APPROVAL
     %% transaction_type: DEPOSIT | WITHDRAWAL | COMMISSION | PNL | SLIPPAGE | SPREAD | ADJUSTMENT
     %% entity_type: USER | SESSION | TRANSACTION | SUBSCRIPTION | POSITION
     %% audit_action: CREATE | UPDATE | DELETE | LOGIN | LOGOUT | PASSWORD_CHANGE | ROLE_CHANGE | BAN | UNBAN
@@ -24,14 +25,9 @@ erDiagram
       enum role
       boolean is_banned
       string stripe_customer_id UK
+      string password_reset_code
       datetime created_at
       datetime updated_at
-    }
-
-    USER_PASSWORD_CHANGE_CODE {
-        string code PK
-        string user_id
-        datetime created_at
     }
 
     USER_SESSION {
@@ -105,7 +101,6 @@ erDiagram
       string id PK
       string instrument_id FK
       enum timeframe
-      string source_label
       string uploaded_by_user_id FK
       datetime uploaded_at
       int records_count
@@ -194,7 +189,7 @@ erDiagram
     SUPPORT_REQUEST {
       string id PK
       string requester_id FK
-      enum suport_status
+      enum support_status
       datetime created_at
       datetime updated_at
     }
@@ -247,7 +242,6 @@ erDiagram
     SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
     USER ||--o{ SUPPORT_REQUEST : "create"
-    USER ||--o{ USER_PASSWORD_CHANGE_CODE : "ask"
     USER ||--o{ SUPPORT_MESSAGE : "send"
     SUPPORT_REQUEST ||--o{ SUPPORT_MESSAGE : "contains"
     SUPPORT_MESSAGE ||--o{ SUPPORT_MESSAGE_FILE : "contains"
