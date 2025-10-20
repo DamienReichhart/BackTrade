@@ -2,29 +2,42 @@ import { useMemo } from "react";
 import styles from "./ChartPreview.module.css";
 
 /**
+ * Generate deterministic pseudo-random data for chart preview
+ * Uses a simple linear congruential generator with a fixed seed
+ */
+function generateChartData() {
+  // Random seed
+  let seed = 123456;
+  const lcg = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+
+  return Array.from({ length: 20 }, (_, i) => {
+    const isGreen = lcg() > 0.5;
+    const height = 40 + lcg() * 80;
+    const wickTop = lcg() * 20;
+    const wickBottom = lcg() * 20;
+
+    return {
+      id: i,
+      isGreen,
+      height,
+      wickTop,
+      wickBottom,
+      bottom: 20 + lcg() * 40,
+    };
+  });
+}
+
+/**
  * ChartPreview component
  *
  * Displays a simulated candlestick chart preview
  */
 export function ChartPreview() {
   // Generate simulated candlestick data (memoized to avoid impure function calls on every render)
-  const candles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => {
-      const isGreen = Math.random() > 0.5;
-      const height = 40 + Math.random() * 80;
-      const wickTop = Math.random() * 20;
-      const wickBottom = Math.random() * 20;
-
-      return {
-        id: i,
-        isGreen,
-        height,
-        wickTop,
-        wickBottom,
-        bottom: 20 + Math.random() * 40,
-      };
-    });
-  }, []); // Empty dependency array means this only runs once on mount
+  const candles = useMemo(() => generateChartData(), []);
 
   return (
     <div className={styles.chartPreview}>
