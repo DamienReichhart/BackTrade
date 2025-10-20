@@ -7,12 +7,12 @@ import styles from "./PricingCards.module.css";
  */
 interface PricingCardsProps {
   tiers: PricingTier[];
-  onSelectPlan?: (code: string) => void;
+  onSelectPlan?: (code: string, planId?: number) => void;
 }
 
 /**
  * PricingCards component
- * 
+ *
  * Displays grid of pricing plan cards
  */
 export function PricingCards({ tiers, onSelectPlan }: PricingCardsProps) {
@@ -33,7 +33,8 @@ export function PricingCards({ tiers, onSelectPlan }: PricingCardsProps) {
               ctaText={tier.ctaText}
               ctaVariant={tier.ctaVariant}
               highlighted={tier.highlighted}
-              onSelect={() => onSelectPlan?.(tier.code)}
+              planId={tier.id}
+              onSelect={() => onSelectPlan?.(tier.code, tier.id)}
             />
           ))}
         </div>
@@ -41,4 +42,3 @@ export function PricingCards({ tiers, onSelectPlan }: PricingCardsProps) {
     </section>
   );
 }
-

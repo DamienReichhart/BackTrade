@@ -18,24 +18,27 @@ const features: InterfaceFeature[] = [
   {
     id: "order-ticket",
     title: "Order ticket",
-    description: "SymbolJ • XAUUSD • Qty: 1.00 lots • SL: 2 352.00 • TP: 2 372.50",
+    description:
+      "SymbolJ • XAUUSD • Qty: 1.00 lots • SL: 2 352.00 • TP: 2 372.50",
     badge: "Immediate fills • Fixed costs",
   },
   {
     id: "open-positions",
     title: "Open positions",
-    description: "XAUUSD Buy 1.20 @ 2 360.80 ~ PnL +€ 852.00\nEURUSD Sell 0.80 @ 1.07520 ~ PnL -€ 232.40\nBTCUSD Buy 0.15 @ 63 900.00 ~ PnL +€ 460.50",
+    description:
+      "XAUUSD Buy 1.20 @ 2 360.80 ~ PnL +€ 852.00\nEURUSD Sell 0.80 @ 1.07520 ~ PnL -€ 232.40\nBTCUSD Buy 0.15 @ 63 900.00 ~ PnL +€ 460.50",
   },
   {
     id: "session-metrics",
     title: "Session metrics",
-    description: "Equity curve, drawdown, win rate per side, timeframe contribution, and costs breakdown.",
+    description:
+      "Equity curve, drawdown, win rate per side, timeframe contribution, and costs breakdown.",
   },
 ];
 
 /**
  * InterfaceFeatures component
- * 
+ *
  * Displays key interface features
  */
 export function InterfaceFeatures() {
@@ -52,4 +55,3 @@ export function InterfaceFeatures() {
     </div>
   );
 }
-

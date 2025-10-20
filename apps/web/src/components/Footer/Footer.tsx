@@ -14,16 +14,16 @@ interface FooterLink {
  */
 const footerLinks: FooterLink[] = [
   { label: "Home", href: "/" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Product", href: "#product" },
-  { label: "Interface", href: "#interface" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Product", href: "/#product" },
+  { label: "Interface", href: "/#interface" },
   { label: "Terms", href: "/terms" },
   { label: "Privacy", href: "/privacy" },
 ];
 
 /**
  * Footer component
- * 
+ *
  * Provides footer navigation and copyright information
  */
 export function Footer() {
@@ -36,14 +36,14 @@ export function Footer() {
           <ul className={styles.linkList}>
             {footerLinks.map((link) => (
               <li key={link.href} className={styles.linkItem}>
-                <a href={link.href} className={styles.link}>
+                <Link to={link.href} className={styles.link}>
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
-        
+
         <div className={styles.copyright}>
           <p>© {currentYear} BackTrade</p>
         </div>
@@ -51,4 +51,3 @@ export function Footer() {
     </footer>
   );
 }
-

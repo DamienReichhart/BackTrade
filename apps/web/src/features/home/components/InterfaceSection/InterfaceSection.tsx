@@ -4,7 +4,7 @@ import styles from "./InterfaceSection.module.css";
 
 /**
  * InterfaceSection component
- * 
+ *
  * Displays interface preview with chart and feature highlights
  */
 export function InterfaceSection() {
@@ -28,7 +28,7 @@ export function InterfaceSection() {
           <div className={styles.chartColumn}>
             <ChartPreview />
           </div>
-          
+
           <div className={styles.featuresColumn}>
             <InterfaceFeatures />
           </div>
@@ -37,4 +37,3 @@ export function InterfaceSection() {
     </section>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../Button";
 import { Navigation } from "./Navigation";
 import styles from "./Header.module.css";
@@ -6,11 +6,13 @@ import logoSvg from "../../assets/logo.svg";
 
 /**
  * Main header component with logo and navigation
- * 
+ *
  * Provides the primary navigation and branding for the application
  * Responsive design with mobile menu support
  */
 export function Header() {
+  const navigate = useNavigate();
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -26,10 +28,18 @@ export function Header() {
 
           {/* Actions */}
           <div className={styles.actions}>
-            <Button variant="ghost" size="medium">
+            <Button
+              variant="ghost"
+              size="medium"
+              onClick={() => navigate("/signin")}
+            >
               Sign in
             </Button>
-            <Button variant="primary" size="medium">
+            <Button
+              variant="primary"
+              size="medium"
+              onClick={() => navigate("/signup")}
+            >
               Get started
             </Button>
           </div>
@@ -38,4 +48,3 @@ export function Header() {
     </header>
   );
 }
-

@@ -23,14 +23,15 @@ interface PricingCardProps {
   ctaText: string;
   ctaVariant?: "outline" | "primary" | "secondary";
   highlighted?: boolean;
+  planId?: number;
   onSelect?: () => void;
 }
 
 /**
  * PricingCard component
- * 
+ *
  * Displays a pricing plan card with features and call-to-action
- * 
+ *
  * @example
  * ```tsx
  * <PricingCard
@@ -56,10 +57,13 @@ export function PricingCard({
   ctaText,
   ctaVariant = "primary",
   highlighted = false,
+  planId,
   onSelect,
 }: PricingCardProps) {
   return (
-    <article className={`${styles.card} ${highlighted ? styles.highlighted : ""}`}>
+    <article
+      className={`${styles.card} ${highlighted ? styles.highlighted : ""}`}
+    >
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.nameSection}>
@@ -94,16 +98,10 @@ export function PricingCard({
 
       {/* CTA */}
       <div className={styles.ctaSection}>
-        <Button
-          variant={ctaVariant}
-          size="large"
-          fullWidth
-          onClick={onSelect}
-        >
+        <Button variant={ctaVariant} size="large" fullWidth onClick={onSelect}>
           {ctaText}
         </Button>
       </div>
     </article>
   );
 }
-

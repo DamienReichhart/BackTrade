@@ -19,7 +19,8 @@ const features: Feature[] = [
     id: "deterministic",
     label: "Determinism",
     title: "100%",
-    description: "Same inputs produce the same PnL every time. No random ticks. No hidden fills.",
+    description:
+      "Same inputs produce the same PnL every time. No random ticks. No hidden fills.",
   },
   {
     id: "concurrency",
@@ -37,7 +38,7 @@ const features: Feature[] = [
 
 /**
  * FeatureCards component
- * 
+ *
  * Displays grid of feature highlight cards
  */
 export function FeatureCards() {
@@ -58,4 +59,3 @@ export function FeatureCards() {
     </section>
   );
 }
-

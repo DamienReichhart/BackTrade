@@ -11,10 +11,14 @@ interface InterfaceFeatureCardProps {
 
 /**
  * InterfaceFeatureCard component
- * 
+ *
  * Individual interface feature card
  */
-export function InterfaceFeatureCard({ title, description, badge }: InterfaceFeatureCardProps) {
+export function InterfaceFeatureCard({
+  title,
+  description,
+  badge,
+}: InterfaceFeatureCardProps) {
   return (
     <article className={styles.card}>
       <h4 className={styles.title}>{title}</h4>
@@ -28,4 +32,3 @@ export function InterfaceFeatureCard({ title, description, badge }: InterfaceFea
     </article>
   );
 }
-

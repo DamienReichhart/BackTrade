@@ -11,7 +11,7 @@ interface FeatureCardProps {
 
 /**
  * FeatureCard component
- * 
+ *
  * Individual feature card with label, title, and description
  */
 export function FeatureCard({ label, title, description }: FeatureCardProps) {
@@ -23,4 +23,3 @@ export function FeatureCard({ label, title, description }: FeatureCardProps) {
     </article>
   );
 }
-

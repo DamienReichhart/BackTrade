@@ -1,6 +1,6 @@
 /**
  * Pricing configuration
- * 
+ *
  * Defines pricing tiers, features, and comparison data
  * Merged with API data to display complete pricing information
  */
@@ -17,6 +17,7 @@ export interface PlanFeature {
  * Pricing tier interface
  */
 export interface PricingTier {
+  id?: number;
   code: string;
   name: string;
   price: number;
@@ -29,6 +30,8 @@ export interface PricingTier {
   ctaText: string;
   ctaVariant: "outline" | "primary" | "secondary";
   highlighted?: boolean;
+  stripeProductId?: string;
+  stripePriceId?: string;
 }
 
 /**
@@ -159,4 +162,3 @@ export function getPricingTierByCode(code: string): PricingTier | undefined {
 export function formatPrice(price: number, currency: string): string {
   return `${currency}${price}`;
 }
-

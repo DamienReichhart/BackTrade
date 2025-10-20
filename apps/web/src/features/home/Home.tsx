@@ -9,7 +9,7 @@ import styles from "./Home.module.css";
 
 /**
  * Home page component
- * 
+ *
  * Main landing page for the BackTrade application
  * Showcases product features, interface, and call-to-action
  */
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className={styles.home}>
       <Header />
-      
+
       <main className={styles.main}>
         <Hero />
         <FeatureCards />
@@ -25,7 +25,7 @@ export default function Home() {
         <InterfaceSection />
         <CTASection />
       </main>
-      
+
       <Footer />
     </div>
   );

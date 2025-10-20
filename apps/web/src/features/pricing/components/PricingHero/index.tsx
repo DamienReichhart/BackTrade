@@ -1,2 +1,1 @@
 export { PricingHero } from "./PricingHero";
-

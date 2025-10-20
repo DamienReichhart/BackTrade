@@ -38,7 +38,7 @@ const timeframes: Timeframe[] = [
 
 /**
  * TickerBar component
- * 
+ *
  * Displays available trading symbols and timeframes
  */
 export function TickerBar() {
@@ -64,4 +64,3 @@ export function TickerBar() {
     </div>
   );
 }
-

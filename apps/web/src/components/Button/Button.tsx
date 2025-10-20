@@ -19,25 +19,25 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * Button content
    */
   children: ReactNode;
-  
+
   /**
    * Visual variant of the button
    * @default "primary"
    */
   variant?: ButtonVariant;
-  
+
   /**
    * Size of the button
    * @default "medium"
    */
   size?: ButtonSize;
-  
+
   /**
    * If true, button takes full width of container
    * @default false
    */
   fullWidth?: boolean;
-  
+
   /**
    * If true, button is disabled
    * @default false
@@ -47,7 +47,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * Versatile button component with multiple variants and sizes
- * 
+ *
  * @example
  * ```tsx
  * <Button variant="primary" size="large">Get started</Button>
@@ -74,13 +74,8 @@ export function Button({
     .join(" ");
 
   return (
-    <button
-      className={classNames}
-      disabled={disabled}
-      {...props}
-    >
+    <button className={classNames} disabled={disabled} {...props}>
       {children}
     </button>
   );
 }
-

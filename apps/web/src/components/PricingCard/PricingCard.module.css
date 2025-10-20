@@ -57,6 +57,13 @@
   text-transform: capitalize;
 }
 
+.planId {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
 .badge {
   padding: var(--spacing-xs) var(--spacing-md);
   background-color: var(--color-accent);
@@ -153,4 +160,3 @@
     padding: 4px var(--spacing-sm);
   }
 }
-
