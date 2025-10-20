@@ -1,4 +1,4 @@
-import { useGet } from "../hooks/useGet";
+import { useGet } from "../hooks";
 import { Health, HealthSchema } from "@backtrade/types";
 
 export function useHealth() {
