@@ -6,190 +6,102 @@ skinparam actorBorderColor #333333
 skinparam noteBackgroundColor #ffffe0
 skinparam noteBorderColor #bfb24d
 
-' === Actors on the LEFT ===
+' === Actors ===
 package "Actors" as ACT {
   actor "Anonymous" as Anon
   actor "User" as User
   actor "Subscribed User" as Subscribed
   actor "Admin" as Admin
 
-  ' Actor generalization
   Subscribed -|> User
   Admin -|> User
 }
 
-' === System boundary in the MIDDLE ===
+' === System ===
 rectangle BackTrade {
   package "Auth & Account" as A {
-    (Sign up) as UC_SIGNUP
-    (Login) as UC_LOGIN
-    (Enable MFA) as UC_MFA
-    (Request password reset) as UC_REQRESET
-    (Reset password) as UC_RESET
-    (Logout) as UC_LOGOUT
-    (Manage sessions and devices) as UC_SESSIONS
-    (Change password) as UC_CHGPASS
+    (Manage Authentication and Account) as UC_AUTH
   }
 
   package "Subscription and Billing" as B {
-    (View plans and limits) as UC_PLANS
-    (Start subscription checkout) as UC_START_SUB
-    (Change plan) as UC_MANAGE_SUB
-    (Manage payment method) as UC_PAYMETHOD
-    (Cancel subscription) as UC_CANCEL
-    (Handle Stripe webhooks) as UC_WEBHOOK
+    (Manage Subscription and Billing) as UC_BILLING
   }
 
   package "Data Management" as C {
-    (Create or configure instrument) as UC_INSTRUMENT
-    (Upload OHLCV CSV) as UC_UPLOAD
-    (Activate dataset) as UC_ACTIVATE
-    (Deactivate dataset) as UC_DEACTIVATE
+    (Manage Datasets) as UC_DATA
   }
 
   package "Backtesting Engine" as D {
-    (Create session) as UC_CREATE_SESS
-    (Enforce session concurrency limits) as UC_LIMITS
-    (Start or Resume session) as UC_START
-    (Pause session) as UC_PAUSE
-    (Set speed 0.5x to 15x) as UC_SPEED
-    (Skip forward or back) as UC_SKIP
-    (Place market order - Buy or Sell) as UC_ORDER
-    (Apply costs: spread, slippage, commission) as UC_COSTS
-    (Record transactions) as UC_TX
-    (Modify TP or SL) as UC_MODIFY
-    (Close position) as UC_CLOSE_POS
-    (Close all positions) as UC_CLOSE_ALL
-    (Auto-pause when not viewed) as UC_AUTOPAUSE
+    (Manage Sessions) as UC_SESSIONS
+    (Manage Positions) as UC_POSITIONS
   }
 
   package "Analytics and Reporting" as E {
-    (View equity curve) as UC_EQUITY
-    (View performance metrics) as UC_METRICS
-    (Generate session report) as UC_REPORT
-    (Export report files) as UC_EXPORT
+    (View Analytics and Reports) as UC_ANALYTICS
   }
 
   package "Support" as F {
-    (Open support request) as UC_TICKET
-    (Send support message) as UC_MSG
-    (Attach files) as UC_ATTACH
+    (Manage Support Requests) as UC_SUPPORT
   }
 
   package "Audit and Compliance" as G {
-    (Record audit event) as UC_AUDIT
+    (Record Audit Event) as UC_AUDIT
     (Ban or Unban user) as UC_BAN
   }
 
-  ' Notes
-  note right of UC_ORDER
-  Constraints:
-  - Market orders only
-  - Immediate fills only
-  - OHLCV only
-  - Fixed costs: spread, slippage, commission
+  note right of UC_SESSIONS
+  Includes:
+  - Create, start, pause, resume sessions
+  - Adjust speed or skip time
+  - Enforce session concurrency limits
+  - Auto-pause when not viewed
   end note
 
-  note right of UC_CREATE_SESS
-  Constraints:
-  - One instrument per session
-  - Plan-based active session cap
+  note right of UC_POSITIONS
+  Includes:
+  - Place market orders (buy/sell)
+  - Apply costs (spread, slippage, commission)
+  - Record transactions
+  - Modify TP/SL
+  - Close one or all positions
   end note
 
-  note right of UC_AUTOPAUSE
-  Behavior:
-  - Sessions pause when not viewed
+  note right of UC_AUDIT
+  System Behavior:
+  - Automatically records every critical user or admin action  
+  - Applies to authentication, billing, dataset management, sessions, positions, analytics, support, and bans  
+  - Entries stored immutably for compliance and traceability
   end note
 }
 
-' === Services on the RIGHT ===
+' === External Services ===
 package "External Services" as EXT {
   actor "Stripe" as Stripe
   actor "Email or SMS" as Mail
-  actor "File Storage" as Store
 }
 
-' Layout hints to enforce left/middle/right placement
 ACT -[hidden]-> BackTrade
 BackTrade -[hidden]-> EXT
 
-' === Actor → use cases (LEFT → MIDDLE) ===
-' Auth
-Anon --> UC_SIGNUP
-Anon --> UC_LOGIN
-Anon --> UC_REQRESET
-User --> UC_LOGOUT
-User --> UC_MFA
-User --> UC_RESET
+' === Actor links ===
+Anon --> UC_AUTH
+User --> UC_AUTH
+
+Anon --> UC_BILLING
+User --> UC_BILLING
+
+Admin --> UC_DATA
+
 User --> UC_SESSIONS
-User --> UC_CHGPASS
+User --> UC_POSITIONS
 
-' Billing
-Anon --> UC_PLANS
-User --> UC_START_SUB
-Subscribed --> UC_MANAGE_SUB
-Subscribed --> UC_PAYMETHOD
-Subscribed --> UC_CANCEL
+User --> UC_ANALYTICS
 
-' Data management
-Admin --> UC_INSTRUMENT
-Admin --> UC_UPLOAD
-Admin --> UC_ACTIVATE
-Admin --> UC_DEACTIVATE
-
-' Engine controls (base = User)
-User --> UC_CREATE_SESS
-User --> UC_START
-User --> UC_PAUSE
-User --> UC_SPEED
-User --> UC_SKIP
-User --> UC_ORDER
-User --> UC_MODIFY
-User --> UC_CLOSE_POS
-User --> UC_CLOSE_ALL
-
-' Analytics
-User --> UC_EQUITY
-User --> UC_METRICS
-User --> UC_REPORT
-User --> UC_EXPORT
-
-' Support / Admin
-User --> UC_TICKET
-User --> UC_MSG
-UC_MSG --> UC_ATTACH
+User --> UC_SUPPORT
 Admin --> UC_BAN
 
-' === Integrations (MIDDLE → RIGHT) ===
-UC_WEBHOOK -right- Stripe
-UC_REQRESET -right- Mail
-UC_ATTACH -right- Store
-UC_EXPORT -right- Store
-UC_UPLOAD -right- Store
-
-' === Includes / cross-relations ===
-UC_CREATE_SESS ..> UC_LIMITS : <<include>>
-UC_ORDER ..> UC_COSTS : <<include>>
-UC_ORDER ..> UC_TX : <<include>>
-
-' Audit on critical actions
-UC_SIGNUP ..> UC_AUDIT : <<include>>
-UC_LOGIN ..> UC_AUDIT : <<include>>
-UC_CHGPASS ..> UC_AUDIT : <<include>>
-UC_START_SUB ..> UC_AUDIT : <<include>>
-UC_MANAGE_SUB ..> UC_AUDIT : <<include>>
-UC_CANCEL ..> UC_AUDIT : <<include>>
-UC_CREATE_SESS ..> UC_AUDIT : <<include>>
-UC_START ..> UC_AUDIT : <<include>>
-UC_ORDER ..> UC_AUDIT : <<include>>
-UC_MODIFY ..> UC_AUDIT : <<include>>
-UC_CLOSE_POS ..> UC_AUDIT : <<include>>
-UC_CLOSE_ALL ..> UC_AUDIT : <<include>>
-UC_UPLOAD ..> UC_AUDIT : <<include>>
-UC_ACTIVATE ..> UC_AUDIT : <<include>>
-UC_DEACTIVATE ..> UC_AUDIT : <<include>>
-UC_TICKET ..> UC_AUDIT : <<include>>
-UC_MSG ..> UC_AUDIT : <<include>>
-UC_BAN ..> UC_AUDIT : <<include>>
+' === Integrations ===
+UC_BILLING -right- Stripe
+UC_AUTH -right- Mail
 
 @enduml
