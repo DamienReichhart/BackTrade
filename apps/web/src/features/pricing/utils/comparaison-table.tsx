@@ -1,3 +1,5 @@
+import { ComparisonTableCellStyles } from "../types";
+
 /**
  * Format cell value for display
  */
@@ -11,7 +13,10 @@ export function formatCellValue(value: string | boolean): string {
 /**
  * Get cell class based on value
  */
-export function getCellClass(value: string | boolean, styles: any): string {
+export function getCellClass(
+  value: string | boolean,
+  styles: ComparisonTableCellStyles,
+): string {
   if (typeof value === "boolean") {
     return value ? styles.included : styles.notIncluded;
   }

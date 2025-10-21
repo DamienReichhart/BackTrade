@@ -2,7 +2,7 @@
   "extends": "@backtrade/tsconfig/base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM"],
+    "lib": ["es2023", "DOM"],
     "baseUrl": ".",
     "paths": {
       "@backtrade/types": ["../../packages/types/src/index.ts"]

@@ -28,17 +28,29 @@ export function ComparisonTable({ data }: ComparisonTableProps) {
                 <tr key={index} className={styles.dataRow}>
                   <td className={styles.featureCell}>{row.feature}</td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.free, styles)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.free, {
+                      included: styles.included,
+                      notIncluded: styles.notIncluded,
+                      highlight: styles.highlight,
+                    })}`}
                   >
                     {formatCellValue(row.free)}
                   </td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.trader, styles)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.trader, {
+                      included: styles.included,
+                      notIncluded: styles.notIncluded,
+                      highlight: styles.highlight,
+                    })}`}
                   >
                     {formatCellValue(row.trader)}
                   </td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.expert, styles)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.expert, {
+                      included: styles.included,
+                      notIncluded: styles.notIncluded,
+                      highlight: styles.highlight,
+                    })}`}
                   >
                     {formatCellValue(row.expert)}
                   </td>
