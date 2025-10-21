@@ -1,14 +1,6 @@
 import { PricingCard } from "../../../../components/PricingCard";
-import { PricingTier } from "../../config/pricingConfig";
 import styles from "./PricingCards.module.css";
-
-/**
- * PricingCards props
- */
-interface PricingCardsProps {
-  tiers: PricingTier[];
-  onSelectPlan?: (code: string, planId?: number) => void;
-}
+import { PricingCardsProps } from "../../types";
 
 /**
  * PricingCards component

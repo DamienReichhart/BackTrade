@@ -5,50 +5,10 @@ import { PricingHero } from "./components/PricingHero";
 import { PricingCards } from "./components/PricingCards";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { PricingCTA } from "./components/PricingCTA";
-import {
-  pricingTiers,
-  comparisonData,
-  PricingTier,
-} from "./config/pricingConfig";
+import { pricingTiers, comparisonData } from "./config/pricingConfig";
 import { usePlans } from "../../api/requests/plans";
-import { Plan } from "@backtrade/types";
+import { mergePlanData } from "./utils";
 import styles from "./Pricing.module.css";
-
-/**
- * Merge API plan data with local pricing configuration
- */
-function mergePlanData(
-  localTiers: PricingTier[],
-  apiPlans: Plan[] | null,
-): PricingTier[] {
-  if (!apiPlans || apiPlans.length === 0) {
-    return localTiers;
-  }
-
-  return localTiers.map((tier) => {
-    // Find matching API plan by code
-    const apiPlan = apiPlans.find(
-      (plan) => plan.code.toUpperCase() === tier.code.toUpperCase(),
-    );
-
-    if (apiPlan) {
-      return {
-        ...tier,
-        id: apiPlan.id,
-        stripeProductId: apiPlan.stripe_product_id,
-        stripePriceId: apiPlan.stripe_price_id,
-        currency:
-          apiPlan.currency === "EUR"
-            ? "€"
-            : apiPlan.currency === "USD"
-              ? "$"
-              : tier.currency,
-      };
-    }
-
-    return tier;
-  });
-}
 
 /**
  * Pricing page component
@@ -63,24 +23,12 @@ export default function Pricing() {
   // Trigger API request on mount
   useEffect(() => {
     request();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Merge API data with local configuration
   const mergedTiers = useMemo(() => {
     return mergePlanData(pricingTiers, apiPlans);
   }, [apiPlans]);
-
-  // Log API data for debugging
-  useEffect(() => {
-    if (apiPlans) {
-      console.log("Plans from API:", apiPlans);
-      console.log("Merged pricing tiers:", mergedTiers);
-    }
-    if (error) {
-      console.error("Error fetching plans:", error);
-    }
-  }, [apiPlans, mergedTiers, error]);
 
   /**
    * Handle plan selection
@@ -104,11 +52,6 @@ export default function Pricing() {
         <Footer />
       </div>
     );
-  }
-
-  // Show error state (but still display pricing from config)
-  if (error) {
-    console.warn("Using local pricing configuration due to API error");
   }
 
   return (

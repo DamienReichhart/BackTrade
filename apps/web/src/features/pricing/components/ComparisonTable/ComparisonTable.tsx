@@ -1,44 +1,6 @@
-import { ComparisonRow } from "../../config/pricingConfig";
+import { ComparisonTableProps } from "../../types";
 import styles from "./ComparisonTable.module.css";
-
-/**
- * ComparisonTable props
- */
-interface ComparisonTableProps {
-  data: ComparisonRow[];
-}
-
-/**
- * Format cell value for display
- */
-function formatCellValue(value: string | boolean): string {
-  if (typeof value === "boolean") {
-    return value ? "✓" : "Not included";
-  }
-  return value;
-}
-
-/**
- * Get cell class based on value
- */
-function getCellClass(value: string | boolean): string {
-  if (typeof value === "boolean") {
-    return value ? styles.included : styles.notIncluded;
-  }
-
-  const lowerValue = value.toLowerCase();
-  if (lowerValue.includes("not included")) {
-    return styles.notIncluded;
-  }
-  if (
-    lowerValue.includes("immediate market") ||
-    lowerValue.includes("fixed spread")
-  ) {
-    return styles.highlight;
-  }
-
-  return "";
-}
+import { formatCellValue, getCellClass } from "../../utils";
 
 /**
  * ComparisonTable component
@@ -66,17 +28,17 @@ export function ComparisonTable({ data }: ComparisonTableProps) {
                 <tr key={index} className={styles.dataRow}>
                   <td className={styles.featureCell}>{row.feature}</td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.free)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.free, styles)}`}
                   >
                     {formatCellValue(row.free)}
                   </td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.trader)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.trader, styles)}`}
                   >
                     {formatCellValue(row.trader)}
                   </td>
                   <td
-                    className={`${styles.dataCell} ${getCellClass(row.expert)}`}
+                    className={`${styles.dataCell} ${getCellClass(row.expert, styles)}`}
                   >
                     {formatCellValue(row.expert)}
                   </td>

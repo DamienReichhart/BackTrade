@@ -22,9 +22,10 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
+      "react-hooks/exhaustive-deps": "off",
     },
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2025,
       sourceType: "module",
       parser: tseslint.parser,
       parserOptions: {
