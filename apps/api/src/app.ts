@@ -4,7 +4,7 @@ import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
-import { router } from "./routes/index.js";
+import { router } from "./routes/index";
 import type { Request, Response, NextFunction } from "express";
 
 export function createApp() {

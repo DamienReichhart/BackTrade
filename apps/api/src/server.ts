@@ -1,5 +1,5 @@
 import { env } from "@backtrade/config";
-import { createApp } from "./app.js";
+import { createApp } from "./app";
 
 const app = createApp();
 const server = app.listen(env.PORT, () => {
