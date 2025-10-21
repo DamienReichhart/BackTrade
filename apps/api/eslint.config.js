@@ -16,11 +16,10 @@ export default [
       parser: tseslint.parser,
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: "./tsconfig.json",
       },
       globals: {
         ...globals.node,
-        ...globals.es2023,
+        ...globals.esnext,
       },
     },
   },

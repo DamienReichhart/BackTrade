@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 // Re-export all hooks
 export * from "./useFetch";
 export * from "./useGet";

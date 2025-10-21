@@ -18,27 +18,20 @@ export default [
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
       "react-hooks/exhaustive-deps": "off",
     },
     languageOptions: {
-      ecmaVersion: 2025,
+      ecmaVersion: "latest",
       sourceType: "module",
       parser: tseslint.parser,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
         tsconfigRootDir: import.meta.dirname,
         project: "./tsconfig.json",
       },
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.es2023,
+        ...globals.esnext,
       },
     },
   },
