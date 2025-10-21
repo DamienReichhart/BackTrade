@@ -1,13 +1,7 @@
 {
   "extends": "@backtrade/tsconfig/base.json",
   "compilerOptions": {
-    "target": "esnext",
     "useDefineForClassFields": true,
-    "lib": ["esnext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "types": ["vite/client"],
-    "skipLibCheck": true,
-    "jsx": "react-jsx"
   },
   "include": ["src", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
 }
