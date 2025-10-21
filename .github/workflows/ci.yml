@@ -100,7 +100,7 @@ jobs:
   build:
     name: Build
     runs-on: self-hosted
-    needs: [lint, typecheck, test, coverage, semgrep]
+    needs: [lint, test, coverage, semgrep]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup

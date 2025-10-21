@@ -7,7 +7,7 @@
 **Professional Trading Backtesting Platform**
 
 [![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
+[![Javascript](https://img.shields.io/badge/Javascript-blue.svg)](https://www.javascript.com/)
 [![React](https://img.shields.io/badge/React-19.1+-61dafb.svg)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
@@ -48,7 +48,7 @@ BackTrade is built as a modern, scalable monorepo:
 
 **Frontend:**
 
-- **React 19.1+** with TypeScript
+- **React 19.1+** with Javascript
 - **Vite** for fast development and building
 - **React Router** for client-side routing
 - **TanStack Query** for server state management
@@ -57,8 +57,6 @@ BackTrade is built as a modern, scalable monorepo:
 **Backend:**
 
 - **Node.js 18+** with Express 5.1
-- **TypeScript** for type safety
-- **Zod** for schema validation
 - **Pino** for structured logging
 
 **Infrastructure:**
@@ -77,10 +75,6 @@ BackTrade/
 ├── apps/
 │   ├── api/                 # Express.js backend API
 │   └── web/                 # React frontend application
-├── packages/
-│   ├── types/               # Shared TypeScript types and Zod schemas
-│   ├── config/              # Environment configuration
-│   └── tsconfig/            # Shared TypeScript configuration
 ├── docker/                  # Docker configuration and images
 ├── documentation/           # Project documentation and mockups
 └── assets/                  # Brand assets and logos
@@ -148,7 +142,6 @@ docker-compose -f docker-dev.yaml up -d
 | `make test:coverage` | Run tests with coverage      |
 | `make lint`          | Run ESLint                   |
 | `make format`        | Format code with Prettier    |
-| `make typecheck`     | Run TypeScript type checking |
 | `make clean`         | Clean build artifacts        |
 
 ### Code Quality
@@ -157,7 +150,6 @@ The project enforces high code quality standards:
 
 - **ESLint** for code linting
 - **Prettier** for code formatting
-- **TypeScript** for type safety
 - **Vitest** for comprehensive testing
 - **Pre-Commit** for git hooks
 
@@ -167,9 +159,6 @@ The project enforces high code quality standards:
 # Run all tests
 pnpm test
 
-# Run tests in watch mode
-pnpm test:watch
-
 # Run tests with coverage
 pnpm test:coverage
 ```
@@ -178,22 +167,16 @@ pnpm test:coverage
 
 ### Production Deployment
 
-1. **Build the application**
-
-   ```bash
-   make build
-   ```
-
-2. **Deploy with Docker**
-
-   ```bash
-   make docker-prod
-   ```
-
-3. **Environment Configuration**
+1. **Environment Configuration**
    - Set up environment variables
    - Configure database connection
    - Set up Cloudflare Tunnel token
+
+2. **Deploy the application**
+
+   ```bash
+   docker compose -f docker-prod.yaml up -d --build
+   ```
 
 ### Docker Services
 

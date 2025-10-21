@@ -36,10 +36,6 @@ jobs:
         uses: ./.github/actions/lint
         continue-on-error: false
 
-      - name: Run typecheck
-        uses: ./.github/actions/typecheck
-        continue-on-error: false
-
       - name: Run tests
         uses: ./.github/actions/test
         continue-on-error: false
