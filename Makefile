@@ -10,7 +10,7 @@
 .PHONY: install dev test test-watch test-coverage typecheck lint format build build-api build-web clean clean-install docker-dev docker-prod docker-stop docker-logs docker-clean db-reset check
 
 # Variables
-NODE_VERSION := 18
+NODE_VERSION := 24
 PNPM_VERSION := 10.18.1
 DOCKER_COMPOSE_DEV := docker-compose -f docker-dev.yaml
 DOCKER_COMPOSE_PROD := docker-compose -f docker-prod.yaml

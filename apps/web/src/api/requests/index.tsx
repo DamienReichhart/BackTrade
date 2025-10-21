@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 // Re-export all request hooks
 export * from "./auth";
 export * from "./users";

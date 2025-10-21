@@ -1,12 +1,7 @@
 {
   "extends": "@backtrade/tsconfig/base.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM"],
-    "baseUrl": ".",
-    "paths": {
-      "@backtrade/types": ["../../packages/types/src/index.ts"]
-    }
+    "useDefineForClassFields": true,
   },
   "include": ["src", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
 }

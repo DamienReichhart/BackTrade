@@ -5,44 +5,7 @@
  * Merged with API data to display complete pricing information
  */
 
-/**
- * Plan feature interface
- */
-export interface PlanFeature {
-  text: string;
-  included: boolean;
-}
-
-/**
- * Pricing tier interface
- */
-export interface PricingTier {
-  id?: number;
-  code: string;
-  name: string;
-  price: number;
-  currency: string;
-  period: string;
-  description: string;
-  badge?: string;
-  badgeVariant?: "default" | "popular" | "premium";
-  features: PlanFeature[];
-  ctaText: string;
-  ctaVariant: "outline" | "primary" | "secondary";
-  highlighted?: boolean;
-  stripeProductId?: string;
-  stripePriceId?: string;
-}
-
-/**
- * Comparison row interface
- */
-export interface ComparisonRow {
-  feature: string;
-  free: string | boolean;
-  trader: string | boolean;
-  expert: string | boolean;
-}
+import { PricingTier, ComparisonRow } from "../types";
 
 /**
  * Pricing tiers configuration
@@ -154,11 +117,4 @@ export const comparisonData: ComparisonRow[] = [
  */
 export function getPricingTierByCode(code: string): PricingTier | undefined {
   return pricingTiers.find((tier) => tier.code === code);
-}
-
-/**
- * Format price with currency
- */
-export function formatPrice(price: number, currency: string): string {
-  return `${currency}${price}`;
 }

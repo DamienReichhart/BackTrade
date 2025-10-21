@@ -11,16 +11,15 @@ export default [
     ...js.configs.recommended,
     ...tseslint.configs.recommended[0],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2025,
       sourceType: "module",
       parser: tseslint.parser,
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: "./tsconfig.json",
       },
       globals: {
         ...globals.node,
-        ...globals.es2022,
+        ...globals.esnext,
       },
     },
   },
