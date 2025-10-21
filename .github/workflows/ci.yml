@@ -42,18 +42,6 @@ jobs:
           pnpm-version: "10.18.1"
       - uses: ./.github/actions/lint
 
-  typecheck:
-    name: Typecheck
-    runs-on: self-hosted
-    needs: setup
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-        with:
-          node-version: "22.19"
-          pnpm-version: "10.18.1"
-      - uses: ./.github/actions/typecheck
-
   test:
     name: Test
     runs-on: self-hosted

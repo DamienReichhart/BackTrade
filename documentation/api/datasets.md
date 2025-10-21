@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Datasets API manages historical market data collections used for backtesting sessions. Each dataset contains candlestick data for a specific instrument and timeframe.
+The Datasets API manages historical market data collections used for backtesting sessions. Each
+dataset contains candlestick data for a specific instrument and timeframe.
 
 ## Endpoints
 
@@ -131,7 +132,8 @@ Create a new dataset.
 **Request Schema:**
 
 - `instrument_id` (number, required): Instrument ID
-- `timeframe` (enum, required): Timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` | `H2` | `H4` | `D1` | `W1`)
+- `timeframe` (enum, required): Timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` | `H2` | `H4`
+  | `D1` | `W1`)
 - `file_id` (number, required): ID of uploaded data file
 - `start_ts` (string, required): Dataset start timestamp (ISO 8601)
 - `end_ts` (string, required): Dataset end timestamp (ISO 8601)

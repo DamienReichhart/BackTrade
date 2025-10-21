@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Reports API manages trading session reports, including performance summaries, equity curves, and statistical analysis of backtesting sessions.
+The Reports API manages trading session reports, including performance summaries, equity curves, and
+statistical analysis of backtesting sessions.
 
 ## Endpoints
 
@@ -210,7 +211,8 @@ Automatically generate a report for a session.
 }
 ```
 
-**Note:** This endpoint analyzes all positions and transactions in the session and automatically calculates all metrics.
+**Note:** This endpoint analyzes all positions and transactions in the session and automatically
+calculates all metrics.
 
 **Errors:**
 

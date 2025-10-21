@@ -9,18 +9,11 @@ repos:
       - id: prettier
         name: Prettier (check formatting)
         language: system
-        entry: pnpm format
+        entry: pnpm format:check
 
       # 2) ESLint (no auto-fix on commit; fail on any warnings)
       - id: eslint
         name: ESLint (no warnings allowed)
         language: system
         entry: pnpm lint
-        pass_filenames: false
-
-      # 3) TypeScript type-check across the workspace via Turbo tasks
-      - id: typecheck
-        name: TypeScript typecheck
-        language: system
-        entry: pnpm typecheck
         pass_filenames: false

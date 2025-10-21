@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Transactions API provides access to financial transaction history, including deposits, withdrawals, commissions, P&L, and other balance adjustments.
+The Transactions API provides access to financial transaction history, including deposits,
+withdrawals, commissions, P&L, and other balance adjustments.
 
 ## Endpoints
 
@@ -203,7 +204,8 @@ Delete a transaction (admin only).
 
 **Response:** `204 No Content`
 
-**Note:** Deleting a transaction does not automatically adjust balances. This should be used carefully for data correction only.
+**Note:** Deleting a transaction does not automatically adjust balances. This should be used
+carefully for data correction only.
 
 **Errors:**
 

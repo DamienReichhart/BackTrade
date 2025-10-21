@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Plans API manages subscription plans available for users to purchase. Plans define pricing tiers and features for the platform.
+The Plans API manages subscription plans available for users to purchase. Plans define pricing tiers
+and features for the platform.
 
 ## Endpoints
 

@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Files API manages file uploads, downloads, and metadata for datasets, reports, and support attachments.
+The Files API manages file uploads, downloads, and metadata for datasets, reports, and support
+attachments.
 
 ## Endpoints
 

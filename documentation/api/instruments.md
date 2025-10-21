@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Instruments API manages trading instruments (currency pairs, stocks, commodities, etc.) available for backtesting.
+The Instruments API manages trading instruments (currency pairs, stocks, commodities, etc.)
+available for backtesting.
 
 ## Endpoints
 

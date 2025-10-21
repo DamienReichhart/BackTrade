@@ -1,8 +1,0 @@
-{
-  "extends": "@backtrade/tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "noEmit": false
-  },
-  "include": ["src", "vitest.config.ts"]
-}

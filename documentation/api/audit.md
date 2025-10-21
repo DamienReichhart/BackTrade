@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Audit API provides access to audit logs tracking user actions and system events for security, compliance, and troubleshooting purposes.
+The Audit API provides access to audit logs tracking user actions and system events for security,
+compliance, and troubleshooting purposes.
 
 ## Endpoints
 
@@ -118,7 +119,8 @@ Get audit logs for a specific entity.
 
 **Path Parameters:**
 
-- `entityType` (string, required): Entity type (`USER` | `SESSION` | `TRANSACTION` | `SUBSCRIPTION` | `POSITION`)
+- `entityType` (string, required): Entity type (`USER` | `SESSION` | `TRANSACTION` | `SUBSCRIPTION`
+  | `POSITION`)
 - `entityId` (string, required): Entity identifier
 
 **Query Parameters:** Same as GET /audit/logs
@@ -150,12 +152,7 @@ interface AuditLog {
   created_at: string; // Timestamp (ISO 8601)
 }
 
-type EntityType =
-  | "USER"
-  | "SESSION"
-  | "TRANSACTION"
-  | "SUBSCRIPTION"
-  | "POSITION";
+type EntityType = "USER" | "SESSION" | "TRANSACTION" | "SUBSCRIPTION" | "POSITION";
 
 type AuditAction =
   | "CREATE"

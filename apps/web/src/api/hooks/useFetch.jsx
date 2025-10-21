@@ -1,0 +1,77 @@
+import { useState } from "react";
+
+export function useFetch(url, options = {}) {
+  const { inputSchema, outputSchema, ...fetchOptions } = options;
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const request = async (body, requestOptions = {}) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      let validatedBody = body;
+
+      // Validate input format with Zod schema if provided
+      if (body !== undefined && inputSchema) {
+        const inputResult = inputSchema.safeParse(body);
+        if (!inputResult.success) {
+          const errorMessage = inputResult.error.issues
+            .map(err => `${err.path.join(".")}: ${err.message}`)
+            .join("; ");
+          throw new Error(`Input validation failed: ${errorMessage}`);
+        }
+        validatedBody = inputResult.data;
+      }
+
+      // Prepare request body
+      const requestBody =
+        validatedBody !== undefined ? JSON.stringify(validatedBody) : undefined;
+
+      const API_BASE_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:3001/api/v1";
+
+      const response = await fetch(API_BASE_URL + url, {
+        ...fetchOptions,
+        ...requestOptions,
+        body: requestBody,
+        headers: {
+          "Content-Type": "application/json",
+          ...fetchOptions.headers,
+          ...requestOptions.headers
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Validate output format with Zod schema if provided
+      if (outputSchema) {
+        const outputResult = outputSchema.safeParse(data);
+        if (!outputResult.success) {
+          const errorMessage = outputResult.error.issues
+            .map(err => `${err.path.join(".")}: ${err.message}`)
+            .join("; ");
+          throw new Error(`Output validation failed: ${errorMessage}`);
+        }
+        setResult(outputResult.data);
+        return outputResult.data;
+      } else {
+        setResult(data);
+        return data;
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { result, error, loading, request };
+}

@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Sessions API manages trading sessions, including creating, updating, controlling session lifecycle (start, pause, resume, stop), and archiving sessions.
+The Sessions API manages trading sessions, including creating, updating, controlling session
+lifecycle (start, pause, resume, stop), and archiving sessions.
 
 ## Endpoints
 
@@ -122,7 +123,8 @@ Create a new trading session.
 **Request Schema:**
 
 - `instrument_id` (number, required): ID of the trading instrument
-- `timeframe` (enum, required): Candlestick timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` | `H2` | `H4` | `D1` | `W1`)
+- `timeframe` (enum, required): Candlestick timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` |
+  `H2` | `H4` | `D1` | `W1`)
 - `speed` (enum, required): Playback speed (`0.5x` | `1x` | `2x` | `3x` | `5x` | `10x` | `15x`)
 - `start_ts` (string, required): Session start timestamp (ISO 8601)
 - `end_ts` (string, optional): Session end timestamp (ISO 8601)
@@ -184,7 +186,8 @@ Update an existing session.
 
 **Request Schema:**
 
-- `session_status` (enum, optional): Session status (`DRAFT` | `RUNNING` | `PAUSED` | `COMPLETED` | `ARCHIVED`)
+- `session_status` (enum, optional): Session status (`DRAFT` | `RUNNING` | `PAUSED` | `COMPLETED` |
+  `ARCHIVED`)
 - `speed` (enum, optional): Playback speed
 - `end_ts` (string, optional): Session end timestamp (ISO 8601)
 
@@ -423,7 +426,8 @@ See [Positions API - Get Positions by Session](./positions.md#get-sessionssessio
 
 Get all transactions for a specific session.
 
-See [Transactions API - Get Transactions by Session](./transactions.md#get-sessionssession_idtransactions)
+See
+[Transactions API - Get Transactions by Session](./transactions.md#get-sessionssession_idtransactions)
 
 ---
 

@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Health API provides a simple health check endpoint to verify that the API is running and operational. This is useful for monitoring, load balancers, and uptime checks.
+The Health API provides a simple health check endpoint to verify that the API is running and
+operational. This is useful for monitoring, load balancers, and uptime checks.
 
 ## Endpoints
 

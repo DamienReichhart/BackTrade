@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Positions API manages trading positions within sessions, including opening, closing, and liquidating positions.
+The Positions API manages trading positions within sessions, including opening, closing, and
+liquidating positions.
 
 ## Endpoints
 

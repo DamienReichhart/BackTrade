@@ -15,6 +15,8 @@ RUN pnpm build
 
 FROM node:25-alpine
 
+ENV NODE_ENV=production
+
 # Install pnpm
 RUN npm install -g pnpm
 
@@ -36,4 +38,4 @@ RUN pnpm install --frozen-lockfile --prod
 # Set working directory to the API
 WORKDIR /app/apps/api
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server.bundle.js"]

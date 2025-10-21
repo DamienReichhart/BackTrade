@@ -2,7 +2,9 @@
 
 ## Overview
 
-The BackTrade API is a RESTful API that provides endpoints for managing trading sessions, positions, transactions, instruments, and user accounts. This documentation covers all available endpoints, request/response formats, and authentication mechanisms.
+The BackTrade API is a RESTful API that provides endpoints for managing trading sessions, positions,
+transactions, instruments, and user accounts. This documentation covers all available endpoints,
+request/response formats, and authentication mechanisms.
 
 ## Base URL
 

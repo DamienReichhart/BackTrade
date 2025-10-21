@@ -12,7 +12,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
 
-_A deterministic multi-session historical trading simulator for professional traders and quantitative analysts_
+_A deterministic multi-session historical trading simulator for professional traders and
+quantitative analysts_
 
 </div>
 
@@ -20,16 +21,23 @@ _A deterministic multi-session historical trading simulator for professional tra
 
 ## Overview
 
-BackTrade is a sophisticated trading backtesting platform that enables professional traders and quantitative analysts to conduct comprehensive historical trading simulations. The platform provides a deterministic environment where users can launch trading sessions at any historical timestamp, execute trades as if operating in real-time during past market conditions, and access detailed performance analytics.
+BackTrade is a sophisticated trading backtesting platform that enables professional traders and
+quantitative analysts to conduct comprehensive historical trading simulations. The platform provides
+a deterministic environment where users can launch trading sessions at any historical timestamp,
+execute trades as if operating in real-time during past market conditions, and access detailed
+performance analytics.
 
 ### Key Features
 
-- ** Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
-- ** Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings (0.5x to 10x)
+- ** Multi-Session Management**: Run multiple concurrent trading sessions with different instruments
+  and parameters
+- ** Real-Time Simulation**: Interactive time controls with play/pause functionality and variable
+  speed settings (0.5x to 10x)
 - ** Advanced Analytics**: Comprehensive trading performance metrics and detailed session reports
 - ** Professional Tools**: Position management, risk controls, and sophisticated order execution
 - ** Role-Based Access**: Tiered subscription system with different session limits and features
-- ** Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and timeframes
+- ** Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and
+  timeframes
 - ** Modern UI**: Intuitive React-based interface with interactive candlestick charts
 
 ## Architecture
@@ -249,13 +257,16 @@ TUNNEL_TOKEN="your-tunnel-token"
 
 ## Contributing
 
-This is a proprietary project. Please contact the author for contribution guidelines and access permissions.
+This is a proprietary project. Please contact the author for contribution guidelines and access
+permissions.
 
 ## License
 
-This project is licensed under a **Proprietary License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under a **Proprietary License**. See the [LICENSE](LICENSE) file for
+details.
 
-**Important**: This is a read-only license. No execution, copying, or distribution rights are granted.
+**Important**: This is a read-only license. No execution, copying, or distribution rights are
+granted.
 
 ## 👨‍💻 Author
 
@@ -268,6 +279,7 @@ This project is licensed under a **Proprietary License**. See the [LICENSE](LICE
 
 **Built with ❤️ for the trading community**
 
-[Report Bug](mailto:contact@damien-reichhart.fr) • [Request Feature](mailto:contact@damien-reichhart.fr) • [Documentation](documentation/)
+[Report Bug](mailto:contact@damien-reichhart.fr) •
+[Request Feature](mailto:contact@damien-reichhart.fr) • [Documentation](documentation/)
 
 </div>

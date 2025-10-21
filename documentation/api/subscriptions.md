@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Subscriptions API manages user subscriptions to platform plans, including creating, updating, canceling, and reactivating subscriptions.
+The Subscriptions API manages user subscriptions to platform plans, including creating, updating,
+canceling, and reactivating subscriptions.
 
 ## Endpoints
 
@@ -237,7 +238,8 @@ Delete a subscription immediately.
 
 **Response:** `204 No Content`
 
-**Note:** This immediately cancels and deletes the subscription. Use cancel endpoint for graceful cancellation.
+**Note:** This immediately cancels and deletes the subscription. Use cancel endpoint for graceful
+cancellation.
 
 **Errors:**
 

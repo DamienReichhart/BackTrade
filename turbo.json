@@ -5,6 +5,9 @@
     "start": { "cache": false },
     "typecheck": {},
     "lint": {},
+    "lint:fix": {},
+    "format": {},
+    "format:check": {},
     "test": {},
     "test:coverage": { "outputs": ["coverage/**"] }
   }

@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Authentication API handles user registration, login, logout, password management, and token refresh operations.
+The Authentication API handles user registration, login, logout, password management, and token
+refresh operations.
 
 ## Endpoints
 
@@ -222,7 +223,8 @@ Request a password reset code to be sent via email.
 
 **Response:** `204 No Content`
 
-**Note:** For security reasons, this endpoint always returns success even if the email doesn't exist.
+**Note:** For security reasons, this endpoint always returns success even if the email doesn't
+exist.
 
 **Errors:**
 

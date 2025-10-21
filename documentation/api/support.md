@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Support API manages customer support requests and associated messages, enabling communication between users and support staff.
+The Support API manages customer support requests and associated messages, enabling communication
+between users and support staff.
 
 ## Endpoints
 
@@ -94,7 +95,8 @@ Create a new support request.
 **Request Schema:**
 
 - `requester_id` (number, required): ID of requesting user
-- `support_status` (enum, optional): Status (`OPEN` | `CLOSED` | `PENDING_APPROVAL`) - default: `OPEN`
+- `support_status` (enum, optional): Status (`OPEN` | `CLOSED` | `PENDING_APPROVAL`) - default:
+  `OPEN`
 
 **Response:** `201 Created`
 

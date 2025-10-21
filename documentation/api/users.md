@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Users API provides endpoints for user management, including creating, updating, deleting users, and managing user bans. Admin access is required for most operations.
+The Users API provides endpoints for user management, including creating, updating, deleting users,
+and managing user bans. Admin access is required for most operations.
 
 ## Endpoints
 
@@ -252,7 +253,8 @@ See [Transactions API - Get Transactions by User](./transactions.md#get-usersuse
 
 Get all subscriptions for a specific user.
 
-See [Subscriptions API - Get Subscriptions by User](./subscriptions.md#get-usersuser_idsubscriptions)
+See
+[Subscriptions API - Get Subscriptions by User](./subscriptions.md#get-usersuser_idsubscriptions)
 
 ---
 

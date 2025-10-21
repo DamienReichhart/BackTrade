@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Candles API provides access to candlestick (OHLC) market data used for backtesting. Candles represent price movements over specific time intervals.
+The Candles API provides access to candlestick (OHLC) market data used for backtesting. Candles
+represent price movements over specific time intervals.
 
 ## Endpoints
 
@@ -99,7 +100,8 @@ Get candles for a specific instrument and timeframe.
 
 **Query Parameters:**
 
-- `timeframe` (string, required): Timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` | `H2` | `H4` | `D1` | `W1`)
+- `timeframe` (string, required): Timeframe (`M1` | `M5` | `M10` | `M15` | `M30` | `H1` | `H2` |
+  `H4` | `D1` | `W1`)
 - `start_date` (string, optional): ISO 8601 date
 - `end_date` (string, optional): ISO 8601 date
 - `page` (number, optional): Page number
