@@ -1,13 +1,6 @@
 import { z } from "zod";
 import {
-  UserSchema,
   PublicUserSchema,
-  UserPasswordChangeCodeSchema,
-  UserSessionSchema,
-  PlanSchema,
-  SubscriptionSchema,
-  StripeEventSchema,
-  AuditLogSchema,
   InstrumentSchema,
   DatasetSchema,
   CandleSchema,
@@ -16,10 +9,7 @@ import {
   TransactionSchema,
   ReportSchema,
   SupportRequestSchema,
-  SupportMessageSchema,
   FileSchema,
-  ReportFileSchema,
-  SupportMessageFileSchema,
 } from "./entities";
 import {
   RoleSchema,
@@ -30,9 +20,6 @@ import {
   SpeedSchema,
   SupportStatusSchema,
   TransactionTypeSchema,
-  EntityTypeSchema,
-  AuditActionSchema,
-  SubscriptionStatusSchema,
 } from "./enums";
 
 // =========================

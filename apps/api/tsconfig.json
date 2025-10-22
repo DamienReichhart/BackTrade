@@ -2,7 +2,13 @@
   "extends": "@backtrade/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": false
+    "noEmit": false,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ESNEXT",
+    "types": ["jest", "node"]
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src"]
 }

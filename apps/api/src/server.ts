@@ -1,9 +1,9 @@
-import { env } from "@backtrade/config";
-import { createApp } from "./app";
+const { env } = require("./config");
+const { createApp: createAppFunction } = require("./app");
 
-const app = createApp();
-const server = app.listen(env.PORT, () => {
-  console.log(`api listening on :${env.PORT}`);
+const app = createAppFunction();
+const server = app.listen(env.PORT, env.HOST, () => {
+  console.log(`api listening on ${env.HOST}:${env.PORT}`);
 });
 
 process.on("SIGINT", () => server.close(() => process.exit(0)));

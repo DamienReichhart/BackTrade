@@ -1,9 +1,8 @@
 import { useGet } from "../hooks";
 import {
-  AuditLog,
+  type AuditLog,
   AuditLogSchema,
-  DateRangeQuery,
-  DateRangeQuerySchema,
+  type DateRangeQuery,
 } from "@backtrade/types";
 
 // Audit Log Management Hooks

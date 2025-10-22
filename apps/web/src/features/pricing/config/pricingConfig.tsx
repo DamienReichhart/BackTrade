@@ -5,7 +5,7 @@
  * Merged with API data to display complete pricing information
  */
 
-import { PricingTier, ComparisonRow } from "../types";
+import { type PricingTier, type ComparisonRow } from "../types";
 
 /**
  * Pricing tiers configuration

@@ -1,7 +1,9 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 
-export const router = Router();
+const router = Router();
 
-router.get("/echo", (req, res) => {
+router.get("/echo", (req: Request, res: Response) => {
   res.json({ query: req.query, now: new Date().toISOString() });
 });
+
+export { router };

@@ -11,12 +11,12 @@ export const ApiResponseSchema = z.object({
   data: z.unknown().optional(),
   error: z.string().optional(),
 });
-export type ApiResponse<T = unknown> = {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
   error?: string;
-};
+}
 
 // Error Response
 export const ErrorResponseSchema = z.object({
@@ -33,11 +33,11 @@ export const SuccessResponseSchema = z.object({
   message: z.string().optional(),
   data: z.unknown(),
 });
-export type SuccessResponse<T = unknown> = {
+export interface SuccessResponse<T = unknown> {
   success: true;
   message?: string;
   data: T;
-};
+}
 
 // Validation Error
 export const ValidationErrorSchema = z.object({
@@ -64,7 +64,7 @@ export const PaginatedResponseSchema = z.object({
     hasPrev: z.boolean(),
   }),
 });
-export type PaginatedResponse<T = unknown> = {
+export interface PaginatedResponse<T = unknown> {
   data: T[];
   pagination: {
     page: number;
@@ -74,7 +74,7 @@ export type PaginatedResponse<T = unknown> = {
     hasNext: boolean;
     hasPrev: boolean;
   };
-};
+}
 
 // Bulk Operation Response
 export const BulkOperationResponseSchema = z.object({

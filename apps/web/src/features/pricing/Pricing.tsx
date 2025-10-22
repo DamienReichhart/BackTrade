@@ -18,7 +18,7 @@ import styles from "./Pricing.module.css";
  */
 export default function Pricing() {
   // Fetch plans from API
-  const { result: apiPlans, loading, error, request } = usePlans();
+  const { result: apiPlans, loading, request } = usePlans();
 
   // Trigger API request on mount
   useEffect(() => {
@@ -34,9 +34,9 @@ export default function Pricing() {
    * Handle plan selection
    */
   const handleSelectPlan = (code: string, planId?: number) => {
-    console.log("Selected plan:", { code, planId });
     // TODO: Implement plan selection logic (redirect to signup with plan ID, etc.)
     // Example: navigate(`/signup?plan=${planId}`);
+    console.log("Selected plan:", { code, planId });
   };
 
   // Show loading state
