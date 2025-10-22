@@ -92,7 +92,7 @@ BackTrade/
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/DamienReichhart/BackTrade.git
    cd BackTrade
    ```
 
@@ -105,10 +105,7 @@ BackTrade/
 3. **Start development environment**
 
    ```bash
-   # Using Makefile (recommended)
-   make dev
-
-   # Or using pnpm directly
+   # Using pnpm directly
    pnpm dev
    ```
 
@@ -121,27 +118,8 @@ BackTrade/
 For a complete development environment with database:
 
 ```bash
-# Start development environment
-make docker-dev
-
-# Or manually
 docker-compose -f docker-dev.yaml up -d
 ```
-
-## 🛠️ Development
-
-### Available Scripts
-
-| Command              | Description                  |
-| -------------------- | ---------------------------- |
-| `make dev`           | Start development servers    |
-| `make build`         | Build all applications       |
-| `make test`          | Run all tests                |
-| `make test:coverage` | Run tests with coverage      |
-| `make lint`          | Run ESLint                   |
-| `make format`        | Format code with Prettier    |
-| `make typecheck`     | Run TypeScript type checking |
-| `make clean`         | Clean build artifacts        |
 
 ### Code Quality
 
@@ -173,13 +151,13 @@ pnpm test:coverage
 1. **Build the application**
 
    ```bash
-   make build
+   pnpm build
    ```
 
 2. **Deploy with Docker**
 
    ```bash
-   make docker-prod
+   pnpm docker-prod
    ```
 
 3. **Environment Configuration**
