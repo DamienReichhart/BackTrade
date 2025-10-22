@@ -1,13 +1,18 @@
-const express = require("express");
-const helmet = require("helmet");
-const cors = require("cors");
-const compression = require("compression");
-const rateLimit = require("express-rate-limit");
-const pinoHttp = require("pino-http");
-const { router: apiRouter } = require("./routes/index");
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
+import helmet from "helmet";
+import cors from "cors";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+import pinoHttp from "pino-http";
+import { router as apiRouter } from "./routes/index";
 
-function createApp() {
-  const app = express();
+function createApp(): Express {
+  const app: Express = express();
   app.disable("x-powered-by");
 
   app.use(helmet());
@@ -17,13 +22,13 @@ function createApp() {
   app.use(rateLimit({ windowMs: 60_000, max: 120 }));
   app.use(pinoHttp());
 
-  apiRouter.get("/health", (_req: any, res: any) =>
+  apiRouter.get("/health", (_req: Request, res: Response) =>
     res.json({ status: "ok", time: new Date().toISOString() }),
   );
 
   app.use("/api/v1", apiRouter);
 
-  app.use((err: unknown, _req: any, res: any, _next: any) => {
+  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     void _next; // preserve 4-arg signature for Express error middleware without unused-var lint error
     res.status(500).json({ error: "internal_error" });
   });
@@ -31,4 +36,4 @@ function createApp() {
   return app;
 }
 
-module.exports = { createApp };
+export { createApp };
