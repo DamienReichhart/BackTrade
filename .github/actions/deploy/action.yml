@@ -17,10 +17,6 @@ inputs:
   remote_dir:
     description: Remote directory to copy files into
     required: true
-  compose_file:
-    description: Docker compose file to run
-    required: false
-    default: docker-prod.yaml
 runs:
   using: composite
   steps:
@@ -52,14 +48,7 @@ runs:
       shell: bash
       run: |
         echo "Stopping running containers..."
-        ssh remote "
-          if [ -f '${{ inputs.remote_dir }}/${{ inputs.compose_file }}' ]; then
-            cd '${{ inputs.remote_dir }}' && docker compose -f ${{ inputs.compose_file }} down --remove-orphans || true
-            echo 'Containers stopped'
-          else
-            echo 'No compose file found, skipping container stop'
-          fi
-        "
+        ssh remote "sudo /usr/local/bin/stop_backtrade.sh safe_app"
 
     - name: Complete directory cleanup
       shell: bash
