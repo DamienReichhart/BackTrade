@@ -1,6 +1,6 @@
 import { PricingCard } from "../../../../components/PricingCard";
 import styles from "./PricingCards.module.css";
-import { PricingCardsProps } from "../../types";
+import { type PricingCardsProps } from "../../types";
 
 /**
  * PricingCards component

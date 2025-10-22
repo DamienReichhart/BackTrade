@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { z } from "zod";
+import { type z } from "zod";
 import { API_BASE_URL } from "../index";
 
 export interface UseFetchOptions<TInput = unknown, TOutput = unknown>

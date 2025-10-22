@@ -1,5 +1,5 @@
-import { PricingTier } from "../types";
-import { Plan } from "@backtrade/types";
+import { type PricingTier } from "../types";
+import { type Plan } from "@backtrade/types";
 
 /**
  * Merge API plan data with local pricing configuration

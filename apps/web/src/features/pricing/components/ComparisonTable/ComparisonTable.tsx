@@ -1,4 +1,4 @@
-import { ComparisonTableProps } from "../../types";
+import { type ComparisonTableProps } from "../../types";
 import styles from "./ComparisonTable.module.css";
 import { formatCellValue, getCellClass } from "../../utils";
 

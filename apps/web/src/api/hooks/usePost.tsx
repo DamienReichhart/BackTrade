@@ -1,4 +1,4 @@
-import { useFetch, UseFetchOptions } from "./useFetch";
+import { useFetch, type UseFetchOptions } from "./useFetch";
 
 export function usePost<TOutput = unknown, TInput = unknown>(
   url: string,

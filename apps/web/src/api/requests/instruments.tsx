@@ -1,15 +1,14 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  Instrument,
+  type Instrument,
   InstrumentSchema,
-  InstrumentListResponse,
+  type InstrumentListResponse,
   InstrumentListResponseSchema,
-  CreateInstrumentRequest,
+  type CreateInstrumentRequest,
   CreateInstrumentRequestSchema,
-  UpdateInstrumentRequest,
+  type UpdateInstrumentRequest,
   UpdateInstrumentRequestSchema,
-  PaginationQuery,
-  PaginationQuerySchema,
+  type PaginationQuery,
 } from "@backtrade/types";
 
 // Instrument Management Hooks

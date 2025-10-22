@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+const { describe, it, expect } = require("vitest");
 
 describe("smoke", () => {
   it("runs a simple assertion", () => {

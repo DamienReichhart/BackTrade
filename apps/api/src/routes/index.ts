@@ -1,7 +1,9 @@
-import { Router } from "express";
+const { Router } = require("express");
 
-export const router = Router();
+const router = Router();
 
-router.get("/echo", (req, res) => {
+router.get("/echo", (req: any, res: any) => {
   res.json({ query: req.query, now: new Date().toISOString() });
 });
+
+module.exports = { router };

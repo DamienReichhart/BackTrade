@@ -1,15 +1,12 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  PublicUser,
+  type PublicUser,
   PublicUserSchema,
-  UserListResponse,
+  type UserListResponse,
   UserListResponseSchema,
-  UpdateUserRequest,
+  type UpdateUserRequest,
   UpdateUserRequestSchema,
-  PaginationQuery,
-  PaginationQuerySchema,
-  SearchQuery,
-  SearchQuerySchema,
+  type SearchQuery,
 } from "@backtrade/types";
 
 // User Management Hooks

@@ -1,10 +1,5 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
-import {
-  Plan,
-  PlanSchema,
-  PaginationQuery,
-  PaginationQuerySchema,
-} from "@backtrade/types";
+import { type Plan, PlanSchema, type PaginationQuery } from "@backtrade/types";
 
 // Plan Management Hooks
 export function usePlans(query?: PaginationQuery) {

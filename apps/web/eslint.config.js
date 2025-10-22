@@ -1,17 +1,15 @@
-import js from "@eslint/js";
+import baseConfig from "@backtrade/eslint-config";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
 
 export default [
+  ...baseConfig,
   {
-    ignores: ["dist", "node_modules"],
+    ignores: ["dist", "node_modules", "coverage"],
   },
   {
     files: ["**/*.{ts,tsx}"],
-    ...js.configs.recommended,
-    ...tseslint.configs.recommended[0],
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
@@ -21,17 +19,12 @@ export default [
       "react-hooks/exhaustive-deps": "off",
     },
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      parser: tseslint.parser,
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
         project: "./tsconfig.json",
       },
       globals: {
         ...globals.browser,
-        ...globals.node,
-        ...globals.esnext,
       },
     },
   },

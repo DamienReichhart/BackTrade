@@ -1,15 +1,14 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  File,
+  type File,
   FileSchema,
-  FileListResponse,
+  type FileListResponse,
   FileListResponseSchema,
-  CreateFileRequest,
+  type CreateFileRequest,
   CreateFileRequestSchema,
-  FileUploadResponse,
+  type FileUploadResponse,
   FileUploadResponseSchema,
-  PaginationQuery,
-  PaginationQuerySchema,
+  type PaginationQuery,
 } from "@backtrade/types";
 
 // File Management Hooks

@@ -1,4 +1,4 @@
-import { ComparisonTableCellStyles } from "../types";
+import { type ComparisonTableCellStyles } from "../types";
 
 /**
  * Format cell value for display

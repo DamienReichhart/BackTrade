@@ -36,4 +36,4 @@ RUN pnpm install --frozen-lockfile --prod
 # Set working directory to the API
 WORKDIR /app/apps/api
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server.bundle.js"]

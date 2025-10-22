@@ -1,4 +1,4 @@
-import { PlanFeature } from "./plan";
+import { type PlanFeature } from "./plan";
 
 /**
  * Pricing tier interface

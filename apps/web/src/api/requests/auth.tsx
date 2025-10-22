@@ -1,18 +1,18 @@
 import { usePost, useGet } from "../hooks";
 import {
-  LoginRequest,
+  type LoginRequest,
   LoginRequestSchema,
-  RegisterRequest,
+  type RegisterRequest,
   RegisterRequestSchema,
-  ChangePasswordRequest,
+  type ChangePasswordRequest,
   ChangePasswordRequestSchema,
-  ForgotPasswordRequest,
+  type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
-  ResetPasswordRequest,
+  type ResetPasswordRequest,
   ResetPasswordRequestSchema,
-  AuthResponse,
+  type AuthResponse,
   AuthResponseSchema,
-  PublicUser,
+  type PublicUser,
   PublicUserSchema,
 } from "@backtrade/types";
 

@@ -1,17 +1,16 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  SupportRequest,
+  type SupportRequest,
   SupportRequestSchema,
-  SupportRequestListResponse,
+  type SupportRequestListResponse,
   SupportRequestListResponseSchema,
-  CreateSupportRequest,
+  type CreateSupportRequest,
   CreateSupportRequestSchema,
-  SupportMessage,
+  type SupportMessage,
   SupportMessageSchema,
-  CreateSupportMessage,
+  type CreateSupportMessage,
   CreateSupportMessageSchema,
-  DateRangeQuery,
-  DateRangeQuerySchema,
+  type DateRangeQuery,
 } from "@backtrade/types";
 
 // Support Request Management Hooks

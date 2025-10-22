@@ -18,6 +18,7 @@ export const EnvSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(3000),
+  HOST: z.string().default("0.0.0.0"),
   VITE_API_URL: z.string().url().optional(),
 });
 export type Env = z.infer<typeof EnvSchema>;

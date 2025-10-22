@@ -57,7 +57,7 @@ export function PricingCard({
   ctaText,
   ctaVariant = "primary",
   highlighted = false,
-  planId,
+  planId: _planId,
   onSelect,
 }: PricingCardProps) {
   return (
