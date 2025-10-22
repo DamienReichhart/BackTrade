@@ -44,7 +44,7 @@ BackTrade is built as a modern, scalable monorepo:
 - **Vite** for fast development and building
 - **React Router** for client-side routing
 - **TanStack Query** for server state management
-- **Vitest** for testing
+- **Jest** for testing
 
 **Backend:**
 
@@ -150,7 +150,7 @@ The project enforces high code quality standards:
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type safety
-- **Vitest** for comprehensive testing
+- **Jest** for comprehensive testing
 - **Pre-Commit** for git hooks
 
 ### Testing

@@ -11,9 +11,9 @@
     "start": "node dist/server.bundle.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@backtrade/types": "workspace:*",
@@ -34,16 +34,17 @@
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
     "@types/express": "5.0.3",
+    "@types/jest": "^29.5.14",
     "@types/node": "24.8.1",
-    "@vitest/coverage-v8": "^3.2.4",
     "esbuild": "0.25.11",
     "eslint": "^9.38.0",
     "globals": "^16.4.0",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.10",
+    "ts-jest": "^29.2.5",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.46.1",
-    "vitest": "3.2.4"
+    "typescript-eslint": "^8.46.1"
   },
   "license": "PROPRIETARY",
   "author": "REICHHART Damien"
