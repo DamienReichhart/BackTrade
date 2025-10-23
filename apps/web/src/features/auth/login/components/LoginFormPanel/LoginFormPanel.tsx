@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../../components/Button";
-import { Input } from "../../../../components/Input";
-import { Checkbox } from "../../../../components/Checkbox";
-import logoSvg from "../../../../assets/logo.svg";
+import { Button } from "../../../../../components/Button";
+import { Input } from "../../../../../components/Input";
+import { Checkbox } from "../../../../../components/Checkbox";
+import {
+  FormHeader,
+  AlternativeOptions,
+  FormFooter,
+} from "../../../components";
 import styles from "./LoginFormPanel.module.css";
 
 /**
@@ -16,8 +20,12 @@ export function LoginFormPanel() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberDevice, setRememberDevice] = useState(false);
-  const [emailError, setEmailError] = useState<string | undefined>("Enter a valid email.");
-  const [passwordError, setPasswordError] = useState<string | undefined>("Minimum 8 characters.");
+  const [emailError, setEmailError] = useState<string | undefined>(
+    "Enter a valid email.",
+  );
+  const [passwordError, setPasswordError] = useState<string | undefined>(
+    "Minimum 8 characters.",
+  );
 
   /**
    * Handle form submission
@@ -33,7 +41,7 @@ export function LoginFormPanel() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    
+
     // Validate email
     if (value.length === 0) {
       setEmailError("Enter a valid email.");
@@ -50,7 +58,7 @@ export function LoginFormPanel() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPassword(value);
-    
+
     // Validate password
     if (value.length === 0) {
       setPasswordError("Minimum 8 characters.");
@@ -65,14 +73,7 @@ export function LoginFormPanel() {
     <div className={styles.panel}>
       <div className={styles.formContainer}>
         {/* Header */}
-        <div className={styles.formHeader}>
-          <div className={styles.formLabel}>SIGN IN</div>
-          <div className={styles.logoContainer}>
-            <img src={logoSvg} alt="BackTrade" className={styles.logo} />
-            <span className={styles.brandName}>BackTrade</span>
-          </div>
-          <div className={styles.secureBadge}>SECURE AREA</div>
-        </div>
+        <FormHeader label="SIGN IN" />
 
         {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -120,47 +121,19 @@ export function LoginFormPanel() {
             Continue
           </Button>
 
-          {/* Separator */}
-          <div className={styles.separator}>
-            <span>or</span>
-          </div>
-
           {/* Alternative Login Options */}
-          <div className={styles.alternativeOptions}>
-            <Button
-              type="button"
-              variant="secondary"
-              size="medium"
-              onClick={() => console.log("SSO login")}
-            >
-              SSO
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="medium"
-              onClick={() => console.log("Magic link login")}
-            >
-              Magic link
-            </Button>
-          </div>
+          <AlternativeOptions
+            onSSOClick={() => console.log("SSO login")}
+            onMagicLinkClick={() => console.log("Magic link login")}
+          />
 
           {/* Footer Links */}
-          <div className={styles.formFooter}>
-            <Link to="/signup" className={styles.signupLink}>
-              New here? Create an account
-            </Link>
-            <div className={styles.footerLinks}>
-              <Link to="/terms">Terms</Link>
-              <span className={styles.separator}>•</span>
-              <Link to="/privacy">Privacy</Link>
-              <span className={styles.separator}>•</span>
-              <span className={styles.euReady}>EU-ready</span>
-            </div>
-          </div>
+          <FormFooter
+            mainLinkText="New here? Create an account"
+            mainLinkUrl="/signup"
+          />
         </form>
       </div>
     </div>
   );
 }
-

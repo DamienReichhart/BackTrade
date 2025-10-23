@@ -1,5 +1,5 @@
 /**
- * Login Form Panel Component Styles
+ * Register Form Panel Component Styles
  */
 
 .panel {
@@ -26,20 +26,18 @@
 
 .formOptions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
+  align-items: flex-start;
+  gap: var(--spacing-sm);
 }
 
-.forgotLink {
+.formOptions .checkbox {
+  flex-shrink: 0;
+}
+
+.formOptions label {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.forgotLink:hover {
-  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
 }
 
 .submitButton {

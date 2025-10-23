@@ -1,0 +1,100 @@
+---
+globs: *.css,*.module.css
+description: Brand guide colors, typography, and design tokens
+---
+
+# Brand Guide & Design System
+
+## Css coding
+
+When using colors, never insert hardcoded colors, always use the variables
+
+## Color Palette
+
+Reference: [main.css](mdc:apps/web/src/main.css)
+
+### Brand Colors
+- **Principal (Background)**: `#0b0f14` - `var(--color-principal)`
+- **Secondary (Surface/Text)**: `#e6eef5` - `var(--color-secondary)`
+- **Accentuation**: `#8aa4c5` - `var(--color-accent)`
+
+### Semantic Colors
+- **Success**: `#4ade80` - `var(--color-success)`
+- **Danger**: `#ef4444` - `var(--color-danger)`
+- **Warning**: `#f59e0b` - `var(--color-warning)`
+- **Info**: `#3b82f6` - `var(--color-info)`
+
+### Surface Colors
+- `var(--color-surface-primary)` - `#0b0f14`
+- `var(--color-surface-secondary)` - `rgba(230, 238, 245, 0.06)`
+- `var(--color-surface-tertiary)` - `rgba(230, 238, 245, 0.12)`
+- `var(--color-surface-elevated)` - `rgba(230, 238, 245, 0.08)`
+
+### Text Colors
+- **Primary**: `var(--color-text-primary)` - `#e6eef5`
+- **Secondary**: `var(--color-text-secondary)` - `rgba(230, 238, 245, 0.7)`
+- **Tertiary**: `var(--color-text-tertiary)` - `rgba(230, 238, 245, 0.5)`
+- **Inverse**: `var(--color-text-inverse)` - `#0b0f14`
+
+### Border Colors
+- `var(--color-border-primary)` - `rgba(230, 238, 245, 0.1)`
+- `var(--color-border-secondary)` - `rgba(230, 238, 245, 0.05)`
+- `var(--color-border-accent)` - `rgba(138, 164, 197, 0.3)`
+
+## Typography
+
+### Font Families
+- **Sans**: `var(--font-sans)` - "Roboto", "Ubuntu", system fonts
+- **Mono**: `var(--font-mono)` - "Azeret Mono", "Courier New"
+
+### Font Sizes
+- `var(--font-size-xs)` - 0.75rem (12px)
+- `var(--font-size-sm)` - 0.875rem (14px)
+- `var(--font-size-base)` - 1rem (16px)
+- `var(--font-size-lg)` - 1.125rem (18px)
+- `var(--font-size-xl)` - 1.25rem (20px)
+- `var(--font-size-2xl)` - 1.5rem (24px)
+- `var(--font-size-3xl)` - 1.875rem (30px)
+- `var(--font-size-4xl)` - 2.25rem (36px)
+- `var(--font-size-5xl)` - 3rem (48px)
+- `var(--font-size-6xl)` - 3.75rem (60px)
+
+### Font Weights
+- `var(--font-weight-light)` - 300
+- `var(--font-weight-regular)` - 400
+- `var(--font-weight-medium)` - 500
+- `var(--font-weight-semibold)` - 600
+- `var(--font-weight-bold)` - 700
+
+## Spacing System
+
+```
+var(--spacing-xs)   - 0.25rem (4px)
+var(--spacing-sm)   - 0.5rem (8px)
+var(--spacing-md)   - 1rem (16px)
+var(--spacing-lg)   - 1.5rem (24px)
+var(--spacing-xl)   - 2rem (32px)
+var(--spacing-2xl)  - 3rem (48px)
+var(--spacing-3xl)  - 4rem (64px)
+var(--spacing-4xl)  - 6rem (96px)
+var(--spacing-5xl)  - 8rem (128px)
+```
+
+## Border Radius
+
+```
+var(--radius-sm)   - 0.25rem (4px)
+var(--radius-md)   - 0.375rem (6px)
+var(--radius-lg)   - 0.5rem (8px)
+var(--radius-xl)   - 0.75rem (12px)
+var(--radius-2xl)  - 1rem (16px)
+var(--radius-full) - 9999px
+```
+
+## Usage Guidelines
+
+1. **Always use CSS variables** - Never hardcode colors or values
+2. **Semantic names** - Use `--color-text-primary` not `--color-white`
+3. **Dark theme** - App uses dark background (`--color-principal`)
+4. **Consistent spacing** - Use spacing variables, not arbitrary values
+5. **Responsive breakpoints** - `640px`, `768px`, `1024px`, `1280px`, `1536px`

@@ -1,10 +1,11 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
+import { type InputHTMLAttributes, forwardRef, useId } from "react";
 import styles from "./Checkbox.module.css";
 
 /**
  * Checkbox component props
  */
-interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+interface CheckboxProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   /**
    * Label text for the checkbox
    */
@@ -22,7 +23,8 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "typ
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ label, className, id, ...props }, ref) => {
-    const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedId = useId();
+    const checkboxId = id ?? `checkbox-${generatedId}`;
 
     return (
       <div className={styles.container}>
@@ -30,7 +32,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           id={checkboxId}
           type="checkbox"
-          className={`${styles.checkbox} ${className || ""}`}
+          className={`${styles.checkbox} ${className ?? ""}`}
           {...props}
         />
         {label && (
@@ -40,8 +42,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Checkbox.displayName = "Checkbox";
-

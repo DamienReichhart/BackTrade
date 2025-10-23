@@ -1,0 +1,32 @@
+/**
+ * Alternative Options Component Styles
+ */
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-border-primary);
+}
+
+.separator span {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.alternativeOptions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.alternativeOptions button {
+  flex: 1;
+}

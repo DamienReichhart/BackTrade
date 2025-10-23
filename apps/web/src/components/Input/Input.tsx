@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
+import { type InputHTMLAttributes, forwardRef, useId } from "react";
 import styles from "./Input.module.css";
 
 /**
@@ -32,7 +32,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, hasError, className, id, ...props }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedId = useId();
+    const inputId = id ?? `input-${generatedId}`;
 
     return (
       <div className={styles.container}>
@@ -44,14 +45,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`${styles.input} ${hasError ? styles.inputError : ""} ${className || ""}`}
+          className={`${styles.input} ${hasError ? styles.inputError : ""} ${className ?? ""}`}
           {...props}
         />
         {error && <span className={styles.error}>{error}</span>}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";
-

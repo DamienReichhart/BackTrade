@@ -1,5 +1,5 @@
 /**
- * Login Info Panel Component Styles
+ * Info Panel Component Styles
  */
 
 .panel {
@@ -79,6 +79,43 @@
   text-align: center;
 }
 
+.benefits {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-xl);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-xl);
+}
+
+.benefitsTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.benefitsList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.benefitsList li {
+  position: relative;
+  padding-left: var(--spacing-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.benefitsList li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .panel {
@@ -104,4 +141,3 @@
     flex-direction: column;
   }
 }
-

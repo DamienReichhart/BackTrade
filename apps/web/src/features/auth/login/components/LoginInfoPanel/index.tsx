@@ -1,2 +1,1 @@
 export { LoginInfoPanel } from "./LoginInfoPanel";
-

@@ -10,7 +10,7 @@ export default function Login() {
   return (
     <div className={styles.login}>
       <StatusIndicator />
-      
+
       <div className={styles.container}>
         <LoginInfoPanel />
         <LoginFormPanel />

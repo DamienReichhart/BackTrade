@@ -1,0 +1,1 @@
+export { RegisterInfoPanel } from "./RegisterInfoPanel";
