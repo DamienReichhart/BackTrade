@@ -1,4 +1,4 @@
-import { usePost, useGet } from '../hooks';
+import { usePost, useGet } from "../hooks";
 import {
   LoginRequestSchema,
   RegisterRequestSchema,
@@ -7,8 +7,8 @@ import {
   ResetPasswordRequestSchema,
   AuthResponseSchema,
   PublicUserSchema,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Authentication API Hooks
@@ -16,54 +16,54 @@ import { z } from 'zod';
  */
 
 export function useLogin() {
-  return usePost('/auth/login', {
+  return usePost("/auth/login", {
     inputSchema: LoginRequestSchema,
     outputSchema: AuthResponseSchema,
   });
 }
 
 export function useRegister() {
-  return usePost('/auth/register', {
+  return usePost("/auth/register", {
     inputSchema: RegisterRequestSchema,
     outputSchema: AuthResponseSchema,
   });
 }
 
 export function useLogout() {
-  return usePost('/auth/logout', {
+  return usePost("/auth/logout", {
     outputSchema: z.void(),
   });
 }
 
 export function useRefreshToken() {
-  return usePost('/auth/refresh', {
+  return usePost("/auth/refresh", {
     outputSchema: AuthResponseSchema,
   });
 }
 
 export function useChangePassword() {
-  return usePost('/auth/change-password', {
+  return usePost("/auth/change-password", {
     inputSchema: ChangePasswordRequestSchema,
     outputSchema: z.void(),
   });
 }
 
 export function useForgotPassword() {
-  return usePost('/auth/forgot-password', {
+  return usePost("/auth/forgot-password", {
     inputSchema: ForgotPasswordRequestSchema,
     outputSchema: z.void(),
   });
 }
 
 export function useResetPassword() {
-  return usePost('/auth/reset-password', {
+  return usePost("/auth/reset-password", {
     inputSchema: ResetPasswordRequestSchema,
     outputSchema: z.void(),
   });
 }
 
 export function useMe() {
-  return useGet('/auth/me', {
+  return useGet("/auth/me", {
     outputSchema: PublicUserSchema,
   });
 }

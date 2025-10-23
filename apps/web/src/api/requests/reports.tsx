@@ -1,11 +1,11 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   ReportSchema,
   ReportListResponseSchema,
   CreateReportRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Report Management API Hooks
@@ -22,7 +22,7 @@ export function useReports(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/reports?${searchParams.toString()}` : '/reports';
+  const url = query ? `/reports?${searchParams.toString()}` : "/reports";
 
   return useGet(url, {
     outputSchema: ReportListResponseSchema,
@@ -55,7 +55,7 @@ export function useReportsBySession(sessionId: string, query?: DateRangeQuery) {
 }
 
 export function useCreateReport() {
-  return usePost('/reports', {
+  return usePost("/reports", {
     inputSchema: CreateReportRequestSchema,
     outputSchema: ReportSchema,
   });

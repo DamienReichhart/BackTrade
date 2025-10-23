@@ -1,11 +1,11 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   PublicUserSchema,
   UserListResponseSchema,
   UpdateUserRequestSchema,
   type SearchQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * User Management API Hooks
@@ -22,7 +22,7 @@ export function useUsers(query?: SearchQuery) {
     });
   }
 
-  const url = query ? `/users?${searchParams.toString()}` : '/users';
+  const url = query ? `/users?${searchParams.toString()}` : "/users";
 
   return useGet(url, {
     outputSchema: UserListResponseSchema,
@@ -36,7 +36,7 @@ export function useUser(id: string) {
 }
 
 export function useCreateUser() {
-  return usePost('/users', {
+  return usePost("/users", {
     inputSchema: UpdateUserRequestSchema,
     outputSchema: PublicUserSchema,
   });

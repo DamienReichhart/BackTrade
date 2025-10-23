@@ -1,12 +1,12 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   SessionSchema,
   SessionListResponseSchema,
   CreateSessionRequestSchema,
   UpdateSessionRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Session Management API Hooks
@@ -23,7 +23,7 @@ export function useSessions(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/sessions?${searchParams.toString()}` : '/sessions';
+  const url = query ? `/sessions?${searchParams.toString()}` : "/sessions";
 
   return useGet(url, {
     outputSchema: SessionListResponseSchema,
@@ -37,7 +37,7 @@ export function useSession(id: string) {
 }
 
 export function useCreateSession() {
-  return usePost('/sessions', {
+  return usePost("/sessions", {
     inputSchema: CreateSessionRequestSchema,
     outputSchema: SessionSchema,
   });

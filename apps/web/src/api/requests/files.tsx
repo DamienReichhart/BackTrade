@@ -1,12 +1,12 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   FileSchema,
   FileListResponseSchema,
   CreateFileRequestSchema,
   FileUploadResponseSchema,
   type PaginationQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * File Management API Hooks
@@ -23,7 +23,7 @@ export function useFiles(query?: PaginationQuery) {
     });
   }
 
-  const url = query ? `/files?${searchParams.toString()}` : '/files';
+  const url = query ? `/files?${searchParams.toString()}` : "/files";
 
   return useGet(url, {
     outputSchema: FileListResponseSchema,
@@ -56,7 +56,7 @@ export function useFilesByEntity(entityId: string, query?: PaginationQuery) {
 }
 
 export function useCreateFile() {
-  return usePost('/files', {
+  return usePost("/files", {
     inputSchema: CreateFileRequestSchema,
     outputSchema: FileSchema,
   });
@@ -75,7 +75,7 @@ export function useDeleteFile(id: string) {
 }
 
 export function useUploadFile() {
-  return usePost('/files/upload', {
+  return usePost("/files/upload", {
     outputSchema: FileUploadResponseSchema,
   });
 }

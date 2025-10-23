@@ -1,11 +1,11 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   DatasetSchema,
   DatasetListResponseSchema,
   CreateDatasetRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Dataset Management API Hooks
@@ -22,7 +22,7 @@ export function useDatasets(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/datasets?${searchParams.toString()}` : '/datasets';
+  const url = query ? `/datasets?${searchParams.toString()}` : "/datasets";
 
   return useGet(url, {
     outputSchema: DatasetListResponseSchema,
@@ -58,7 +58,7 @@ export function useDatasetsByInstrument(
 }
 
 export function useCreateDataset() {
-  return usePost('/datasets', {
+  return usePost("/datasets", {
     inputSchema: CreateDatasetRequestSchema,
     outputSchema: DatasetSchema,
   });

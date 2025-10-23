@@ -1,11 +1,11 @@
-import { useGet, usePost, useDelete } from '../hooks';
+import { useGet, usePost, useDelete } from "../hooks";
 import {
   TransactionSchema,
   TransactionListResponseSchema,
   CreateTransactionRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Transaction Management API Hooks
@@ -24,7 +24,7 @@ export function useTransactions(query?: DateRangeQuery) {
 
   const url = query
     ? `/transactions?${searchParams.toString()}`
-    : '/transactions';
+    : "/transactions";
 
   return useGet(url, {
     outputSchema: TransactionListResponseSchema,
@@ -79,7 +79,7 @@ export function useTransactionsBySession(
 }
 
 export function useCreateTransaction() {
-  return usePost('/transactions', {
+  return usePost("/transactions", {
     inputSchema: CreateTransactionRequestSchema,
     outputSchema: TransactionSchema,
   });

@@ -1,11 +1,11 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   CandleSchema,
   CandleListResponseSchema,
   CreateCandleRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Candle Management API Hooks
@@ -22,7 +22,7 @@ export function useCandles(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/candles?${searchParams.toString()}` : '/candles';
+  const url = query ? `/candles?${searchParams.toString()}` : "/candles";
 
   return useGet(url, {
     outputSchema: CandleListResponseSchema,
@@ -41,7 +41,7 @@ export function useCandlesByInstrument(
   query?: DateRangeQuery,
 ) {
   const searchParams = new URLSearchParams();
-  searchParams.append('timeframe', timeframe);
+  searchParams.append("timeframe", timeframe);
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -78,14 +78,14 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
 }
 
 export function useCreateCandle() {
-  return usePost('/candles', {
+  return usePost("/candles", {
     inputSchema: CreateCandleRequestSchema,
     outputSchema: CandleSchema,
   });
 }
 
 export function useCreateCandles() {
-  return usePost('/candles/bulk', {
+  return usePost("/candles/bulk", {
     outputSchema: z.array(CandleSchema),
   });
 }

@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   SupportRequestSchema,
   SupportRequestListResponseSchema,
@@ -6,8 +6,8 @@ import {
   SupportMessageSchema,
   CreateSupportMessageSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Support Request Management API Hooks
@@ -26,7 +26,7 @@ export function useSupportRequests(query?: DateRangeQuery) {
 
   const url = query
     ? `/support/requests?${searchParams.toString()}`
-    : '/support/requests';
+    : "/support/requests";
 
   return useGet(url, {
     outputSchema: SupportRequestListResponseSchema,
@@ -40,7 +40,7 @@ export function useSupportRequest(id: string) {
 }
 
 export function useCreateSupportRequest() {
-  return usePost('/support/requests', {
+  return usePost("/support/requests", {
     inputSchema: CreateSupportRequestSchema,
     outputSchema: SupportRequestSchema,
   });
@@ -91,7 +91,7 @@ export function useSupportMessage(id: string) {
 }
 
 export function useCreateSupportMessage() {
-  return usePost('/support/messages', {
+  return usePost("/support/messages", {
     inputSchema: CreateSupportMessageSchema,
     outputSchema: SupportMessageSchema,
   });

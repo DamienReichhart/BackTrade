@@ -1,10 +1,14 @@
-import { useQuery, useMutation, type UseQueryOptions } from '@tanstack/react-query';
-import { type z } from 'zod';
-import { API_BASE_URL } from '../index';
+import {
+  useQuery,
+  useMutation,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import { type z } from "zod";
+import { API_BASE_URL } from "../index";
 
 export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
   /** HTTP method */
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: "GET" | "POST" | "PUT" | "DELETE";
   /** Zod schema to validate request body before sending */
   inputSchema?: z.ZodType<TInput>;
   /** Zod schema to validate response data after receiving */
@@ -12,21 +16,24 @@ export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
   /** For GET requests: automatically fetch on mount */
   autoFetch?: boolean;
   /** Additional fetch options */
-  fetchOptions?: Omit<RequestInit, 'body' | 'method'>;
+  fetchOptions?: Omit<RequestInit, "body" | "method">;
   /** React Query options (for GET only) */
-  queryOptions?: Omit<UseQueryOptions<TOutput, Error>, 'queryKey' | 'queryFn' | 'enabled'>;
+  queryOptions?: Omit<
+    UseQueryOptions<TOutput, Error>,
+    "queryKey" | "queryFn" | "enabled"
+  >;
 }
 
 /**
  * Unified GET/POST/PUT/DELETE hook built on React Query
- * 
+ *
  * @param url - API endpoint URL (relative to API_BASE_URL)
  * @param options - Configuration options
  */
 export function useFetch<TOutput = unknown, TInput = unknown>(
   url: string,
   {
-    method = 'GET',
+    method = "GET",
     inputSchema,
     outputSchema,
     autoFetch = false,
@@ -34,7 +41,7 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     queryOptions = {},
   }: UseFetchOptions<TInput, TOutput> = {},
 ) {
-  const isQuery = method === 'GET';
+  const isQuery = method === "GET";
   const key = [method, url];
 
   // Common fetch executor
@@ -46,8 +53,8 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
       const inputResult = inputSchema.safeParse(body);
       if (!inputResult.success) {
         const errorMessage = inputResult.error.issues
-          .map((err: z.ZodIssue) => `${err.path.join('.')}: ${err.message}`)
-          .join('; ');
+          .map((err: z.ZodIssue) => `${err.path.join(".")}: ${err.message}`)
+          .join("; ");
         throw new Error(`Input validation failed: ${errorMessage}`);
       }
       validatedBody = inputResult.data;
@@ -57,15 +64,19 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
       method,
       ...fetchOptions,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...fetchOptions.headers,
       },
-      ...(validatedBody !== undefined ? { body: JSON.stringify(validatedBody) } : {}),
+      ...(validatedBody !== undefined
+        ? { body: JSON.stringify(validatedBody) }
+        : {}),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+      throw new Error(
+        `HTTP ${response.status}: ${errorText || response.statusText}`,
+      );
     }
 
     const data = await response.json();
@@ -75,8 +86,8 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
       const outputResult = outputSchema.safeParse(data);
       if (!outputResult.success) {
         const errorMessage = outputResult.error.issues
-          .map((err: z.ZodIssue) => `${err.path.join('.')}: ${err.message}`)
-          .join('; ');
+          .map((err: z.ZodIssue) => `${err.path.join(".")}: ${err.message}`)
+          .join("; ");
         throw new Error(`Output validation failed: ${errorMessage}`);
       }
       return outputResult.data;
@@ -85,15 +96,20 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     return data as TOutput;
   };
 
-  // For GET requests - use useQuery
-  if (isQuery) {
-    const query = useQuery<TOutput, Error>({
-      queryKey: key,
-      queryFn: () => fetcher(),
-      enabled: autoFetch,
-      ...queryOptions,
-    });
+  // Always call both hooks to satisfy Rules of Hooks
+  const query = useQuery<TOutput, Error>({
+    queryKey: key,
+    queryFn: () => fetcher(),
+    enabled: isQuery && autoFetch,
+    ...queryOptions,
+  });
 
+  const mutation = useMutation<TOutput, Error, TInput | undefined>({
+    mutationFn: fetcher,
+  });
+
+  // Return appropriate data based on method
+  if (isQuery) {
     return {
       data: query.data ?? null,
       error: query.error ?? null,
@@ -104,10 +120,6 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   }
 
   // For POST/PUT/DELETE - use useMutation
-  const mutation = useMutation<TOutput, Error, TInput | undefined>({
-    mutationFn: fetcher,
-  });
-
   return {
     data: mutation.data ?? null,
     error: mutation.error ?? null,

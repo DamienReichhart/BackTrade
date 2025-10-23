@@ -1,6 +1,6 @@
-import { type z } from 'zod';
-import { useGet, usePost, usePut, useDelete } from './index';
-import { type UseFetchOptions } from './useFetch';
+import { type z } from "zod";
+import { useGet, usePost, usePut, useDelete } from "./index";
+import { type UseFetchOptions } from "./useFetch";
 
 /**
  * Endpoint configuration for type-safe API calls
@@ -14,7 +14,7 @@ export interface EndpointConfig<TInput = unknown, TOutput = unknown> {
 
 /**
  * Creates a typed GET endpoint hook factory
- * 
+ *
  * @param config - Endpoint configuration with schemas
  * @returns Hook factory function
  */
@@ -23,7 +23,10 @@ export function createGetEndpoint<TOutput = unknown>(
 ) {
   return (
     url: string,
-    options?: Omit<UseFetchOptions<never, TOutput>, 'method' | 'inputSchema' | 'outputSchema'>,
+    options?: Omit<
+      UseFetchOptions<never, TOutput>,
+      "method" | "inputSchema" | "outputSchema"
+    >,
   ) => {
     return useGet<TOutput>(url, {
       ...options,
@@ -34,7 +37,7 @@ export function createGetEndpoint<TOutput = unknown>(
 
 /**
  * Creates a typed POST endpoint hook factory
- * 
+ *
  * @param config - Endpoint configuration with schemas
  * @returns Hook factory function
  */
@@ -43,7 +46,10 @@ export function createPostEndpoint<TOutput = unknown, TInput = unknown>(
 ) {
   return (
     url: string,
-    options?: Omit<UseFetchOptions<TInput, TOutput>, 'method' | 'inputSchema' | 'outputSchema'>,
+    options?: Omit<
+      UseFetchOptions<TInput, TOutput>,
+      "method" | "inputSchema" | "outputSchema"
+    >,
   ) => {
     return usePost<TOutput, TInput>(url, {
       ...options,
@@ -55,7 +61,7 @@ export function createPostEndpoint<TOutput = unknown, TInput = unknown>(
 
 /**
  * Creates a typed PUT endpoint hook factory
- * 
+ *
  * @param config - Endpoint configuration with schemas
  * @returns Hook factory function
  */
@@ -64,7 +70,10 @@ export function createPutEndpoint<TOutput = unknown, TInput = unknown>(
 ) {
   return (
     url: string,
-    options?: Omit<UseFetchOptions<TInput, TOutput>, 'method' | 'inputSchema' | 'outputSchema'>,
+    options?: Omit<
+      UseFetchOptions<TInput, TOutput>,
+      "method" | "inputSchema" | "outputSchema"
+    >,
   ) => {
     return usePut<TOutput, TInput>(url, {
       ...options,
@@ -76,7 +85,7 @@ export function createPutEndpoint<TOutput = unknown, TInput = unknown>(
 
 /**
  * Creates a typed DELETE endpoint hook factory
- * 
+ *
  * @param config - Endpoint configuration with schemas
  * @returns Hook factory function
  */
@@ -85,7 +94,10 @@ export function createDeleteEndpoint<TOutput = unknown>(
 ) {
   return (
     url: string,
-    options?: Omit<UseFetchOptions<never, TOutput>, 'method' | 'inputSchema' | 'outputSchema'>,
+    options?: Omit<
+      UseFetchOptions<never, TOutput>,
+      "method" | "inputSchema" | "outputSchema"
+    >,
   ) => {
     return useDelete<TOutput>(url, {
       ...options,
@@ -96,7 +108,7 @@ export function createDeleteEndpoint<TOutput = unknown>(
 
 /**
  * Creates a complete CRUD endpoint set with schemas defined once
- * 
+ *
  * @example
  * ```ts
  * const userEndpoints = createCrudEndpoints({
@@ -106,7 +118,7 @@ export function createDeleteEndpoint<TOutput = unknown>(
  *   update: { inputSchema: UpdateUserRequestSchema, outputSchema: UserSchema },
  *   delete: { outputSchema: z.void() },
  * });
- * 
+ *
  * // Usage in components
  * const { data, isLoading } = userEndpoints.list('/users');
  * const { execute } = userEndpoints.create('/users');
@@ -135,4 +147,3 @@ export function createCrudEndpoints<
     delete: config.delete ? createDeleteEndpoint(config.delete) : undefined,
   };
 }
-

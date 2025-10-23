@@ -1,9 +1,6 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
-import {
-  SubscriptionSchema,
-  type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { SubscriptionSchema, type DateRangeQuery } from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Subscription Management API Hooks
@@ -22,7 +19,7 @@ export function useSubscriptions(query?: DateRangeQuery) {
 
   const url = query
     ? `/subscriptions?${searchParams.toString()}`
-    : '/subscriptions';
+    : "/subscriptions";
 
   return useGet(url, {
     outputSchema: z.array(SubscriptionSchema),
@@ -55,7 +52,7 @@ export function useSubscriptionsByUser(userId: string, query?: DateRangeQuery) {
 }
 
 export function useCreateSubscription() {
-  return usePost('/subscriptions', {
+  return usePost("/subscriptions", {
     outputSchema: SubscriptionSchema,
   });
 }

@@ -1,12 +1,12 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   InstrumentSchema,
   InstrumentListResponseSchema,
   CreateInstrumentRequestSchema,
   UpdateInstrumentRequestSchema,
   type PaginationQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Instrument Management API Hooks
@@ -25,7 +25,7 @@ export function useInstruments(query?: PaginationQuery) {
 
   const url = query
     ? `/instruments?${searchParams.toString()}`
-    : '/instruments';
+    : "/instruments";
 
   return useGet(url, {
     outputSchema: InstrumentListResponseSchema,
@@ -39,7 +39,7 @@ export function useInstrument(id: string) {
 }
 
 export function useCreateInstrument() {
-  return usePost('/instruments', {
+  return usePost("/instruments", {
     inputSchema: CreateInstrumentRequestSchema,
     outputSchema: InstrumentSchema,
   });

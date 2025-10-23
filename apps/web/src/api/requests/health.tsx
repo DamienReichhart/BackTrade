@@ -1,5 +1,5 @@
-import { useGet } from '../hooks';
-import { HealthSchema } from '@backtrade/types';
+import { useGet } from "../hooks";
+import { HealthSchema } from "@backtrade/types";
 
 /**
  * Health Check API Hook
@@ -7,7 +7,7 @@ import { HealthSchema } from '@backtrade/types';
  */
 
 export function useHealth() {
-  return useGet('/health', {
+  return useGet("/health", {
     outputSchema: HealthSchema,
   });
 }

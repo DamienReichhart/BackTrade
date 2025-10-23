@@ -1,6 +1,6 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
-import { PlanSchema, type PaginationQuery } from '@backtrade/types';
-import { z } from 'zod';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { PlanSchema, type PaginationQuery } from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Plan Management API Hooks
@@ -17,7 +17,7 @@ export function usePlans(query?: PaginationQuery) {
     });
   }
 
-  const url = query ? `/plans?${searchParams.toString()}` : '/plans';
+  const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
   return useGet(url, {
     outputSchema: z.array(PlanSchema),
@@ -31,7 +31,7 @@ export function usePlan(id: string) {
 }
 
 export function useCreatePlan() {
-  return usePost('/plans', {
+  return usePost("/plans", {
     outputSchema: PlanSchema,
   });
 }

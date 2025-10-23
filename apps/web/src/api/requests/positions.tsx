@@ -1,12 +1,12 @@
-import { useGet, usePost, usePut, useDelete } from '../hooks';
+import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
   PositionSchema,
   PositionListResponseSchema,
   CreatePositionRequestSchema,
   UpdatePositionRequestSchema,
   type DateRangeQuery,
-} from '@backtrade/types';
-import { z } from 'zod';
+} from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Position Management API Hooks
@@ -23,7 +23,7 @@ export function usePositions(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/positions?${searchParams.toString()}` : '/positions';
+  const url = query ? `/positions?${searchParams.toString()}` : "/positions";
 
   return useGet(url, {
     outputSchema: PositionListResponseSchema,
@@ -59,7 +59,7 @@ export function usePositionsBySession(
 }
 
 export function useCreatePosition() {
-  return usePost('/positions', {
+  return usePost("/positions", {
     inputSchema: CreatePositionRequestSchema,
     outputSchema: PositionSchema,
   });
