@@ -3,8 +3,10 @@ import {
   SupportRequestSchema,
   SupportRequestListResponseSchema,
   CreateSupportRequestSchema,
+  UpdateSupportRequestSchema,
   SupportMessageSchema,
   CreateSupportMessageSchema,
+  UpdateSupportMessageSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 import { z } from "zod";
@@ -48,6 +50,7 @@ export function useCreateSupportRequest() {
 
 export function useUpdateSupportRequest(id: string) {
   return usePut(`/support/requests/${id}`, {
+    inputSchema: UpdateSupportRequestSchema,
     outputSchema: SupportRequestSchema,
   });
 }
@@ -99,6 +102,7 @@ export function useCreateSupportMessage() {
 
 export function useUpdateSupportMessage(id: string) {
   return usePut(`/support/messages/${id}`, {
+    inputSchema: UpdateSupportMessageSchema,
     outputSchema: SupportMessageSchema,
   });
 }

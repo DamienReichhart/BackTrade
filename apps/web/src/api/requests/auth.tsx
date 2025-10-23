@@ -5,6 +5,7 @@ import {
   ChangePasswordRequestSchema,
   ForgotPasswordRequestSchema,
   ResetPasswordRequestSchema,
+  RefreshTokenRequestSchema,
   AuthResponseSchema,
   PublicUserSchema,
 } from "@backtrade/types";
@@ -37,6 +38,7 @@ export function useLogout() {
 
 export function useRefreshToken() {
   return usePost("/auth/refresh", {
+    inputSchema: RefreshTokenRequestSchema,
     outputSchema: AuthResponseSchema,
   });
 }

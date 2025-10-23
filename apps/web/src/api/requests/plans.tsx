@@ -1,5 +1,10 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
-import { PlanSchema, type PaginationQuery } from "@backtrade/types";
+import {
+  PlanSchema,
+  CreatePlanRequestSchema,
+  UpdatePlanRequestSchema,
+  type PaginationQuery,
+} from "@backtrade/types";
 import { z } from "zod";
 
 /**
@@ -32,12 +37,14 @@ export function usePlan(id: string) {
 
 export function useCreatePlan() {
   return usePost("/plans", {
+    inputSchema: CreatePlanRequestSchema,
     outputSchema: PlanSchema,
   });
 }
 
 export function useUpdatePlan(id: string) {
   return usePut(`/plans/${id}`, {
+    inputSchema: UpdatePlanRequestSchema,
     outputSchema: PlanSchema,
   });
 }

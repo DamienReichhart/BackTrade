@@ -3,6 +3,8 @@ import {
   FileSchema,
   FileListResponseSchema,
   CreateFileRequestSchema,
+  UpdateFileRequestSchema,
+  FileUploadRequestSchema,
   FileUploadResponseSchema,
   type PaginationQuery,
 } from "@backtrade/types";
@@ -64,6 +66,7 @@ export function useCreateFile() {
 
 export function useUpdateFile(id: string) {
   return usePut(`/files/${id}`, {
+    inputSchema: UpdateFileRequestSchema,
     outputSchema: FileSchema,
   });
 }
@@ -76,6 +79,7 @@ export function useDeleteFile(id: string) {
 
 export function useUploadFile() {
   return usePost("/files/upload", {
+    inputSchema: FileUploadRequestSchema,
     outputSchema: FileUploadResponseSchema,
   });
 }

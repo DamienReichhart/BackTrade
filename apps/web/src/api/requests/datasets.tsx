@@ -3,6 +3,7 @@ import {
   DatasetSchema,
   DatasetListResponseSchema,
   CreateDatasetRequestSchema,
+  UpdateDatasetRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 import { z } from "zod";
@@ -66,6 +67,7 @@ export function useCreateDataset() {
 
 export function useUpdateDataset(id: string) {
   return usePut(`/datasets/${id}`, {
+    inputSchema: UpdateDatasetRequestSchema,
     outputSchema: DatasetSchema,
   });
 }

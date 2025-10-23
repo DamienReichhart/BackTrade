@@ -3,6 +3,8 @@ import {
   ReportSchema,
   ReportListResponseSchema,
   CreateReportRequestSchema,
+  UpdateReportRequestSchema,
+  GenerateReportRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 import { z } from "zod";
@@ -63,6 +65,7 @@ export function useCreateReport() {
 
 export function useUpdateReport(id: string) {
   return usePut(`/reports/${id}`, {
+    inputSchema: UpdateReportRequestSchema,
     outputSchema: ReportSchema,
   });
 }
@@ -75,6 +78,7 @@ export function useDeleteReport(id: string) {
 
 export function useGenerateReport(sessionId: string) {
   return usePost(`/sessions/${sessionId}/generate-report`, {
+    inputSchema: GenerateReportRequestSchema,
     outputSchema: ReportSchema,
   });
 }

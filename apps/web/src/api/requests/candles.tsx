@@ -3,6 +3,8 @@ import {
   CandleSchema,
   CandleListResponseSchema,
   CreateCandleRequestSchema,
+  CreateCandlesRequestSchema,
+  UpdateCandleRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 import { z } from "zod";
@@ -86,12 +88,14 @@ export function useCreateCandle() {
 
 export function useCreateCandles() {
   return usePost("/candles/bulk", {
+    inputSchema: CreateCandlesRequestSchema,
     outputSchema: z.array(CandleSchema),
   });
 }
 
 export function useUpdateCandle(id: string) {
   return usePut(`/candles/${id}`, {
+    inputSchema: UpdateCandleRequestSchema,
     outputSchema: CandleSchema,
   });
 }
