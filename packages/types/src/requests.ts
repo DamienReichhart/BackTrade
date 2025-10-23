@@ -20,6 +20,7 @@ import {
   SpeedSchema,
   SupportStatusSchema,
   TransactionTypeSchema,
+  SubscriptionStatusSchema,
 } from "./enums";
 
 // =========================
@@ -259,6 +260,120 @@ export const CreateReportRequestSchema = z.object({
 });
 export type CreateReportRequest = z.infer<typeof CreateReportRequestSchema>;
 
+export const UpdateReportRequestSchema = z.object({
+  summary_json: z.record(z.string(), z.unknown()).optional(),
+  equity_curve_json: z.record(z.string(), z.unknown()).optional(),
+});
+export type UpdateReportRequest = z.infer<typeof UpdateReportRequestSchema>;
+
+// Plan Management
+export const CreatePlanRequestSchema = z.object({
+  code: z.string().min(1),
+  stripe_product_id: z.string().min(1),
+  stripe_price_id: z.string().min(1),
+  currency: z.string().length(3),
+});
+export type CreatePlanRequest = z.infer<typeof CreatePlanRequestSchema>;
+
+export const UpdatePlanRequestSchema = z.object({
+  code: z.string().min(1).optional(),
+  stripe_product_id: z.string().min(1).optional(),
+  stripe_price_id: z.string().min(1).optional(),
+  currency: z.string().length(3).optional(),
+});
+export type UpdatePlanRequest = z.infer<typeof UpdatePlanRequestSchema>;
+
+// Subscription Management
+export const CreateSubscriptionRequestSchema = z.object({
+  user_id: z.number().int().positive(),
+  plan_id: z.number().int().positive(),
+  stripe_subscription_id: z.string().min(1),
+  current_period_start: z.iso.datetime(),
+  current_period_end: z.iso.datetime(),
+  cancel_at_period_end: z.boolean().default(false),
+  trial_end: z.iso.datetime().optional(),
+});
+export type CreateSubscriptionRequest = z.infer<
+  typeof CreateSubscriptionRequestSchema
+>;
+
+export const UpdateSubscriptionRequestSchema = z.object({
+  status: SubscriptionStatusSchema.optional(),
+  cancel_at_period_end: z.boolean().optional(),
+  canceled_at: z.iso.datetime().optional(),
+  trial_end: z.iso.datetime().optional(),
+});
+export type UpdateSubscriptionRequest = z.infer<
+  typeof UpdateSubscriptionRequestSchema
+>;
+
+// Dataset Management
+export const UpdateDatasetRequestSchema = z.object({
+  instrument_id: z.number().int().positive().optional(),
+  timeframe: TimeframeSchema.optional(),
+  start_date: z.iso.datetime().optional(),
+  end_date: z.iso.datetime().optional(),
+  is_active: z.boolean().optional(),
+});
+export type UpdateDatasetRequest = z.infer<typeof UpdateDatasetRequestSchema>;
+
+// File Management
+export const UpdateFileRequestSchema = z.object({
+  filename: z.string().min(1).optional(),
+  file_type: z.string().min(1).optional(),
+  file_size: z.number().int().positive().optional(),
+  mime_type: z.string().min(1).optional(),
+  is_public: z.boolean().optional(),
+});
+export type UpdateFileRequest = z.infer<typeof UpdateFileRequestSchema>;
+
+// Candle Management
+export const UpdateCandleRequestSchema = z.object({
+  instrument_id: z.number().int().positive().optional(),
+  timeframe: TimeframeSchema.optional(),
+  timestamp: z.iso.datetime().optional(),
+  open: z.number().optional(),
+  high: z.number().optional(),
+  low: z.number().optional(),
+  close: z.number().optional(),
+  volume: z.number().nonnegative().optional(),
+});
+export type UpdateCandleRequest = z.infer<typeof UpdateCandleRequestSchema>;
+
+// Support Request Management
+export const UpdateSupportRequestSchema = z.object({
+  support_status: SupportStatusSchema.optional(),
+});
+export type UpdateSupportRequest = z.infer<typeof UpdateSupportRequestSchema>;
+
+// Bulk Candle Creation
+export const CreateCandlesRequestSchema = z.object({
+  candles: z.array(CreateCandleRequestSchema).min(1),
+});
+export type CreateCandlesRequest = z.infer<typeof CreateCandlesRequestSchema>;
+
+// File Upload
+export const FileUploadRequestSchema = z.object({
+  file: z.any(), // File object from FormData
+  entity_id: z.string().optional(),
+  is_public: z.boolean().default(false),
+});
+export type FileUploadRequest = z.infer<typeof FileUploadRequestSchema>;
+
+// Report Generation
+export const GenerateReportRequestSchema = z.object({
+  include_equity_curve: z.boolean().default(true),
+  include_transactions: z.boolean().default(true),
+  include_positions: z.boolean().default(true),
+});
+export type GenerateReportRequest = z.infer<typeof GenerateReportRequestSchema>;
+
+// Token Refresh
+export const RefreshTokenRequestSchema = z.object({
+  refresh_token: z.string().min(1),
+});
+export type RefreshTokenRequest = z.infer<typeof RefreshTokenRequestSchema>;
+
 export const ReportListResponseSchema = z.object({
   reports: z.array(ReportSchema),
   total: z.number().int().nonnegative(),
@@ -280,6 +395,11 @@ export const CreateSupportMessageSchema = z.object({
   content: z.string().min(1),
 });
 export type CreateSupportMessage = z.infer<typeof CreateSupportMessageSchema>;
+
+export const UpdateSupportMessageSchema = z.object({
+  content: z.string().min(1).optional(),
+});
+export type UpdateSupportMessage = z.infer<typeof UpdateSupportMessageSchema>;
 
 export const SupportRequestListResponseSchema = z.object({
   support_requests: z.array(SupportRequestSchema),

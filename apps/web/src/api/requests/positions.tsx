@@ -1,17 +1,18 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  type Position,
   PositionSchema,
-  type PositionListResponse,
   PositionListResponseSchema,
-  type CreatePositionRequest,
   CreatePositionRequestSchema,
-  type UpdatePositionRequest,
   UpdatePositionRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
-// Position Management Hooks
+/**
+ * Position Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function usePositions(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -24,13 +25,13 @@ export function usePositions(query?: DateRangeQuery) {
 
   const url = query ? `/positions?${searchParams.toString()}` : "/positions";
 
-  return useGet<PositionListResponse>(url, {
+  return useGet(url, {
     outputSchema: PositionListResponseSchema,
   });
 }
 
 export function usePosition(id: string) {
-  return useGet<Position>(`/positions/${id}`, {
+  return useGet(`/positions/${id}`, {
     outputSchema: PositionSchema,
   });
 }
@@ -52,37 +53,39 @@ export function usePositionsBySession(
     ? `/sessions/${sessionId}/positions?${searchParams.toString()}`
     : `/sessions/${sessionId}/positions`;
 
-  return useGet<PositionListResponse>(url, {
+  return useGet(url, {
     outputSchema: PositionListResponseSchema,
   });
 }
 
 export function useCreatePosition() {
-  return usePost<Position, CreatePositionRequest>("/positions", {
+  return usePost("/positions", {
     inputSchema: CreatePositionRequestSchema,
     outputSchema: PositionSchema,
   });
 }
 
 export function useUpdatePosition(id: string) {
-  return usePut<Position, UpdatePositionRequest>(`/positions/${id}`, {
+  return usePut(`/positions/${id}`, {
     inputSchema: UpdatePositionRequestSchema,
     outputSchema: PositionSchema,
   });
 }
 
 export function useDeletePosition(id: string) {
-  return useDelete<void>(`/positions/${id}`);
+  return useDelete(`/positions/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useClosePosition(id: string) {
-  return usePost<Position>(`/positions/${id}/close`, {
+  return usePost(`/positions/${id}/close`, {
     outputSchema: PositionSchema,
   });
 }
 
 export function useLiquidatePosition(id: string) {
-  return usePost<Position>(`/positions/${id}/liquidate`, {
+  return usePost(`/positions/${id}/liquidate`, {
     outputSchema: PositionSchema,
   });
 }

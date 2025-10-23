@@ -1,15 +1,17 @@
 import { useGet, usePost, useDelete } from "../hooks";
 import {
-  type Transaction,
   TransactionSchema,
-  type TransactionListResponse,
   TransactionListResponseSchema,
-  type CreateTransactionRequest,
   CreateTransactionRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
-// Transaction Management Hooks
+/**
+ * Transaction Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useTransactions(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -24,13 +26,13 @@ export function useTransactions(query?: DateRangeQuery) {
     ? `/transactions?${searchParams.toString()}`
     : "/transactions";
 
-  return useGet<TransactionListResponse>(url, {
+  return useGet(url, {
     outputSchema: TransactionListResponseSchema,
   });
 }
 
 export function useTransaction(id: string) {
-  return useGet<Transaction>(`/transactions/${id}`, {
+  return useGet(`/transactions/${id}`, {
     outputSchema: TransactionSchema,
   });
 }
@@ -49,7 +51,7 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
     ? `/users/${userId}/transactions?${searchParams.toString()}`
     : `/users/${userId}/transactions`;
 
-  return useGet<TransactionListResponse>(url, {
+  return useGet(url, {
     outputSchema: TransactionListResponseSchema,
   });
 }
@@ -71,18 +73,20 @@ export function useTransactionsBySession(
     ? `/sessions/${sessionId}/transactions?${searchParams.toString()}`
     : `/sessions/${sessionId}/transactions`;
 
-  return useGet<TransactionListResponse>(url, {
+  return useGet(url, {
     outputSchema: TransactionListResponseSchema,
   });
 }
 
 export function useCreateTransaction() {
-  return usePost<Transaction, CreateTransactionRequest>("/transactions", {
+  return usePost("/transactions", {
     inputSchema: CreateTransactionRequestSchema,
     outputSchema: TransactionSchema,
   });
 }
 
 export function useDeleteTransaction(id: string) {
-  return useDelete<void>(`/transactions/${id}`);
+  return useDelete(`/transactions/${id}`, {
+    outputSchema: z.void(),
+  });
 }

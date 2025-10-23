@@ -1,17 +1,18 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  type Instrument,
   InstrumentSchema,
-  type InstrumentListResponse,
   InstrumentListResponseSchema,
-  type CreateInstrumentRequest,
   CreateInstrumentRequestSchema,
-  type UpdateInstrumentRequest,
   UpdateInstrumentRequestSchema,
   type PaginationQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
-// Instrument Management Hooks
+/**
+ * Instrument Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useInstruments(query?: PaginationQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -26,43 +27,45 @@ export function useInstruments(query?: PaginationQuery) {
     ? `/instruments?${searchParams.toString()}`
     : "/instruments";
 
-  return useGet<InstrumentListResponse>(url, {
+  return useGet(url, {
     outputSchema: InstrumentListResponseSchema,
   });
 }
 
 export function useInstrument(id: string) {
-  return useGet<Instrument>(`/instruments/${id}`, {
+  return useGet(`/instruments/${id}`, {
     outputSchema: InstrumentSchema,
   });
 }
 
 export function useCreateInstrument() {
-  return usePost<Instrument, CreateInstrumentRequest>("/instruments", {
+  return usePost("/instruments", {
     inputSchema: CreateInstrumentRequestSchema,
     outputSchema: InstrumentSchema,
   });
 }
 
 export function useUpdateInstrument(id: string) {
-  return usePut<Instrument, UpdateInstrumentRequest>(`/instruments/${id}`, {
+  return usePut(`/instruments/${id}`, {
     inputSchema: UpdateInstrumentRequestSchema,
     outputSchema: InstrumentSchema,
   });
 }
 
 export function useDeleteInstrument(id: string) {
-  return useDelete<void>(`/instruments/${id}`);
+  return useDelete(`/instruments/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useEnableInstrument(id: string) {
-  return usePost<Instrument>(`/instruments/${id}/enable`, {
+  return usePost(`/instruments/${id}/enable`, {
     outputSchema: InstrumentSchema,
   });
 }
 
 export function useDisableInstrument(id: string) {
-  return usePost<Instrument>(`/instruments/${id}/disable`, {
+  return usePost(`/instruments/${id}/disable`, {
     outputSchema: InstrumentSchema,
   });
 }

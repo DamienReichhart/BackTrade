@@ -1,11 +1,12 @@
 import { useGet } from "../hooks";
-import {
-  type AuditLog,
-  AuditLogSchema,
-  type DateRangeQuery,
-} from "@backtrade/types";
+import { AuditLogSchema, type DateRangeQuery } from "@backtrade/types";
+import { z } from "zod";
 
-// Audit Log Management Hooks
+/**
+ * Audit Log Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useAuditLogs(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -18,13 +19,13 @@ export function useAuditLogs(query?: DateRangeQuery) {
 
   const url = query ? `/audit/logs?${searchParams.toString()}` : "/audit/logs";
 
-  return useGet<AuditLog[]>(url, {
-    outputSchema: AuditLogSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(AuditLogSchema),
   });
 }
 
 export function useAuditLog(id: string) {
-  return useGet<AuditLog>(`/audit/logs/${id}`, {
+  return useGet(`/audit/logs/${id}`, {
     outputSchema: AuditLogSchema,
   });
 }
@@ -43,8 +44,8 @@ export function useAuditLogsByUser(userId: string, query?: DateRangeQuery) {
     ? `/users/${userId}/audit-logs?${searchParams.toString()}`
     : `/users/${userId}/audit-logs`;
 
-  return useGet<AuditLog[]>(url, {
-    outputSchema: AuditLogSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(AuditLogSchema),
   });
 }
 
@@ -66,7 +67,7 @@ export function useAuditLogsByEntity(
     ? `/audit/entities/${entityType}/${entityId}?${searchParams.toString()}`
     : `/audit/entities/${entityType}/${entityId}`;
 
-  return useGet<AuditLog[]>(url, {
-    outputSchema: AuditLogSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(AuditLogSchema),
   });
 }

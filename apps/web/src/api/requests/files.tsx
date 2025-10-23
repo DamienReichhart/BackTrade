@@ -1,17 +1,20 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  type File,
   FileSchema,
-  type FileListResponse,
   FileListResponseSchema,
-  type CreateFileRequest,
   CreateFileRequestSchema,
-  type FileUploadResponse,
+  UpdateFileRequestSchema,
+  FileUploadRequestSchema,
   FileUploadResponseSchema,
   type PaginationQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
-// File Management Hooks
+/**
+ * File Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useFiles(query?: PaginationQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -24,13 +27,13 @@ export function useFiles(query?: PaginationQuery) {
 
   const url = query ? `/files?${searchParams.toString()}` : "/files";
 
-  return useGet<FileListResponse>(url, {
+  return useGet(url, {
     outputSchema: FileListResponseSchema,
   });
 }
 
 export function useFile(id: string) {
-  return useGet<File>(`/files/${id}`, {
+  return useGet(`/files/${id}`, {
     outputSchema: FileSchema,
   });
 }
@@ -49,34 +52,38 @@ export function useFilesByEntity(entityId: string, query?: PaginationQuery) {
     ? `/entities/${entityId}/files?${searchParams.toString()}`
     : `/entities/${entityId}/files`;
 
-  return useGet<FileListResponse>(url, {
+  return useGet(url, {
     outputSchema: FileListResponseSchema,
   });
 }
 
 export function useCreateFile() {
-  return usePost<File, CreateFileRequest>("/files", {
+  return usePost("/files", {
     inputSchema: CreateFileRequestSchema,
     outputSchema: FileSchema,
   });
 }
 
 export function useUpdateFile(id: string) {
-  return usePut<File, Partial<CreateFileRequest>>(`/files/${id}`, {
+  return usePut(`/files/${id}`, {
+    inputSchema: UpdateFileRequestSchema,
     outputSchema: FileSchema,
   });
 }
 
 export function useDeleteFile(id: string) {
-  return useDelete<void>(`/files/${id}`);
+  return useDelete(`/files/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useUploadFile() {
-  return usePost<FileUploadResponse, FormData>("/files/upload", {
+  return usePost("/files/upload", {
+    inputSchema: FileUploadRequestSchema,
     outputSchema: FileUploadResponseSchema,
   });
 }
 
 export function useDownloadFile(id: string) {
-  return useGet<Blob>(`/files/${id}/download`);
+  return useGet(`/files/${id}/download`);
 }

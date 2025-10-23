@@ -1,7 +1,17 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
-import { type Plan, PlanSchema, type PaginationQuery } from "@backtrade/types";
+import {
+  PlanSchema,
+  CreatePlanRequestSchema,
+  UpdatePlanRequestSchema,
+  type PaginationQuery,
+} from "@backtrade/types";
+import { z } from "zod";
 
-// Plan Management Hooks
+/**
+ * Plan Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function usePlans(query?: PaginationQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -14,29 +24,33 @@ export function usePlans(query?: PaginationQuery) {
 
   const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
-  return useGet<Plan[]>(url, {
-    outputSchema: PlanSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(PlanSchema),
   });
 }
 
 export function usePlan(id: string) {
-  return useGet<Plan>(`/plans/${id}`, {
+  return useGet(`/plans/${id}`, {
     outputSchema: PlanSchema,
   });
 }
 
 export function useCreatePlan() {
-  return usePost<Plan, Omit<Plan, "id">>("/plans", {
+  return usePost("/plans", {
+    inputSchema: CreatePlanRequestSchema,
     outputSchema: PlanSchema,
   });
 }
 
 export function useUpdatePlan(id: string) {
-  return usePut<Plan, Partial<Omit<Plan, "id">>>(`/plans/${id}`, {
+  return usePut(`/plans/${id}`, {
+    inputSchema: UpdatePlanRequestSchema,
     outputSchema: PlanSchema,
   });
 }
 
 export function useDeletePlan(id: string) {
-  return useDelete<void>(`/plans/${id}`);
+  return useDelete(`/plans/${id}`, {
+    outputSchema: z.void(),
+  });
 }

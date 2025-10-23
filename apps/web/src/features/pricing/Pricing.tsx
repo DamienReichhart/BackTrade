@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { PricingHero } from "./components/PricingHero";
@@ -17,13 +17,8 @@ import styles from "./Pricing.module.css";
  * Fetches plan data from API and merges with local configuration
  */
 export default function Pricing() {
-  // Fetch plans from API
-  const { result: apiPlans, loading, request } = usePlans();
-
-  // Trigger API request on mount
-  useEffect(() => {
-    request();
-  }, []);
+  // Fetch plans from API (automatically fetches on mount with React Query)
+  const { data: apiPlans, isLoading } = usePlans();
 
   // Merge API data with local configuration
   const mergedTiers = useMemo(() => {
@@ -33,14 +28,14 @@ export default function Pricing() {
   /**
    * Handle plan selection
    */
-  const handleSelectPlan = (code: string, planId?: number) => {
+  const handleSelectPlan = (_code: string, _planId?: number) => {
     // TODO: Implement plan selection logic (redirect to signup with plan ID, etc.)
-    // Example: navigate(`/signup?plan=${planId}`);
-    console.log("Selected plan:", { code, planId });
+    // Plan selection logic will be implemented here
+    // For now, this is a placeholder function
   };
 
   // Show loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.pricing}>
         <Header />

@@ -1,15 +1,19 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
 import {
-  type Report,
   ReportSchema,
-  type ReportListResponse,
   ReportListResponseSchema,
-  type CreateReportRequest,
   CreateReportRequestSchema,
+  UpdateReportRequestSchema,
+  GenerateReportRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
-// Report Management Hooks
+/**
+ * Report Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useReports(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -22,13 +26,13 @@ export function useReports(query?: DateRangeQuery) {
 
   const url = query ? `/reports?${searchParams.toString()}` : "/reports";
 
-  return useGet<ReportListResponse>(url, {
+  return useGet(url, {
     outputSchema: ReportListResponseSchema,
   });
 }
 
 export function useReport(id: string) {
-  return useGet<Report>(`/reports/${id}`, {
+  return useGet(`/reports/${id}`, {
     outputSchema: ReportSchema,
   });
 }
@@ -47,30 +51,34 @@ export function useReportsBySession(sessionId: string, query?: DateRangeQuery) {
     ? `/sessions/${sessionId}/reports?${searchParams.toString()}`
     : `/sessions/${sessionId}/reports`;
 
-  return useGet<ReportListResponse>(url, {
+  return useGet(url, {
     outputSchema: ReportListResponseSchema,
   });
 }
 
 export function useCreateReport() {
-  return usePost<Report, CreateReportRequest>("/reports", {
+  return usePost("/reports", {
     inputSchema: CreateReportRequestSchema,
     outputSchema: ReportSchema,
   });
 }
 
 export function useUpdateReport(id: string) {
-  return usePut<Report, Partial<CreateReportRequest>>(`/reports/${id}`, {
+  return usePut(`/reports/${id}`, {
+    inputSchema: UpdateReportRequestSchema,
     outputSchema: ReportSchema,
   });
 }
 
 export function useDeleteReport(id: string) {
-  return useDelete<void>(`/reports/${id}`);
+  return useDelete(`/reports/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useGenerateReport(sessionId: string) {
-  return usePost<Report>(`/sessions/${sessionId}/generate-report`, {
+  return usePost(`/sessions/${sessionId}/generate-report`, {
+    inputSchema: GenerateReportRequestSchema,
     outputSchema: ReportSchema,
   });
 }
