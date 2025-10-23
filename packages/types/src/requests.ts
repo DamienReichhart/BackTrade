@@ -293,7 +293,9 @@ export const CreateSubscriptionRequestSchema = z.object({
   cancel_at_period_end: z.boolean().default(false),
   trial_end: z.iso.datetime().optional(),
 });
-export type CreateSubscriptionRequest = z.infer<typeof CreateSubscriptionRequestSchema>;
+export type CreateSubscriptionRequest = z.infer<
+  typeof CreateSubscriptionRequestSchema
+>;
 
 export const UpdateSubscriptionRequestSchema = z.object({
   status: SubscriptionStatusSchema.optional(),
@@ -301,7 +303,9 @@ export const UpdateSubscriptionRequestSchema = z.object({
   canceled_at: z.iso.datetime().optional(),
   trial_end: z.iso.datetime().optional(),
 });
-export type UpdateSubscriptionRequest = z.infer<typeof UpdateSubscriptionRequestSchema>;
+export type UpdateSubscriptionRequest = z.infer<
+  typeof UpdateSubscriptionRequestSchema
+>;
 
 // Dataset Management
 export const UpdateDatasetRequestSchema = z.object({

@@ -28,13 +28,10 @@ export default function Pricing() {
   /**
    * Handle plan selection
    */
-  const handleSelectPlan = (code: string, planId?: number) => {
+  const handleSelectPlan = (_code: string, _planId?: number) => {
     // TODO: Implement plan selection logic (redirect to signup with plan ID, etc.)
-    // Example: navigate(`/signup?plan=${planId}`);
-    // Log plan selection for debugging (remove in production)
-    if (process.env.NODE_ENV === "development") {
-      console.log(`Selected plan: ${code}, ID: ${planId}\n`);
-    }
+    // Plan selection logic will be implemented here
+    // For now, this is a placeholder function
   };
 
   // Show loading state

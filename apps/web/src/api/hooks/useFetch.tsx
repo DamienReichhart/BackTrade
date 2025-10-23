@@ -96,38 +96,33 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     return data as TOutput;
   };
 
-  // Use conditional hook calling to avoid Rules of Hooks violation
-  const query = isQuery
-    ? useQuery<TOutput, Error>({
-        queryKey: key,
-        queryFn: () => fetcher(),
-        enabled: autoFetch,
-        ...queryOptions,
-      })
-    : null;
+  // Always call hooks to avoid Rules of Hooks violation
+  const query = useQuery<TOutput, Error>({
+    queryKey: key,
+    queryFn: () => fetcher(),
+    enabled: isQuery && autoFetch,
+    ...queryOptions,
+  });
 
-  const mutation = !isQuery
-    ? useMutation<TOutput, Error, TInput | undefined>({
-        mutationFn: fetcher,
-      })
-    : null;
+  const mutation = useMutation<TOutput, Error, TInput | undefined>({
+    mutationFn: fetcher,
+  });
 
   // Create consistent execute function that always returns Promise<TOutput>
   const execute = async (body?: TInput): Promise<TOutput> => {
-    if (isQuery && query) {
+    if (isQuery) {
       const result = await query.refetch();
       if (result.error) {
         throw result.error;
       }
       return result.data as TOutput;
-    } else if (!isQuery && mutation) {
+    } else {
       return await mutation.mutateAsync(body);
     }
-    throw new Error("Invalid hook state");
   };
 
   // Return consistent object shape for all methods
-  if (isQuery && query) {
+  if (isQuery) {
     return {
       data: query.data ?? null,
       error: query.error ?? null,
@@ -137,24 +132,11 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     };
   }
 
-  if (!isQuery && mutation) {
-    return {
-      data: mutation.data ?? null,
-      error: mutation.error ?? null,
-      isLoading: mutation.isPending,
-      isSuccess: mutation.isSuccess,
-      execute,
-    };
-  }
-
-  // Fallback for invalid state (should never happen)
   return {
-    data: null,
-    error: new Error("Invalid hook configuration") as Error,
-    isLoading: false,
-    isSuccess: false,
-    execute: async () => {
-      throw new Error("Invalid hook configuration");
-    },
+    data: mutation.data ?? null,
+    error: mutation.error ?? null,
+    isLoading: mutation.isPending,
+    isSuccess: mutation.isSuccess,
+    execute,
   };
 }
