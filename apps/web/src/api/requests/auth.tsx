@@ -1,64 +1,69 @@
-import { usePost, useGet } from "../hooks";
+import { usePost, useGet } from '../hooks';
 import {
-  type LoginRequest,
   LoginRequestSchema,
-  type RegisterRequest,
   RegisterRequestSchema,
-  type ChangePasswordRequest,
   ChangePasswordRequestSchema,
-  type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
-  type ResetPasswordRequest,
   ResetPasswordRequestSchema,
-  type AuthResponse,
   AuthResponseSchema,
-  type PublicUser,
   PublicUserSchema,
-} from "@backtrade/types";
+} from '@backtrade/types';
+import { z } from 'zod';
 
-// Authentication Hooks
+/**
+ * Authentication API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useLogin() {
-  return usePost<AuthResponse, LoginRequest>("/auth/login", {
+  return usePost('/auth/login', {
     inputSchema: LoginRequestSchema,
     outputSchema: AuthResponseSchema,
   });
 }
 
 export function useRegister() {
-  return usePost<AuthResponse, RegisterRequest>("/auth/register", {
+  return usePost('/auth/register', {
     inputSchema: RegisterRequestSchema,
     outputSchema: AuthResponseSchema,
   });
 }
 
 export function useLogout() {
-  return usePost<void>("/auth/logout");
+  return usePost('/auth/logout', {
+    outputSchema: z.void(),
+  });
 }
 
 export function useRefreshToken() {
-  return usePost<AuthResponse>("/auth/refresh");
+  return usePost('/auth/refresh', {
+    outputSchema: AuthResponseSchema,
+  });
 }
 
 export function useChangePassword() {
-  return usePost<void, ChangePasswordRequest>("/auth/change-password", {
+  return usePost('/auth/change-password', {
     inputSchema: ChangePasswordRequestSchema,
+    outputSchema: z.void(),
   });
 }
 
 export function useForgotPassword() {
-  return usePost<void, ForgotPasswordRequest>("/auth/forgot-password", {
+  return usePost('/auth/forgot-password', {
     inputSchema: ForgotPasswordRequestSchema,
+    outputSchema: z.void(),
   });
 }
 
 export function useResetPassword() {
-  return usePost<void, ResetPasswordRequest>("/auth/reset-password", {
+  return usePost('/auth/reset-password', {
     inputSchema: ResetPasswordRequestSchema,
+    outputSchema: z.void(),
   });
 }
 
 export function useMe() {
-  return useGet<PublicUser>("/auth/me", {
+  return useGet('/auth/me', {
     outputSchema: PublicUserSchema,
   });
 }

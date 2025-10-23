@@ -1,15 +1,17 @@
-import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { useGet, usePost, usePut, useDelete } from '../hooks';
 import {
-  type Dataset,
   DatasetSchema,
-  type DatasetListResponse,
   DatasetListResponseSchema,
-  type CreateDatasetRequest,
   CreateDatasetRequestSchema,
   type DateRangeQuery,
-} from "@backtrade/types";
+} from '@backtrade/types';
+import { z } from 'zod';
 
-// Dataset Management Hooks
+/**
+ * Dataset Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useDatasets(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -20,15 +22,15 @@ export function useDatasets(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/datasets?${searchParams.toString()}` : "/datasets";
+  const url = query ? `/datasets?${searchParams.toString()}` : '/datasets';
 
-  return useGet<DatasetListResponse>(url, {
+  return useGet(url, {
     outputSchema: DatasetListResponseSchema,
   });
 }
 
 export function useDataset(id: string) {
-  return useGet<Dataset>(`/datasets/${id}`, {
+  return useGet(`/datasets/${id}`, {
     outputSchema: DatasetSchema,
   });
 }
@@ -50,36 +52,38 @@ export function useDatasetsByInstrument(
     ? `/instruments/${instrumentId}/datasets?${searchParams.toString()}`
     : `/instruments/${instrumentId}/datasets`;
 
-  return useGet<DatasetListResponse>(url, {
+  return useGet(url, {
     outputSchema: DatasetListResponseSchema,
   });
 }
 
 export function useCreateDataset() {
-  return usePost<Dataset, CreateDatasetRequest>("/datasets", {
+  return usePost('/datasets', {
     inputSchema: CreateDatasetRequestSchema,
     outputSchema: DatasetSchema,
   });
 }
 
 export function useUpdateDataset(id: string) {
-  return usePut<Dataset, Partial<CreateDatasetRequest>>(`/datasets/${id}`, {
+  return usePut(`/datasets/${id}`, {
     outputSchema: DatasetSchema,
   });
 }
 
 export function useDeleteDataset(id: string) {
-  return useDelete<void>(`/datasets/${id}`);
+  return useDelete(`/datasets/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useActivateDataset(id: string) {
-  return usePost<Dataset>(`/datasets/${id}/activate`, {
+  return usePost(`/datasets/${id}/activate`, {
     outputSchema: DatasetSchema,
   });
 }
 
 export function useDeactivateDataset(id: string) {
-  return usePost<Dataset>(`/datasets/${id}/deactivate`, {
+  return usePost(`/datasets/${id}/deactivate`, {
     outputSchema: DatasetSchema,
   });
 }

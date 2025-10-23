@@ -1,11 +1,15 @@
-import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { useGet, usePost, usePut, useDelete } from '../hooks';
 import {
-  type Subscription,
   SubscriptionSchema,
   type DateRangeQuery,
-} from "@backtrade/types";
+} from '@backtrade/types';
+import { z } from 'zod';
 
-// Subscription Management Hooks
+/**
+ * Subscription Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useSubscriptions(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -18,15 +22,15 @@ export function useSubscriptions(query?: DateRangeQuery) {
 
   const url = query
     ? `/subscriptions?${searchParams.toString()}`
-    : "/subscriptions";
+    : '/subscriptions';
 
-  return useGet<Subscription[]>(url, {
-    outputSchema: SubscriptionSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(SubscriptionSchema),
   });
 }
 
 export function useSubscription(id: string) {
-  return useGet<Subscription>(`/subscriptions/${id}`, {
+  return useGet(`/subscriptions/${id}`, {
     outputSchema: SubscriptionSchema,
   });
 }
@@ -45,38 +49,37 @@ export function useSubscriptionsByUser(userId: string, query?: DateRangeQuery) {
     ? `/users/${userId}/subscriptions?${searchParams.toString()}`
     : `/users/${userId}/subscriptions`;
 
-  return useGet<Subscription[]>(url, {
-    outputSchema: SubscriptionSchema.array(),
+  return useGet(url, {
+    outputSchema: z.array(SubscriptionSchema),
   });
 }
 
 export function useCreateSubscription() {
-  return usePost<Subscription, Omit<Subscription, "id">>("/subscriptions", {
+  return usePost('/subscriptions', {
     outputSchema: SubscriptionSchema,
   });
 }
 
 export function useUpdateSubscription(id: string) {
-  return usePut<Subscription, Partial<Omit<Subscription, "id">>>(
-    `/subscriptions/${id}`,
-    {
-      outputSchema: SubscriptionSchema,
-    },
-  );
+  return usePut(`/subscriptions/${id}`, {
+    outputSchema: SubscriptionSchema,
+  });
 }
 
 export function useDeleteSubscription(id: string) {
-  return useDelete<void>(`/subscriptions/${id}`);
+  return useDelete(`/subscriptions/${id}`, {
+    outputSchema: z.void(),
+  });
 }
 
 export function useCancelSubscription(id: string) {
-  return usePost<Subscription>(`/subscriptions/${id}/cancel`, {
+  return usePost(`/subscriptions/${id}/cancel`, {
     outputSchema: SubscriptionSchema,
   });
 }
 
 export function useReactivateSubscription(id: string) {
-  return usePost<Subscription>(`/subscriptions/${id}/reactivate`, {
+  return usePost(`/subscriptions/${id}/reactivate`, {
     outputSchema: SubscriptionSchema,
   });
 }

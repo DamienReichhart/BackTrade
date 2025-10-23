@@ -1,15 +1,17 @@
-import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { useGet, usePost, usePut, useDelete } from '../hooks';
 import {
-  type Candle,
   CandleSchema,
-  type CandleListResponse,
   CandleListResponseSchema,
-  type CreateCandleRequest,
   CreateCandleRequestSchema,
   type DateRangeQuery,
-} from "@backtrade/types";
+} from '@backtrade/types';
+import { z } from 'zod';
 
-// Candle Management Hooks
+/**
+ * Candle Management API Hooks
+ * Schemas are defined once and automatically applied
+ */
+
 export function useCandles(query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -20,15 +22,15 @@ export function useCandles(query?: DateRangeQuery) {
     });
   }
 
-  const url = query ? `/candles?${searchParams.toString()}` : "/candles";
+  const url = query ? `/candles?${searchParams.toString()}` : '/candles';
 
-  return useGet<CandleListResponse>(url, {
+  return useGet(url, {
     outputSchema: CandleListResponseSchema,
   });
 }
 
 export function useCandle(id: string) {
-  return useGet<Candle>(`/candles/${id}`, {
+  return useGet(`/candles/${id}`, {
     outputSchema: CandleSchema,
   });
 }
@@ -39,7 +41,7 @@ export function useCandlesByInstrument(
   query?: DateRangeQuery,
 ) {
   const searchParams = new URLSearchParams();
-  searchParams.append("timeframe", timeframe);
+  searchParams.append('timeframe', timeframe);
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -51,7 +53,7 @@ export function useCandlesByInstrument(
 
   const url = `/instruments/${instrumentId}/candles?${searchParams.toString()}`;
 
-  return useGet<CandleListResponse>(url, {
+  return useGet(url, {
     outputSchema: CandleListResponseSchema,
   });
 }
@@ -70,30 +72,32 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
     ? `/datasets/${datasetId}/candles?${searchParams.toString()}`
     : `/datasets/${datasetId}/candles`;
 
-  return useGet<CandleListResponse>(url, {
+  return useGet(url, {
     outputSchema: CandleListResponseSchema,
   });
 }
 
 export function useCreateCandle() {
-  return usePost<Candle, CreateCandleRequest>("/candles", {
+  return usePost('/candles', {
     inputSchema: CreateCandleRequestSchema,
     outputSchema: CandleSchema,
   });
 }
 
 export function useCreateCandles() {
-  return usePost<Candle[], CreateCandleRequest[]>("/candles/bulk", {
-    outputSchema: CandleSchema.array(),
+  return usePost('/candles/bulk', {
+    outputSchema: z.array(CandleSchema),
   });
 }
 
 export function useUpdateCandle(id: string) {
-  return usePut<Candle, Partial<CreateCandleRequest>>(`/candles/${id}`, {
+  return usePut(`/candles/${id}`, {
     outputSchema: CandleSchema,
   });
 }
 
 export function useDeleteCandle(id: string) {
-  return useDelete<void>(`/candles/${id}`);
+  return useDelete(`/candles/${id}`, {
+    outputSchema: z.void(),
+  });
 }
