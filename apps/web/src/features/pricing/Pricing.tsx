@@ -33,7 +33,7 @@ export default function Pricing() {
     // Example: navigate(`/signup?plan=${planId}`);
     // Log plan selection for debugging (remove in production)
     if (process.env.NODE_ENV === "development") {
-      process.stdout.write(`Selected plan: ${code}, ID: ${planId}\n`);
+      console.log(`Selected plan: ${code}, ID: ${planId}\n`);
     }
   };
 
