@@ -421,6 +421,12 @@ export const CreateFileRequestSchema = z.object({
 });
 export type CreateFileRequest = z.infer<typeof CreateFileRequestSchema>;
 
+export const FileUploadResponseSchema = FileSchema.extend({
+  filename: z.string(),
+  url: z.string().url(),
+});
+export type FileUploadResponse = z.infer<typeof FileUploadResponseSchema>;
+
 export const FileListResponseSchema = z.object({
   files: z.array(FileSchema),
   total: z.number().int().nonnegative(),

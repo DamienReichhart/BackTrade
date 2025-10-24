@@ -4,7 +4,6 @@ import { z } from "zod";
 export * from "./enums";
 export * from "./entities";
 export * from "./requests";
-export * from "./api";
 
 // Legacy schemas (keeping for backward compatibility)
 export const HealthSchema = z.object({

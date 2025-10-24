@@ -283,3 +283,4 @@ export const SupportMessageFileSchema = z.object({
   updated_at: z.string(),
 });
 export type SupportMessageFile = z.infer<typeof SupportMessageFileSchema>;
+
