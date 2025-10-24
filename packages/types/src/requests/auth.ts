@@ -56,6 +56,6 @@ export const AuthResponseSchema = z.object({
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
 export const RefreshTokenRequestSchema = z.object({
-  refresh_token: z.string().min(1),
+  refreshToken: z.string().min(1),
 });
 export type RefreshTokenRequest = z.infer<typeof RefreshTokenRequestSchema>;

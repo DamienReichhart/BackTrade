@@ -1,4 +1,4 @@
-import { useFetch, type UseFetchOptions } from "./useFetch";
+import { useFetch, type fetchOptions } from "./useFetch";
 
 /**
  * GET request hook built on React Query
@@ -8,7 +8,7 @@ import { useFetch, type UseFetchOptions } from "./useFetch";
  */
 export function useGet<TOutput = unknown>(
   url: string,
-  options?: Omit<UseFetchOptions<never, TOutput>, "method" | "inputSchema">,
+  options?: Omit<fetchOptions<never, TOutput>, "method" | "inputSchema">,
 ) {
   return useFetch<TOutput>(url, {
     ...options,
