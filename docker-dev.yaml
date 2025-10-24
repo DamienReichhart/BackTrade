@@ -11,7 +11,7 @@ services:
       - ./packages:/app/packages
       - ./assets:/app/assets
       - ./documentation:/app/documentation
-      - ./eslint-config.cjs:/app/eslint-config.cjs
+      - ./eslint-config.js:/app/eslint-config.js
       - ./LICENSE:/app/LICENSE
       - ./package.json:/app/package.json
       - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
