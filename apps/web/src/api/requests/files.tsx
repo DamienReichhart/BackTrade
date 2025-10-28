@@ -6,9 +6,9 @@ import {
   UpdateFileRequestSchema,
   FileUploadRequestSchema,
   FileUploadResponseSchema,
+  EmptyResponseSchema,
   type PaginationQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * File Management API Hooks
@@ -73,7 +73,7 @@ export function useUpdateFile(id: string) {
 
 export function useDeleteFile(id: string) {
   return useDelete(`/files/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

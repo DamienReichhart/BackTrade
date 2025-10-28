@@ -4,9 +4,9 @@ import {
   DatasetListResponseSchema,
   CreateDatasetRequestSchema,
   UpdateDatasetRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Dataset Management API Hooks
@@ -74,7 +74,7 @@ export function useUpdateDataset(id: string) {
 
 export function useDeleteDataset(id: string) {
   return useDelete(`/datasets/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

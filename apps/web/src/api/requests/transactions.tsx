@@ -3,9 +3,9 @@ import {
   TransactionSchema,
   TransactionListResponseSchema,
   CreateTransactionRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Transaction Management API Hooks
@@ -87,6 +87,6 @@ export function useCreateTransaction() {
 
 export function useDeleteTransaction(id: string) {
   return useDelete(`/transactions/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }

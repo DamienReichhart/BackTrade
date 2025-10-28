@@ -7,6 +7,7 @@ import {
   SupportMessageSchema,
   CreateSupportMessageSchema,
   UpdateSupportMessageSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 import { z } from "zod";
@@ -57,7 +58,7 @@ export function useUpdateSupportRequest(id: string) {
 
 export function useDeleteSupportRequest(id: string) {
   return useDelete(`/support/requests/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
@@ -109,6 +110,6 @@ export function useUpdateSupportMessage(id: string) {
 
 export function useDeleteSupportMessage(id: string) {
   return useDelete(`/support/messages/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }

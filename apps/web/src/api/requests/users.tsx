@@ -3,9 +3,9 @@ import {
   PublicUserSchema,
   UserListResponseSchema,
   UpdateUserRequestSchema,
+  EmptyResponseSchema,
   type SearchQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * User Management API Hooks
@@ -51,18 +51,18 @@ export function useUpdateUser(id: string) {
 
 export function useDeleteUser(id: string) {
   return useDelete(`/users/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useBanUser(id: string) {
   return usePost(`/users/${id}/ban`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useUnbanUser(id: string) {
   return usePost(`/users/${id}/unban`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }

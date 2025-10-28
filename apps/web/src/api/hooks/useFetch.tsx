@@ -1,12 +1,9 @@
-import {
-  useQuery,
-  useMutation,
-} from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { API_BASE_URL } from "../index";
 import { useAuthStore } from "../../context/AuthContext";
 import { validateApiInput, validateApiOutput } from "../utils";
-import { fetchOptions } from "../types";
-import { AuthResponse, AuthResponseSchema } from "@backtrade/types";
+import { AuthResponseSchema, type AuthResponse } from "@backtrade/types";
+import type { fetchOptions } from "../types";
 
 /**
  * Unified GET/POST/PUT/DELETE hook built on React Query
@@ -46,7 +43,10 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   };
 
   // Common fetch executor
-  const fetcher = async (body?: TInput, retryOnUnauthorized: boolean = true): Promise<TOutput> => {
+  const fetcher = async (
+    body?: TInput,
+    retryOnUnauthorized: boolean = true,
+  ): Promise<TOutput> => {
     let validatedBody: TInput | undefined = body;
 
     // Validate input with Zod schema if provided
@@ -56,7 +56,7 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
 
     if (accessToken) {
       fetchOptions.headers = {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         ...fetchOptions.headers,
       };
     }
@@ -82,7 +82,7 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
           return await fetcher(body, false);
         }
       }
-      
+
       throw new Error(
         `HTTP ${response.status}: ${errorText || response.statusText}`,
       );

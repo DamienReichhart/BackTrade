@@ -20,3 +20,10 @@ export const DateRangeQuerySchema = z.object({
   ...PaginationQuerySchema.shape,
 });
 export type DateRangeQuery = z.infer<typeof DateRangeQuerySchema>;
+
+/**
+ * Empty response schema for DELETE operations
+ * Represents a successful deletion with no response body
+ */
+export const EmptyResponseSchema = z.object({}).optional();
+export type EmptyResponse = z.infer<typeof EmptyResponseSchema>;

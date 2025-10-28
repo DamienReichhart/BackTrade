@@ -5,9 +5,9 @@ import {
   CreateReportRequestSchema,
   UpdateReportRequestSchema,
   GenerateReportRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Report Management API Hooks
@@ -72,7 +72,7 @@ export function useUpdateReport(id: string) {
 
 export function useDeleteReport(id: string) {
   return useDelete(`/reports/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

@@ -3,7 +3,9 @@ import {
   PlanSchema,
   CreatePlanRequestSchema,
   UpdatePlanRequestSchema,
+  EmptyResponseSchema,
   type PaginationQuery,
+  type Plan,
 } from "@backtrade/types";
 import { z } from "zod";
 
@@ -24,7 +26,7 @@ export function usePlans(query?: PaginationQuery) {
 
   const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
-  return useGet(url, {
+  return useGet<Plan[]>(url, {
     outputSchema: z.array(PlanSchema),
   });
 }
@@ -51,6 +53,6 @@ export function useUpdatePlan(id: string) {
 
 export function useDeletePlan(id: string) {
   return useDelete(`/plans/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }

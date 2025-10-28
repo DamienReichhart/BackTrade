@@ -1,4 +1,5 @@
-import { useFetch, type fetchOptions } from "./useFetch";
+import { useFetch } from "./useFetch";
+import type { fetchOptions } from "../types";
 
 /**
  * PUT request hook built on React Query
@@ -11,8 +12,8 @@ export function usePut<TOutput = unknown, TInput = unknown>(
   options?: Omit<fetchOptions<TInput, TOutput>, "method">,
 ) {
   return useFetch<TOutput, TInput>(url, {
-    ...options,
     method: "PUT",
     autoFetch: options?.autoFetch ?? false, // Default to false for PUT requests
+    ...options,
   });
 }

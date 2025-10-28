@@ -4,9 +4,9 @@ import {
   PositionListResponseSchema,
   CreatePositionRequestSchema,
   UpdatePositionRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Position Management API Hooks
@@ -74,7 +74,7 @@ export function useUpdatePosition(id: string) {
 
 export function useDeletePosition(id: string) {
   return useDelete(`/positions/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

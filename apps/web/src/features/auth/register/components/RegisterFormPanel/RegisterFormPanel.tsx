@@ -188,8 +188,12 @@ export function RegisterFormPanel() {
 
           {/* Alternative Registration Options */}
           <AlternativeOptions
-            onSSOClick={() => console.log("SSO registration")}
-            onMagicLinkClick={() => console.log("Magic link registration")}
+            onSSOClick={() => {
+              // TODO: Implement SSO registration
+            }}
+            onMagicLinkClick={() => {
+              // TODO: Implement magic link registration
+            }}
           />
 
           {/* Footer Links */}

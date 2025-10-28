@@ -4,9 +4,9 @@ import {
   SessionListResponseSchema,
   CreateSessionRequestSchema,
   UpdateSessionRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Session Management API Hooks
@@ -52,7 +52,7 @@ export function useUpdateSession(id: string) {
 
 export function useDeleteSession(id: string) {
   return useDelete(`/sessions/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

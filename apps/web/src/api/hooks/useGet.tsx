@@ -1,4 +1,5 @@
-import { useFetch, type fetchOptions } from "./useFetch";
+import { useFetch } from "./useFetch";
+import type { fetchOptions } from "../types";
 
 /**
  * GET request hook built on React Query
@@ -11,8 +12,8 @@ export function useGet<TOutput = unknown>(
   options?: Omit<fetchOptions<never, TOutput>, "method" | "inputSchema">,
 ) {
   return useFetch<TOutput>(url, {
-    ...options,
     method: "GET",
     autoFetch: options?.autoFetch ?? true, // Default to true for GET requests
+    ...options,
   });
 }

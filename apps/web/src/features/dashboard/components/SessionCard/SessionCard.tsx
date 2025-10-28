@@ -44,14 +44,16 @@ export function SessionCard({ session }: SessionCardProps) {
       : `#${session.instrument_id}`;
 
   // Get the session display name
-  const sessionName = session.name || `Session #${session.id}`;
+  const sessionName = session.name ?? `Session #${session.id}`;
 
   return (
     <Link to={`/dashboard/sessions/${session.id}`} className={styles.card}>
       <div className={styles.header}>
         <div className={styles.titleSection}>
           <h3 className={styles.title}>{sessionName}</h3>
-          <span className={`${styles.status} ${getStatusColor(session.session_status)}`}>
+          <span
+            className={`${styles.status} ${getStatusColor(session.session_status)}`}
+          >
             {session.session_status}
           </span>
         </div>
@@ -61,7 +63,9 @@ export function SessionCard({ session }: SessionCardProps) {
         <div className={styles.info}>
           <div className={styles.infoItem}>
             <span className={styles.label}>Instrument:</span>
-            <span className={`${styles.value} ${isLoadingInstrument ? styles.loading : ""}`}>
+            <span
+              className={`${styles.value} ${isLoadingInstrument ? styles.loading : ""}`}
+            >
               {instrumentDisplay}
             </span>
           </div>
@@ -71,7 +75,9 @@ export function SessionCard({ session }: SessionCardProps) {
           </div>
           <div className={styles.infoItem}>
             <span className={styles.label}>Initial Balance:</span>
-            <span className={styles.value}>${session.initial_balance.toLocaleString()}</span>
+            <span className={styles.value}>
+              ${session.initial_balance.toLocaleString()}
+            </span>
           </div>
           <div className={styles.infoItem}>
             <span className={styles.label}>Leverage:</span>
@@ -90,4 +96,3 @@ export function SessionCard({ session }: SessionCardProps) {
     </Link>
   );
 }
-

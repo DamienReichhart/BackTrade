@@ -82,4 +82,3 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     </div>
   );
 }
-
