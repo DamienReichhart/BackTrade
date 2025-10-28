@@ -2,6 +2,8 @@
  * Utility Functions
  */
 
+export * from "./jwt";
+
 /**
  * Format a date string to a readable format
  */
@@ -43,4 +45,3 @@ export function formatRelativeTime(dateString: string): string {
 
   return formatDate(dateString);
 }
-

@@ -8,8 +8,8 @@ import {
   RefreshTokenRequestSchema,
   AuthResponseSchema,
   PublicUserSchema,
+  EmptyResponseSchema,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Authentication API Hooks
@@ -32,7 +32,7 @@ export function useRegister() {
 
 export function useLogout() {
   return usePost("/auth/logout", {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
@@ -46,21 +46,21 @@ export function useRefreshToken() {
 export function useChangePassword() {
   return usePost("/auth/change-password", {
     inputSchema: ChangePasswordRequestSchema,
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useForgotPassword() {
   return usePost("/auth/forgot-password", {
     inputSchema: ForgotPasswordRequestSchema,
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useResetPassword() {
   return usePost("/auth/reset-password", {
     inputSchema: ResetPasswordRequestSchema,
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

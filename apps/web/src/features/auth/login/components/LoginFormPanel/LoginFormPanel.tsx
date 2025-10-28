@@ -33,7 +33,6 @@ export function LoginFormPanel() {
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberDevice });
     // Redirect to dashboard without authentication for now
     navigate("/dashboard");
   };
@@ -126,8 +125,12 @@ export function LoginFormPanel() {
 
           {/* Alternative Login Options */}
           <AlternativeOptions
-            onSSOClick={() => console.log("SSO login")}
-            onMagicLinkClick={() => console.log("Magic link login")}
+            onSSOClick={() => {
+              // TODO: Implement SSO login
+            }}
+            onMagicLinkClick={() => {
+              // TODO: Implement magic link login
+            }}
           />
 
           {/* Footer Links */}

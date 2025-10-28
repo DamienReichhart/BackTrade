@@ -98,15 +98,15 @@
   .page {
     padding: var(--spacing-xl) 0;
   }
-  
+
   .container {
     padding: 0 var(--spacing-md);
   }
-  
+
   .content {
     padding: var(--spacing-xl);
   }
-  
+
   .title {
     font-size: var(--font-size-3xl);
   }

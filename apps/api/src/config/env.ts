@@ -6,7 +6,9 @@ import { z } from "zod";
  * Loads environment variables from .env file
  */
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.coerce.number().default(3000),
   HOST: z.string().default("localhost"),
 });

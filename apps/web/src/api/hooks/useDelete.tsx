@@ -1,4 +1,5 @@
-import { useFetch, type fetchOptions } from "./useFetch";
+import { useFetch } from "./useFetch";
+import type { fetchOptions } from "../types";
 
 /**
  * DELETE request hook built on React Query
@@ -11,8 +12,8 @@ export function useDelete<TOutput = unknown>(
   options?: Omit<fetchOptions<never, TOutput>, "method" | "inputSchema">,
 ) {
   return useFetch<TOutput>(url, {
-    ...options,
     method: "DELETE",
     autoFetch: options?.autoFetch ?? false, // Default to false for DELETE requests
+    ...options,
   });
 }

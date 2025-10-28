@@ -1,11 +1,12 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { z } from "zod";
 import {
   SubscriptionSchema,
   CreateSubscriptionRequestSchema,
   UpdateSubscriptionRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Subscription Management API Hooks
@@ -72,7 +73,7 @@ export function useUpdateSubscription(id: string) {
 
 export function useDeleteSubscription(id: string) {
   return useDelete(`/subscriptions/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

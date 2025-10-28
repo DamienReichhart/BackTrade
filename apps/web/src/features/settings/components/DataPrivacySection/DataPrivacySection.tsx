@@ -1,0 +1,102 @@
+import { useState } from "react";
+import { Button } from "../../../../components";
+import { useAuthStore } from "../../../../context/AuthContext";
+import { useDeleteUser } from "../../../../api/requests/users";
+import { useNavigate } from "react-router-dom";
+import styles from "./DataPrivacySection.module.css";
+
+/**
+ * Data & Privacy section component
+ *
+ * Handles data retention and account deletion
+ */
+export function DataPrivacySection() {
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { execute, isLoading } = useDeleteUser(user?.id.toString() ?? "");
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setError(null);
+
+    try {
+      await execute();
+      // Logout and redirect to home after successful deletion
+      logout();
+      navigate("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete account");
+      setShowConfirmDialog(false);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    setShowConfirmDialog(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmDialog(false);
+    setError(null);
+  };
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Data & Privacy</h2>
+        <a href="#" className={styles.link}>
+          Exports and retention
+        </a>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.dangerZone}>
+          <h3 className={styles.dangerTitle}>Danger zone</h3>
+          <p className={styles.dangerText}>
+            Deleting your account removes sessions, reports, and profile data.
+            This action is irreversible.
+          </p>
+          {error && <p className={styles.errorMessage}>{error}</p>}
+          {showConfirmDialog ? (
+            <div className={styles.confirmDialog}>
+              <p className={styles.confirmText}>
+                Are you absolutely sure? This action cannot be undone.
+              </p>
+              <div className={styles.confirmActions}>
+                <Button
+                  variant="primary"
+                  size="medium"
+                  onClick={handleDeleteAccount}
+                  disabled={isLoading}
+                  className={styles.deleteButton}
+                >
+                  {isLoading ? "Deleting..." : "Yes, delete my account"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="medium"
+                  onClick={handleCancelDelete}
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              size="medium"
+              onClick={handleConfirmDelete}
+              className={styles.deleteButton}
+            >
+              Delete account
+            </Button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

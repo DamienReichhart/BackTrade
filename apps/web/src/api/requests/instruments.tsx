@@ -4,9 +4,10 @@ import {
   InstrumentListResponseSchema,
   CreateInstrumentRequestSchema,
   UpdateInstrumentRequestSchema,
+  EmptyResponseSchema,
   type PaginationQuery,
+  type Instrument,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Instrument Management API Hooks
@@ -33,7 +34,7 @@ export function useInstruments(query?: PaginationQuery) {
 }
 
 export function useInstrument(id: string) {
-  return useGet(`/instruments/${id}`, {
+  return useGet<Instrument>(`/instruments/${id}`, {
     outputSchema: InstrumentSchema,
   });
 }
@@ -54,7 +55,7 @@ export function useUpdateInstrument(id: string) {
 
 export function useDeleteInstrument(id: string) {
   return useDelete(`/instruments/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
 

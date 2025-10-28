@@ -20,4 +20,3 @@ export function EmptyState() {
     </div>
   );
 }
-

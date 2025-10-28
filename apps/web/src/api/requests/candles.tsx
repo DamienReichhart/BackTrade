@@ -1,13 +1,14 @@
 import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { z } from "zod";
 import {
   CandleSchema,
   CandleListResponseSchema,
   CreateCandleRequestSchema,
   CreateCandlesRequestSchema,
   UpdateCandleRequestSchema,
+  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Candle Management API Hooks
@@ -102,6 +103,6 @@ export function useUpdateCandle(id: string) {
 
 export function useDeleteCandle(id: string) {
   return useDelete(`/candles/${id}`, {
-    outputSchema: z.void(),
+    outputSchema: EmptyResponseSchema,
   });
 }
