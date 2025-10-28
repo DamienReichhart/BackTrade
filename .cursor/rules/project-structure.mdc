@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+description: BackTrade project structure and architecture
+---
+
+# BackTrade Project Structure
+
+This is a **monorepo** using pnpm workspaces and Turbo.
+
+## Workspace Organization
+
+```
+BackTrade/
+├── apps/
+│   ├── api/          # Backend API (Node.js/Express)
+│   └── web/          # Frontend application (React/Vite)
+├── packages/
+│   ├── eslint-config/  # Shared ESLint configuration
+│   ├── tsconfig/       # Shared TypeScript configuration
+│   └── types/          # Shared TypeScript types and Zod schemas
+```

@@ -1,0 +1,64 @@
+/**
+ * Register Form Panel Component Styles
+ */
+
+.panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  background-color: var(--color-principal);
+  border-left: 1px solid var(--color-border-primary);
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.formOptions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.formOptions .checkbox {
+  flex-shrink: 0;
+}
+
+.formOptions label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.submitButton {
+  margin-top: var(--spacing-sm);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .panel {
+    flex: none;
+    border-left: none;
+    border-top: 1px solid var(--color-border-primary);
+  }
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .formContainer {
+    max-width: 100%;
+  }
+}

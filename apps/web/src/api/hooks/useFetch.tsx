@@ -1,28 +1,12 @@
 import {
   useQuery,
   useMutation,
-  type UseQueryOptions,
 } from "@tanstack/react-query";
-import { type z } from "zod";
 import { API_BASE_URL } from "../index";
-
-export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
-  /** HTTP method */
-  method?: "GET" | "POST" | "PUT" | "DELETE";
-  /** Zod schema to validate request body before sending */
-  inputSchema?: z.ZodType<TInput>;
-  /** Zod schema to validate response data after receiving */
-  outputSchema?: z.ZodType<TOutput>;
-  /** For GET requests: automatically fetch on mount */
-  autoFetch?: boolean;
-  /** Additional fetch options */
-  fetchOptions?: Omit<RequestInit, "body" | "method">;
-  /** React Query options (for GET only) */
-  queryOptions?: Omit<
-    UseQueryOptions<TOutput, Error>,
-    "queryKey" | "queryFn" | "enabled"
-  >;
-}
+import { useAuthStore } from "../../context/AuthContext";
+import { validateApiInput, validateApiOutput } from "../utils";
+import { fetchOptions } from "../types";
+import { AuthResponse, AuthResponseSchema } from "@backtrade/types";
 
 /**
  * Unified GET/POST/PUT/DELETE hook built on React Query
@@ -39,25 +23,42 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     autoFetch = false,
     fetchOptions = {},
     queryOptions = {},
-  }: UseFetchOptions<TInput, TOutput> = {},
+  }: fetchOptions<TInput, TOutput> = {},
 ) {
   const isQuery = method === "GET";
   const key = [method, url];
+  const { accessToken, refreshToken, login } = useAuthStore();
+
+  // Perform token refresh without using hooks to avoid recursion
+  const refreshAccessToken = async (): Promise<AuthResponse> => {
+    const response = await fetch(API_BASE_URL + "/auth/refresh", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken: refreshToken ?? "" }),
+    });
+    if (!response.ok) {
+      throw new Error(`Refresh failed: HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    return AuthResponseSchema.parse(data);
+  };
 
   // Common fetch executor
-  const fetcher = async (body?: TInput): Promise<TOutput> => {
+  const fetcher = async (body?: TInput, retryOnUnauthorized: boolean = true): Promise<TOutput> => {
     let validatedBody: TInput | undefined = body;
 
     // Validate input with Zod schema if provided
     if (body !== undefined && inputSchema) {
-      const inputResult = inputSchema.safeParse(body);
-      if (!inputResult.success) {
-        const errorMessage = inputResult.error.issues
-          .map((err: z.ZodIssue) => `${err.path.join(".")}: ${err.message}`)
-          .join("; ");
-        throw new Error(`Input validation failed: ${errorMessage}`);
-      }
-      validatedBody = inputResult.data;
+      validatedBody = validateApiInput<TInput>(inputSchema, body);
+    }
+
+    if (accessToken) {
+      fetchOptions.headers = {
+        "Authorization": `Bearer ${accessToken}`,
+        ...fetchOptions.headers,
+      };
     }
 
     const response = await fetch(API_BASE_URL + url, {
@@ -74,6 +75,14 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
 
     if (!response.ok) {
       const errorText = await response.text();
+      if (response.status === 401 || response.status === 403) {
+        const authResponseData = await refreshAccessToken();
+        login(authResponseData.accessToken, authResponseData.refreshToken);
+        if (retryOnUnauthorized) {
+          return await fetcher(body, false);
+        }
+      }
+      
       throw new Error(
         `HTTP ${response.status}: ${errorText || response.statusText}`,
       );
@@ -81,19 +90,14 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
 
     const data = await response.json();
 
+    let validatedOutput: TOutput | undefined;
+
     // Validate output with Zod schema if provided
     if (outputSchema) {
-      const outputResult = outputSchema.safeParse(data);
-      if (!outputResult.success) {
-        const errorMessage = outputResult.error.issues
-          .map((err: z.ZodIssue) => `${err.path.join(".")}: ${err.message}`)
-          .join("; ");
-        throw new Error(`Output validation failed: ${errorMessage}`);
-      }
-      return outputResult.data;
+      validatedOutput = validateApiOutput<TOutput>(outputSchema, data);
     }
 
-    return data as TOutput;
+    return validatedOutput as TOutput;
   };
 
   // Always call hooks to avoid Rules of Hooks violation
@@ -105,7 +109,7 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   });
 
   const mutation = useMutation<TOutput, Error, TInput | undefined>({
-    mutationFn: fetcher,
+    mutationFn: (body?: TInput) => fetcher(body, true),
   });
 
   // Create consistent execute function that always returns Promise<TOutput>

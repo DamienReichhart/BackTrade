@@ -9,7 +9,7 @@ import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
-import { router as apiRouter } from "./routes/index";
+import { router as apiRouter } from "./routes/router.js";
 
 function createApp(): Express {
   const app: Express = express();

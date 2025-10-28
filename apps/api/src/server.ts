@@ -1,9 +1,9 @@
-const { env } = require("./config");
-const { createApp: createAppFunction } = require("./app");
+import { env } from "./config/env.js";
+import { createApp } from "./app.js";
 
-const app = createAppFunction();
+const app = createApp();
 const server = app.listen(env.PORT, env.HOST, () => {
-  process.stdout.write(`api listening on ${env.HOST}:${env.PORT}\n`);
+  process.stdout.write(`api listening on http://${env.HOST}:${env.PORT}\n`);
 });
 
 process.on("SIGINT", () => server.close(() => process.exit(0)));

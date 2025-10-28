@@ -1,10 +1,9 @@
 import { z } from "zod";
 
-// Re-export all schemas and types
+// Re-export all schemas and types from modular structure
 export * from "./enums";
 export * from "./entities";
 export * from "./requests";
-export * from "./api";
 
 // Legacy schemas (keeping for backward compatibility)
 export const HealthSchema = z.object({
@@ -12,13 +11,3 @@ export const HealthSchema = z.object({
   time: z.string(),
 });
 export type Health = z.infer<typeof HealthSchema>;
-
-export const EnvSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
-  PORT: z.coerce.number().int().positive().default(3000),
-  HOST: z.string().default("0.0.0.0"),
-  VITE_API_URL: z.string().url().optional(),
-});
-export type Env = z.infer<typeof EnvSchema>;

@@ -1,0 +1,77 @@
+---
+globs: *.tsx
+description: Coding standards and best practices
+---
+
+# Coding Standards
+
+## TypeScript
+
+- **Strict mode**: Enabled in all TypeScript projects
+- **Type everything**: No `any` types, use proper interfaces
+- **Interface naming**: PascalCase (e.g., `ComponentProps`)
+
+## File Naming
+
+- **Components**: PascalCase (e.g., `Button.tsx`)
+- **Utilities**: camelCase (e.g., `formatDate.ts`)
+- **Types**: camelCase with `.ts` extension (e.g., `types.ts`)
+- **Config**: camelCase (e.g., `pricingConfig.tsx`)
+
+## Documentation
+
+Every component, function, and type should have JSDoc comments:
+
+```tsx
+/**
+ * Component description
+ *
+ * Additional context about when and how to use this component
+ * @example
+ * ```tsx
+ * <Component prop1="value" />
+ * ```
+ */
+export function Component({ prop1 }: ComponentProps) {
+  // Implementation
+}
+```
+
+## Error Handling
+
+```tsx
+try {
+  const result = await execute(data);
+  // Handle success
+} catch (error) {
+  console.error("Error:", error);
+  // Show user-friendly error message
+}
+```
+
+## State Management
+
+- Use `useState` for local component state
+- Lift state up when needed
+- Keep state as close to where it's used as possible
+
+## Component Guidelines
+
+1. **Single Responsibility**: Each component should do one thing
+2. **Composition over Inheritance**: Build complex UIs from simple components
+3. **Props destructuring**: Always destructure in function signature
+4. **Controlled components**: Prefer controlled for forms
+5. **Key props**: Always provide unique keys for list items
+
+## Performance
+
+- Use `useMemo` for expensive calculations
+- Use `useCallback` for stable function references
+
+## Accessibility
+
+- Use semantic HTML elements
+- Provide alt text for images
+- Support keyboard navigation
+- Use ARIA labels when needed
+- Ensure sufficient color contrast

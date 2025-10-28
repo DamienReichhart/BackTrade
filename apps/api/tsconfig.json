@@ -3,11 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "noEmit": false,
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "target": "ESNEXT",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "ESNext",
     "types": ["jest", "node"]
   },
   "include": ["src"]

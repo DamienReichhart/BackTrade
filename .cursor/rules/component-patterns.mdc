@@ -1,0 +1,139 @@
+---
+globs: *.tsx
+description: React component patterns and conventions
+---
+
+# Component Patterns
+
+## Component Structure
+
+Every component follows this pattern:
+
+```tsx
+import styles from "./ComponentName.module.css";
+
+/**
+ * Component description
+ *
+ * Additional context about when and how to use this component
+ */
+export function ComponentName({ prop1, prop2 }: ComponentProps) {
+  return (
+    <div className={styles.container}>
+      {/* Component content */}
+    </div>
+  );
+}
+```
+
+## File Organization
+
+Each component has its own directory:
+
+```
+ComponentName/
+├── ComponentName.tsx           # Component implementation
+├── ComponentName.module.css    # Scoped styles
+└── index.tsx                   # Export: export { ComponentName } from "./ComponentName";
+```
+
+## Component Props Pattern
+
+```tsx
+/**
+ * Component props interface
+ */
+interface ComponentProps {
+  /**
+   * Prop description
+   */
+  prop1: string;
+  
+  /**
+   * Optional prop with default
+   * @default "defaultValue"
+   */
+  prop2?: number;
+}
+```
+
+## Component Guidelines
+
+1. **Named exports**: Use `export function ComponentName()`
+2. **TypeScript**: Always type props with interfaces
+3. **CSS Modules**: Use `styles.` prefix for all class names
+4. **Documentation**: Add JSDoc comments explaining purpose
+5. **Forward refs**: Use `forwardRef` when components need DOM refs
+6. **Composition**: Build complex UIs from smaller components
+7. **Props destructuring**: Always destructure props in function signature
+
+## Page Components Pattern
+
+Page components orchestrate smaller components:
+
+```tsx
+import { SubComponent1, SubComponent2 } from "./components";
+import styles from "./PageName.module.css";
+
+export default function PageName() {
+  return (
+    <div className={styles.page}>
+      <SubComponent1 />
+      <SubComponent2 />
+    </div>
+  );
+}
+```
+
+## Component Organization
+
+- **Shared components** → `src/components/`
+- **Feature components** → `src/features/[feature]/components/`
+- Each component has: `.tsx`, `.module.css`, `index.tsx`
+- Components are self-contained and reusable
+
+## Key Principles
+
+1. **Feature-based organization**: Group related functionality together
+2. **Modular components**: Each component is in its own directory
+3. **CSS Modules**: Scoped styling with `.module.css`
+4. **Co-location**: Keep related files together
+5. **Separation of concerns**: Separate API logic, UI, types, and utils
+
+
+## Frontend Structure (`apps/web/src/`)
+
+```
+src/
+├── api/           # API hooks and request functions
+│   ├── hooks/     # Custom React Query hooks
+│   └── requests/  # Endpoint-specific hooks (auth, sessions, etc.)
+├── components/    # Shared reusable components
+├── features/      # Feature-based modules ( contains component/hooks, etc.... directory for things only in feature)
+├── routes/        # React Router configuration
+├── types/         # Frontend-specific types
+├── utils/         # Utility functions
+├── App.tsx        # Root component
+├── main.tsx       # Application entry point
+└── main.css       # Global styles and CSS variables
+```
+
+## Feature Module Pattern
+
+Each feature follows this structure:
+
+```
+feature-name/
+├── components/     # Feature-specific components
+│   ├── ComponentName/
+│   │   ├── ComponentName.tsx
+│   │   ├── ComponentName.module.css
+│   │   └── index.tsx
+│   └── index.tsx
+├── config/        # Configuration and constants
+├── types/         # Feature-specific types
+├── utils/         # Feature-specific utilities
+├── FeatureName.tsx # Main feature component
+├── FeatureName.module.css
+└── index.tsx       # Feature exports
+```
