@@ -20,10 +20,5 @@ export const UpdateDatasetRequestSchema = z.object({
 });
 export type UpdateDatasetRequest = z.infer<typeof UpdateDatasetRequestSchema>;
 
-export const DatasetListResponseSchema = z.object({
-  datasets: z.array(DatasetSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const DatasetListResponseSchema = z.array(DatasetSchema);
 export type DatasetListResponse = z.infer<typeof DatasetListResponseSchema>;

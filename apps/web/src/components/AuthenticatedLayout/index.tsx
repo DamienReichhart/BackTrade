@@ -1,0 +1,2 @@
+export { AuthenticatedLayout } from "./AuthenticatedLayout";
+

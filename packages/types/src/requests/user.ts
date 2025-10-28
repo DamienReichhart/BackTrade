@@ -9,10 +9,5 @@ export const UpdateUserRequestSchema = z.object({
 });
 export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
 
-export const UserListResponseSchema = z.object({
-  users: z.array(PublicUserSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const UserListResponseSchema = z.array(PublicUserSchema);
 export type UserListResponse = z.infer<typeof UserListResponseSchema>;

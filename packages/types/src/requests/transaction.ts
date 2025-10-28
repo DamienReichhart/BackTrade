@@ -14,12 +14,7 @@ export type CreateTransactionRequest = z.infer<
   typeof CreateTransactionRequestSchema
 >;
 
-export const TransactionListResponseSchema = z.object({
-  transactions: z.array(TransactionSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const TransactionListResponseSchema = z.array(TransactionSchema);
 export type TransactionListResponse = z.infer<
   typeof TransactionListResponseSchema
 >;

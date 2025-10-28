@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Checkbox } from "../../../../../components/Checkbox";
@@ -17,6 +17,7 @@ import styles from "./LoginFormPanel.module.css";
  * SSO, and magic link options
  */
 export function LoginFormPanel() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberDevice, setRememberDevice] = useState(false);
@@ -33,6 +34,8 @@ export function LoginFormPanel() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login attempt:", { email, password, rememberDevice });
+    // Redirect to dashboard without authentication for now
+    navigate("/dashboard");
   };
 
   /**
