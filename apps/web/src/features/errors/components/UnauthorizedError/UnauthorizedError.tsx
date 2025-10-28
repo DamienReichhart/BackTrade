@@ -1,4 +1,5 @@
 import { ErrorPage } from "../ErrorPage";
+import { useNavigate } from "react-router-dom";
 
 /**
  * 401 Unauthorized error page component
@@ -6,6 +7,7 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when authentication is required but not provided
  */
 export function UnauthorizedError() {
+  const navigate = useNavigate();
   return (
     <ErrorPage
       statusCode={401}
@@ -14,7 +16,7 @@ export function UnauthorizedError() {
       details="Please sign in to continue."
       primaryActionText="Sign In"
       primaryAction={() => {
-        window.location.href = "/signin";
+        navigate("/signin");
       }}
     />
   );
