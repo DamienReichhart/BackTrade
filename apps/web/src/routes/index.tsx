@@ -3,6 +3,7 @@ import App from "../App";
 import Home from "../features/home/Home";
 import Pricing from "../features/pricing/Pricing";
 import { Login, Register } from "../features/auth";
+import { Terms, Privacy } from "../features/legal";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,14 @@ export const router = createBrowserRouter([
       {
         path: "/signup",
         element: <Register />,
+      },
+      {
+        path: "/terms",
+        element: <Terms />,
+      },
+      {
+        path: "/privacy",
+        element: <Privacy />,
       },
     ],
   },
