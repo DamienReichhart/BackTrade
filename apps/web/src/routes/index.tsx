@@ -7,6 +7,14 @@ import { Terms, Privacy } from "../features/legal";
 import { Dashboard } from "../features/dashboard";
 import { Settings } from "../features/settings";
 import { AuthenticatedLayout } from "../components";
+import {
+  NotFoundError,
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  InternalServerError,
+  ServiceUnavailableError,
+} from "../features/errors";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +61,32 @@ export const router = createBrowserRouter([
             <Settings />
           </AuthenticatedLayout>
         ),
+      },
+      // Error pages
+      {
+        path: "/error/400",
+        element: <BadRequestError />,
+      },
+      {
+        path: "/error/401",
+        element: <UnauthorizedError />,
+      },
+      {
+        path: "/error/403",
+        element: <ForbiddenError />,
+      },
+      {
+        path: "/error/500",
+        element: <InternalServerError />,
+      },
+      {
+        path: "/error/503",
+        element: <ServiceUnavailableError />,
+      },
+      // Catch-all route for 404
+      {
+        path: "*",
+        element: <NotFoundError />,
       },
     ],
   },
