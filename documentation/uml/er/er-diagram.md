@@ -130,6 +130,7 @@ erDiagram
       string id PK
       string user_id FK
       string instrument_id FK
+      string name
       enum timeframe
       enum session_status
       enum speed

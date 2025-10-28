@@ -32,10 +32,5 @@ export const FileUploadResponseSchema = FileSchema.extend({
 });
 export type FileUploadResponse = z.infer<typeof FileUploadResponseSchema>;
 
-export const FileListResponseSchema = z.object({
-  files: z.array(FileSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const FileListResponseSchema = z.array(FileSchema);
 export type FileListResponse = z.infer<typeof FileListResponseSchema>;

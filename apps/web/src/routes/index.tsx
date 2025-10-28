@@ -4,6 +4,8 @@ import Home from "../features/home/Home";
 import Pricing from "../features/pricing/Pricing";
 import { Login, Register } from "../features/auth";
 import { Terms, Privacy } from "../features/legal";
+import { Dashboard } from "../features/dashboard";
+import { AuthenticatedLayout } from "../components";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +36,14 @@ export const router = createBrowserRouter([
       {
         path: "/privacy",
         element: <Privacy />,
+      },
+      {
+        path: "/dashboard",
+        element: (
+          <AuthenticatedLayout>
+            <Dashboard />
+          </AuthenticatedLayout>
+        ),
       },
     ],
   },

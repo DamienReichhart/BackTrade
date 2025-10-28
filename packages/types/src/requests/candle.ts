@@ -26,12 +26,7 @@ export const UpdateCandleRequestSchema = z.object({
 });
 export type UpdateCandleRequest = z.infer<typeof UpdateCandleRequestSchema>;
 
-export const CandleListResponseSchema = z.object({
-  candles: z.array(CandleSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const CandleListResponseSchema = z.array(CandleSchema);
 export type CandleListResponse = z.infer<typeof CandleListResponseSchema>;
 
 export const CreateCandlesRequestSchema = z.object({

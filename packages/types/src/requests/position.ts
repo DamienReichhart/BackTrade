@@ -25,10 +25,5 @@ export const UpdatePositionRequestSchema = z.object({
 });
 export type UpdatePositionRequest = z.infer<typeof UpdatePositionRequestSchema>;
 
-export const PositionListResponseSchema = z.object({
-  positions: z.array(PositionSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const PositionListResponseSchema = z.array(PositionSchema);
 export type PositionListResponse = z.infer<typeof PositionListResponseSchema>;

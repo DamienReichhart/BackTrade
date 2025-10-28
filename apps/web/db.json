@@ -17,7 +17,7 @@
     },
     {
       "id": 2,
-      "email": "trader1@example.com",
+      "email": "john.trader@example.com",
       "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
       "role": "ANONYMOUS",
       "is_banned": false,
@@ -27,12 +27,52 @@
     },
     {
       "id": 3,
-      "email": "trader2@example.com",
+      "email": "sarah.investor@example.com",
       "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
       "role": "ANONYMOUS",
       "is_banned": false,
       "stripe_customer_id": "cus_trader2",
       "created_at": "2024-01-03T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "email": "mike.daytrader@example.com",
+      "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
+      "role": "ANONYMOUS",
+      "is_banned": false,
+      "stripe_customer_id": "cus_trader3",
+      "created_at": "2024-01-04T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "email": "lisa.scalper@example.com",
+      "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
+      "role": "ANONYMOUS",
+      "is_banned": false,
+      "stripe_customer_id": "cus_trader4",
+      "created_at": "2024-01-05T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "email": "alex.swing@example.com",
+      "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
+      "role": "ANONYMOUS",
+      "is_banned": false,
+      "stripe_customer_id": "cus_trader5",
+      "created_at": "2024-01-06T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 7,
+      "email": "banned.user@example.com",
+      "password_hash": "$2b$10$rQ8K8K8K8K8K8K8K8K8K8O",
+      "role": "ANONYMOUS",
+      "is_banned": true,
+      "stripe_customer_id": "cus_banned",
+      "created_at": "2024-01-07T00:00:00.000Z",
       "updated_at": "2024-01-15T10:30:00.000Z"
     }
   ],
@@ -48,6 +88,42 @@
       "last_seen": "2024-01-15T10:30:00.000Z",
       "expires_at": "2024-01-22T10:00:00.000Z",
       "is_active": true
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "ip_address": "192.168.1.101",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+      "device_info": "Desktop Safari",
+      "refresh_token_hash": "$2b$10$refresh_token_hash_2",
+      "issued_at": "2024-01-15T09:30:00.000Z",
+      "last_seen": "2024-01-15T10:25:00.000Z",
+      "expires_at": "2024-01-22T09:30:00.000Z",
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "user_id": 3,
+      "ip_address": "192.168.1.102",
+      "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+      "device_info": "Mobile Safari",
+      "refresh_token_hash": "$2b$10$refresh_token_hash_3",
+      "issued_at": "2024-01-15T08:45:00.000Z",
+      "last_seen": "2024-01-15T10:20:00.000Z",
+      "expires_at": "2024-01-22T08:45:00.000Z",
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "user_id": 4,
+      "ip_address": "192.168.1.103",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "device_info": "Desktop Firefox",
+      "refresh_token_hash": "$2b$10$refresh_token_hash_4",
+      "issued_at": "2024-01-14T16:00:00.000Z",
+      "last_seen": "2024-01-14T18:30:00.000Z",
+      "expires_at": "2024-01-21T16:00:00.000Z",
+      "is_active": false
     }
   ],
   "plans": [
@@ -94,6 +170,39 @@
       "current_period_start": "2024-01-01T00:00:00.000Z",
       "current_period_end": "2024-02-01T00:00:00.000Z",
       "cancel_at_period_end": false,
+      "trial_end": null
+    },
+    {
+      "id": 3,
+      "user_id": 4,
+      "plan_id": 3,
+      "stripe_subscription_id": "sub_trader3_expert",
+      "status": "active",
+      "current_period_start": "2024-01-01T00:00:00.000Z",
+      "current_period_end": "2024-02-01T00:00:00.000Z",
+      "cancel_at_period_end": false,
+      "trial_end": null
+    },
+    {
+      "id": 4,
+      "user_id": 5,
+      "plan_id": 2,
+      "stripe_subscription_id": "sub_trader4_pro",
+      "status": "trialing",
+      "current_period_start": "2024-01-10T00:00:00.000Z",
+      "current_period_end": "2024-02-10T00:00:00.000Z",
+      "cancel_at_period_end": false,
+      "trial_end": "2024-01-20T00:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "user_id": 6,
+      "plan_id": 1,
+      "stripe_subscription_id": "sub_trader5_basic",
+      "status": "canceled",
+      "current_period_start": "2023-12-01T00:00:00.000Z",
+      "current_period_end": "2024-01-01T00:00:00.000Z",
+      "cancel_at_period_end": true,
       "trial_end": null
     }
   ],
@@ -142,6 +251,96 @@
       "enabled": true,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "symbol": "NZDUSD",
+      "display_name": "New Zealand Dollar / US Dollar",
+      "pip_size": 0.0001,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 7,
+      "symbol": "EURGBP",
+      "display_name": "Euro / British Pound",
+      "pip_size": 0.0001,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 8,
+      "symbol": "EURJPY",
+      "display_name": "Euro / Japanese Yen",
+      "pip_size": 0.01,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 9,
+      "symbol": "GBPJPY",
+      "display_name": "British Pound / Japanese Yen",
+      "pip_size": 0.01,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 10,
+      "symbol": "AUDJPY",
+      "display_name": "Australian Dollar / Japanese Yen",
+      "pip_size": 0.01,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 11,
+      "symbol": "BTCUSD",
+      "display_name": "Bitcoin / US Dollar",
+      "pip_size": 1.0,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 12,
+      "symbol": "ETHUSD",
+      "display_name": "Ethereum / US Dollar",
+      "pip_size": 0.01,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 13,
+      "symbol": "XAUUSD",
+      "display_name": "Gold / US Dollar",
+      "pip_size": 0.1,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 14,
+      "symbol": "XAGUSD",
+      "display_name": "Silver / US Dollar",
+      "pip_size": 0.001,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 15,
+      "symbol": "USOIL",
+      "display_name": "Crude Oil WTI",
+      "pip_size": 0.01,
+      "enabled": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
     }
   ],
   "datasets": [
@@ -171,6 +370,62 @@
       "start_ts": "2023-01-01T00:00:00.000Z",
       "end_ts": "2023-12-31T23:00:00.000Z",
       "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "instrument_id": 1,
+      "timeframe": "M15",
+      "uploaded_by_user_id": 2,
+      "uploaded_at": "2024-01-05T00:00:00.000Z",
+      "records_count": 35040,
+      "file_id": 3,
+      "is_active": true,
+      "start_ts": "2023-01-01T00:00:00.000Z",
+      "end_ts": "2023-12-31T23:45:00.000Z",
+      "created_at": "2024-01-05T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "instrument_id": 3,
+      "timeframe": "H4",
+      "uploaded_by_user_id": 3,
+      "uploaded_at": "2024-01-08T00:00:00.000Z",
+      "records_count": 2190,
+      "file_id": 4,
+      "is_active": true,
+      "start_ts": "2023-01-01T00:00:00.000Z",
+      "end_ts": "2023-12-31T20:00:00.000Z",
+      "created_at": "2024-01-08T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "instrument_id": 11,
+      "timeframe": "H1",
+      "uploaded_by_user_id": 4,
+      "uploaded_at": "2024-01-10T00:00:00.000Z",
+      "records_count": 8760,
+      "file_id": 5,
+      "is_active": true,
+      "start_ts": "2023-01-01T00:00:00.000Z",
+      "end_ts": "2023-12-31T23:00:00.000Z",
+      "created_at": "2024-01-10T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "instrument_id": 13,
+      "timeframe": "D1",
+      "uploaded_by_user_id": 5,
+      "uploaded_at": "2024-01-12T00:00:00.000Z",
+      "records_count": 365,
+      "file_id": 6,
+      "is_active": true,
+      "start_ts": "2023-01-01T00:00:00.000Z",
+      "end_ts": "2023-12-31T00:00:00.000Z",
+      "created_at": "2024-01-12T00:00:00.000Z",
       "updated_at": "2024-01-15T10:30:00.000Z"
     }
   ],
@@ -213,6 +468,97 @@
       "volume": 1320.8,
       "created_at": "2024-01-15T12:00:00.000Z",
       "updated_at": "2024-01-15T12:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "instrument_id": 1,
+      "timeframe": "H1",
+      "ts": "2024-01-15T13:00:00.000Z",
+      "open": 1.0875,
+      "high": 1.0885,
+      "low": 1.087,
+      "close": 1.088,
+      "volume": 1450.3,
+      "created_at": "2024-01-15T13:00:00.000Z",
+      "updated_at": "2024-01-15T13:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "instrument_id": 1,
+      "timeframe": "H1",
+      "ts": "2024-01-15T14:00:00.000Z",
+      "open": 1.088,
+      "high": 1.089,
+      "low": 1.0875,
+      "close": 1.0885,
+      "volume": 1380.7,
+      "created_at": "2024-01-15T14:00:00.000Z",
+      "updated_at": "2024-01-15T14:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "instrument_id": 2,
+      "timeframe": "H1",
+      "ts": "2024-01-15T10:00:00.000Z",
+      "open": 1.265,
+      "high": 1.2675,
+      "low": 1.2645,
+      "close": 1.266,
+      "volume": 980.2,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "instrument_id": 2,
+      "timeframe": "H1",
+      "ts": "2024-01-15T11:00:00.000Z",
+      "open": 1.266,
+      "high": 1.268,
+      "low": 1.2655,
+      "close": 1.267,
+      "volume": 1050.8,
+      "created_at": "2024-01-15T11:00:00.000Z",
+      "updated_at": "2024-01-15T11:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "instrument_id": 3,
+      "timeframe": "H1",
+      "ts": "2024-01-15T10:00:00.000Z",
+      "open": 148.25,
+      "high": 148.45,
+      "low": 148.15,
+      "close": 148.35,
+      "volume": 1250.0,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "instrument_id": 11,
+      "timeframe": "H1",
+      "ts": "2024-01-15T10:00:00.000Z",
+      "open": 42500.0,
+      "high": 42850.0,
+      "low": 42400.0,
+      "close": 42750.0,
+      "volume": 125.5,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": 10,
+      "instrument_id": 13,
+      "timeframe": "H1",
+      "ts": "2024-01-15T10:00:00.000Z",
+      "open": 2025.50,
+      "high": 2030.25,
+      "low": 2024.75,
+      "close": 2028.90,
+      "volume": 850.2,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
     }
   ],
   "sessions": [
@@ -220,6 +566,7 @@
       "id": 1,
       "user_id": 2,
       "instrument_id": 1,
+      "name": "EUR/USD Hourly Scalping",
       "timeframe": "H1",
       "session_status": "RUNNING",
       "speed": "1x",
@@ -237,6 +584,7 @@
       "id": 2,
       "user_id": 3,
       "instrument_id": 2,
+      "name": "GBP/USD Conservative Test",
       "timeframe": "H1",
       "session_status": "COMPLETED",
       "speed": "2x",
@@ -249,6 +597,96 @@
       "commission_per_fill": 0.75,
       "created_at": "2024-01-14T08:00:00.000Z",
       "updated_at": "2024-01-14T16:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "user_id": 4,
+      "instrument_id": 1,
+      "name": "EUR/USD Quick Scalping (15min)",
+      "timeframe": "M15",
+      "session_status": "COMPLETED",
+      "speed": "5x",
+      "start_ts": "2024-01-13T09:00:00.000Z",
+      "end_ts": "2024-01-13T17:00:00.000Z",
+      "initial_balance": 25000.0,
+      "leverage": 200,
+      "spread_pts": 1,
+      "slippage_pts": 0.5,
+      "commission_per_fill": 0.25,
+      "created_at": "2024-01-13T09:00:00.000Z",
+      "updated_at": "2024-01-13T17:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "user_id": 5,
+      "instrument_id": 11,
+      "name": "Crypto Backtest - High Volatility",
+      "timeframe": "H1",
+      "session_status": "RUNNING",
+      "speed": "1x",
+      "start_ts": "2024-01-15T08:00:00.000Z",
+      "end_ts": null,
+      "initial_balance": 15000.0,
+      "leverage": 10,
+      "spread_pts": 50,
+      "slippage_pts": 25,
+      "commission_per_fill": 2.5,
+      "created_at": "2024-01-15T08:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "user_id": 6,
+      "instrument_id": 13,
+      "name": "Swing Trading Strategy Test",
+      "timeframe": "H4",
+      "session_status": "PAUSED",
+      "speed": "1x",
+      "start_ts": "2024-01-12T00:00:00.000Z",
+      "end_ts": null,
+      "initial_balance": 8000.0,
+      "leverage": 20,
+      "spread_pts": 5,
+      "slippage_pts": 3,
+      "commission_per_fill": 1.0,
+      "created_at": "2024-01-12T00:00:00.000Z",
+      "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "instrument_id": 3,
+      "name": "USD/JPY Medium Speed Test",
+      "timeframe": "H1",
+      "session_status": "COMPLETED",
+      "speed": "3x",
+      "start_ts": "2024-01-11T10:00:00.000Z",
+      "end_ts": "2024-01-11T18:00:00.000Z",
+      "initial_balance": 12000.0,
+      "leverage": 100,
+      "spread_pts": 2,
+      "slippage_pts": 1,
+      "commission_per_fill": 0.5,
+      "created_at": "2024-01-11T10:00:00.000Z",
+      "updated_at": "2024-01-11T18:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "user_id": 3,
+      "instrument_id": 1,
+      "name": "EUR/USD Long-Term Analysis",
+      "timeframe": "D1",
+      "session_status": "COMPLETED",
+      "speed": "10x",
+      "start_ts": "2024-01-08T00:00:00.000Z",
+      "end_ts": "2024-01-10T00:00:00.000Z",
+      "initial_balance": 30000.0,
+      "leverage": 50,
+      "spread_pts": 3,
+      "slippage_pts": 2,
+      "commission_per_fill": 0.75,
+      "created_at": "2024-01-08T00:00:00.000Z",
+      "updated_at": "2024-01-10T00:00:00.000Z"
     }
   ],
   "positions": [
@@ -293,6 +731,132 @@
       "spread_cost": 0.0,
       "created_at": "2024-01-14T10:30:00.000Z",
       "updated_at": "2024-01-14T12:45:00.000Z"
+    },
+    {
+      "id": 3,
+      "session_id": 2,
+      "candle_id": 3,
+      "exit_candle_id": 4,
+      "position_status": "CLOSED",
+      "side": "BUY",
+      "entry_price": 1.0825,
+      "quantity_lots": 1.0,
+      "tp_price": 1.0875,
+      "sl_price": 1.0775,
+      "exit_price": 1.085,
+      "opened_at": "2024-01-14T13:15:00.000Z",
+      "closed_at": "2024-01-14T14:30:00.000Z",
+      "realized_pnl": 25.0,
+      "commission_cost": 0.75,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-14T13:15:00.000Z",
+      "updated_at": "2024-01-14T14:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "session_id": 3,
+      "candle_id": 4,
+      "exit_candle_id": 5,
+      "position_status": "CLOSED",
+      "side": "SELL",
+      "entry_price": 1.088,
+      "quantity_lots": 2.0,
+      "tp_price": 1.083,
+      "sl_price": 1.093,
+      "exit_price": 1.0845,
+      "opened_at": "2024-01-13T11:20:00.000Z",
+      "closed_at": "2024-01-13T12:45:00.000Z",
+      "realized_pnl": 70.0,
+      "commission_cost": 0.5,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-13T11:20:00.000Z",
+      "updated_at": "2024-01-13T12:45:00.000Z"
+    },
+    {
+      "id": 5,
+      "session_id": 4,
+      "candle_id": 9,
+      "exit_candle_id": null,
+      "position_status": "OPEN",
+      "side": "BUY",
+      "entry_price": 42550.0,
+      "quantity_lots": 0.1,
+      "tp_price": 43000.0,
+      "sl_price": 42000.0,
+      "exit_price": null,
+      "opened_at": "2024-01-15T09:30:00.000Z",
+      "closed_at": null,
+      "realized_pnl": 0.0,
+      "commission_cost": 2.5,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-15T09:30:00.000Z",
+      "updated_at": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "session_id": 5,
+      "candle_id": 10,
+      "exit_candle_id": null,
+      "position_status": "OPEN",
+      "side": "SELL",
+      "entry_price": 2028.5,
+      "quantity_lots": 0.5,
+      "tp_price": 2020.0,
+      "sl_price": 2035.0,
+      "exit_price": null,
+      "opened_at": "2024-01-12T14:00:00.000Z",
+      "closed_at": null,
+      "realized_pnl": 0.0,
+      "commission_cost": 1.0,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-12T14:00:00.000Z",
+      "updated_at": "2024-01-12T14:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "session_id": 6,
+      "candle_id": 8,
+      "exit_candle_id": null,
+      "position_status": "CLOSED",
+      "side": "BUY",
+      "entry_price": 148.3,
+      "quantity_lots": 1.5,
+      "tp_price": 149.0,
+      "sl_price": 147.5,
+      "exit_price": 148.8,
+      "opened_at": "2024-01-11T11:00:00.000Z",
+      "closed_at": "2024-01-11T15:30:00.000Z",
+      "realized_pnl": 75.0,
+      "commission_cost": 0.75,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-11T11:00:00.000Z",
+      "updated_at": "2024-01-11T15:30:00.000Z"
+    },
+    {
+      "id": 8,
+      "session_id": 7,
+      "candle_id": 1,
+      "exit_candle_id": 2,
+      "position_status": "CLOSED",
+      "side": "SELL",
+      "entry_price": 1.086,
+      "quantity_lots": 3.0,
+      "tp_price": 1.081,
+      "sl_price": 1.091,
+      "exit_price": 1.0835,
+      "opened_at": "2024-01-08T02:00:00.000Z",
+      "closed_at": "2024-01-08T18:00:00.000Z",
+      "realized_pnl": 75.0,
+      "commission_cost": 2.25,
+      "slippage_cost": 0.0,
+      "spread_cost": 0.0,
+      "created_at": "2024-01-08T02:00:00.000Z",
+      "updated_at": "2024-01-08T18:00:00.000Z"
     }
   ],
   "transactions": [
@@ -328,6 +892,193 @@
       "balance_after": 5022.5,
       "created_at": "2024-01-14T12:45:00.000Z",
       "updated_at": "2024-01-14T12:45:00.000Z"
+    },
+    {
+      "id": 4,
+      "user_id": 3,
+      "session_id": 2,
+      "position_id": 2,
+      "transaction_type": "COMMISSION",
+      "amount": -0.75,
+      "balance_after": 5021.75,
+      "created_at": "2024-01-14T12:45:00.000Z",
+      "updated_at": "2024-01-14T12:45:00.000Z"
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "session_id": 2,
+      "position_id": 3,
+      "transaction_type": "PNL",
+      "amount": 25.0,
+      "balance_after": 5046.75,
+      "created_at": "2024-01-14T14:30:00.000Z",
+      "updated_at": "2024-01-14T14:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "user_id": 3,
+      "session_id": 2,
+      "position_id": 3,
+      "transaction_type": "COMMISSION",
+      "amount": -0.75,
+      "balance_after": 5046.0,
+      "created_at": "2024-01-14T14:30:00.000Z",
+      "updated_at": "2024-01-14T14:30:00.000Z"
+    },
+    {
+      "id": 7,
+      "user_id": 4,
+      "session_id": 3,
+      "position_id": null,
+      "transaction_type": "DEPOSIT",
+      "amount": 25000.0,
+      "balance_after": 25000.0,
+      "created_at": "2024-01-13T09:00:00.000Z",
+      "updated_at": "2024-01-13T09:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "user_id": 4,
+      "session_id": 3,
+      "position_id": 4,
+      "transaction_type": "PNL",
+      "amount": 70.0,
+      "balance_after": 25070.0,
+      "created_at": "2024-01-13T12:45:00.000Z",
+      "updated_at": "2024-01-13T12:45:00.000Z"
+    },
+    {
+      "id": 9,
+      "user_id": 4,
+      "session_id": 3,
+      "position_id": 4,
+      "transaction_type": "COMMISSION",
+      "amount": -0.5,
+      "balance_after": 25069.5,
+      "created_at": "2024-01-13T12:45:00.000Z",
+      "updated_at": "2024-01-13T12:45:00.000Z"
+    },
+    {
+      "id": 10,
+      "user_id": 5,
+      "session_id": 4,
+      "position_id": null,
+      "transaction_type": "DEPOSIT",
+      "amount": 15000.0,
+      "balance_after": 15000.0,
+      "created_at": "2024-01-15T08:00:00.000Z",
+      "updated_at": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "user_id": 5,
+      "session_id": 4,
+      "position_id": 5,
+      "transaction_type": "COMMISSION",
+      "amount": -2.5,
+      "balance_after": 14997.5,
+      "created_at": "2024-01-15T09:30:00.000Z",
+      "updated_at": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": 12,
+      "user_id": 6,
+      "session_id": 5,
+      "position_id": null,
+      "transaction_type": "DEPOSIT",
+      "amount": 8000.0,
+      "balance_after": 8000.0,
+      "created_at": "2024-01-12T00:00:00.000Z",
+      "updated_at": "2024-01-12T00:00:00.000Z"
+    },
+    {
+      "id": 13,
+      "user_id": 6,
+      "session_id": 5,
+      "position_id": 6,
+      "transaction_type": "COMMISSION",
+      "amount": -1.0,
+      "balance_after": 7999.0,
+      "created_at": "2024-01-12T14:00:00.000Z",
+      "updated_at": "2024-01-12T14:00:00.000Z"
+    },
+    {
+      "id": 14,
+      "user_id": 2,
+      "session_id": 6,
+      "position_id": null,
+      "transaction_type": "DEPOSIT",
+      "amount": 12000.0,
+      "balance_after": 12000.0,
+      "created_at": "2024-01-11T10:00:00.000Z",
+      "updated_at": "2024-01-11T10:00:00.000Z"
+    },
+    {
+      "id": 15,
+      "user_id": 2,
+      "session_id": 6,
+      "position_id": 7,
+      "transaction_type": "PNL",
+      "amount": 75.0,
+      "balance_after": 12075.0,
+      "created_at": "2024-01-11T15:30:00.000Z",
+      "updated_at": "2024-01-11T15:30:00.000Z"
+    },
+    {
+      "id": 16,
+      "user_id": 2,
+      "session_id": 6,
+      "position_id": 7,
+      "transaction_type": "COMMISSION",
+      "amount": -0.75,
+      "balance_after": 12074.25,
+      "created_at": "2024-01-11T15:30:00.000Z",
+      "updated_at": "2024-01-11T15:30:00.000Z"
+    },
+    {
+      "id": 17,
+      "user_id": 3,
+      "session_id": 7,
+      "position_id": null,
+      "transaction_type": "DEPOSIT",
+      "amount": 30000.0,
+      "balance_after": 30000.0,
+      "created_at": "2024-01-08T00:00:00.000Z",
+      "updated_at": "2024-01-08T00:00:00.000Z"
+    },
+    {
+      "id": 18,
+      "user_id": 3,
+      "session_id": 7,
+      "position_id": 8,
+      "transaction_type": "PNL",
+      "amount": 75.0,
+      "balance_after": 30075.0,
+      "created_at": "2024-01-08T18:00:00.000Z",
+      "updated_at": "2024-01-08T18:00:00.000Z"
+    },
+    {
+      "id": 19,
+      "user_id": 3,
+      "session_id": 7,
+      "position_id": 8,
+      "transaction_type": "COMMISSION",
+      "amount": -2.25,
+      "balance_after": 30072.75,
+      "created_at": "2024-01-08T18:00:00.000Z",
+      "updated_at": "2024-01-08T18:00:00.000Z"
+    },
+    {
+      "id": 20,
+      "user_id": 2,
+      "session_id": 1,
+      "position_id": null,
+      "transaction_type": "WITHDRAWAL",
+      "amount": -500.0,
+      "balance_after": 9499.5,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
     }
   ],
   "reports": [
@@ -335,25 +1086,122 @@
       "id": 1,
       "session_id": 2,
       "summary_json": {
-        "total_trades": 5,
-        "winning_trades": 3,
-        "losing_trades": 2,
-        "win_rate": 60.0,
-        "total_pnl": 125.5,
-        "max_drawdown": -45.25,
-        "sharpe_ratio": 1.85,
-        "profit_factor": 2.1
+        "total_trades": 2,
+        "winning_trades": 2,
+        "losing_trades": 0,
+        "win_rate": 100.0,
+        "total_pnl": 47.5,
+        "max_drawdown": -0.0,
+        "sharpe_ratio": 2.1,
+        "profit_factor": 999.0,
+        "avg_win": 23.75,
+        "avg_loss": 0.0,
+        "max_win": 25.0,
+        "max_loss": 0.0,
+        "total_commission": 1.5,
+        "net_profit": 46.0
       },
       "equity_curve_json": {
         "timestamps": [
           "2024-01-14T08:00:00.000Z",
-          "2024-01-14T12:00:00.000Z",
+          "2024-01-14T12:45:00.000Z",
+          "2024-01-14T14:30:00.000Z",
           "2024-01-14T16:00:00.000Z"
         ],
-        "equity_values": [5000.0, 5045.25, 5125.5]
+        "equity_values": [5000.0, 5022.5, 5046.0, 5046.0]
       },
       "created_at": "2024-01-14T16:00:00.000Z",
       "updated_at": "2024-01-14T16:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "session_id": 3,
+      "summary_json": {
+        "total_trades": 1,
+        "winning_trades": 1,
+        "losing_trades": 0,
+        "win_rate": 100.0,
+        "total_pnl": 70.0,
+        "max_drawdown": -0.0,
+        "sharpe_ratio": 1.8,
+        "profit_factor": 999.0,
+        "avg_win": 70.0,
+        "avg_loss": 0.0,
+        "max_win": 70.0,
+        "max_loss": 0.0,
+        "total_commission": 0.5,
+        "net_profit": 69.5
+      },
+      "equity_curve_json": {
+        "timestamps": [
+          "2024-01-13T09:00:00.000Z",
+          "2024-01-13T12:45:00.000Z",
+          "2024-01-13T17:00:00.000Z"
+        ],
+        "equity_values": [25000.0, 25070.0, 25069.5]
+      },
+      "created_at": "2024-01-13T17:00:00.000Z",
+      "updated_at": "2024-01-13T17:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "session_id": 6,
+      "summary_json": {
+        "total_trades": 1,
+        "winning_trades": 1,
+        "losing_trades": 0,
+        "win_rate": 100.0,
+        "total_pnl": 75.0,
+        "max_drawdown": -0.0,
+        "sharpe_ratio": 2.2,
+        "profit_factor": 999.0,
+        "avg_win": 75.0,
+        "avg_loss": 0.0,
+        "max_win": 75.0,
+        "max_loss": 0.0,
+        "total_commission": 0.75,
+        "net_profit": 74.25
+      },
+      "equity_curve_json": {
+        "timestamps": [
+          "2024-01-11T10:00:00.000Z",
+          "2024-01-11T15:30:00.000Z",
+          "2024-01-11T18:00:00.000Z"
+        ],
+        "equity_values": [12000.0, 12075.0, 12074.25]
+      },
+      "created_at": "2024-01-11T18:00:00.000Z",
+      "updated_at": "2024-01-11T18:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "session_id": 7,
+      "summary_json": {
+        "total_trades": 1,
+        "winning_trades": 1,
+        "losing_trades": 0,
+        "win_rate": 100.0,
+        "total_pnl": 75.0,
+        "max_drawdown": -0.0,
+        "sharpe_ratio": 1.9,
+        "profit_factor": 999.0,
+        "avg_win": 75.0,
+        "avg_loss": 0.0,
+        "max_win": 75.0,
+        "max_loss": 0.0,
+        "total_commission": 2.25,
+        "net_profit": 72.75
+      },
+      "equity_curve_json": {
+        "timestamps": [
+          "2024-01-08T00:00:00.000Z",
+          "2024-01-08T18:00:00.000Z",
+          "2024-01-10T00:00:00.000Z"
+        ],
+        "equity_values": [30000.0, 30075.0, 30072.75]
+      },
+      "created_at": "2024-01-10T00:00:00.000Z",
+      "updated_at": "2024-01-10T00:00:00.000Z"
     }
   ],
   "support_requests": [
@@ -363,6 +1211,27 @@
       "support_status": "OPEN",
       "created_at": "2024-01-15T09:30:00.000Z",
       "updated_at": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "requester_id": 3,
+      "support_status": "IN_PROGRESS",
+      "created_at": "2024-01-14T14:20:00.000Z",
+      "updated_at": "2024-01-15T08:45:00.000Z"
+    },
+    {
+      "id": 3,
+      "requester_id": 4,
+      "support_status": "RESOLVED",
+      "created_at": "2024-01-12T16:30:00.000Z",
+      "updated_at": "2024-01-13T10:15:00.000Z"
+    },
+    {
+      "id": 4,
+      "requester_id": 5,
+      "support_status": "CLOSED",
+      "created_at": "2024-01-10T11:45:00.000Z",
+      "updated_at": "2024-01-11T14:20:00.000Z"
     }
   ],
   "support_messages": [
@@ -373,6 +1242,62 @@
       "content": "I'm having trouble uploading my dataset. The file seems to be in the correct format but I'm getting an error.",
       "created_at": "2024-01-15T09:30:00.000Z",
       "updated_at": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "sender_id": 1,
+      "support_request_id": 1,
+      "content": "Hello! I can help you with that. Can you please share the exact error message you're seeing? Also, what format is your dataset file in?",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "sender_id": 3,
+      "support_request_id": 2,
+      "content": "My trading session keeps pausing unexpectedly. Is this a known issue?",
+      "created_at": "2024-01-14T14:20:00.000Z",
+      "updated_at": "2024-01-14T14:20:00.000Z"
+    },
+    {
+      "id": 4,
+      "sender_id": 1,
+      "support_request_id": 2,
+      "content": "This could be due to network connectivity issues or browser performance. Let me check your session logs and get back to you.",
+      "created_at": "2024-01-15T08:45:00.000Z",
+      "updated_at": "2024-01-15T08:45:00.000Z"
+    },
+    {
+      "id": 5,
+      "sender_id": 4,
+      "support_request_id": 3,
+      "content": "How do I export my trading reports?",
+      "created_at": "2024-01-12T16:30:00.000Z",
+      "updated_at": "2024-01-12T16:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "sender_id": 1,
+      "support_request_id": 3,
+      "content": "You can export your reports by clicking the 'Export' button in the report view. Available formats include PDF and CSV.",
+      "created_at": "2024-01-13T10:15:00.000Z",
+      "updated_at": "2024-01-13T10:15:00.000Z"
+    },
+    {
+      "id": 7,
+      "sender_id": 5,
+      "support_request_id": 4,
+      "content": "I want to cancel my subscription. How do I do that?",
+      "created_at": "2024-01-10T11:45:00.000Z",
+      "updated_at": "2024-01-10T11:45:00.000Z"
+    },
+    {
+      "id": 8,
+      "sender_id": 1,
+      "support_request_id": 4,
+      "content": "You can cancel your subscription from your account settings under the 'Billing' section. Your access will continue until the end of your current billing period.",
+      "created_at": "2024-01-11T14:20:00.000Z",
+      "updated_at": "2024-01-11T14:20:00.000Z"
     }
   ],
   "files": [
@@ -397,6 +1322,72 @@
       "uploaded_at": "2024-01-01T00:00:00.000Z",
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "owner_id": 2,
+      "entity_id": 3,
+      "path": "/uploads/datasets/eurusd_m15_2023.csv",
+      "size": "8194304",
+      "md5": "c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8",
+      "uploaded_at": "2024-01-05T00:00:00.000Z",
+      "created_at": "2024-01-05T00:00:00.000Z",
+      "updated_at": "2024-01-05T00:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "owner_id": 3,
+      "entity_id": 4,
+      "path": "/uploads/datasets/usdjpy_h4_2023.csv",
+      "size": "512000",
+      "md5": "d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9",
+      "uploaded_at": "2024-01-08T00:00:00.000Z",
+      "created_at": "2024-01-08T00:00:00.000Z",
+      "updated_at": "2024-01-08T00:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "owner_id": 4,
+      "entity_id": 5,
+      "path": "/uploads/datasets/btcusd_h1_2023.csv",
+      "size": "2048576",
+      "md5": "e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0",
+      "uploaded_at": "2024-01-10T00:00:00.000Z",
+      "created_at": "2024-01-10T00:00:00.000Z",
+      "updated_at": "2024-01-10T00:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "owner_id": 5,
+      "entity_id": 6,
+      "path": "/uploads/datasets/xauusd_d1_2023.csv",
+      "size": "102400",
+      "md5": "f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1",
+      "uploaded_at": "2024-01-12T00:00:00.000Z",
+      "created_at": "2024-01-12T00:00:00.000Z",
+      "updated_at": "2024-01-12T00:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "owner_id": 2,
+      "entity_id": 1,
+      "path": "/uploads/reports/session_2_report.pdf",
+      "size": "256000",
+      "md5": "g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2",
+      "uploaded_at": "2024-01-14T16:00:00.000Z",
+      "created_at": "2024-01-14T16:00:00.000Z",
+      "updated_at": "2024-01-14T16:00:00.000Z"
+    },
+    {
+      "id": 8,
+      "owner_id": 3,
+      "entity_id": 2,
+      "path": "/uploads/reports/session_3_report.pdf",
+      "size": "245760",
+      "md5": "h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3",
+      "uploaded_at": "2024-01-13T17:00:00.000Z",
+      "created_at": "2024-01-13T17:00:00.000Z",
+      "updated_at": "2024-01-13T17:00:00.000Z"
     }
   ],
   "audit_logs": [
@@ -407,12 +1398,86 @@
       "entity_id": 2,
       "audit_action": "CREATE",
       "details": {
-        "email": "trader1@example.com",
+        "email": "john.trader@example.com",
         "role": "ANONYMOUS"
       },
       "ip_address": "192.168.1.100",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       "created_at": "2024-01-02T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "entity_type": "USER",
+      "entity_id": 3,
+      "audit_action": "CREATE",
+      "details": {
+        "email": "sarah.investor@example.com",
+        "role": "ANONYMOUS"
+      },
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "created_at": "2024-01-03T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "entity_type": "SESSION",
+      "entity_id": 1,
+      "audit_action": "CREATE",
+      "details": {
+        "instrument_id": 1,
+        "timeframe": "H1",
+        "initial_balance": 10000.0
+      },
+      "ip_address": "192.168.1.101",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+      "created_at": "2024-01-15T09:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "user_id": 3,
+      "entity_type": "POSITION",
+      "entity_id": 2,
+      "audit_action": "CREATE",
+      "details": {
+        "session_id": 2,
+        "side": "SELL",
+        "entry_price": 1.0865,
+        "quantity_lots": 0.5
+      },
+      "ip_address": "192.168.1.102",
+      "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+      "created_at": "2024-01-14T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "user_id": 1,
+      "entity_type": "USER",
+      "entity_id": 7,
+      "audit_action": "BAN",
+      "details": {
+        "email": "banned.user@example.com",
+        "reason": "Violation of terms of service"
+      },
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "created_at": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "user_id": 4,
+      "entity_type": "DATASET",
+      "entity_id": 5,
+      "audit_action": "UPLOAD",
+      "details": {
+        "instrument_id": 11,
+        "timeframe": "H1",
+        "records_count": 8760
+      },
+      "ip_address": "192.168.1.103",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "created_at": "2024-01-10T00:00:00.000Z"
     }
   ]
 }

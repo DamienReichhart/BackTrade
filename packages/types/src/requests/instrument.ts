@@ -20,12 +20,7 @@ export type UpdateInstrumentRequest = z.infer<
   typeof UpdateInstrumentRequestSchema
 >;
 
-export const InstrumentListResponseSchema = z.object({
-  instruments: z.array(InstrumentSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const InstrumentListResponseSchema = z.array(InstrumentSchema);
 export type InstrumentListResponse = z.infer<
   typeof InstrumentListResponseSchema
 >;

@@ -25,12 +25,7 @@ export const UpdateSupportMessageSchema = z.object({
 });
 export type UpdateSupportMessage = z.infer<typeof UpdateSupportMessageSchema>;
 
-export const SupportRequestListResponseSchema = z.object({
-  support_requests: z.array(SupportRequestSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const SupportRequestListResponseSchema = z.array(SupportRequestSchema);
 export type SupportRequestListResponse = z.infer<
   typeof SupportRequestListResponseSchema
 >;

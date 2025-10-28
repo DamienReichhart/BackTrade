@@ -14,12 +14,7 @@ export const UpdateReportRequestSchema = z.object({
 });
 export type UpdateReportRequest = z.infer<typeof UpdateReportRequestSchema>;
 
-export const ReportListResponseSchema = z.object({
-  reports: z.array(ReportSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().positive(),
-  limit: z.number().int().positive(),
-});
+export const ReportListResponseSchema = z.array(ReportSchema);
 export type ReportListResponse = z.infer<typeof ReportListResponseSchema>;
 
 export const GenerateReportRequestSchema = z.object({
