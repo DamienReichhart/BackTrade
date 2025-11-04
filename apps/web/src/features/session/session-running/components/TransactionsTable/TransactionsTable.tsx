@@ -37,7 +37,10 @@ export function TransactionsTable() {
 
   const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    navigate(`/sessions/${currentSession?.id}/transactions/list`);
+    if (!currentSession) {
+      return;
+    }
+    navigate(`/sessions/${currentSession.id}/transactions/list`);
   };
 
   return (
