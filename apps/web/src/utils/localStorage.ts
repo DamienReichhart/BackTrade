@@ -33,6 +33,7 @@ function getLocalStorageItem<T>(key: string, defaultValue: T): T {
     }
     return JSON.parse(item) as T;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn(`Failed to parse localStorage item "${key}":`, error);
     return defaultValue;
   }
@@ -52,6 +53,7 @@ function setLocalStorageItem<T>(key: string, value: T): void {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn(`Failed to set localStorage item "${key}":`, error);
   }
 }
@@ -91,7 +93,10 @@ export function getChartGridSettings(): ChartGridSettings {
     vertLines: getLocalStorageItem(STORAGE_KEYS.CHART_GRID_VERT_LINES, false),
     horzLines: getLocalStorageItem(STORAGE_KEYS.CHART_GRID_HORZ_LINES, false),
     timeVisible: getLocalStorageItem(STORAGE_KEYS.CHART_TIME_VISIBLE, true),
-    secondsVisible: getLocalStorageItem(STORAGE_KEYS.CHART_SECONDS_VISIBLE, false),
+    secondsVisible: getLocalStorageItem(
+      STORAGE_KEYS.CHART_SECONDS_VISIBLE,
+      false,
+    ),
   };
 }
 
@@ -152,4 +157,3 @@ export function updateChartGridSettings(
     setChartSecondsVisible(settings.secondsVisible);
   }
 }
-

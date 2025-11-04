@@ -89,4 +89,3 @@ export function ChartMenuButton({ onSettingsChange }: ChartMenuButtonProps) {
     </div>
   );
 }
-

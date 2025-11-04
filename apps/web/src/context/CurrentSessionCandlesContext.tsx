@@ -9,7 +9,7 @@ interface CurrentSessionCandlesState {
 
 /**
  * Zustand store for managing the current session candles data globally.
- * This store holds the last 200 candles for the configured timeframe
+ * This store holds the last 1000 candles for the configured timeframe
  * and allows components to access and update candle data without prop drilling.
  */
 export const useCurrentSessionCandlesStore = create<CurrentSessionCandlesState>(

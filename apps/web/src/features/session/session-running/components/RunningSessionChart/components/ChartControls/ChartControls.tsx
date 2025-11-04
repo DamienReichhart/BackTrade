@@ -31,39 +31,61 @@ export function ChartControls({ onSettingsChange }: ChartControlsProps) {
   const [vertLines, setVertLines] = useState(initialSettings.vertLines);
   const [horzLines, setHorzLines] = useState(initialSettings.horzLines);
   const [timeVisible, setTimeVisible] = useState(initialSettings.timeVisible);
-  const [secondsVisible, setSecondsVisible] = useState(initialSettings.secondsVisible);
+  const [secondsVisible, setSecondsVisible] = useState(
+    initialSettings.secondsVisible,
+  );
 
   // Notify parent of initial settings on mount
   useEffect(() => {
     onSettingsChange?.(initialSettings);
-  }, []);
+  }, [onSettingsChange, initialSettings]);
 
   // Handle vertical lines toggle
   const handleVertLinesChange = (checked: boolean) => {
     setVertLines(checked);
     setChartGridVertLines(checked);
-    onSettingsChange?.({ vertLines: checked, horzLines, timeVisible, secondsVisible });
+    onSettingsChange?.({
+      vertLines: checked,
+      horzLines,
+      timeVisible,
+      secondsVisible,
+    });
   };
 
   // Handle horizontal lines toggle
   const handleHorzLinesChange = (checked: boolean) => {
     setHorzLines(checked);
     setChartGridHorzLines(checked);
-    onSettingsChange?.({ vertLines, horzLines: checked, timeVisible, secondsVisible });
+    onSettingsChange?.({
+      vertLines,
+      horzLines: checked,
+      timeVisible,
+      secondsVisible,
+    });
   };
 
   // Handle time visibility toggle
   const handleTimeVisibleChange = (checked: boolean) => {
     setTimeVisible(checked);
     setChartTimeVisible(checked);
-    onSettingsChange?.({ vertLines, horzLines, timeVisible: checked, secondsVisible });
+    onSettingsChange?.({
+      vertLines,
+      horzLines,
+      timeVisible: checked,
+      secondsVisible,
+    });
   };
 
   // Handle seconds visibility toggle
   const handleSecondsVisibleChange = (checked: boolean) => {
     setSecondsVisible(checked);
     setChartSecondsVisible(checked);
-    onSettingsChange?.({ vertLines, horzLines, timeVisible, secondsVisible: checked });
+    onSettingsChange?.({
+      vertLines,
+      horzLines,
+      timeVisible,
+      secondsVisible: checked,
+    });
   };
 
   return (
@@ -91,4 +113,3 @@ export function ChartControls({ onSettingsChange }: ChartControlsProps) {
     </div>
   );
 }
-

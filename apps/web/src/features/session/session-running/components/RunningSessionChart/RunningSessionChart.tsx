@@ -8,7 +8,10 @@ import {
 } from "lightweight-charts";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
 import { convertCandleToChartData } from "../../../../../utils";
-import { getChartGridSettings, type ChartGridSettings } from "../../../../../utils/localStorage";
+import {
+  getChartGridSettings,
+  type ChartGridSettings,
+} from "../../../../../utils/localStorage";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
 
@@ -118,7 +121,12 @@ export function RunningSessionChart() {
 
   // Update chart data when candles change
   useEffect(() => {
-    if (!seriesRef.current || candles.length === 0) return;
+    if (!seriesRef.current) return;
+
+    if (candles.length === 0) {
+      seriesRef.current.setData([]);
+      return;
+    }
 
     const chartData = candles.map(convertCandleToChartData);
     seriesRef.current.setData(chartData);
