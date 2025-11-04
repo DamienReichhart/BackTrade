@@ -105,7 +105,9 @@ export function TransactionDetailsModal({
             <div className={styles.row}>
               <span className={styles.label}>Balance After:</span>
               <span className={styles.value}>
-                €{transaction.balance_after.toFixed(2)}
+                {typeof transaction.balance_after === "number"
+                  ? `€${transaction.balance_after.toFixed(2)}`
+                  : "—"}
               </span>
             </div>
           </div>
