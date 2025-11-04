@@ -56257,6 +56257,17 @@
       "position_status": "OPEN",
       "opened_at": "2020-01-16T10:30:00Z",
       "id": 5
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "tp_price": 1.12,
+      "sl_price": 1,
+      "position_status": "OPEN",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 6
     }
   ],
   "transactions": [

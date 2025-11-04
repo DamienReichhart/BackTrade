@@ -1,0 +1,21 @@
+.chartContainer {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+  overflow: hidden;
+}
+
+.menuButtonWrapper {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  z-index: 10;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}

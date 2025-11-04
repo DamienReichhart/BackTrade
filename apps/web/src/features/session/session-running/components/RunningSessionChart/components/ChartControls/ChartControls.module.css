@@ -1,0 +1,10 @@
+/**
+ * ChartControls Component Styles
+ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: 0;
+}
