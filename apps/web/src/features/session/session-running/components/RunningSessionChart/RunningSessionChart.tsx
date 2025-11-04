@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createChart,
   type IChartApi,
@@ -8,6 +8,8 @@ import {
 } from "lightweight-charts";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
 import { convertCandleToChartData } from "../../../../../utils";
+import { getChartGridSettings, type ChartGridSettings } from "../../../../../utils/localStorage";
+import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
 
 /**
@@ -21,6 +23,9 @@ export function RunningSessionChart() {
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const { candles } = useCurrentSessionCandlesStore();
+  const [gridSettings, setGridSettings] = useState<ChartGridSettings>(() =>
+    getChartGridSettings(),
+  );
 
   // Initialize chart
   useEffect(() => {
@@ -34,8 +39,8 @@ export function RunningSessionChart() {
         textColor: "#e6eef5",
       },
       grid: {
-        vertLines: { visible: false },
-        horzLines: { visible: false },
+        vertLines: { visible: gridSettings.vertLines },
+        horzLines: { visible: gridSettings.horzLines },
       },
       timeScale: {
         timeVisible: true,
@@ -119,8 +124,28 @@ export function RunningSessionChart() {
     seriesRef.current.setData(chartData);
   }, [candles]);
 
+  // Update chart grid when settings change
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    chartRef.current.applyOptions({
+      grid: {
+        vertLines: { visible: gridSettings.vertLines },
+        horzLines: { visible: gridSettings.horzLines },
+      },
+    });
+  }, [gridSettings]);
+
+  // Handle grid settings change from ChartControls
+  const handleGridSettingsChange = (settings: ChartGridSettings) => {
+    setGridSettings(settings);
+  };
+
   return (
     <div className={styles.chartContainer}>
+      <div className={styles.menuButtonWrapper}>
+        <ChartMenuButton onSettingsChange={handleGridSettingsChange} />
+      </div>
       <div ref={chartContainerRef} className={styles.chart} />
     </div>
   );

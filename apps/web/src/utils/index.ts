@@ -6,6 +6,7 @@ export * from "./jwt";
 export * from "./timeConvert";
 export * from "./candles";
 export * from "./cookies";
+export * from "./localStorage";
 
 /**
  * Format a date string to a readable format
