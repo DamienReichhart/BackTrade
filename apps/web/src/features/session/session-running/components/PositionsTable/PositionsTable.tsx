@@ -51,7 +51,10 @@ export function PositionsTable() {
 
   const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    navigate(`/sessions/${id}/positions/list`);
+    if (!hasValidSession) {
+      return;
+    }
+    navigate(`/sessions/${sessionId}/positions/list`);
   };
 
   return (
