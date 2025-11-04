@@ -42,6 +42,7 @@ export function useCandlesByInstrument(
   instrumentId: string,
   timeframe: string,
   query?: DateRangeQuery,
+  enabled?: boolean,
 ) {
   const searchParams = new URLSearchParams();
   searchParams.append("timeframe", timeframe);
@@ -58,6 +59,7 @@ export function useCandlesByInstrument(
 
   return useGet(url, {
     outputSchema: CandleListResponseSchema,
+    queryOptions: enabled !== undefined ? { enabled } : undefined,
   });
 }
 

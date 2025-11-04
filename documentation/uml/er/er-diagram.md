@@ -12,6 +12,7 @@ erDiagram
     %% timeframe: M1 | M5 | M10 | M15 | M30 | H1 | H2 | H4 | D1 | W1
     %% side: BUY | SELL
     %% speed: 0.5x | 1x | 2x | 3x | 5x | 10x | 15x
+    %% leverage: 1x | 50x | 100x | 200x | 500x | 1000x
     %% support_status: OPEN | CLOSED | PENDING APPROVAL
     %% transaction_type: DEPOSIT | WITHDRAWAL | COMMISSION | PNL | SLIPPAGE | SPREAD | ADJUSTMENT
     %% entity_type: USER | SESSION | TRANSACTION | SUBSCRIPTION | POSITION
@@ -135,9 +136,10 @@ erDiagram
       enum session_status
       enum speed
       datetime start_ts
+      datetime current_ts
       datetime end_ts
       decimal initial_balance
-      decimal leverage
+      enum leverage
       int spread_pts
       int slippage_pts
       decimal commission_per_fill
@@ -148,8 +150,6 @@ erDiagram
     POSITION {
       string id PK
       string session_id FK
-      string candle_id FK
-      string exit_candle_id FK
       enum position_status
       enum side
       decimal entry_price

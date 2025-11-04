@@ -4,18 +4,18 @@ import { SideSchema, PositionStatusSchema } from "../enums";
 
 export const CreatePositionRequestSchema = z.object({
   session_id: z.number().int().positive(),
-  candle_id: z.number().int().positive(),
   side: SideSchema,
   entry_price: z.number().positive(),
   quantity_lots: z.number().positive(),
   tp_price: z.number().positive().optional(),
   sl_price: z.number().positive().optional(),
+  position_status: PositionStatusSchema,
+  opened_at: z.iso.datetime(),
 });
 export type CreatePositionRequest = z.infer<typeof CreatePositionRequestSchema>;
 
 export const UpdatePositionRequestSchema = z.object({
   position_status: PositionStatusSchema.optional(),
-  exit_candle_id: z.number().int().positive().optional(),
   exit_price: z.number().positive().optional(),
   closed_at: z.iso.datetime().optional(),
   realized_pnl: z.number().optional(),
@@ -25,5 +25,43 @@ export const UpdatePositionRequestSchema = z.object({
 });
 export type UpdatePositionRequest = z.infer<typeof UpdatePositionRequestSchema>;
 
-export const PositionListResponseSchema = z.array(PositionSchema);
+/**
+ * Response schema for create position operation.
+ * Makes computed fields optional since they may not be present immediately after creation.
+ */
+export const CreatePositionResponseSchema = PositionSchema.partial({
+  position_status: true,
+  opened_at: true,
+  realized_pnl: true,
+  commission_cost: true,
+  slippage_cost: true,
+  spread_cost: true,
+  created_at: true,
+  updated_at: true,
+  closed_at: true,
+  exit_price: true,
+}).passthrough();
+export type CreatePositionResponse = z.infer<
+  typeof CreatePositionResponseSchema
+>;
+
+/**
+ * Schema for position items in list responses.
+ * Makes computed fields optional since the backend may not always include them.
+ */
+export const PositionListItemSchema = PositionSchema.partial({
+  realized_pnl: true,
+  commission_cost: true,
+  slippage_cost: true,
+  spread_cost: true,
+  created_at: true,
+  updated_at: true,
+  closed_at: true,
+  exit_price: true,
+  tp_price: true,
+  sl_price: true,
+}).passthrough();
+export type PositionListItem = z.infer<typeof PositionListItemSchema>;
+
+export const PositionListResponseSchema = z.array(PositionListItemSchema);
 export type PositionListResponse = z.infer<typeof PositionListResponseSchema>;

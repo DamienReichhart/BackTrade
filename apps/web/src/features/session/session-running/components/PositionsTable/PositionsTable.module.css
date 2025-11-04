@@ -1,0 +1,95 @@
+.card {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.headerLeft {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.badge {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-primary);
+  background: var(--color-surface-elevated);
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+}
+
+.manageBtn {
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-elevated);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+.manageBtn:hover {
+  background: var(--color-surface-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-secondary);
+}
+
+.manageBtn:active {
+  transform: scale(0.98);
+}
+
+.tableWrapper {
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-secondary);
+  white-space: nowrap;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.buy {
+  color: var(--color-success);
+}
+.sell {
+  color: var(--color-danger);
+}
+.pnlPos {
+  color: var(--color-success);
+}
+.pnlNeg {
+  color: var(--color-danger);
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.clickableRow:hover {
+  background-color: var(--color-surface-elevated);
+}

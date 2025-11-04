@@ -33,9 +33,16 @@ export function useInstruments(query?: PaginationQuery) {
   });
 }
 
-export function useInstrument(id: string) {
+export function useInstrument(
+  id: string,
+  queryOptions?: { enabled?: boolean },
+) {
   return useGet<Instrument>(`/instruments/${id}`, {
     outputSchema: InstrumentSchema,
+    queryOptions: {
+      enabled: queryOptions?.enabled ?? true,
+      ...queryOptions,
+    },
   });
 }
 

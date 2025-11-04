@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { TimeframeSchema, SessionStatusSchema, SpeedSchema } from "../enums";
+import {
+  TimeframeSchema,
+  SessionStatusSchema,
+  SpeedSchema,
+  LeverageSchema,
+} from "../enums";
 
 export const SessionSchema = z.object({
   id: z.number().int().positive(),
@@ -10,9 +15,10 @@ export const SessionSchema = z.object({
   session_status: SessionStatusSchema,
   speed: SpeedSchema,
   start_ts: z.iso.datetime(),
+  current_ts: z.iso.datetime(),
   end_ts: z.iso.datetime().nullable().optional(),
   initial_balance: z.number().positive(),
-  leverage: z.number().positive(),
+  leverage: LeverageSchema,
   spread_pts: z.number().nonnegative(),
   slippage_pts: z.number().nonnegative(),
   commission_per_fill: z.number().nonnegative(),

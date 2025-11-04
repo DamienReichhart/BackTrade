@@ -1,0 +1,104 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.card {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.sectionHeader {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--spacing-sm) var(--spacing-md);
+}
+
+.label {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  align-self: center;
+}
+
+.input {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+
+.inlineInfo {
+  display: flex;
+  gap: var(--spacing-md);
+  color: var(--color-text-tertiary);
+  margin: var(--spacing-md) 0;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.btn {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+
+.buy {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.sell {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.estimates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.estimateItem {
+  background: var(--color-surface-elevated);
+  border: 1px dashed var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  font-size: var(--font-size-sm);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.infoLabel {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.infoValue {
+  font-family: var(--font-mono);
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  padding: var(--spacing-xs) 0;
+  margin-top: var(--spacing-sm);
+}

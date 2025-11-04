@@ -15,8 +15,8 @@ export const SearchQuerySchema = z.object({
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;
 
 export const DateRangeQuerySchema = z.object({
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
+  ts_gte: z.string().optional(),
+  ts_lte: z.string().optional(),
   ...PaginationQuerySchema.shape,
 });
 export type DateRangeQuery = z.infer<typeof DateRangeQuerySchema>;

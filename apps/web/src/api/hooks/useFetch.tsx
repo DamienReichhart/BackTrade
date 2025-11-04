@@ -104,7 +104,7 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   const query = useQuery<TOutput, Error>({
     queryKey: key,
     queryFn: () => fetcher(),
-    enabled: isQuery && autoFetch,
+    enabled: queryOptions?.enabled ?? (isQuery && autoFetch),
     ...queryOptions,
   });
 
