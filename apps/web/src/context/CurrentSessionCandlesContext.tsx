@@ -23,5 +23,3 @@ export const useCurrentSessionCandlesStore = create<CurrentSessionCandlesState>(
     clearCandles: () => set({ candles: [] }),
   }),
 );
-
-

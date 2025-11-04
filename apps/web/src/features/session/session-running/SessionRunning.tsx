@@ -58,7 +58,11 @@ export function SessionRunning() {
   // Fetch chart candles (last 1000 candles on the configured timeframe)
   const chartDateRange = useMemo(() => {
     if (!session) return undefined;
-    return calculateCandleDateRange(session.timeframe, session.current_ts, 1000);
+    return calculateCandleDateRange(
+      session.timeframe,
+      session.current_ts,
+      1000,
+    );
   }, [session]);
 
   const { data: chartCandles } = useCandlesByInstrument(

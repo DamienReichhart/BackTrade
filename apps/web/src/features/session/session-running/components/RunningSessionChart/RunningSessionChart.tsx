@@ -4,12 +4,11 @@ import {
   type IChartApi,
   type ISeriesApi,
   CandlestickSeries,
+  type PriceFormatCustom,
 } from "lightweight-charts";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
 import { convertCandleToChartData } from "../../../../../utils";
 import styles from "./RunningSessionChart.module.css";
-
-
 
 /**
  * RunningSessionChart component
@@ -35,8 +34,8 @@ export function RunningSessionChart() {
         textColor: "#e6eef5",
       },
       grid: {
-        vertLines: { color: "#e6eef5" },
-        horzLines: { color: "#e6eef5" },
+        vertLines: { visible: false },
+        horzLines: { visible: false },
       },
       timeScale: {
         timeVisible: true,
@@ -51,13 +50,43 @@ export function RunningSessionChart() {
       },
     });
 
-    // Use addSeries with CandlestickSeries for v5 API
+    // Use addSeries with CandlestickSeries
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: "#26a69a",
       downColor: "#ef5350",
       borderVisible: false,
       wickUpColor: "#26a69a",
       wickDownColor: "#ef5350",
+      priceFormat: {
+        type: "custom",
+        minMove: 0.00001,
+        formatter: (price: number) => {
+          // Convert to string and truncate to max 5 decimal places without rounding
+          const str = price.toString();
+          const decimalIndex = str.indexOf(".");
+
+          if (decimalIndex === -1) {
+            // No decimal point, return as is
+            return str;
+          }
+
+          // Extract integer part and decimal part
+          const integerPart = str.substring(0, decimalIndex);
+          const decimalPart = str.substring(decimalIndex + 1);
+
+          // Truncate to max 5 decimal places (not rounding)
+          const truncatedDecimal = decimalPart.substring(0, 5);
+
+          // Remove trailing zeros
+          const trimmedDecimal = truncatedDecimal.replace(/0+$/, "");
+
+          // Return formatted string
+          if (trimmedDecimal === "") {
+            return integerPart;
+          }
+          return `${integerPart}.${trimmedDecimal}`;
+        },
+      } as PriceFormatCustom,
     }) as ISeriesApi<"Candlestick">;
 
     chartRef.current = chart;
@@ -96,4 +125,3 @@ export function RunningSessionChart() {
     </div>
   );
 }
-

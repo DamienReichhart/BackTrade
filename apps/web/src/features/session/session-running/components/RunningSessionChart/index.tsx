@@ -1,3 +1,1 @@
 export { RunningSessionChart } from "./RunningSessionChart";
-
-

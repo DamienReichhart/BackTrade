@@ -5,7 +5,7 @@
 export * from "./jwt";
 export * from "./timeConvert";
 export * from "./candles";
-export * from "./cookies"
+export * from "./cookies";
 
 /**
  * Format a date string to a readable format
@@ -18,4 +18,3 @@ export function formatDate(dateString: string): string {
     day: "numeric",
   });
 }
-
