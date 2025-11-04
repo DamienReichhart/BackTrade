@@ -33,6 +33,9 @@ export function useSessions(query?: DateRangeQuery) {
 export function useSession(id: string) {
   return useGet(`/sessions/${id}`, {
     outputSchema: SessionSchema,
+    queryOptions: {
+      enabled: !!id && id !== "",
+    },
   });
 }
 

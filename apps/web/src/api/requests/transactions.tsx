@@ -59,6 +59,7 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
 export function useTransactionsBySession(
   sessionId: string,
   query?: DateRangeQuery,
+  queryOptions?: { enabled?: boolean },
 ) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -75,6 +76,10 @@ export function useTransactionsBySession(
 
   return useGet(url, {
     outputSchema: TransactionListResponseSchema,
+    queryOptions: {
+      enabled: queryOptions?.enabled ?? (!!sessionId && sessionId !== ""),
+      ...queryOptions,
+    },
   });
 }
 

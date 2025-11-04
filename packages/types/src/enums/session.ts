@@ -33,3 +33,14 @@ export const SpeedSchema = z.enum([
   "15x",
 ]);
 export type Speed = z.infer<typeof SpeedSchema>;
+
+// Numeric leverage allowed values; represented as numbers in APIs
+export const LeverageSchema = z.union([
+  z.literal(1),
+  z.literal(50),
+  z.literal(100),
+  z.literal(200),
+  z.literal(500),
+  z.literal(1000),
+]);
+export type Leverage = z.infer<typeof LeverageSchema>;

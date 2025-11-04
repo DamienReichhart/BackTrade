@@ -3,6 +3,7 @@ import {
   PositionSchema,
   PositionListResponseSchema,
   CreatePositionRequestSchema,
+  CreatePositionResponseSchema,
   UpdatePositionRequestSchema,
   EmptyResponseSchema,
   type DateRangeQuery,
@@ -39,6 +40,7 @@ export function usePosition(id: string) {
 export function usePositionsBySession(
   sessionId: string,
   query?: DateRangeQuery,
+  queryOptions?: { enabled?: boolean },
 ) {
   const searchParams = new URLSearchParams();
   if (query) {
@@ -55,13 +57,17 @@ export function usePositionsBySession(
 
   return useGet(url, {
     outputSchema: PositionListResponseSchema,
+    queryOptions: {
+      enabled: queryOptions?.enabled ?? (!!sessionId && sessionId !== ""),
+      ...queryOptions,
+    },
   });
 }
 
 export function useCreatePosition() {
   return usePost("/positions", {
     inputSchema: CreatePositionRequestSchema,
-    outputSchema: PositionSchema,
+    outputSchema: CreatePositionResponseSchema,
   });
 }
 
@@ -87,5 +93,11 @@ export function useClosePosition(id: string) {
 export function useLiquidatePosition(id: string) {
   return usePost(`/positions/${id}/liquidate`, {
     outputSchema: PositionSchema,
+  });
+}
+
+export function useCloseAllPositions(sessionId: string) {
+  return usePost(`/sessions/${sessionId}/positions/close-all`, {
+    outputSchema: EmptyResponseSchema,
   });
 }

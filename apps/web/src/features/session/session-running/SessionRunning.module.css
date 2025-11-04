@@ -1,0 +1,55 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for full-width items */
+  gap: var(--spacing-lg);
+  min-height: 0;
+  width: 100%;
+}
+
+.content > .chartPlaceholderWrapper,
+.content > .orderTicketWrapper,
+.content > .tablesRow,
+.content > .sessionInfoWrapper {
+  grid-column: 1 / -1; /* Span all columns */
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.chartPlaceholder {
+  height: 520px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+}
+
+.tablesRow {
+  display: grid;
+  grid-template-columns: minmax(
+    0,
+    1fr
+  ); /* always stacked vertically, respect container width */
+  gap: var(--spacing-lg);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  position: relative;
+}

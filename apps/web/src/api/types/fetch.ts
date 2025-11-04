@@ -13,8 +13,5 @@ export interface fetchOptions<TInput = unknown, TOutput = unknown> {
   /** Additional fetch options */
   fetchOptions?: Omit<RequestInit, "body" | "method">;
   /** React Query options (for GET only) */
-  queryOptions?: Omit<
-    UseQueryOptions<TOutput, Error>,
-    "queryKey" | "queryFn" | "enabled"
-  >;
+  queryOptions?: Omit<UseQueryOptions<TOutput, Error>, "queryKey" | "queryFn">;
 }

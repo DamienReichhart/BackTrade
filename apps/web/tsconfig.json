@@ -1,6 +1,7 @@
 {
   "extends": "@backtrade/tsconfig/base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "useDefineForClassFields": true,
     "types": ["vite/client", "jest"]
   },

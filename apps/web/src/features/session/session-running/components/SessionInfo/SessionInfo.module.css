@@ -1,0 +1,27 @@
+.card {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.sectionHeader {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.infoLabel {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.infoValue {
+  font-family: var(--font-mono);
+}
