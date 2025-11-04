@@ -39,22 +39,6 @@ export function SessionRunning() {
     enabled: hasValidSession,
   });
 
-  // Fetch current price from candles (M1 for price calculation)
-  const { data: priceCandles } = useCandlesByInstrument(
-    instrumentId,
-    "M1",
-    session
-      ? ({
-          ts_lte: session.current_ts,
-          ts_gte:
-            new Date(new Date(session.current_ts).getTime() - 2 * 60 * 1000)
-              .toISOString()
-              .slice(0, 19) + "Z",
-        } as DateRangeQuery)
-      : undefined,
-    hasValidSession && !!session,
-  );
-
   // Fetch chart candles (last 1000 candles on the configured timeframe)
   const chartDateRange = useMemo(() => {
     if (!session) return undefined;
@@ -72,11 +56,12 @@ export function SessionRunning() {
     hasValidSession && !!session && !!chartDateRange,
   );
 
+  // Derive current price from the last candle of the chart data
   const currentPrice = useMemo(() => {
-    if (!priceCandles || priceCandles.length === 0) return undefined;
-    const last = (priceCandles as Candle[])[priceCandles.length - 1];
+    if (!chartCandles || chartCandles.length === 0) return undefined;
+    const last = (chartCandles as Candle[])[chartCandles.length - 1];
     return last.close;
-  }, [priceCandles]);
+  }, [chartCandles]);
 
   // Sync session to global store
   useEffect(() => {
@@ -96,10 +81,10 @@ export function SessionRunning() {
     }
   }, [instrument, setCurrentSessionInstrument]);
 
-  // Update the global store when current price or session timestamp changes
+  // Update the global store when current price changes
   useEffect(() => {
     setCurrentPrice(currentPrice);
-  }, [currentPrice, session?.current_ts, setCurrentPrice]);
+  }, [currentPrice, setCurrentPrice]);
 
   // Update chart candles in store
   useEffect(() => {
