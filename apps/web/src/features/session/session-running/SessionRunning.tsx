@@ -9,12 +9,15 @@ import { SidePanel } from "./components/SidePanel";
 import { PositionsTable } from "./components/PositionsTable";
 import { TransactionsTable } from "./components/TransactionsTable";
 import { SessionInfo } from "./components/SessionInfo";
+import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useCurrentSessionStore } from "../../../context/CurrentSessionContext";
 import { useCurrentPriceStore } from "../../../context/CurrentPriceContext";
+import { useCurrentSessionCandlesStore } from "../../../context/CurrentSessionCandlesContext";
+import { calculateCandleDateRange } from "../../../utils/timeConvert";
 import styles from "./SessionRunning.module.css";
 
 /**
- * Running Session page (chart replaced with an empty container for now)
+ * Running Session page
  *
  * The layout strictly follows the mockup: header controls, main chart area,
  * order/estimates panel on the right, and tables below.
@@ -27,6 +30,7 @@ export function SessionRunning() {
     clearCurrentSession,
   } = useCurrentSessionStore();
   const { setCurrentPrice } = useCurrentPriceStore();
+  const { setCandles, clearCandles } = useCurrentSessionCandlesStore();
 
   const { data: session } = useSession(id);
   const hasValidSession = !!session && !!session.instrument_id;
@@ -35,8 +39,8 @@ export function SessionRunning() {
     enabled: hasValidSession,
   });
 
-  // Fetch current price from candles
-  const { data: candles } = useCandlesByInstrument(
+  // Fetch current price from candles (M1 for price calculation)
+  const { data: priceCandles } = useCandlesByInstrument(
     instrumentId,
     "M1",
     session
@@ -51,11 +55,24 @@ export function SessionRunning() {
     hasValidSession && !!session,
   );
 
+  // Fetch chart candles (last 1000 candles on the configured timeframe)
+  const chartDateRange = useMemo(() => {
+    if (!session) return undefined;
+    return calculateCandleDateRange(session.timeframe, session.current_ts, 1000);
+  }, [session]);
+
+  const { data: chartCandles } = useCandlesByInstrument(
+    instrumentId,
+    session?.timeframe ?? "M1",
+    chartDateRange as DateRangeQuery | undefined,
+    hasValidSession && !!session && !!chartDateRange,
+  );
+
   const currentPrice = useMemo(() => {
-    if (!candles || candles.length === 0) return undefined;
-    const last = (candles as Candle[])[candles.length - 1];
+    if (!priceCandles || priceCandles.length === 0) return undefined;
+    const last = (priceCandles as Candle[])[priceCandles.length - 1];
     return last.close;
-  }, [candles]);
+  }, [priceCandles]);
 
   // Sync session to global store
   useEffect(() => {
@@ -80,21 +97,29 @@ export function SessionRunning() {
     setCurrentPrice(currentPrice);
   }, [currentPrice, session?.current_ts, setCurrentPrice]);
 
-  // Cleanup: clear session when component unmounts
+  // Update chart candles in store
+  useEffect(() => {
+    if (chartCandles && Array.isArray(chartCandles)) {
+      setCandles(chartCandles as Candle[]);
+    }
+  }, [chartCandles, setCandles]);
+
+  // Cleanup: clear session and candles when component unmounts
   useEffect(() => {
     return () => {
       clearCurrentSession();
+      clearCandles();
     };
-  }, [clearCurrentSession]);
+  }, [clearCurrentSession, clearCandles]);
 
   return (
     <div className={styles.page}>
       <TopBar />
 
       <div className={styles.content}>
-        {/* Chart placeholder */}
+        {/* Chart */}
         <div className={styles.chartPlaceholderWrapper}>
-          <div className={styles.chartPlaceholder} />
+          <RunningSessionChart />
         </div>
 
         {/* Order ticket */}

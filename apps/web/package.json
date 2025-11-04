@@ -18,6 +18,7 @@
   "dependencies": {
     "@backtrade/types": "workspace:*",
     "@tanstack/react-query": "^5.90.6",
+    "lightweight-charts": "^5.0.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "7.9.5",
@@ -30,6 +31,10 @@
     "@eslint/js": "^9.39.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/d3-format": "^3.0.4",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-time": "^3.0.4",
+    "@types/d3-time-format": "^4.0.3",
     "@types/jest": "30.0.0",
     "@types/node": "24.10.0",
     "@types/react": "^19.2.2",
