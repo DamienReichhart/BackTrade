@@ -43,8 +43,8 @@ export function RunningSessionChart() {
         horzLines: { visible: gridSettings.horzLines },
       },
       timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
+        timeVisible: gridSettings.timeVisible,
+        secondsVisible: gridSettings.secondsVisible,
         borderColor: "#e6eef5",
       },
       rightPriceScale: {
@@ -124,7 +124,7 @@ export function RunningSessionChart() {
     seriesRef.current.setData(chartData);
   }, [candles]);
 
-  // Update chart grid when settings change
+  // Update chart grid and time scale when settings change
   useEffect(() => {
     if (!chartRef.current) return;
 
@@ -132,6 +132,10 @@ export function RunningSessionChart() {
       grid: {
         vertLines: { visible: gridSettings.vertLines },
         horzLines: { visible: gridSettings.horzLines },
+      },
+      timeScale: {
+        timeVisible: gridSettings.timeVisible,
+        secondsVisible: gridSettings.secondsVisible,
       },
     });
   }, [gridSettings]);

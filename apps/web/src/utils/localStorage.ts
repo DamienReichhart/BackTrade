@@ -10,6 +10,8 @@
 const STORAGE_KEYS = {
   CHART_GRID_VERT_LINES: "chart.grid.vertLines",
   CHART_GRID_HORZ_LINES: "chart.grid.horzLines",
+  CHART_TIME_VISIBLE: "chart.time.timeVisible",
+  CHART_SECONDS_VISIBLE: "chart.time.secondsVisible",
 } as const;
 
 /**
@@ -67,6 +69,16 @@ export interface ChartGridSettings {
    * Whether horizontal grid lines are visible
    */
   horzLines: boolean;
+
+  /**
+   * Whether time is visible on the time scale
+   */
+  timeVisible: boolean;
+
+  /**
+   * Whether seconds are visible on the time scale
+   */
+  secondsVisible: boolean;
 }
 
 /**
@@ -78,6 +90,8 @@ export function getChartGridSettings(): ChartGridSettings {
   return {
     vertLines: getLocalStorageItem(STORAGE_KEYS.CHART_GRID_VERT_LINES, false),
     horzLines: getLocalStorageItem(STORAGE_KEYS.CHART_GRID_HORZ_LINES, false),
+    timeVisible: getLocalStorageItem(STORAGE_KEYS.CHART_TIME_VISIBLE, true),
+    secondsVisible: getLocalStorageItem(STORAGE_KEYS.CHART_SECONDS_VISIBLE, false),
   };
 }
 
@@ -100,6 +114,24 @@ export function setChartGridHorzLines(visible: boolean): void {
 }
 
 /**
+ * Set time visibility on the time scale
+ *
+ * @param visible - Whether time should be visible
+ */
+export function setChartTimeVisible(visible: boolean): void {
+  setLocalStorageItem(STORAGE_KEYS.CHART_TIME_VISIBLE, visible);
+}
+
+/**
+ * Set seconds visibility on the time scale
+ *
+ * @param visible - Whether seconds should be visible
+ */
+export function setChartSecondsVisible(visible: boolean): void {
+  setLocalStorageItem(STORAGE_KEYS.CHART_SECONDS_VISIBLE, visible);
+}
+
+/**
  * Update chart grid settings
  *
  * @param settings - Partial settings to update
@@ -112,6 +144,12 @@ export function updateChartGridSettings(
   }
   if (settings.horzLines !== undefined) {
     setChartGridHorzLines(settings.horzLines);
+  }
+  if (settings.timeVisible !== undefined) {
+    setChartTimeVisible(settings.timeVisible);
+  }
+  if (settings.secondsVisible !== undefined) {
+    setChartSecondsVisible(settings.secondsVisible);
   }
 }
 
