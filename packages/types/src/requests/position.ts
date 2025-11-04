@@ -27,7 +27,7 @@ export type UpdatePositionRequest = z.infer<typeof UpdatePositionRequestSchema>;
 
 /**
  * Response schema for create position operation.
- * Makes computed fields optional since they may not be present immediately after creation.
+ * Makes the fields optional since they may not be present immediately after creation.
  */
 export const CreatePositionResponseSchema = PositionSchema.partial({
   position_status: true,
