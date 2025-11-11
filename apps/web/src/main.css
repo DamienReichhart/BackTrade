@@ -41,6 +41,12 @@
   --color-surface-secondary: rgba(230, 238, 245, 0.06);
   --color-surface-tertiary: rgba(230, 238, 245, 0.12);
   --color-surface-elevated: rgba(230, 238, 245, 0.08);
+  
+  /* Dropdown Menu Colors - Solid/Opaque */
+  --color-dropdown-bg: #1a1f2e;
+  --color-dropdown-item-hover: #252b3d;
+  --color-dropdown-item-active: #2a3145;
+  --color-dropdown-item-active-hover: #2f364a;
 
   /* Text Colors */
   --color-text-primary: #e6eef5;
