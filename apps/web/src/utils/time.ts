@@ -1,26 +1,11 @@
 import type { Timeframe } from "@backtrade/types";
-
-/**
- * Helper function to convert timeframe to milliseconds
- */
-export function timeframeToMilliseconds(timeframe: Timeframe): number {
-  const timeframeMap: Record<Timeframe, number> = {
-    M1: 1 * 60 * 1000, // 1 minute
-    M5: 5 * 60 * 1000, // 5 minutes
-    M10: 10 * 60 * 1000, // 10 minutes
-    M15: 15 * 60 * 1000, // 15 minutes
-    M30: 30 * 60 * 1000, // 30 minutes
-    H1: 1 * 60 * 60 * 1000, // 1 hour
-    H2: 2 * 60 * 60 * 1000, // 2 hours
-    H4: 4 * 60 * 60 * 1000, // 4 hours
-    D1: 24 * 60 * 60 * 1000, // 1 day
-    W1: 7 * 24 * 60 * 60 * 1000, // 1 week
-  };
-  return timeframeMap[timeframe];
-}
+import { timeframeToMilliseconds, formatDate } from "@backtrade/utils";
 
 /**
  * Format a date string to a relative time (e.g., "2 hours ago")
+ *
+ * @param dateString - ISO date string to format
+ * @returns Formatted relative time string
  */
 export function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
@@ -47,16 +32,13 @@ export function formatRelativeTime(dateString: string): string {
   }
 
   // Fallback to formatted date string
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return formatDate(dateString);
 }
 
 /**
  * Calculate the date range for fetching a specific number of candles
  * based on the timeframe and current timestamp.
+ *
  * @param timeframe - The timeframe (e.g., M1, M5, H1, etc.)
  * @param currentTs - The current timestamp (ISO datetime string)
  * @param candleCount - Number of candles to fetch (default: 200)
@@ -81,16 +63,4 @@ export function calculateCandleDateRange(
     ts_gte: formatISO(startDate),
     ts_lte: formatISO(currentDate),
   };
-}
-
-/**
- * Format a date string to a readable format
- */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
 }

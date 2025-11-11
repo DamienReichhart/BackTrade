@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Subscription, Plan } from "@backtrade/types";
-import { formatDate } from "../../../../utils";
+import { formatDate } from "@backtrade/utils";
 import styles from "./SubscriptionCard.module.css";
 
 interface SubscriptionCardProps {

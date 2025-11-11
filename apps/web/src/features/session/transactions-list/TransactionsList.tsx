@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { TransactionDetailsModal } from "../session-running/components/TransactionDetailsModal";
 import { useTransactionsList } from "./hooks/useTransactionsList";
+import { formatDateTime } from "@backtrade/utils";
 import styles from "./TransactionsList.module.css";
 
 /**
@@ -103,7 +104,7 @@ export function TransactionsList() {
                     onClick={() => handleRowClick(transaction)}
                   >
                     <td>#{transaction.id}</td>
-                    <td>{new Date(transaction.created_at).toLocaleString()}</td>
+                    <td>{formatDateTime(transaction.created_at)}</td>
                     <td>{transaction.transaction_type}</td>
                     <td
                       className={

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Subscription, Plan } from "@backtrade/types";
-import { formatDate } from "../../../../utils";
+import { formatDate } from "@backtrade/utils";
 import { getStatusColorClass } from "../../utils/subscriptions";
 import styles from "./CurrentSubscription.module.css";
 

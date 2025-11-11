@@ -1,6 +1,7 @@
 import styles from "./TransactionsTable.module.css";
 import { TransactionDetailsModal } from "../TransactionDetailsModal";
 import { useTransactionsTable } from "../../hooks";
+import { formatTime } from "@backtrade/utils";
 
 /**
  * Table listing account transactions (PNL, fees, deposits, withdrawals, etc.).
@@ -62,7 +63,7 @@ export function TransactionsTable() {
                     className={styles.clickableRow}
                     onClick={() => handleRowClick(t)}
                   >
-                    <td>{new Date(t.created_at).toLocaleTimeString()}</td>
+                    <td>{formatTime(t.created_at)}</td>
                     <td>#{t.id}</td>
                     <td>{t.transaction_type}</td>
                     <td

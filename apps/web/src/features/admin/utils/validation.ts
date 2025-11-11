@@ -3,23 +3,9 @@
  */
 
 /**
- * Validate email format
+ * Re-export email validation from shared package
  */
-export function validateEmail(email: string): {
-  isValid: boolean;
-  error?: string;
-} {
-  if (!email.trim()) {
-    return { isValid: false, error: "Email is required" };
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return { isValid: false, error: "Invalid email format" };
-  }
-
-  return { isValid: true };
-}
+export { validateEmail } from "@backtrade/utils";
 
 /**
  * Validate role

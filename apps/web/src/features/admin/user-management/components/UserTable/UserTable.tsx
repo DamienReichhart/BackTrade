@@ -1,7 +1,7 @@
 import type { PublicUser } from "@backtrade/types";
 import type { SortField, SortOrder } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
-import { formatDate } from "../../../../../utils";
+import { formatDate } from "@backtrade/utils";
 import styles from "./UserTable.module.css";
 
 /**

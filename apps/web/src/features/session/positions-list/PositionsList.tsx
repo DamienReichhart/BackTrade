@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { PositionDetailsModal } from "../session-running/components/PositionDetailsModal";
 import { usePositionsList } from "./hooks/usePositionsList";
+import { formatDateTime } from "@backtrade/utils";
 import styles from "./PositionsList.module.css";
 
 /**
@@ -160,12 +161,12 @@ export function PositionsList() {
                     <td>{position.position_status}</td>
                     <td>
                       {position.opened_at
-                        ? new Date(position.opened_at).toLocaleString()
+                        ? formatDateTime(position.opened_at)
                         : "-"}
                     </td>
                     <td>
                       {position.closed_at
-                        ? new Date(position.closed_at).toLocaleString()
+                        ? formatDateTime(position.closed_at)
                         : "-"}
                     </td>
                   </tr>

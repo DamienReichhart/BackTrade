@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import type { PublicUser } from "@backtrade/types";
-import { formatDate } from "../../../../../utils";
+import { formatDate } from "@backtrade/utils";
 import styles from "./UserDetailsModal.module.css";
 
 /**

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Session } from "@backtrade/types";
-import { formatDate } from "../../../../utils/index";
+import { formatDate } from "@backtrade/utils";
 import { useSessionCard } from "../../hooks/useSessionCard";
 import { getSessionStatusColorClass } from "../../utils/sessions";
 import styles from "./SessionCard.module.css";
