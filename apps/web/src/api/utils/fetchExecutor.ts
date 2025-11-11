@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../index";
 import { validateApiInput, validateApiOutput } from "./validations";
 import { refreshAccessToken } from "./tokenRefresh";
-import type { z } from "zod";
+import type { FetchExecutorOptions } from "../types";
 
 /**
  * Executes an API fetch request with validation, error handling, and automatic token refresh.

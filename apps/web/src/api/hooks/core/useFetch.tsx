@@ -1,6 +1,6 @@
 import { useAuthStore } from "../../../context/AuthContext";
 import { executeFetch } from "../../utils/fetchExecutor";
-import { useQueryAndMutation } from "./useQueryAndMutation.tsx";
+import { useQueryAndMutation } from "./useQueryAndMutation";
 import type { fetchOptions } from "../../types";
 
 /**
