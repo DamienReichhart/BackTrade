@@ -4,7 +4,7 @@ import {
   UserListResponseSchema,
   UpdateUserRequestSchema,
   EmptyResponseSchema,
-  type SearchQuery,
+  type SearchQueryUser,
 } from "@backtrade/types";
 
 /**
@@ -12,7 +12,7 @@ import {
  * Schemas are defined once and automatically applied
  */
 
-export function useUsers(query?: SearchQuery) {
+export function useUsers(query?: SearchQueryUser) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
