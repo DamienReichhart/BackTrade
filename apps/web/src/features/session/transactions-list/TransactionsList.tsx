@@ -1,19 +1,7 @@
-import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useSession } from "../../../api/hooks/requests/sessions";
-import { useTransactionsBySession } from "../../../api/hooks/requests/transactions";
-import type { Transaction } from "@backtrade/types";
 import { TransactionDetailsModal } from "../session-running/components/TransactionDetailsModal";
-import { useModal } from "../../../hooks/useModal";
+import { useTransactionsList } from "./hooks/useTransactionsList";
 import styles from "./TransactionsList.module.css";
-
-type SortField =
-  | "id"
-  | "transaction_type"
-  | "amount"
-  | "balance_after"
-  | "created_at";
-type SortOrder = "asc" | "desc";
 
 /**
  * Transactions List page for a session
@@ -23,88 +11,17 @@ type SortOrder = "asc" | "desc";
  */
 export function TransactionsList() {
   const { id = "" } = useParams<{ id: string }>();
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const {
-    isOpen,
-    selectedItem: selectedTransaction,
-    openModal,
+    session,
+    sortedTransactions,
+    isLoadingTransactions,
+    isModalOpen,
+    selectedTransaction,
+    handleSort,
+    getSortIndicator,
+    handleRowClick,
     closeModal,
-  } = useModal<Transaction>();
-
-  const { data: session } = useSession(id);
-  const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useTransactionsBySession(id);
-  const transactions = Array.isArray(transactionsData) ? transactionsData : [];
-
-  /**
-   * Handle column header click to toggle sorting
-   */
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      // Toggle order if clicking the same field
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      // Set new field with default descending order
-      setSortField(field);
-      setSortOrder("desc");
-    }
-  };
-
-  /**
-   * Sorted transactions based on current sort field and order
-   */
-  const sortedTransactions = useMemo(() => {
-    const sorted = [...transactions];
-
-    sorted.sort((a, b) => {
-      let aValue: number | string;
-      let bValue: number | string;
-
-      switch (sortField) {
-        case "id":
-          aValue = a.id;
-          bValue = b.id;
-          break;
-        case "transaction_type":
-          aValue = a.transaction_type;
-          bValue = b.transaction_type;
-          break;
-        case "amount":
-          aValue = a.amount;
-          bValue = b.amount;
-          break;
-        case "balance_after":
-          aValue = a.balance_after;
-          bValue = b.balance_after;
-          break;
-        case "created_at":
-          aValue = new Date(a.created_at).getTime();
-          bValue = new Date(b.created_at).getTime();
-          break;
-        default:
-          return 0;
-      }
-
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    return sorted;
-  }, [transactions, sortField, sortOrder]);
-
-  const handleRowClick = (transaction: Transaction) => {
-    openModal(transaction);
-  };
-
-  /**
-   * Get sort indicator for column header
-   */
-  const getSortIndicator = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortOrder === "asc" ? " ↑" : " ↓";
-  };
+  } = useTransactionsList();
 
   return (
     <div className={styles.page}>
@@ -121,7 +38,7 @@ export function TransactionsList() {
           <span className={styles.badge}>
             {isLoadingTransactions
               ? "Loading..."
-              : `${transactions.length} transaction${transactions.length !== 1 ? "s" : ""}`}
+              : `${sortedTransactions.length} transaction${sortedTransactions.length !== 1 ? "s" : ""}`}
           </span>
         </div>
       </div>
@@ -207,7 +124,7 @@ export function TransactionsList() {
 
       <TransactionDetailsModal
         transaction={selectedTransaction}
-        isOpen={isOpen}
+        isOpen={isModalOpen}
         onClose={closeModal}
       />
     </div>
