@@ -13,7 +13,7 @@ import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useCurrentSessionStore } from "../../../context/CurrentSessionContext";
 import { useCurrentPriceStore } from "../../../context/CurrentPriceContext";
 import { useCurrentSessionCandlesStore } from "../../../context/CurrentSessionCandlesContext";
-import { calculateCandleDateRange } from "../../../utils/timeConvert";
+import { calculateCandleDateRange } from "../../../utils/time";
 import styles from "./SessionRunning.module.css";
 
 /**

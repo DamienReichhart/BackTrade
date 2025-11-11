@@ -47,7 +47,7 @@
   background: var(--color-dropdown-bg);
   border: 1px solid var(--color-border-primary);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px var(--color-shadow-overlay);
   min-width: 240px;
   overflow: hidden;
   display: flex;

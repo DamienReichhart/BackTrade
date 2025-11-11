@@ -146,6 +146,25 @@
   --container-lg: 1024px;
   --container-xl: 1280px;
   --container-2xl: 1400px;
+
+  /* Chart Colors */
+  --color-chart-text: var(--color-text-primary);
+  --color-chart-border: var(--color-text-primary);
+  --color-chart-up: #26a69a;
+  --color-chart-down: #ef5350;
+
+  /* Semantic Colors with Opacity */
+  --color-success-bg: rgba(74, 222, 128, 0.1);
+  --color-success-border: rgba(74, 222, 128, 0.35);
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-danger-border: rgba(239, 68, 68, 0.3);
+  --color-danger-border-35: rgba(239, 68, 68, 0.35);
+  --color-danger-border-alt: rgba(239, 68, 68, 0.4);
+  --color-warning-border: rgba(245, 158, 11, 0.4);
+
+  /* Modal & Overlay Colors */
+  --color-modal-backdrop: rgba(0, 0, 0, 0.95);
+  --color-shadow-overlay: rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================================================

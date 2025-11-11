@@ -57,13 +57,13 @@
 }
 
 .buy {
-  background: rgba(74, 222, 128, 0.1);
-  border-color: rgba(74, 222, 128, 0.35);
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
 }
 
 .sell {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.35);
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border-35);
 }
 
 .estimates {

@@ -14,6 +14,7 @@ import {
 } from "../../../../../utils/localStorage";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
+import { getCSSVar } from "../../../../../utils";
 
 /**
  * RunningSessionChart component
@@ -34,12 +35,17 @@ export function RunningSessionChart() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    const chartTextColor = getCSSVar("--color-chart-text");
+    const chartBorderColor = getCSSVar("--color-chart-border");
+    const chartUpColor = getCSSVar("--color-chart-up");
+    const chartDownColor = getCSSVar("--color-chart-down");
+
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 520,
       layout: {
         background: { color: "transparent" },
-        textColor: "#e6eef5",
+        textColor: chartTextColor,
       },
       grid: {
         vertLines: { visible: gridSettings.vertLines },
@@ -48,23 +54,23 @@ export function RunningSessionChart() {
       timeScale: {
         timeVisible: gridSettings.timeVisible,
         secondsVisible: gridSettings.secondsVisible,
-        borderColor: "#e6eef5",
+        borderColor: chartBorderColor,
       },
       rightPriceScale: {
-        borderColor: "#e6eef5",
+        borderColor: chartBorderColor,
       },
       leftPriceScale: {
-        borderColor: "#e6eef5",
+        borderColor: chartBorderColor,
       },
     });
 
     // Use addSeries with CandlestickSeries
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
+      upColor: chartUpColor,
+      downColor: chartDownColor,
       borderVisible: false,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
+      wickUpColor: chartUpColor,
+      wickDownColor: chartDownColor,
       priceFormat: {
         type: "custom",
         minMove: 0.00001,
