@@ -1,16 +1,8 @@
 import type { PublicUser } from "@backtrade/types";
+import type { SortField, SortOrder } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
-import { formatDate } from "../../../../../utils";
+import { formatDate } from "@backtrade/utils";
 import styles from "./UserTable.module.css";
-
-type SortField =
-  | "id"
-  | "email"
-  | "role"
-  | "is_banned"
-  | "created_at"
-  | "updated_at";
-type SortOrder = "asc" | "desc";
 
 /**
  * User Table component props

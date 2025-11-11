@@ -1,102 +1,37 @@
 import styles from "./SidePanel.module.css";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
-import { useCreatePosition } from "../../../../../api/hooks/requests/positions";
-import type { CreatePositionRequest } from "@backtrade/types";
+import { useOrderForm, usePositionCreation } from "../../hooks";
 
 /**
  * Right-side panel with order ticket and session KPIs as per mockup.
  */
 export function SidePanel() {
   const currency = "€";
-  const queryClient = useQueryClient();
   const { currentPrice } = useCurrentPriceStore();
   const { currentSession, currentSessionInstrument } = useCurrentSessionStore();
 
-  // Order inputs
+  // Order form state management
   const pipSize = currentSessionInstrument?.pip_size ?? 1;
-  const [qty, setQty] = useState<number>(1);
-  const [tp, setTp] = useState<number | undefined>(undefined);
-  const [sl, setSl] = useState<number | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null);
-
-  // API hooks
-  const { execute: createPosition, isLoading: isCreatingPosition } =
-    useCreatePosition();
+  const form = useOrderForm(pipSize);
+  const { createPositionWithSide, isCreatingPosition } =
+    usePositionCreation(form);
 
   // Cost/estimates from session
   const spreadPts = currentSession?.spread_pts ?? 0;
   const slippagePts = currentSession?.slippage_pts ?? 0;
   const commission = currentSession?.commission_per_fill ?? 0;
 
-  const handleCreatePosition = async (side: "BUY" | "SELL") => {
-    setError(null);
-
-    // Validation
-    if (!currentSession?.id) {
-      setError("Session is required");
-      return;
-    }
-
-    if (!currentPrice) {
-      setError("Current price is not available");
-      return;
-    }
-
-    if (!qty || qty <= 0) {
-      setError("Quantity must be greater than 0");
-      return;
-    }
-
-    try {
-      if (!currentSession.current_ts) {
-        setError("Session timestamp is not available");
-        return;
-      }
-
-      const request: CreatePositionRequest = {
-        session_id: currentSession.id,
-        side,
-        entry_price: currentPrice,
-        quantity_lots: qty,
-        position_status: "OPEN",
-        opened_at: currentSession.current_ts,
-        ...(tp !== undefined && tp > 0 ? { tp_price: tp } : {}),
-        ...(sl !== undefined && sl > 0 ? { sl_price: sl } : {}),
-      };
-
-      await createPosition(request);
-
-      // Invalidate positions and transactions queries to refresh the tables
-      const sessionId = String(currentSession.id);
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}/positions`],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}/transactions`],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}`],
-      });
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to create position";
-      setError(errorMessage);
-    }
-  };
-
   const handleBuy = () => {
-    handleCreatePosition("BUY");
+    createPositionWithSide("BUY", form.qty, form.tp, form.sl);
   };
 
   const handleSell = () => {
-    handleCreatePosition("SELL");
+    createPositionWithSide("SELL", form.qty, form.tp, form.sl);
   };
 
   const isDisabled =
-    !currentSession?.id || !currentPrice || isCreatingPosition || qty <= 0;
+    !currentSession?.id || !currentPrice || isCreatingPosition || form.qty <= 0;
 
   return (
     <div className={styles.panel}>
@@ -114,8 +49,8 @@ export function SidePanel() {
             type="number"
             min={0}
             step={0.01}
-            value={qty}
-            onChange={(e) => setQty(Number(e.target.value))}
+            value={form.qty}
+            onChange={(e) => form.setQty(Number(e.target.value))}
           />
 
           <label className={styles.label}>TP</label>
@@ -123,8 +58,8 @@ export function SidePanel() {
             className={styles.input}
             type="number"
             step={pipSize}
-            value={tp ?? ""}
-            onChange={(e) => setTp(Number(e.target.value))}
+            value={form.tp ?? ""}
+            onChange={(e) => form.setTp(Number(e.target.value))}
             placeholder={
               currentPrice !== undefined ? currentPrice.toString() : ""
             }
@@ -135,8 +70,8 @@ export function SidePanel() {
             className={styles.input}
             type="number"
             step={pipSize}
-            value={sl ?? ""}
-            onChange={(e) => setSl(Number(e.target.value))}
+            value={form.sl ?? ""}
+            onChange={(e) => form.setSl(Number(e.target.value))}
             placeholder={
               currentPrice !== undefined ? currentPrice.toString() : ""
             }
@@ -152,7 +87,7 @@ export function SidePanel() {
           </span>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {form.error && <div className={styles.error}>{form.error}</div>}
 
         <div className={styles.actions}>
           <button

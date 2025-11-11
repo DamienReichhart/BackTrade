@@ -1,4 +1,5 @@
 import { Button } from "../../../../components/Button";
+import { useDashboardHeader } from "../../hooks";
 import styles from "./DashboardHeader.module.css";
 
 /**
@@ -7,6 +8,8 @@ import styles from "./DashboardHeader.module.css";
  * Displays page title and primary actions
  */
 export function DashboardHeader() {
+  const { handleNewSession } = useDashboardHeader();
+
   return (
     <div className={styles.header}>
       <div className={styles.content}>
@@ -17,7 +20,7 @@ export function DashboardHeader() {
           </p>
         </div>
         <div className={styles.actions}>
-          <Button variant="primary" size="medium">
+          <Button variant="primary" size="medium" onClick={handleNewSession}>
             New Session
           </Button>
         </div>

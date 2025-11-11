@@ -1,24 +1,8 @@
-import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useSession } from "../../../api/hooks/requests/sessions";
-import { usePositionsBySession } from "../../../api/hooks/requests/positions";
-import type { Position } from "@backtrade/types";
 import { PositionDetailsModal } from "../session-running/components/PositionDetailsModal";
-import { useModal } from "../../../hooks/useModal";
+import { usePositionsList } from "./hooks/usePositionsList";
+import { formatDateTime } from "@backtrade/utils";
 import styles from "./PositionsList.module.css";
-
-type SortField =
-  | "id"
-  | "side"
-  | "quantity_lots"
-  | "entry_price"
-  | "realized_pnl"
-  | "sl_price"
-  | "tp_price"
-  | "position_status"
-  | "opened_at"
-  | "closed_at";
-type SortOrder = "asc" | "desc";
 
 /**
  * Positions List page for a session
@@ -28,108 +12,17 @@ type SortOrder = "asc" | "desc";
  */
 export function PositionsList() {
   const { id = "" } = useParams<{ id: string }>();
-  const [sortField, setSortField] = useState<SortField>("opened_at");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const {
-    isOpen,
-    selectedItem: selectedPosition,
-    openModal,
+    session,
+    sortedPositions,
+    isLoadingPositions,
+    isModalOpen,
+    selectedPosition,
+    handleSort,
+    getSortIndicator,
+    handleRowClick,
     closeModal,
-  } = useModal<Position>();
-
-  const { data: session } = useSession(id);
-  const { data: positionsData, isLoading: isLoadingPositions } =
-    usePositionsBySession(id);
-  const positions = Array.isArray(positionsData) ? positionsData : [];
-
-  /**
-   * Handle column header click to toggle sorting
-   */
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      // Toggle order if clicking the same field
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      // Set new field with default descending order
-      setSortField(field);
-      setSortOrder("desc");
-    }
-  };
-
-  /**
-   * Sorted positions based on current sort field and order
-   */
-  const sortedPositions = useMemo(() => {
-    const sorted = [...positions];
-
-    sorted.sort((a, b) => {
-      let aValue: number | string;
-      let bValue: number | string;
-
-      switch (sortField) {
-        case "id":
-          aValue = a.id;
-          bValue = b.id;
-          break;
-        case "side":
-          aValue = a.side;
-          bValue = b.side;
-          break;
-        case "quantity_lots":
-          aValue = a.quantity_lots;
-          bValue = b.quantity_lots;
-          break;
-        case "entry_price":
-          aValue = a.entry_price;
-          bValue = b.entry_price;
-          break;
-        case "realized_pnl":
-          aValue = a.realized_pnl ?? 0;
-          bValue = b.realized_pnl ?? 0;
-          break;
-        case "sl_price":
-          aValue = a.sl_price ?? 0;
-          bValue = b.sl_price ?? 0;
-          break;
-        case "tp_price":
-          aValue = a.tp_price ?? 0;
-          bValue = b.tp_price ?? 0;
-          break;
-        case "position_status":
-          aValue = a.position_status;
-          bValue = b.position_status;
-          break;
-        case "opened_at":
-          aValue = a.opened_at ? new Date(a.opened_at).getTime() : 0;
-          bValue = b.opened_at ? new Date(b.opened_at).getTime() : 0;
-          break;
-        case "closed_at":
-          aValue = a.closed_at ? new Date(a.closed_at).getTime() : 0;
-          bValue = b.closed_at ? new Date(b.closed_at).getTime() : 0;
-          break;
-        default:
-          return 0;
-      }
-
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    return sorted;
-  }, [positions, sortField, sortOrder]);
-
-  const handleRowClick = (position: Position) => {
-    openModal(position);
-  };
-
-  /**
-   * Get sort indicator for column header
-   */
-  const getSortIndicator = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortOrder === "asc" ? " ↑" : " ↓";
-  };
+  } = usePositionsList();
 
   return (
     <div className={styles.page}>
@@ -146,7 +39,7 @@ export function PositionsList() {
           <span className={styles.badge}>
             {isLoadingPositions
               ? "Loading..."
-              : `${positions.length} position${positions.length !== 1 ? "s" : ""}`}
+              : `${sortedPositions.length} position${sortedPositions.length !== 1 ? "s" : ""}`}
           </span>
         </div>
       </div>
@@ -238,12 +131,7 @@ export function PositionsList() {
                   <tr
                     key={position.id}
                     className={styles.clickableRow}
-                    onClick={() =>
-                      handleRowClick({
-                        ...position,
-                        realized_pnl: position.realized_pnl ?? 0,
-                      } as Position)
-                    }
+                    onClick={() => handleRowClick(position)}
                   >
                     <td>#{position.id}</td>
                     <td
@@ -273,12 +161,12 @@ export function PositionsList() {
                     <td>{position.position_status}</td>
                     <td>
                       {position.opened_at
-                        ? new Date(position.opened_at).toLocaleString()
+                        ? formatDateTime(position.opened_at)
                         : "-"}
                     </td>
                     <td>
                       {position.closed_at
-                        ? new Date(position.closed_at).toLocaleString()
+                        ? formatDateTime(position.closed_at)
                         : "-"}
                     </td>
                   </tr>
@@ -290,7 +178,7 @@ export function PositionsList() {
 
       <PositionDetailsModal
         position={selectedPosition}
-        isOpen={isOpen}
+        isOpen={isModalOpen}
         onClose={closeModal}
       />
     </div>

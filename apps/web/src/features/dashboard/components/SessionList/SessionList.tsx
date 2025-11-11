@@ -1,9 +1,8 @@
-import { useSessions } from "../../../../api/hooks/requests/sessions";
 import { SessionCard } from "../SessionCard";
 import { LoadingState } from "../LoadingState";
 import { ErrorState } from "../ErrorState";
 import { EmptyState } from "../EmptyState";
-import type { Session } from "@backtrade/types";
+import { useSessionList } from "../../hooks";
 import styles from "./SessionList.module.css";
 
 /**
@@ -12,8 +11,7 @@ import styles from "./SessionList.module.css";
  * Displays a list of trading sessions fetched from the API
  */
 export function SessionList() {
-  const { data, isLoading, error } = useSessions();
-  const sessions = (data as Session[]) || [];
+  const { sessions, isLoading, error } = useSessionList();
 
   if (isLoading) {
     return <LoadingState />;

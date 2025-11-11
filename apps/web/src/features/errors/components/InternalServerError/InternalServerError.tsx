@@ -1,4 +1,5 @@
 import { ErrorPage } from "../ErrorPage";
+import { getErrorConfig } from "../../utils/errorConfig";
 
 /**
  * 500 Internal Server Error page component
@@ -6,17 +7,22 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when the server encounters an unexpected error
  */
 export function InternalServerError() {
+  const config = getErrorConfig(500);
+
+  const handleReportIssue = () => {
+    // TODO: Implement issue reporting functionality
+    console.log("Report issue clicked");
+  };
+
   return (
     <ErrorPage
       statusCode={500}
-      title="Internal Server Error"
-      description="Something went wrong on our end. We're working to fix it."
-      details="Please try again later or contact us if the problem persists."
-      primaryActionText="Go Home"
-      secondaryActionText="Report Issue"
-      secondaryAction={() => {
-        // TODO: Implement issue reporting functionality
-      }}
+      title={config.title}
+      description={config.description}
+      details={config.details}
+      primaryActionText={config.primaryActionText}
+      secondaryActionText={config.secondaryActionText}
+      secondaryAction={handleReportIssue}
     />
   );
 }

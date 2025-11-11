@@ -1,4 +1,6 @@
 import { ErrorPage } from "../ErrorPage";
+import { useErrorPage } from "../../hooks";
+import { getErrorConfig } from "../../utils/errorConfig";
 
 /**
  * 503 Service Unavailable error page component
@@ -6,17 +8,21 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when the service is temporarily unavailable (maintenance, overload, etc.)
  */
 export function ServiceUnavailableError() {
+  const config = getErrorConfig(503);
+  const { handleRefresh } = useErrorPage({
+    statusCode: 503,
+    ...config,
+  });
+
   return (
     <ErrorPage
       statusCode={503}
-      title="Service Unavailable"
-      description="The service is temporarily unavailable."
-      details="We're either performing maintenance or experiencing high traffic. Please try again shortly."
-      primaryActionText="Go Home"
-      secondaryActionText="Refresh Page"
-      secondaryAction={() => {
-        window.location.reload();
-      }}
+      title={config.title}
+      description={config.description}
+      details={config.details}
+      primaryActionText={config.primaryActionText}
+      secondaryActionText={config.secondaryActionText}
+      secondaryAction={handleRefresh}
     />
   );
 }

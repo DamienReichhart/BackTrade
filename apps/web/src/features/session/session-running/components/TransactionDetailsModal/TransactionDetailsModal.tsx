@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Button } from "../../../../../components";
 import type { Transaction } from "@backtrade/types";
+import { formatDateTime } from "@backtrade/utils";
 import styles from "./TransactionDetailsModal.module.css";
 
 interface TransactionDetailsModalProps {
@@ -45,18 +46,6 @@ export function TransactionDetailsModal({
   }, [isOpen]);
 
   if (!isOpen || !transaction) return null;
-
-  const formatDateTime = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  };
 
   return (
     <div className={styles.backdrop} onClick={onClose}>

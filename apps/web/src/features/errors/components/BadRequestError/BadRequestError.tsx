@@ -1,4 +1,5 @@
 import { ErrorPage } from "../ErrorPage";
+import { getErrorConfig } from "../../utils/errorConfig";
 
 /**
  * 400 Bad Request error page component
@@ -6,13 +7,15 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when the request is malformed or invalid
  */
 export function BadRequestError() {
+  const config = getErrorConfig(400);
+
   return (
     <ErrorPage
       statusCode={400}
-      title="Bad Request"
-      description="The request could not be understood or was missing required parameters."
-      details="Please check your input and try again."
-      primaryActionText="Go Home"
+      title={config.title}
+      description={config.description}
+      details={config.details}
+      primaryActionText={config.primaryActionText}
     />
   );
 }

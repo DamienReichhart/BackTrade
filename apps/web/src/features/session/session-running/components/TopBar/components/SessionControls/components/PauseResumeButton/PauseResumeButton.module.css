@@ -12,7 +12,7 @@
     background var(--transition-fast),
     border-color var(--transition-fast);
   cursor: pointer;
-  border-color: rgba(245, 158, 11, 0.4);
+  border-color: var(--color-warning-border);
 }
 
 .button:hover:not(:disabled) {

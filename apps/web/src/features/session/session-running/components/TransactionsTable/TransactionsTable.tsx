@@ -1,47 +1,21 @@
-import { useNavigate } from "react-router-dom";
 import styles from "./TransactionsTable.module.css";
-import type { Transaction } from "@backtrade/types";
 import { TransactionDetailsModal } from "../TransactionDetailsModal";
-import { useModal } from "../../../../../hooks/useModal";
-import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
-import { useTransactionsBySession } from "../../../../../api/hooks/requests/transactions";
+import { useTransactionsTable } from "../../hooks";
+import { formatTime } from "@backtrade/utils";
 
 /**
  * Table listing account transactions (PNL, fees, deposits, withdrawals, etc.).
  */
 export function TransactionsTable() {
-  const navigate = useNavigate();
-  const { currentSession } = useCurrentSessionStore();
-  const sessionId = currentSession ? String(currentSession.id) : "";
-  const hasValidSession = !!sessionId && sessionId !== "";
-
   const {
-    isOpen,
-    selectedItem: selectedTransaction,
-    openModal,
+    transactions,
+    loading,
+    isModalOpen,
+    selectedTransaction,
+    handleRowClick,
+    handleManageClick,
     closeModal,
-  } = useModal<Transaction>();
-
-  const { data: transactionsData, isLoading: loading } =
-    useTransactionsBySession(sessionId, undefined, {
-      enabled: hasValidSession,
-    });
-
-  const transactions: Transaction[] = Array.isArray(transactionsData)
-    ? transactionsData
-    : [];
-
-  const handleRowClick = (transaction: Transaction) => {
-    openModal(transaction);
-  };
-
-  const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!currentSession) {
-      return;
-    }
-    navigate(`/sessions/${currentSession.id}/transactions/list`);
-  };
+  } = useTransactionsTable();
 
   return (
     <>
@@ -89,7 +63,7 @@ export function TransactionsTable() {
                     className={styles.clickableRow}
                     onClick={() => handleRowClick(t)}
                   >
-                    <td>{new Date(t.created_at).toLocaleTimeString()}</td>
+                    <td>{formatTime(t.created_at)}</td>
                     <td>#{t.id}</td>
                     <td>{t.transaction_type}</td>
                     <td
@@ -108,7 +82,7 @@ export function TransactionsTable() {
       </div>
       <TransactionDetailsModal
         transaction={selectedTransaction}
-        isOpen={isOpen}
+        isOpen={isModalOpen}
         onClose={closeModal}
       />
     </>

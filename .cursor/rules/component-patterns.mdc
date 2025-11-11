@@ -69,17 +69,28 @@ interface ComponentProps {
 
 ## Page Components Pattern
 
-Page components orchestrate smaller components:
+Page components orchestrate smaller components and use hooks for logic:
 
 ```tsx
+import { usePageLogic } from "./hooks";
 import { SubComponent1, SubComponent2 } from "./components";
 import styles from "./PageName.module.css";
 
-export default function PageName() {
+export function PageName() {
+  const {
+    data,
+    isLoading,
+    error,
+    handleAction,
+  } = usePageLogic();
+
+  if (isLoading) return <LoadingState />;
+  if (error) return <ErrorState error={error} />;
+
   return (
     <div className={styles.page}>
-      <SubComponent1 />
-      <SubComponent2 />
+      <SubComponent1 data={data} />
+      <SubComponent2 onAction={handleAction} />
     </div>
   );
 }
@@ -97,8 +108,14 @@ export default function PageName() {
 1. **Feature-based organization**: Group related functionality together
 2. **Modular components**: Each component is in its own directory
 3. **CSS Modules**: Scoped styling with `.module.css`
-4. **Co-location**: Keep related files together
-5. **Separation of concerns**: Separate API logic, UI, types, and utils
+4. **Co-location**: Keep related files together (hooks, utils, components in feature)
+5. **Separation of concerns**: 
+   - **Components**: Focus on rendering and UI
+   - **Hooks**: Handle state management and side effects
+   - **Utils**: Contain pure functions (validation, formatting, calculations)
+   - **API**: Handle data fetching and mutations
+6. **Logic Extraction**: Always extract complex logic to hooks or utilities
+7. **Reusability**: Design hooks and utilities to be reusable
 
 
 ## Frontend Structure (`apps/web/src/`)
@@ -130,10 +147,67 @@ feature-name/
 │   │   ├── ComponentName.module.css
 │   │   └── index.tsx
 │   └── index.tsx
-├── config/        # Configuration and constants
-├── types/         # Feature-specific types
-├── utils/         # Feature-specific utilities
+├── hooks/          # Custom React hooks for feature logic
+│   ├── useFeatureName.ts
+│   ├── useSubFeature.ts
+│   └── index.ts    # Export: export { useFeatureName } from "./useFeatureName";
+├── utils/          # Utility functions (validation, formatting, calculations)
+│   ├── validation.ts
+│   ├── formatting.ts
+│   └── index.ts    # Export: export * from "./validation";
+├── config/         # Configuration and constants (if needed)
+├── types/          # Feature-specific types (if needed)
 ├── FeatureName.tsx # Main feature component
 ├── FeatureName.module.css
 └── index.tsx       # Feature exports
+```
+
+## Component Refactoring Pattern
+
+When refactoring components, follow this pattern:
+
+1. **Extract Logic to Hooks**: Move state management and side effects to custom hooks
+2. **Extract Utilities**: Move pure functions to utility files
+3. **Keep Components Simple**: Components should focus on rendering and delegate logic to hooks
+
+### Before Refactoring
+
+```tsx
+export function FeatureComponent() {
+  const [state, setState] = useState();
+  const [errors, setErrors] = useState({});
+  
+  const handleAction = () => {
+    // Complex logic here
+  };
+  
+  const validate = () => {
+    // Validation logic
+  };
+  
+  return <div>{/* JSX */}</div>;
+}
+```
+
+### After Refactoring
+
+```tsx
+import { useFeatureLogic } from "../hooks";
+import { formatValue } from "../utils/formatting";
+
+export function FeatureComponent() {
+  const {
+    state,
+    errors,
+    handleAction,
+    validate,
+  } = useFeatureLogic();
+
+  return (
+    <div>
+      {formatValue(state.value)}
+      <button onClick={handleAction}>Action</button>
+    </div>
+  );
+}
 ```

@@ -1,4 +1,5 @@
 import { ErrorPage } from "../ErrorPage";
+import { getErrorConfig } from "../../utils/errorConfig";
 
 /**
  * 403 Forbidden error page component
@@ -6,13 +7,15 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when the user doesn't have permission to access a resource
  */
 export function ForbiddenError() {
+  const config = getErrorConfig(403);
+
   return (
     <ErrorPage
       statusCode={403}
-      title="Access Forbidden"
-      description="You don't have permission to access this resource."
-      details="Please contact us if you believe this is an error."
-      primaryActionText="Go Home"
+      title={config.title}
+      description={config.description}
+      details={config.details}
+      primaryActionText={config.primaryActionText}
     />
   );
 }

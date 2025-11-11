@@ -38,7 +38,10 @@ export function useSubscription(id: string) {
   });
 }
 
-export function useSubscriptionsByUser(userId: string | undefined, query?: DateRangeQuery) {
+export function useSubscriptionsByUser(
+  userId: string | undefined,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

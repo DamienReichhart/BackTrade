@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useErrorPage } from "../../hooks";
 import { Button } from "../../../../components/Button";
 import styles from "./ErrorPage.module.css";
 
@@ -98,19 +98,18 @@ export function ErrorPage({
   showStatusCode = true,
   className,
 }: ErrorPageProps) {
-  const navigate = useNavigate();
-
-  const handlePrimaryAction = () => {
-    if (primaryAction) {
-      primaryAction();
-    } else {
-      navigate("/");
-    }
-  };
-
-  const handleGoBack = () => {
-    window.history.back();
-  };
+  const { handlePrimaryAction, handleGoBack } = useErrorPage({
+    statusCode,
+    title,
+    description,
+    details,
+    primaryActionText,
+    primaryAction,
+    secondaryActionText,
+    secondaryAction,
+    icon,
+    showStatusCode,
+  });
 
   return (
     <div className={`${styles.errorPage} ${className ?? ""}`}>

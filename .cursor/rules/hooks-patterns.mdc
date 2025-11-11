@@ -1,0 +1,253 @@
+---
+globs: *.ts, *.tsx
+description: Custom React hooks patterns and conventions
+---
+
+# Custom Hooks Patterns
+
+## Hook Structure
+
+Custom hooks encapsulate stateful logic and side effects. They should be placed in a `hooks/` directory within each feature.
+
+### Hook File Organization
+
+```
+feature-name/
+├── hooks/
+│   ├── useFeatureName.ts    # Main feature hook
+│   ├── useSubFeature.ts     # Sub-feature hooks
+│   └── index.ts             # Export all hooks: export { useFeatureName } from "./useFeatureName";
+```
+
+### Hook Naming Convention
+
+- **Prefix**: Always start with `use` (e.g., `useUserManagement`, `useLoginForm`)
+- **Descriptive**: Name should clearly indicate what the hook manages
+- **Singular responsibility**: Each hook should handle one specific concern
+
+### Hook Return Pattern
+
+Hooks should return an object with organized sections:
+
+```tsx
+export function useFeatureName() {
+  // State declarations
+  const [state, setState] = useState();
+  
+  // Derived state
+  const computedValue = useMemo(() => {
+    // calculations
+  }, [dependencies]);
+  
+  // Handlers
+  const handleAction = useCallback(() => {
+    // action logic
+  }, [dependencies]);
+  
+  // Return organized object
+  return {
+    // State
+    state,
+    computedValue,
+    
+    // Loading/Error states
+    isLoading,
+    error,
+    
+    // Handlers
+    handleAction,
+    handleOtherAction,
+    
+    // Mutations (if applicable)
+    mutation,
+  };
+}
+```
+
+### Hook Documentation
+
+Every hook should have comprehensive JSDoc:
+
+```tsx
+/**
+ * Hook for managing [feature] state and logic
+ *
+ * This hook handles:
+ * - State management for [specific concern]
+ * - API calls for [resource]
+ * - Event handlers for [actions]
+ *
+ * @returns Object containing state, handlers, and mutations
+ * @example
+ * ```tsx
+ * const { state, handleAction } = useFeatureName();
+ * ```
+ */
+export function useFeatureName() {
+  // Implementation
+}
+```
+
+## Hook Patterns by Use Case
+
+### Data Fetching Hook
+
+```tsx
+import { useResource } from "../../../api/hooks/requests/resource";
+
+export function useFeatureData(id: string) {
+  const {
+    data,
+    isLoading,
+    error,
+    execute: refetch,
+  } = useResource(id);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+```
+
+### Form Management Hook
+
+```tsx
+import { useState } from "react";
+import { validateEmail } from "../utils/validation";
+
+export function useFormState() {
+  const [formState, setFormState] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (field: string, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    
+    const emailValidation = validateEmail(formState.email);
+    if (!emailValidation.isValid) {
+      newErrors.email = emailValidation.error ?? "Invalid email";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  return {
+    formState,
+    errors,
+    handleChange,
+    validate,
+    setFormState,
+    setErrors,
+  };
+}
+```
+
+### Modal Management Hook
+
+```tsx
+import { useState } from "react";
+import { useModal } from "../../../hooks/useModal";
+
+export function useFeatureModal() {
+  const {
+    isOpen,
+    selectedItem,
+    openModal,
+    closeModal,
+  } = useModal<ItemType>();
+
+  return {
+    isOpen,
+    selectedItem,
+    openModal,
+    closeModal,
+  };
+}
+```
+
+### Complex Feature Hook
+
+For features with multiple concerns, create a main hook that orchestrates sub-hooks:
+
+```tsx
+import { useFeatureData } from "./useFeatureData";
+import { useFeatureActions } from "./useFeatureActions";
+import { useFeatureFilters } from "./useFeatureFilters";
+
+export function useFeatureManagement() {
+  const data = useFeatureData();
+  const actions = useFeatureActions();
+  const filters = useFeatureFilters();
+
+  return {
+    // Data
+    ...data,
+    
+    // Actions
+    ...actions,
+    
+    // Filters
+    ...filters,
+  };
+}
+```
+
+## Hook Guidelines
+
+1. **Single Responsibility**: Each hook should handle one specific concern
+2. **Reusability**: Design hooks to be reusable across components
+3. **Testability**: Keep hooks pure and testable
+4. **Type Safety**: Always type return values and parameters
+5. **Documentation**: Document all hooks with JSDoc
+6. **Error Handling**: Handle errors gracefully within hooks
+7. **Performance**: Use `useMemo` and `useCallback` appropriately
+8. **Dependencies**: Keep dependency arrays accurate
+
+## Hook Export Pattern
+
+Always export hooks through an index file:
+
+```tsx
+// hooks/index.ts
+export { useFeatureName } from "./useFeatureName";
+export { useSubFeature } from "./useSubFeature";
+export type { FeatureNameReturn } from "./useFeatureName";
+```
+
+## Component Integration
+
+Components should use hooks for all logic:
+
+```tsx
+import { useFeatureName } from "../hooks";
+
+export function FeatureComponent() {
+  const {
+    state,
+    isLoading,
+    handleAction,
+  } = useFeatureName();
+
+  if (isLoading) return <LoadingState />;
+
+  return (
+    <div>
+      <button onClick={handleAction}>Action</button>
+    </div>
+  );
+}
+```

@@ -1,7 +1,5 @@
 import styles from "./Admin.module.css";
-import { useNavigate } from "react-router-dom";
-
-type AdminSection = "user-management" | "data-management";
+import { useAdminChoices } from "./hooks";
 
 /**
  * Admin page component
@@ -9,11 +7,7 @@ type AdminSection = "user-management" | "data-management";
  * Main admin page with menu to choose between user management and data management
  */
 export function AdminChoices() {
-  const navigate = useNavigate();
-
-  const handleMenuClick = (section: AdminSection) => {
-    navigate(`/dashboard/admin/${section}`);
-  };
+  const { handleMenuClick } = useAdminChoices();
 
   return (
     <div className={styles.container}>
