@@ -1,9 +1,9 @@
 import styles from "./SpeedSelector.module.css";
 import type { Speed } from "@backtrade/types";
-import { useState, useEffect, useRef } from "react";
 import { useUpdateSession } from "../../../../../../../../../api/requests/sessions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentSessionStore } from "../../../../../../../../../context/CurrentSessionContext";
+import { Select } from "../../../../../../../../../components/Select";
 
 interface SpeedSelectorProps {
   /**
@@ -29,8 +29,6 @@ export function SpeedSelector({ onError, onSuccess }: SpeedSelectorProps) {
   const queryClient = useQueryClient();
   const { execute: updateSession, isLoading: isUpdatingSpeed } =
     useUpdateSession(sessionId ?? "");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const availableSpeeds: Speed[] = [
     "0.5x",
@@ -42,43 +40,31 @@ export function SpeedSelector({ onError, onSuccess }: SpeedSelectorProps) {
     "15x",
   ];
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
+  const speedOptions = availableSpeeds.map((speed) => ({
+    value: speed,
+    label: speed,
+  }));
 
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
-  const handleSpeedSelect = async (speed: Speed) => {
+  const handleSpeedSelect = async (speed: string) => {
     if (!sessionId) {
       onError?.("Session ID is required");
       return;
     }
 
-    if (speed === currentSpeed) {
-      setIsMenuOpen(false);
+    const speedValue = speed as Speed;
+
+    if (speedValue === currentSpeed) {
       return;
     }
 
     try {
-      const updatedSession = await updateSession({ speed });
+      const updatedSession = await updateSession({ speed: speedValue });
 
       // Update the session query cache with the mutation result
       queryClient.setQueryData(
         ["GET", `/sessions/${sessionId}`],
         updatedSession,
       );
-      setIsMenuOpen(false);
       onSuccess?.();
     } catch (err) {
       const errorMessage =
@@ -88,29 +74,16 @@ export function SpeedSelector({ onError, onSuccess }: SpeedSelectorProps) {
   };
 
   return (
-    <div className={styles.speedSelector} ref={menuRef}>
-      <button
-        className={styles.button}
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+    <div className={styles.speedSelector}>
+      <Select
+        value={currentSpeed}
+        onChange={handleSpeedSelect}
+        options={speedOptions}
+        placeholder="Select speed"
         disabled={!sessionId || isUpdatingSpeed}
-      >
-        {isUpdatingSpeed ? "Updating..." : `Speed ${currentSpeed}`}
-      </button>
-      {isMenuOpen && (
-        <div className={styles.menu}>
-          {availableSpeeds.map((speed) => (
-            <button
-              key={speed}
-              className={`${styles.menuItem} ${
-                speed === currentSpeed ? styles.menuItemActive : ""
-              }`}
-              onClick={() => handleSpeedSelect(speed)}
-            >
-              {speed}
-            </button>
-          ))}
-        </div>
-      )}
+        className={styles.select}
+      />
+      {isUpdatingSpeed && <span className={styles.updating}>Updating...</span>}
     </div>
   );
 }

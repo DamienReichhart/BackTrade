@@ -7,3 +7,4 @@ export { PricingCard } from "./PricingCard";
 export { AuthenticatedLayout } from "./AuthenticatedLayout";
 export { Toggle } from "./Toggle";
 export { ConfirmModal } from "./ConfirmModal";
+export { Select } from "./Select";

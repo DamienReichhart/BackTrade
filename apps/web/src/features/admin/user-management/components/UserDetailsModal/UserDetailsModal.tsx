@@ -1,0 +1,150 @@
+import { useEffect } from "react";
+import type { PublicUser } from "@backtrade/types";
+import { formatDate } from "../../../../../utils";
+import styles from "./UserDetailsModal.module.css";
+
+/**
+ * User Details Modal component props
+ */
+interface UserDetailsModalProps {
+  /**
+   * User to display
+   */
+  user: PublicUser;
+
+  /**
+   * Whether the modal is open
+   */
+  isOpen: boolean;
+
+  /**
+   * Callback when modal is closed
+   */
+  onClose: () => void;
+}
+
+/**
+ * User Details Modal component
+ *
+ * Modal for viewing user details in read-only mode
+ */
+export function UserDetailsModal({
+  user,
+  isOpen,
+  onClose,
+}: UserDetailsModalProps) {
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.backdrop} onClick={onClose}>
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="user-details-title"
+      >
+        <div className={styles.header}>
+          <h2 id="user-details-title" className={styles.title}>
+            User Details
+          </h2>
+          <button
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className={styles.content}>
+          <div className={styles.detailRow}>
+            <span className={styles.label}>ID</span>
+            <span className={styles.value}>{user.id}</span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.label}>Email</span>
+            <span className={styles.value}>{user.email}</span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.label}>Role</span>
+            <span
+              className={`${styles.badge} ${
+                user.role === "ADMIN"
+                  ? styles.roleAdmin
+                  : user.role === "USER"
+                    ? styles.roleUser
+                    : styles.roleAnonymous
+              }`}
+            >
+              {user.role}
+            </span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.label}>Status</span>
+            <span
+              className={`${styles.badge} ${
+                user.is_banned ? styles.bannedBadge : styles.activeBadge
+              }`}
+            >
+              {user.is_banned ? "Banned" : "Active"}
+            </span>
+          </div>
+
+          {user.stripe_customer_id && (
+            <div className={styles.detailRow}>
+              <span className={styles.label}>Stripe Customer ID</span>
+              <span className={styles.value}>{user.stripe_customer_id}</span>
+            </div>
+          )}
+
+          <div className={styles.detailRow}>
+            <span className={styles.label}>Created At</span>
+            <span className={styles.value}>{formatDate(user.created_at)}</span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.label}>Updated At</span>
+            <span className={styles.value}>{formatDate(user.updated_at)}</span>
+          </div>
+        </div>
+
+        <div className={styles.footer}>
+          <button className={styles.closeFooterButton} onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

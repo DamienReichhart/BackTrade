@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RoleSchema } from "../enums";
 
 export const PaginationQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -20,6 +21,14 @@ export const DateRangeQuerySchema = z.object({
   ...PaginationQuerySchema.shape,
 });
 export type DateRangeQuery = z.infer<typeof DateRangeQuerySchema>;
+
+export const SearchQueryUserSchema = z.object({
+  q: z.string().optional(),
+  role: RoleSchema.optional(),
+  is_banned: z.boolean().optional(),
+  ...PaginationQuerySchema.shape,
+});
+export type SearchQueryUser = z.infer<typeof SearchQueryUserSchema>;
 
 /**
  * Empty response schema for DELETE operations

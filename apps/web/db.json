@@ -4,6 +4,9 @@
       "id": 1,
       "email": "demo@backtrade.local",
       "name": "Demo User",
+      "role": "ADMIN",
+      "is_banned": false,
+      "stripe_customer_id": "cus_demo123",
       "created_at": "2024-01-01T00:00:00Z",
       "updated_at": "2024-01-01T00:00:00Z"
     }
