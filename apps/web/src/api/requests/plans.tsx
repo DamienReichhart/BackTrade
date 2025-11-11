@@ -4,8 +4,8 @@ import {
   CreatePlanRequestSchema,
   UpdatePlanRequestSchema,
   EmptyResponseSchema,
-  type PaginationQuery,
   type Plan,
+  type SearchQuery,
 } from "@backtrade/types";
 import { z } from "zod";
 
@@ -14,7 +14,7 @@ import { z } from "zod";
  * Schemas are defined once and automatically applied
  */
 
-export function usePlans(query?: PaginationQuery) {
+export function usePlans(query?: SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

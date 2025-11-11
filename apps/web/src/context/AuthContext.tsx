@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { deleteCookie, setCookie, getCookie } from "../utils/cookies";
 import type { PublicUser } from "@backtrade/types";
-
 interface AuthState {
   accessToken: string | undefined;
   refreshToken: string | undefined;

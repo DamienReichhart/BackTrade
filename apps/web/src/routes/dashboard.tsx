@@ -4,6 +4,7 @@ import { Settings } from "../features/settings";
 import { Plans } from "../features/plans";
 import { Support } from "../features/support";
 import { SupportRequestDetail } from "../features/support/components/SupportRequestDetail";
+import { AdminChoices } from "../features/admin";
 
 export const dashboardRoutes = [
   {
@@ -43,6 +44,14 @@ export const dashboardRoutes = [
     element: (
       <AuthenticatedLayout>
         <SupportRequestDetail />
+      </AuthenticatedLayout>
+    ),
+  },
+  {
+    path: "/dashboard/admin",
+    element: (
+      <AuthenticatedLayout>
+        <AdminChoices />
       </AuthenticatedLayout>
     ),
   },
