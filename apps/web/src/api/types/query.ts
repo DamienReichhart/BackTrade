@@ -1,8 +1,8 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import type { executeFetch } from "../utils/fetchExecutor";
-import type { FetchExecutorOptions } from ".";
+import type { FetchExecutorConfig } from ".";
 
-export interface UseQueryAndMutationOptions<TInput, TOutput> {
+export interface QueryAndMutationHookConfig<TInput, TOutput> {
   /** HTTP method */
   method: string;
   /** API endpoint URL for React Query key */
@@ -13,6 +13,6 @@ export interface UseQueryAndMutationOptions<TInput, TOutput> {
   queryOptions?: Omit<UseQueryOptions<TOutput, Error>, "queryKey" | "queryFn">;
   /** Fetch executor function */
   fetcher: typeof executeFetch<TInput, TOutput>;
-  /** Fetch executor options */
-  fetchOptions: FetchExecutorOptions<TInput, TOutput>;
+  /** Fetch executor configuration */
+  executorConfig: FetchExecutorConfig<TInput, TOutput>;
 }

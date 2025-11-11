@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import type { UseQueryAndMutationOptions } from "../../types";
+import type { QueryAndMutationHookConfig } from "../../types";
 
 /**
  * Sets up React Query hooks.
@@ -12,14 +12,14 @@ export function useQueryAndMutation<TInput = unknown, TOutput = unknown>({
   isQuery,
   queryOptions = {},
   fetcher,
-  fetchOptions,
-}: UseQueryAndMutationOptions<TInput, TOutput>) {
+  executorConfig,
+}: QueryAndMutationHookConfig<TInput, TOutput>) {
   const queryKey = [method, url];
 
   // Set up query hook for GET requests
   const query = useQuery<TOutput, Error>({
     queryKey,
-    queryFn: () => fetcher(undefined, fetchOptions),
+    queryFn: () => fetcher(undefined, executorConfig),
     ...queryOptions,
     // Because if not specified, the query will be enabled by default
     enabled: isQuery ? (queryOptions?.enabled ?? true) : false,
@@ -27,7 +27,7 @@ export function useQueryAndMutation<TInput = unknown, TOutput = unknown>({
 
   // Set up mutation hook for POST/PUT/DELETE requests
   const mutation = useMutation<TOutput, Error, TInput | undefined>({
-    mutationFn: (body?: TInput) => fetcher(body, fetchOptions, true),
+    mutationFn: (body?: TInput) => fetcher(body, executorConfig, true),
   });
 
   // Create consistent execute function that always returns Promise<TOutput>

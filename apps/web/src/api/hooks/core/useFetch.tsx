@@ -1,7 +1,7 @@
 import { useAuthStore } from "../../../context/AuthContext";
 import { executeFetch } from "../../utils/fetchExecutor";
 import { useQueryAndMutation } from "./useQueryAndMutation";
-import type { fetchOptions } from "../../types";
+import type { UseFetchOptions } from "../../types";
 
 /**
  * Unified GET/POST/PUT/DELETE hook built on React Query
@@ -15,9 +15,9 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     method = "GET",
     inputSchema,
     outputSchema,
-    fetchOptions = {},
+    requestInit = {},
     queryOptions = {},
-  }: fetchOptions<TInput, TOutput> = {},
+  }: UseFetchOptions<TInput, TOutput> = {},
 ) {
   const isQuery = method === "GET";
   const { accessToken, refreshToken, login } = useAuthStore();
@@ -29,12 +29,12 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
     isQuery,
     queryOptions,
     fetcher: executeFetch,
-    fetchOptions: {
+    executorConfig: {
       method,
       url,
       inputSchema,
       outputSchema,
-      fetchOptions,
+      requestInit,
       accessToken,
       refreshToken,
       onTokenRefresh: login,

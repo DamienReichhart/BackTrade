@@ -1,5 +1,5 @@
 import { useFetch } from "./useFetch";
-import type { fetchOptions } from "../../types";
+import type { UseFetchOptions } from "../../types";
 
 /**
  * DELETE request hook built on React Query
@@ -9,7 +9,7 @@ import type { fetchOptions } from "../../types";
  */
 export function useDelete<TOutput = unknown>(
   url: string,
-  options?: Omit<fetchOptions<never, TOutput>, "method" | "inputSchema">,
+  options?: Omit<UseFetchOptions<never, TOutput>, "method" | "inputSchema">,
 ) {
   return useFetch<TOutput>(url, {
     method: "DELETE",

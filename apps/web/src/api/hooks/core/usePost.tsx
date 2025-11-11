@@ -1,5 +1,5 @@
 import { useFetch } from "./useFetch";
-import type { fetchOptions } from "../../types";
+import type { UseFetchOptions } from "../../types";
 
 /**
  * POST request hook built on React Query
@@ -9,7 +9,7 @@ import type { fetchOptions } from "../../types";
  */
 export function usePost<TOutput = unknown, TInput = unknown>(
   url: string,
-  options?: Omit<fetchOptions<TInput, TOutput>, "method">,
+  options?: Omit<UseFetchOptions<TInput, TOutput>, "method">,
 ) {
   return useFetch<TOutput, TInput>(url, {
     method: "POST",

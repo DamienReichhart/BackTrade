@@ -1,43 +1,44 @@
 import { API_BASE_URL } from "../index";
 import { validateApiInput, validateApiOutput } from "./validations";
 import { refreshAccessToken } from "./tokenRefresh";
-import type { FetchExecutorOptions } from "../types";
+import type { FetchExecutorConfig } from "../types";
 
 /**
  * Executes an API fetch request with validation, error handling, and automatic token refresh.
  *
  * @param body - Optional request body to send
- * @param options - Configuration options for the fetch request
+ * @param executorConfig - Configuration for the fetch executor
  * @param retryOnUnauthorized - Whether to retry the request after token refresh (default: true)
  * @returns Promise resolving to the validated response data
  * @throws Error if the request fails or validation fails
  */
 export async function executeFetch<TInput = unknown, TOutput = unknown>(
   body: TInput | undefined,
-  options: FetchExecutorOptions<TInput, TOutput>,
+  executorConfig: FetchExecutorConfig<TInput, TOutput>,
   retryOnUnauthorized: boolean = true,
 ): Promise<TOutput> {
   let validatedBody: TInput | undefined = body;
 
   // Validate input with Zod schema if provided
-  if (body !== undefined && options.inputSchema) {
-    validatedBody = validateApiInput<TInput>(options.inputSchema, body);
+  if (body !== undefined && executorConfig.inputSchema) {
+    validatedBody = validateApiInput<TInput>(executorConfig.inputSchema, body);
   }
 
   // Prepare headers with authorization if access token is available
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(options.fetchOptions?.headers as Record<string, string> | undefined),
-  };
+  const { headers: providedHeaders, ...remainingRequestInit } =
+    executorConfig.requestInit ?? {};
 
-  if (options.accessToken) {
-    headers["Authorization"] = `Bearer ${options.accessToken}`;
+  const headers = new Headers(providedHeaders);
+  headers.set("Content-Type", "application/json");
+
+  if (executorConfig.accessToken) {
+    headers.set("Authorization", `Bearer ${executorConfig.accessToken}`);
   }
 
   // Execute the fetch request
-  const response = await fetch(API_BASE_URL + options.url, {
-    method: options.method,
-    ...options.fetchOptions,
+  const response = await fetch(API_BASE_URL + executorConfig.url, {
+    method: executorConfig.method,
+    ...remainingRequestInit,
     headers,
     ...(validatedBody !== undefined
       ? { body: JSON.stringify(validatedBody) }
@@ -53,20 +54,20 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
       retryOnUnauthorized
     ) {
       // Attempt to refresh the token
-      if (!options.refreshToken) {
+      if (!executorConfig.refreshToken) {
         throw new Error(
           `HTTP ${response.status}: ${errorText || response.statusText}`,
         );
       }
 
       try {
-        const authResponseData = await refreshAccessToken(options.refreshToken);
+        const refreshedTokens = await refreshAccessToken(executorConfig.refreshToken);
 
         // Update tokens using the callback
-        if (options.onTokenRefresh) {
-          options.onTokenRefresh(
-            authResponseData.accessToken,
-            authResponseData.refreshToken,
+        if (executorConfig.onTokenRefresh) {
+          executorConfig.onTokenRefresh(
+            refreshedTokens.accessToken,
+            refreshedTokens.refreshToken,
           );
         }
 
@@ -74,9 +75,9 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
         return await executeFetch(
           body,
           {
-            ...options,
-            accessToken: authResponseData.accessToken,
-            refreshToken: authResponseData.refreshToken,
+            ...executorConfig,
+            accessToken: refreshedTokens.accessToken,
+            refreshToken: refreshedTokens.refreshToken,
           },
           false,
         );
@@ -107,11 +108,11 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
   }
 
   // Parse and validate response
-  const data = await response.json();
+  const responseData = await response.json();
 
-  if (options.outputSchema) {
-    return validateApiOutput<TOutput>(options.outputSchema, data);
+  if (executorConfig.outputSchema) {
+    return validateApiOutput<TOutput>(executorConfig.outputSchema, responseData);
   }
 
-  return data as TOutput;
+  return responseData as TOutput;
 }
