@@ -93,8 +93,4 @@
   .filterContainer {
     flex-direction: column;
   }
-
-  .filterSelect {
-    width: 100%;
-  }
 }
