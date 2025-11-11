@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Subscription, Plan } from "@backtrade/types";
 import { formatDate } from "../../../../utils";
+import { getStatusColorClass } from "../../utils/subscriptions";
 import styles from "./CurrentSubscription.module.css";
 
 interface CurrentSubscriptionProps {
@@ -23,14 +24,8 @@ export function CurrentSubscription({
   }, [plans, subscription.plan_id]);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return styles.statusActive;
-      case "trialing":
-        return styles.statusTrialing;
-      default:
-        return "";
-    }
+    const colorClass = getStatusColorClass(status);
+    return colorClass ? (styles[colorClass] ?? "") : "";
   };
 
   const formatPeriod = (start: string, end: string) => {

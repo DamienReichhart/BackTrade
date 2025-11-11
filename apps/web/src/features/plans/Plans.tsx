@@ -1,14 +1,10 @@
-import { useMemo } from "react";
 import { Button } from "../../components";
-import { useAuthStore } from "../../context/AuthContext";
-import { useSubscriptionsByUser } from "../../api/hooks/requests/subscriptions";
-import { usePlans } from "../../api/hooks/requests/plans";
 import { LoadingState } from "../dashboard/components/LoadingState";
 import { ErrorState } from "../dashboard/components/ErrorState";
 import { CurrentSubscription } from "./components/CurrentSubscription/CurrentSubscription";
 import { SubscriptionList } from "./components/SubscriptionList/SubscriptionList";
 import { PlansList } from "./components/PlanList/PlansList";
-import type { Subscription } from "@backtrade/types";
+import { usePlansData, useSubscriptionManagement } from "./hooks";
 import styles from "./Plans.module.css";
 
 /**
@@ -17,51 +13,14 @@ import styles from "./Plans.module.css";
  * Displays user subscriptions (current and all) and available plans
  */
 export function Plans() {
-  const { user } = useAuthStore();
-  const userId = user?.id.toString();
+  const { subscriptions, plans, currentSubscription, isLoading, error } =
+    usePlansData();
 
-  // Fetch user subscriptions (only when user is authenticated)
-  const {
-    data: subscriptionsData,
-    isLoading: isLoadingSubscriptions,
-    error: subscriptionsError,
-  } = useSubscriptionsByUser(userId);
-
-  // Fetch available plans
-  const {
-    data: plansData,
-    isLoading: isLoadingPlans,
-    error: plansError,
-  } = usePlans();
-
-  const subscriptions = (subscriptionsData as Subscription[]) ?? [];
-  const plans = plansData ?? [];
-
-  // Find current subscription (active or trialing)
-  const currentSubscription = useMemo(() => {
-    return subscriptions.find(
-      (sub) => sub.status === "active" || sub.status === "trialing",
-    );
-  }, [subscriptions]);
-
-  // Handle subscription change
-  const handleChangeSubscription = (planId: number, planCode: string) => {
-    // eslint-disable-next-line no-console
-    console.log("Change subscription requested:", {
-      planId,
-      planCode,
-      currentSubscriptionId: currentSubscription?.id,
-    });
-  };
-
-  // Handle manage subscriptions
-  const handleManageSubscriptions = () => {
-    // eslint-disable-next-line no-console
-    console.log("manage subscription");
-  };
+  const { handleChangeSubscription, handleManageSubscriptions } =
+    useSubscriptionManagement();
 
   // Show loading state if either is loading
-  if (isLoadingSubscriptions || isLoadingPlans) {
+  if (isLoading) {
     return (
       <div className={styles.container}>
         <LoadingState />
@@ -70,10 +29,10 @@ export function Plans() {
   }
 
   // Show error state if there's an error
-  if (subscriptionsError || plansError) {
+  if (error) {
     return (
       <div className={styles.container}>
-        <ErrorState error={(subscriptionsError ?? plansError) as Error} />
+        <ErrorState error={error} />
       </div>
     );
   }
@@ -125,7 +84,13 @@ export function Plans() {
           <PlansList
             plans={plans}
             currentSubscription={currentSubscription}
-            onChangeSubscription={handleChangeSubscription}
+            onChangeSubscription={(planId, planCode) =>
+              handleChangeSubscription(
+                planId,
+                planCode,
+                currentSubscription?.id,
+              )
+            }
           />
         </section>
       </div>
