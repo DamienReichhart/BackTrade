@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { Button } from "../../../../components";
-import { useAuthStore } from "../../../../context/AuthContext";
-import { useDeleteUser } from "../../../../api/hooks/requests/users";
-import { useNavigate } from "react-router-dom";
+import { useDataPrivacySection } from "../../hooks";
 import styles from "./DataPrivacySection.module.css";
 
 /**
@@ -11,37 +8,14 @@ import styles from "./DataPrivacySection.module.css";
  * Handles data retention and account deletion
  */
 export function DataPrivacySection() {
-  const { user, logout } = useAuthStore();
-  const navigate = useNavigate();
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const { execute, isLoading } = useDeleteUser(user?.id.toString() ?? "");
-
-  const handleDeleteAccount = async () => {
-    if (!user) return;
-
-    setError(null);
-
-    try {
-      await execute();
-      // Logout and redirect to home after successful deletion
-      logout();
-      navigate("/");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete account");
-      setShowConfirmDialog(false);
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    setShowConfirmDialog(true);
-  };
-
-  const handleCancelDelete = () => {
-    setShowConfirmDialog(false);
-    setError(null);
-  };
+  const {
+    showConfirmDialog,
+    error,
+    isLoading,
+    handleDeleteAccount,
+    handleConfirmDelete,
+    handleCancelDelete,
+  } = useDataPrivacySection();
 
   return (
     <section className={styles.section}>

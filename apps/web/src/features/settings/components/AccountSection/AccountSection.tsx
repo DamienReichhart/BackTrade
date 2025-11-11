@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Input, Button } from "../../../../components";
-import { useAuthStore } from "../../../../context/AuthContext";
-import { useUpdateUser } from "../../../../api/hooks/requests/users";
+import { useAccountSection } from "../../hooks";
 import styles from "./AccountSection.module.css";
 
 interface AccountSectionProps {
@@ -14,36 +12,16 @@ interface AccountSectionProps {
  * Displays and allows editing of user account information
  */
 export function AccountSection({ accountId }: AccountSectionProps) {
-  const { user } = useAuthStore();
-  const [email, setEmail] = useState(user?.email ?? "");
-  const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const { execute, isLoading } = useUpdateUser(user?.id.toString() ?? "");
-
-  const handleSave = async () => {
-    if (!user) return;
-
-    setError(null);
-
-    try {
-      await execute({ email });
-      setIsEditing(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update email");
-    }
-  };
-
-  const handleCancel = () => {
-    setEmail(user?.email ?? "");
-    setIsEditing(false);
-    setError(null);
-  };
-
-  const handleEdit = () => {
-    setEmail(user?.email ?? "");
-    setIsEditing(true);
-  };
+  const {
+    email,
+    isEditing,
+    error,
+    isLoading,
+    handleEmailChange,
+    handleSave,
+    handleCancel,
+    handleEdit,
+  } = useAccountSection();
 
   return (
     <section className={styles.section}>
@@ -58,7 +36,7 @@ export function AccountSection({ accountId }: AccountSectionProps) {
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => handleEmailChange(e.target.value)}
             disabled={!isEditing}
             hasError={!!error}
             error={error ?? undefined}

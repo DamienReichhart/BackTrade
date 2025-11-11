@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { Button, Input, Toggle } from "../../../../components";
-import { useChangePassword } from "../../../../api/hooks/requests/auth";
+import { useSecuritySection } from "../../hooks";
 import styles from "./SecuritySection.module.css";
 
 /**
@@ -9,57 +8,18 @@ import styles from "./SecuritySection.module.css";
  * Handles password changes and two-factor authentication settings
  */
 export function SecuritySection() {
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [passwords, setPasswords] = useState({
-    current: "",
-    new: "",
-    confirm: "",
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
-  const { execute, isLoading } = useChangePassword();
-
-  const handlePasswordChange = (field: string, value: string) => {
-    setPasswords((prev) => ({ ...prev, [field]: value }));
-    setError(null);
-    setSuccess(false);
-  };
-
-  const handleUpdatePassword = async () => {
-    setError(null);
-    setSuccess(false);
-
-    if (passwords.new !== passwords.confirm) {
-      setError("Passwords don't match");
-      return;
-    }
-
-    if (passwords.new.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
-    try {
-      await execute({
-        currentPassword: passwords.current,
-        newPassword: passwords.new,
-        confirmPassword: passwords.confirm,
-      });
-      setSuccess(true);
-      setPasswords({ current: "", new: "", confirm: "" });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update password",
-      );
-    }
-  };
-
-  const handleClearPasswords = () => {
-    setPasswords({ current: "", new: "", confirm: "" });
-    setError(null);
-    setSuccess(false);
-  };
+  const {
+    twoFactorEnabled,
+    setTwoFactorEnabled,
+    passwords,
+    error,
+    success,
+    isLoading,
+    isUpdateDisabled,
+    handlePasswordChange,
+    handleUpdatePassword,
+    handleClearPasswords,
+  } = useSecuritySection();
 
   return (
     <section className={styles.section}>
@@ -117,12 +77,7 @@ export function SecuritySection() {
               variant="primary"
               size="medium"
               onClick={handleUpdatePassword}
-              disabled={
-                isLoading ||
-                !passwords.current ||
-                !passwords.new ||
-                !passwords.confirm
-              }
+              disabled={isUpdateDisabled}
             >
               {isLoading ? "Updating..." : "Update password"}
             </Button>
