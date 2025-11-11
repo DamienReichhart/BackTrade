@@ -18,9 +18,9 @@ import styles from "./Plans.module.css";
  */
 export function Plans() {
   const { user } = useAuthStore();
-  const userId = user?.id.toString() ?? "";
+  const userId = user?.id.toString();
 
-  // Fetch user subscriptions
+  // Fetch user subscriptions (only when user is authenticated)
   const {
     data: subscriptionsData,
     isLoading: isLoadingSubscriptions,
