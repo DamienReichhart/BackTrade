@@ -1,8 +1,8 @@
 import styles from "./SessionInfo.module.css";
 import type { Position, Transaction } from "@backtrade/types";
 import { useMemo } from "react";
-import { usePositionsBySession } from "../../../../../api/requests/positions";
-import { useTransactionsBySession } from "../../../../../api/requests/transactions";
+import { usePositionsBySession } from "../../../../../api/hooks/requests/positions";
+import { useTransactionsBySession } from "../../../../../api/hooks/requests/transactions";
 import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
 

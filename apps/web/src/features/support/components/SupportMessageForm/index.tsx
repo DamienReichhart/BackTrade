@@ -1,1 +1,0 @@
-export { SupportMessageForm } from "./SupportMessageForm";

@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useSession } from "../../../api/requests/sessions";
-import { useInstrument } from "../../../api/requests/instruments";
-import { useCandlesByInstrument } from "../../../api/requests/candles";
+import { useSession } from "../../../api/hooks/requests/sessions";
+import { useInstrument } from "../../../api/hooks/requests/instruments";
+import { useCandlesByInstrument } from "../../../api/hooks/requests/candles";
 import type { Candle, DateRangeQuery } from "@backtrade/types";
 import { TopBar } from "./components/TopBar";
 import { SidePanel } from "./components/SidePanel";

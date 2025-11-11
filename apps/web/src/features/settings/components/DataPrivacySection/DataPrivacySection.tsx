@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../../../components";
 import { useAuthStore } from "../../../../context/AuthContext";
-import { useDeleteUser } from "../../../../api/requests/users";
+import { useDeleteUser } from "../../../../api/hooks/requests/users";
 import { useNavigate } from "react-router-dom";
 import styles from "./DataPrivacySection.module.css";
 

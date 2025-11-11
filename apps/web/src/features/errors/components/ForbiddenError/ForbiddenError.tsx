@@ -11,7 +11,7 @@ export function ForbiddenError() {
       statusCode={403}
       title="Access Forbidden"
       description="You don't have permission to access this resource."
-      details="Please contact support if you believe this is an error."
+      details="Please contact us if you believe this is an error."
       primaryActionText="Go Home"
     />
   );

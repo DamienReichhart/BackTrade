@@ -42,7 +42,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:
@@ -73,7 +73,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:
@@ -102,7 +102,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:
@@ -120,7 +120,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:
@@ -138,7 +138,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:
@@ -157,7 +157,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     assignees:
       - "DamienReichhart"
     commit-message:

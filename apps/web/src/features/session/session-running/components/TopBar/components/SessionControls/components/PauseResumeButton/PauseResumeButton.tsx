@@ -2,7 +2,7 @@ import styles from "./PauseResumeButton.module.css";
 import {
   usePauseSession,
   useResumeSession,
-} from "../../../../../../../../../api/requests/sessions";
+} from "../../../../../../../../../api/hooks/requests/sessions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentSessionStore } from "../../../../../../../../../context/CurrentSessionContext";
 

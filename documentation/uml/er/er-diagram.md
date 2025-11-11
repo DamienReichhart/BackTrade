@@ -13,7 +13,6 @@ erDiagram
     %% side: BUY | SELL
     %% speed: 0.5x | 1x | 2x | 3x | 5x | 10x | 15x
     %% leverage: 1x | 50x | 100x | 200x | 500x | 1000x
-    %% support_status: OPEN | CLOSED | PENDING APPROVAL
     %% transaction_type: DEPOSIT | WITHDRAWAL | COMMISSION | PNL | SLIPPAGE | SPREAD | ADJUSTMENT
     %% entity_type: USER | SESSION | TRANSACTION | SUBSCRIPTION | POSITION
     %% audit_action: CREATE | UPDATE | DELETE | LOGIN | LOGOUT | PASSWORD_CHANGE | ROLE_CHANGE | BAN | UNBAN
@@ -187,23 +186,6 @@ erDiagram
       datetime created_at
       datetime updated_at    }
 
-    SUPPORT_REQUEST {
-      string id PK
-      string requester_id FK
-      enum support_status
-      datetime created_at
-      datetime updated_at
-    }
-
-    SUPPORT_MESSAGE {
-      string id PK
-      string sender_id FK
-      string support_request_id FK
-      string content
-      datetime created_at
-      datetime updated_at
-    }
-
     FILE {
       string id PK
       string owner_id FK
@@ -224,14 +206,6 @@ erDiagram
       datetime updated_at
     }
 
-    SUPPORT_MESSAGE_FILE {
-      string id PK
-      string support_message_id FK
-      string file_id FK
-      datetime created_at
-      datetime updated_at
-    }
-
 
     USER ||--o{ SESSION : "owns"
     USER ||--o{ SUBSCRIPTION : "owns"
@@ -242,14 +216,9 @@ erDiagram
     SESSION ||--o{ POSITION : "contains"
     SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
-    USER ||--o{ SUPPORT_REQUEST : "create"
-    USER ||--o{ SUPPORT_MESSAGE : "send"
-    SUPPORT_REQUEST ||--o{ SUPPORT_MESSAGE : "contains"
-    SUPPORT_MESSAGE ||--o{ SUPPORT_MESSAGE_FILE : "contains"
     REPORT ||--|| REPORT_FILE : "contains"
     REPORT_FILE ||--|| FILE : "reference"
     DATASET ||--|| FILE : "reference"
-    SUPPORT_MESSAGE_FILE ||--|| FILE : "reference"
     USER ||--o{ TRANSACTION : "has"
     SESSION ||--o{ TRANSACTION : "records"
     POSITION ||--o{ TRANSACTION : "linked"

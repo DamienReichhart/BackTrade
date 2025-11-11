@@ -5,7 +5,7 @@ import {
   useDeleteUser,
   useBanUser,
   useUnbanUser,
-} from "../../../api/requests/users";
+} from "../../../api/hooks/requests/users";
 import type { PublicUser, Role, SearchQueryUser } from "@backtrade/types";
 import { useModal } from "../../../hooks/useModal";
 import { UserTable } from "./components/UserTable";

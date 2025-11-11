@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Session } from "@backtrade/types";
-import { useInstrument } from "../../../../api/requests/instruments";
+import { useInstrument } from "../../../../api/hooks/requests/instruments";
 import { formatDate } from "../../../../utils/index";
 import styles from "./SessionCard.module.css";
 

@@ -104,12 +104,6 @@ export const comparisonData: ComparisonRow[] = [
     trader: "Not included",
     expert: "Not included",
   },
-  {
-    feature: "Support",
-    free: "Community",
-    trader: "Standard",
-    expert: "Priority",
-  },
 ];
 
 /**

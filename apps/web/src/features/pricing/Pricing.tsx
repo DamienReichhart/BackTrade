@@ -7,7 +7,7 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { PricingCTA } from "./components/PricingCTA";
 import { pricingTiers, comparisonData } from "./config/pricingConfig";
 import { useNavigate } from "react-router-dom";
-import { usePlans } from "../../api/requests/plans";
+import { usePlans } from "../../api/hooks/requests/plans";
 import { mergePlanData } from "./utils";
 import { useAuthStore } from "../../context/AuthContext";
 import styles from "./Pricing.module.css";

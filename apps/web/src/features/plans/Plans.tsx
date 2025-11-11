@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Button } from "../../components";
 import { useAuthStore } from "../../context/AuthContext";
-import { useSubscriptionsByUser } from "../../api/requests/subscriptions";
-import { usePlans } from "../../api/requests/plans";
+import { useSubscriptionsByUser } from "../../api/hooks/requests/subscriptions";
+import { usePlans } from "../../api/hooks/requests/plans";
 import { LoadingState } from "../dashboard/components/LoadingState";
 import { ErrorState } from "../dashboard/components/ErrorState";
 import { CurrentSubscription } from "./components/CurrentSubscription/CurrentSubscription";

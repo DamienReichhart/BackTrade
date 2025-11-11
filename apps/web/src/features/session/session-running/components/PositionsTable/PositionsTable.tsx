@@ -5,7 +5,7 @@ import { PositionDetailsModal } from "../PositionDetailsModal";
 import { useModal } from "../../../../../hooks/useModal";
 import { ClosePositionButton } from "./components";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
-import { usePositionsBySession } from "../../../../../api/requests/positions";
+import { usePositionsBySession } from "../../../../../api/hooks/requests/positions";
 
 /**
  * Table for open positions as in the mockup.

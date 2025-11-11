@@ -10,5 +10,4 @@ export * from "./session";
 export * from "./position";
 export * from "./transaction";
 export * from "./report";
-export * from "./support";
 export * from "./file";

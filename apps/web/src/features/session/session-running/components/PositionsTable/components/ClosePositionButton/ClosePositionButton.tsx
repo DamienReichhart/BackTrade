@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useClosePosition } from "../../../../../../../api/requests/positions";
+import { useClosePosition } from "../../../../../../../api/hooks/requests/positions";
 import { useCurrentSessionStore } from "../../../../../../../context/CurrentSessionContext";
 import styles from "./ClosePositionButton.module.css";
 

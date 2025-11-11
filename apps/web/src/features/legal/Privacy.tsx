@@ -32,7 +32,7 @@ export function Privacy() {
           <li>Account credentials and authentication information</li>
           <li>Payment and billing information</li>
           <li>Profile information and preferences</li>
-          <li>Communication records (support tickets, feedback)</li>
+          <li>Communication records (feedback)</li>
         </ul>
 
         <h3>2.2 Trading and Financial Data</h3>
@@ -75,8 +75,8 @@ export function Privacy() {
             provide relevant content
           </li>
           <li>
-            <strong>Communication:</strong> To send you updates, notifications,
-            and support communications
+            <strong>Communication:</strong> To send you updates and
+            notifications
           </li>
           <li>
             <strong>Analytics:</strong> To analyze usage patterns and improve
@@ -102,7 +102,6 @@ export function Privacy() {
           <li>Payment processing and billing</li>
           <li>Data storage and cloud services</li>
           <li>Analytics and performance monitoring</li>
-          <li>Customer support and communication</li>
           <li>Security and fraud prevention</li>
         </ul>
 
@@ -147,9 +146,6 @@ export function Privacy() {
         <ul>
           <li>Account information is retained while your account is active</li>
           <li>Trading data is retained for regulatory compliance purposes</li>
-          <li>
-            Communication records are retained for customer support purposes
-          </li>
           <li>Analytics data may be retained in aggregated form</li>
         </ul>
 
@@ -170,7 +166,6 @@ export function Privacy() {
           <li>Updating your account settings</li>
           <li>Unsubscribing from marketing emails</li>
           <li>Adjusting notification preferences</li>
-          <li>Contacting our support team</li>
         </ul>
 
         <h2>8. Cookies and Tracking Technologies</h2>

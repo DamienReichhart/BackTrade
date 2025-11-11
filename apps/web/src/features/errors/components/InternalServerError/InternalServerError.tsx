@@ -11,11 +11,10 @@ export function InternalServerError() {
       statusCode={500}
       title="Internal Server Error"
       description="Something went wrong on our end. We're working to fix it."
-      details="Please try again later or contact support if the problem persists."
+      details="Please try again later or contact us if the problem persists."
       primaryActionText="Go Home"
       secondaryActionText="Report Issue"
       secondaryAction={() => {
-        // In a real app, this would open a support ticket or feedback form
         // TODO: Implement issue reporting functionality
       }}
     />

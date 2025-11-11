@@ -4,7 +4,7 @@ import {
   type PublicUser,
   type UpdateUserRequest,
 } from "@backtrade/types";
-import { useUpdateUser } from "../../../../../api/requests/users";
+import { useUpdateUser } from "../../../../../api/hooks/requests/users";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";

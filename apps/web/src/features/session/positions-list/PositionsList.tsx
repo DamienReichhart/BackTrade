@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useSession } from "../../../api/requests/sessions";
-import { usePositionsBySession } from "../../../api/requests/positions";
+import { useSession } from "../../../api/hooks/requests/sessions";
+import { usePositionsBySession } from "../../../api/hooks/requests/positions";
 import type { Position } from "@backtrade/types";
 import { PositionDetailsModal } from "../session-running/components/PositionDetailsModal";
 import { useModal } from "../../../hooks/useModal";
