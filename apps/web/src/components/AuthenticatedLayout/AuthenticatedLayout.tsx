@@ -12,7 +12,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", to: "/dashboard" },
-  { label: "Datasets", to: "/dashboard/datasets" },
+  { label: "Admin", to: "/dashboard/admin" },
   { label: "Support", to: "/dashboard/support" },
   { label: "Plans", to: "/dashboard/plans" },
   { label: "Settings", to: "/dashboard/settings" },

@@ -5,7 +5,7 @@ import {
   CreateInstrumentRequestSchema,
   UpdateInstrumentRequestSchema,
   EmptyResponseSchema,
-  type PaginationQuery,
+  type SearchQuery,
   type Instrument,
 } from "@backtrade/types";
 
@@ -14,7 +14,7 @@ import {
  * Schemas are defined once and automatically applied
  */
 
-export function useInstruments(query?: PaginationQuery) {
+export function useInstruments(query: SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

@@ -7,7 +7,7 @@ import {
   FileUploadRequestSchema,
   FileUploadResponseSchema,
   EmptyResponseSchema,
-  type PaginationQuery,
+  type SearchQuery,
 } from "@backtrade/types";
 
 /**
@@ -15,7 +15,7 @@ import {
  * Schemas are defined once and automatically applied
  */
 
-export function useFiles(query?: PaginationQuery) {
+export function useFiles(query: SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -38,7 +38,7 @@ export function useFile(id: string) {
   });
 }
 
-export function useFilesByEntity(entityId: string, query?: PaginationQuery) {
+export function useFilesByEntity(entityId: string, query: SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

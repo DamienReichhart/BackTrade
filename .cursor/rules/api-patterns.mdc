@@ -15,7 +15,7 @@ All API requests use the unified `useFetch` hook with Zod validation.
 import { useGet } from "../hooks";
 import { SomeSchema } from "@backtrade/types";
 
-export function useSomeResource(query?: PaginationQuery) {
+export function useSomeResource(query) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
