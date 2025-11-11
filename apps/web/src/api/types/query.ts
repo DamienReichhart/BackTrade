@@ -1,10 +1,10 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import type { executeFetch } from "../utils/fetchExecutor";
-import type { FetchExecutorConfig } from ".";
+import type { FetchExecutorConfig, HttpMethod } from ".";
 
 export interface QueryAndMutationHookConfig<TInput, TOutput> {
   /** HTTP method */
-  method: string;
+  method: HttpMethod;
   /** API endpoint URL for React Query key */
   url: string;
   /** Whether this is a GET request (query) or mutation */

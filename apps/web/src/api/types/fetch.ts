@@ -1,9 +1,12 @@
 import type { z } from "zod";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
+/** HTTP request method type */
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
 export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
   /** HTTP method */
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: HttpMethod;
   /** Zod schema to validate request body before sending */
   inputSchema?: z.ZodType<TInput>;
   /** Zod schema to validate response data after receiving */
@@ -16,7 +19,7 @@ export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
 
 export interface FetchExecutorConfig<TInput, TOutput> {
   /** HTTP method */
-  method: "GET" | "POST" | "PUT" | "DELETE";
+  method: HttpMethod;
   /** API endpoint URL (relative to API_BASE_URL) */
   url: string;
   /** Zod schema to validate request body before sending */
