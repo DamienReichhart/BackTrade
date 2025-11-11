@@ -38,7 +38,7 @@ interface UserEditModalProps {
 /**
  * User Edit Modal component
  *
- * Modal for editing user details (email, role, ban status)
+ * Modal for editing user details (email, role)
  */
 export function UserEditModal({
   user,
@@ -52,7 +52,6 @@ export function UserEditModal({
   // Initialize state from user prop
   const [email, setEmail] = useState<string>(user.email);
   const [role, setRole] = useState<string>(user.role);
-  const [isBanned, setIsBanned] = useState<boolean>(user.is_banned);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateUserMutation = useUpdateUser(user.id.toString());
@@ -73,13 +72,12 @@ export function UserEditModal({
       startTransition(() => {
         setEmail(user.email);
         setRole(user.role);
-        setIsBanned(user.is_banned);
         setErrors({});
       });
     } else {
       previousIsOpenRef.current = isOpen;
     }
-  }, [user.id, user.email, user.role, user.is_banned, isOpen]);
+  }, [user.id, user.email, user.role, isOpen]);
 
   // Close on Escape key
   useEffect(() => {
@@ -147,10 +145,6 @@ export function UserEditModal({
 
       if (role !== user.role) {
         updateData.role = RoleSchema.parse(role);
-      }
-
-      if (isBanned !== user.is_banned) {
-        updateData.is_banned = isBanned;
       }
 
       // Only update if there are changes
@@ -224,19 +218,6 @@ export function UserEditModal({
               {errors.role && (
                 <span className={styles.error}>{errors.role}</span>
               )}
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={isBanned}
-                  onChange={(e) => setIsBanned(e.target.checked)}
-                  className={styles.checkbox}
-                  disabled={updateUserMutation.isLoading}
-                />
-                <span>Banned</span>
-              </label>
             </div>
 
             {errors.submit && (
