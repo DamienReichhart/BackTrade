@@ -6,8 +6,10 @@ import { PricingCards } from "./components/PricingCards";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { PricingCTA } from "./components/PricingCTA";
 import { pricingTiers, comparisonData } from "./config/pricingConfig";
+import { useNavigate } from "react-router-dom";
 import { usePlans } from "../../api/requests/plans";
 import { mergePlanData } from "./utils";
+import { useAuthStore } from "../../context/AuthContext";
 import styles from "./Pricing.module.css";
 
 /**
@@ -19,6 +21,9 @@ import styles from "./Pricing.module.css";
 export default function Pricing() {
   // Fetch plans from API (automatically fetches on mount with React Query)
   const { data: apiPlans, isLoading } = usePlans();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const isLoggedIn = !!user;
 
   // Merge API data with local configuration
   const mergedTiers = useMemo(() => {
@@ -29,9 +34,11 @@ export default function Pricing() {
    * Handle plan selection
    */
   const handleSelectPlan = (_code: string, _planId?: number) => {
-    // TODO: Implement plan selection logic (redirect to signup with plan ID, etc.)
-    // Plan selection logic will be implemented here
-    // For now, this is a placeholder function
+    if (isLoggedIn) {
+      navigate("/dashboard/plans");
+    } else {
+      navigate("/signup");
+    }
   };
 
   // Show loading state

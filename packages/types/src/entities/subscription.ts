@@ -10,7 +10,7 @@ export const SubscriptionSchema = z.object({
   current_period_start: z.iso.datetime(),
   current_period_end: z.iso.datetime(),
   cancel_at_period_end: z.boolean().default(false),
-  canceled_at: z.iso.datetime().optional(),
-  trial_end: z.iso.datetime().optional(),
+  canceled_at: z.iso.datetime().nullable().optional(),
+  trial_end: z.iso.datetime().nullable().optional(),
 });
 export type Subscription = z.infer<typeof SubscriptionSchema>;

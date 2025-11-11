@@ -1,6 +1,7 @@
 import { AuthenticatedLayout } from "../components";
 import { Dashboard } from "../features/dashboard";
 import { Settings } from "../features/settings";
+import { Plans } from "../features/plans";
 
 export const dashboardRoutes = [
   {
@@ -16,6 +17,14 @@ export const dashboardRoutes = [
     element: (
       <AuthenticatedLayout>
         <Settings />
+      </AuthenticatedLayout>
+    ),
+  },
+  {
+    path: "/dashboard/plans",
+    element: (
+      <AuthenticatedLayout>
+        <Plans />
       </AuthenticatedLayout>
     ),
   },

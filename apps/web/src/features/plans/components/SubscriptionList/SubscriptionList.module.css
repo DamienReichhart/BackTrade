@@ -1,0 +1,22 @@
+/**
+ * Subscription List Component Styles
+ */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.empty {
+  padding: var(--spacing-xl);
+  text-align: center;
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.emptyText {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

@@ -20,11 +20,3 @@ export interface PricingTier {
   stripeProductId?: string;
   stripePriceId?: string;
 }
-
-/**
- * PricingCards props
- */
-export interface PricingCardsProps {
-  tiers: PricingTier[];
-  onSelectPlan?: (code: string, planId?: number) => void;
-}
