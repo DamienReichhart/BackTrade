@@ -1,5 +1,5 @@
 ---
-globs: *.tsx
+globs: *.tsx, *.ts
 description: Coding standards and best practices
 ---
 
@@ -51,17 +51,23 @@ try {
 
 ## State Management
 
-- Use `useState` for local component state
-- Lift state up when needed
-- Keep state as close to where it's used as possible
+- **Custom Hooks**: Extract stateful logic to custom hooks in `hooks/` directory
+- **Component State**: Use `useState` only for simple, component-specific UI state
+- **Feature State**: Complex state should live in custom hooks, not components
+- **Global State**: Use Zustand for global state (auth, current session, etc.)
+- **Server State**: Use React Query for server state management
+- **Separation**: Keep business logic in hooks, UI logic in components
 
 ## Component Guidelines
 
 1. **Single Responsibility**: Each component should do one thing
-2. **Composition over Inheritance**: Build complex UIs from simple components
-3. **Props destructuring**: Always destructure in function signature
-4. **Controlled components**: Prefer controlled for forms
-5. **Key props**: Always provide unique keys for list items
+2. **Logic Separation**: Components should focus on rendering; delegate logic to hooks
+3. **Composition over Inheritance**: Build complex UIs from simple components
+4. **Props destructuring**: Always destructure in function signature
+5. **Controlled components**: use only controlled forms
+6. **Key props**: Always provide unique keys for list items
+7. **Hook Usage**: Use custom hooks for all state management and side effects
+8. **Utility Functions**: Extract pure functions to `utils/` directory
 
 ## Performance
 
