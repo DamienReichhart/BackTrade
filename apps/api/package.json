@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@backtrade/types": "workspace:*",
+    "@backtrade/eslint-config": "workspace:*",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

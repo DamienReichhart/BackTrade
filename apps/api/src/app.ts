@@ -22,8 +22,9 @@ function createApp(): Express {
   app.use(rateLimit({ windowMs: 60_000, max: 120 }));
   app.use(pinoHttp());
 
-  apiRouter.get("/health", (_req: Request, res: Response) =>
-    res.json({ status: "ok", time: new Date().toISOString() }),
+  apiRouter.get("/health", (_req: Request, res: Response) => {
+      res.json({ status: "ok", time: new Date().toISOString() });
+    }
   );
 
   app.use("/api/v1", apiRouter);
