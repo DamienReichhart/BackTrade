@@ -75,7 +75,8 @@ export function Privacy() {
             provide relevant content
           </li>
           <li>
-            <strong>Communication:</strong> To send you updates and notifications
+            <strong>Communication:</strong> To send you updates and
+            notifications
           </li>
           <li>
             <strong>Analytics:</strong> To analyze usage patterns and improve

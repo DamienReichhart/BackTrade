@@ -13,7 +13,6 @@ export function usePost<TOutput = unknown, TInput = unknown>(
 ) {
   return useFetch<TOutput, TInput>(url, {
     method: "POST",
-    autoFetch: options?.autoFetch ?? false, // Default to false for POST requests
     ...options,
   });
 }

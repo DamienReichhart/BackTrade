@@ -13,7 +13,6 @@ export function useDelete<TOutput = unknown>(
 ) {
   return useFetch<TOutput>(url, {
     method: "DELETE",
-    autoFetch: options?.autoFetch ?? false, // Default to false for DELETE requests
     ...options,
   });
 }

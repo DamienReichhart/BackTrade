@@ -11,9 +11,14 @@ export function useGet<TOutput = unknown>(
   url: string,
   options?: Omit<fetchOptions<never, TOutput>, "method" | "inputSchema">,
 ) {
+  const { queryOptions, ...restOptions } = options ?? {};
   return useFetch<TOutput>(url, {
     method: "GET",
-    autoFetch: options?.autoFetch ?? true, // Default to true for GET requests
-    ...options,
+    // Default enabled to true for GET requests if not specified
+    queryOptions: {
+      enabled: queryOptions?.enabled ?? true,
+      ...queryOptions,
+    },
+    ...restOptions,
   });
 }

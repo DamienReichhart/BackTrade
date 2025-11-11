@@ -8,10 +8,27 @@ export interface fetchOptions<TInput = unknown, TOutput = unknown> {
   inputSchema?: z.ZodType<TInput>;
   /** Zod schema to validate response data after receiving */
   outputSchema?: z.ZodType<TOutput>;
-  /** For GET requests: automatically fetch on mount */
-  autoFetch?: boolean;
   /** Additional fetch options */
   fetchOptions?: Omit<RequestInit, "body" | "method">;
-  /** React Query options (for GET only) */
+  /** React Query options (for GET only). Use `enabled` to control auto-fetch behavior */
   queryOptions?: Omit<UseQueryOptions<TOutput, Error>, "queryKey" | "queryFn">;
+}
+
+export interface FetchExecutorOptions<TInput, TOutput> {
+  /** HTTP method */
+  method: string;
+  /** API endpoint URL (relative to API_BASE_URL) */
+  url: string;
+  /** Zod schema to validate request body before sending */
+  inputSchema?: z.ZodType<TInput>;
+  /** Zod schema to validate response data after receiving */
+  outputSchema?: z.ZodType<TOutput>;
+  /** Additional fetch options */
+  fetchOptions?: Omit<RequestInit, "body" | "method">;
+  /** Current access token for authorization */
+  accessToken?: string;
+  /** Current refresh token for token refresh */
+  refreshToken?: string;
+  /** Callback to update tokens after refresh */
+  onTokenRefresh?: (accessToken: string, refreshToken: string) => void;
 }

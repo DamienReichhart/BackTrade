@@ -13,7 +13,6 @@ export function usePut<TOutput = unknown, TInput = unknown>(
 ) {
   return useFetch<TOutput, TInput>(url, {
     method: "PUT",
-    autoFetch: options?.autoFetch ?? false, // Default to false for PUT requests
     ...options,
   });
 }
