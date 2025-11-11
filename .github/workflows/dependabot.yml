@@ -53,7 +53,8 @@ jobs:
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
-          gh pr review --approve "$PR_URL"
+          gh pr review "$PR_URL" --comment --body "✅ **Auto-approved**: This is a patch or minor version update. All checks passed."
+          gh pr merge "$PR_URL" --auto --squash
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
