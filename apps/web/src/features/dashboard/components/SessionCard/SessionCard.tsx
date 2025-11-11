@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import type { Session } from "@backtrade/types";
-import { useInstrument } from "../../../../api/hooks/requests/instruments";
 import { formatDate } from "../../../../utils/index";
+import { useSessionCard } from "../../hooks/useSessionCard";
+import { getSessionStatusColorClass } from "../../utils/sessions";
 import styles from "./SessionCard.module.css";
 
 interface SessionCardProps {
@@ -14,37 +15,13 @@ interface SessionCardProps {
  * Displays information about a trading session
  */
 export function SessionCard({ session }: SessionCardProps) {
-  // Fetch instrument data with automatic caching via React Query
-  const { data: instrument, isLoading: isLoadingInstrument } = useInstrument(
-    String(session.instrument_id),
-  );
+  const { instrumentDisplay, sessionName, isLoadingInstrument } =
+    useSessionCard(session);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "RUNNING":
-        return styles.statusRunning;
-      case "PAUSED":
-        return styles.statusPaused;
-      case "COMPLETED":
-        return styles.statusCompleted;
-      case "DRAFT":
-        return styles.statusDraft;
-      case "ARCHIVED":
-        return styles.statusArchived;
-      default:
-        return "";
-    }
+    const colorClass = getSessionStatusColorClass(status);
+    return colorClass ? (styles[colorClass] ?? "") : "";
   };
-
-  // Display instrument name or fallback to ID while loading
-  const instrumentDisplay = isLoadingInstrument
-    ? `Loading...`
-    : instrument
-      ? instrument.display_name
-      : `#${session.instrument_id}`;
-
-  // Get the session display name
-  const sessionName = session.name ?? `Session #${session.id}`;
 
   return (
     <Link to={`/dashboard/sessions/${session.id}`} className={styles.card}>
