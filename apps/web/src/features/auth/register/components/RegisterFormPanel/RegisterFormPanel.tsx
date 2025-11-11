@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Checkbox } from "../../../../../components/Checkbox";
@@ -7,6 +6,7 @@ import {
   AlternativeOptions,
   FormFooter,
 } from "../../../components";
+import { useRegisterForm } from "../../../hooks";
 import styles from "./RegisterFormPanel.module.css";
 
 /**
@@ -16,104 +16,18 @@ import styles from "./RegisterFormPanel.module.css";
  * and terms acceptance fields
  */
 export function RegisterFormPanel() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [nameError, setNameError] = useState<string | undefined>(
-    "Enter your name.",
-  );
-  const [emailError, setEmailError] = useState<string | undefined>(
-    "Enter a valid email.",
-  );
-  const [passwordError, setPasswordError] = useState<string | undefined>(
-    "Minimum 8 characters.",
-  );
-  const [confirmPasswordError, setConfirmPasswordError] = useState<
-    string | undefined
-  >("Passwords must match.");
-
-  /**
-   * Handle form submission
-   */
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement registration logic
-  };
-
-  /**
-   * Handle name input change
-   */
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setName(value);
-
-    if (value.length === 0) {
-      setNameError("Enter your name.");
-    } else if (value.length < 2) {
-      setNameError("Name must be at least 2 characters.");
-    } else {
-      setNameError(undefined);
-    }
-  };
-
-  /**
-   * Handle email input change
-   */
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-
-    // Validate email
-    if (value.length === 0) {
-      setEmailError("Enter a valid email.");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      setEmailError("Enter a valid email.");
-    } else {
-      setEmailError(undefined);
-    }
-  };
-
-  /**
-   * Handle password input change
-   */
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-
-    // Validate password
-    if (value.length === 0) {
-      setPasswordError("Minimum 8 characters.");
-    } else if (value.length < 8) {
-      setPasswordError("Minimum 8 characters.");
-    } else {
-      setPasswordError(undefined);
-    }
-
-    // Validate password match if confirm password has value
-    if (confirmPassword && value !== confirmPassword) {
-      setConfirmPasswordError("Passwords must match.");
-    } else if (confirmPassword && value === confirmPassword) {
-      setConfirmPasswordError(undefined);
-    }
-  };
-
-  /**
-   * Handle confirm password input change
-   */
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-
-    if (value !== password) {
-      setConfirmPasswordError("Passwords must match.");
-    } else {
-      setConfirmPasswordError(undefined);
-    }
-  };
+  const {
+    formState,
+    errors,
+    isLoading,
+    isFormValid,
+    handleNameChange,
+    handleEmailChange,
+    handlePasswordChange,
+    handleConfirmPasswordChange,
+    handleAcceptTermsChange,
+    handleSubmit,
+  } = useRegisterForm();
 
   return (
     <div className={styles.panel}>
@@ -128,10 +42,10 @@ export function RegisterFormPanel() {
             label="Name"
             type="text"
             placeholder="Your name"
-            value={name}
-            onChange={handleNameChange}
-            error={nameError}
-            hasError={!!nameError}
+            value={formState.name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            error={errors.name}
+            hasError={!!errors.name}
           />
 
           {/* Email Input */}
@@ -139,38 +53,38 @@ export function RegisterFormPanel() {
             label="Email"
             type="email"
             placeholder="you@domain.com"
-            value={email}
-            onChange={handleEmailChange}
-            error={emailError}
-            hasError={!!emailError}
+            value={formState.email}
+            onChange={(e) => handleEmailChange(e.target.value)}
+            error={errors.email}
+            hasError={!!errors.email}
           />
 
           {/* Password Input */}
           <Input
             label="Password"
             type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            error={passwordError}
-            hasError={!!passwordError}
+            value={formState.password}
+            onChange={(e) => handlePasswordChange(e.target.value)}
+            error={errors.password}
+            hasError={!!errors.password}
           />
 
           {/* Confirm Password Input */}
           <Input
             label="Confirm Password"
             type="password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            error={confirmPasswordError}
-            hasError={!!confirmPasswordError}
+            value={formState.confirmPassword}
+            onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+            error={errors.confirmPassword}
+            hasError={!!errors.confirmPassword}
           />
 
           {/* Terms Acceptance */}
           <div className={styles.formOptions}>
             <Checkbox
               label="I accept the Terms of Service and Privacy Policy"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
+              checked={formState.acceptTerms}
+              onChange={(e) => handleAcceptTermsChange(e.target.checked)}
             />
           </div>
 
@@ -181,9 +95,9 @@ export function RegisterFormPanel() {
             size="large"
             fullWidth
             className={styles.submitButton}
-            disabled={!acceptTerms}
+            disabled={!isFormValid || isLoading}
           >
-            Create account
+            {isLoading ? "Creating account..." : "Create account"}
           </Button>
 
           {/* Alternative Registration Options */}
