@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePut, useDelete } from "../core";
 import { z } from "zod";
 import {
   SubscriptionSchema,
