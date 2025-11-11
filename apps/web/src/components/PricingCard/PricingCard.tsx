@@ -32,19 +32,6 @@ interface PricingCardProps {
  *
  * Displays a pricing plan card with features and call-to-action
  *
- * @example
- * ```tsx
- * <PricingCard
- *   name="Pro"
- *   price={19}
- *   currency="€"
- *   period="/month"
- *   description="For professionals"
- *   features={[...]}
- *   ctaText="Get started"
- *   ctaVariant="primary"
- * />
- * ```
  */
 export function PricingCard({
   name,

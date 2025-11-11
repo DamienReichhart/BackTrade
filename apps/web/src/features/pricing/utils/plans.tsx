@@ -22,6 +22,7 @@ export function mergePlanData(
       return {
         ...tier,
         id: apiPlan.id,
+        price: apiPlan.price,
         stripeProductId: apiPlan.stripe_product_id,
         stripePriceId: apiPlan.stripe_price_id,
         currency:
