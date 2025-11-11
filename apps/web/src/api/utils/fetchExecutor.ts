@@ -92,6 +92,20 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
     );
   }
 
+  // Check for empty responses (204 No Content, 205 Reset Content, or no content)
+  const contentType = response.headers.get("content-type");
+  const contentLength = response.headers.get("content-length");
+  const isEmptyResponse =
+    response.status === 204 ||
+    response.status === 205 ||
+    contentLength === "0" ||
+    (contentType === null && contentLength === null);
+
+  // Return undefined for empty responses
+  if (isEmptyResponse) {
+    return undefined as TOutput;
+  }
+
   // Parse and validate response
   const data = await response.json();
 
