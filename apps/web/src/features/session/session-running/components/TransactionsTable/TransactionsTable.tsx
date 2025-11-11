@@ -4,7 +4,7 @@ import type { Transaction } from "@backtrade/types";
 import { TransactionDetailsModal } from "../TransactionDetailsModal";
 import { useModal } from "../../../../../hooks/useModal";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
-import { useTransactionsBySession } from "../../../../../api/requests/transactions";
+import { useTransactionsBySession } from "../../../../../api/hooks/requests/transactions";
 
 /**
  * Table listing account transactions (PNL, fees, deposits, withdrawals, etc.).

@@ -1,4 +1,4 @@
-import { useGet } from "../hooks";
+import { useGet } from "..";
 import { AuditLogSchema, type DateRangeQuery } from "@backtrade/types";
 import { z } from "zod";
 

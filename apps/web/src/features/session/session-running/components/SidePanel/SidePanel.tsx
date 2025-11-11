@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
-import { useCreatePosition } from "../../../../../api/requests/positions";
+import { useCreatePosition } from "../../../../../api/hooks/requests/positions";
 import type { CreatePositionRequest } from "@backtrade/types";
 
 /**

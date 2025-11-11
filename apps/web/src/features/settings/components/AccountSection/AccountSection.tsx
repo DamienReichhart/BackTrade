@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input, Button } from "../../../../components";
 import { useAuthStore } from "../../../../context/AuthContext";
-import { useUpdateUser } from "../../../../api/requests/users";
+import { useUpdateUser } from "../../../../api/hooks/requests/users";
 import styles from "./AccountSection.module.css";
 
 interface AccountSectionProps {

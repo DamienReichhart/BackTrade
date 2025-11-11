@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useSession } from "../../../api/requests/sessions";
-import { useTransactionsBySession } from "../../../api/requests/transactions";
+import { useSession } from "../../../api/hooks/requests/sessions";
+import { useTransactionsBySession } from "../../../api/hooks/requests/transactions";
 import type { Transaction } from "@backtrade/types";
 import { TransactionDetailsModal } from "../session-running/components/TransactionDetailsModal";
 import { useModal } from "../../../hooks/useModal";

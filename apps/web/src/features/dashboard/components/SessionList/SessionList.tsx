@@ -1,4 +1,4 @@
-import { useSessions } from "../../../../api/requests/sessions";
+import { useSessions } from "../../../../api/hooks/requests/sessions";
 import { SessionCard } from "../SessionCard";
 import { LoadingState } from "../LoadingState";
 import { ErrorState } from "../ErrorState";

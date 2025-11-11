@@ -1,5 +1,5 @@
 import { useFetch } from "./useFetch";
-import type { fetchOptions } from "../types";
+import type { fetchOptions } from "../../types";
 
 /**
  * DELETE request hook built on React Query

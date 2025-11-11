@@ -1,5 +1,5 @@
 import styles from "./CloseAllButton.module.css";
-import { useCloseAllPositions } from "../../../../../../../../../api/requests/positions";
+import { useCloseAllPositions } from "../../../../../../../../../api/hooks/requests/positions";
 import { useCurrentSessionStore } from "../../../../../../../../../context/CurrentSessionContext";
 
 interface CloseAllButtonProps {

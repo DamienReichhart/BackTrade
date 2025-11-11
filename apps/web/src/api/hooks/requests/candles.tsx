@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "../hooks";
+import { useGet, usePost, usePut, useDelete } from "..";
 import { z } from "zod";
 import {
   CandleSchema,

@@ -1,4 +1,4 @@
-import { useGet } from "../hooks";
+import { useGet } from "..";
 import { HealthSchema } from "@backtrade/types";
 
 /**

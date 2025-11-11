@@ -1,4 +1,4 @@
-import { usePost, useGet } from "../hooks";
+import { usePost, useGet } from "..";
 import {
   LoginRequestSchema,
   RegisterRequestSchema,

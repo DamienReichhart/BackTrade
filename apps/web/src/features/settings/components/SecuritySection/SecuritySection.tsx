@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Input, Toggle } from "../../../../components";
-import { useChangePassword } from "../../../../api/requests/auth";
+import { useChangePassword } from "../../../../api/hooks/requests/auth";
 import styles from "./SecuritySection.module.css";
 
 /**

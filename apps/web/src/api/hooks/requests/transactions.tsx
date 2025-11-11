@@ -1,4 +1,4 @@
-import { useGet, usePost, useDelete } from "../hooks";
+import { useGet, usePost, useDelete } from "..";
 import {
   TransactionSchema,
   TransactionListResponseSchema,

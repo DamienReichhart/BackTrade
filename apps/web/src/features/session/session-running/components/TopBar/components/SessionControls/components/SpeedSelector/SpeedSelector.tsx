@@ -1,6 +1,6 @@
 import styles from "./SpeedSelector.module.css";
 import type { Speed } from "@backtrade/types";
-import { useUpdateSession } from "../../../../../../../../../api/requests/sessions";
+import { useUpdateSession } from "../../../../../../../../../api/hooks/requests/sessions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentSessionStore } from "../../../../../../../../../context/CurrentSessionContext";
 import { Select } from "../../../../../../../../../components/Select";
