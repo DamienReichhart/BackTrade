@@ -1,4 +1,5 @@
 import { ErrorPage } from "../ErrorPage";
+import { getErrorConfig } from "../../utils/errorConfig";
 
 /**
  * 404 Not Found error page component
@@ -6,13 +7,15 @@ import { ErrorPage } from "../ErrorPage";
  * Displayed when a user navigates to a page that doesn't exist
  */
 export function NotFoundError() {
+  const config = getErrorConfig(404);
+
   return (
     <ErrorPage
       statusCode={404}
-      title="Page Not Found"
-      description="The page you're looking for doesn't exist or has been moved."
-      details="Please check the URL or return to the homepage."
-      primaryActionText="Go Home"
+      title={config.title}
+      description={config.description}
+      details={config.details}
+      primaryActionText={config.primaryActionText}
     />
   );
 }
