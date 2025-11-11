@@ -1,15 +1,10 @@
-import { useMemo } from "react";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { PricingHero } from "./components/PricingHero";
 import { PricingCards } from "./components/PricingCards";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { PricingCTA } from "./components/PricingCTA";
-import { pricingTiers, comparisonData } from "./config/pricingConfig";
-import { useNavigate } from "react-router-dom";
-import { usePlans } from "../../api/hooks/requests/plans";
-import { mergePlanData } from "./utils";
-import { useAuthStore } from "../../context/AuthContext";
+import { usePricing, usePlanSelection } from "./hooks";
 import styles from "./Pricing.module.css";
 
 /**
@@ -19,27 +14,8 @@ import styles from "./Pricing.module.css";
  * Fetches plan data from API and merges with local configuration
  */
 export default function Pricing() {
-  // Fetch plans from API (automatically fetches on mount with React Query)
-  const { data: apiPlans, isLoading } = usePlans();
-  const navigate = useNavigate();
-  const { user } = useAuthStore();
-  const isLoggedIn = !!user;
-
-  // Merge API data with local configuration
-  const mergedTiers = useMemo(() => {
-    return mergePlanData(pricingTiers, apiPlans);
-  }, [apiPlans]);
-
-  /**
-   * Handle plan selection
-   */
-  const handleSelectPlan = (_code: string, _planId?: number) => {
-    if (isLoggedIn) {
-      navigate("/dashboard/plans");
-    } else {
-      navigate("/signup");
-    }
-  };
+  const { mergedTiers, comparisonData, isLoading, isLoggedIn } = usePricing();
+  const { handleSelectPlan } = usePlanSelection(isLoggedIn);
 
   // Show loading state
   if (isLoading) {
