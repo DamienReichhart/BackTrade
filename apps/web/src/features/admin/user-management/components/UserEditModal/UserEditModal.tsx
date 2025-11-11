@@ -1,10 +1,6 @@
-import { useState, useEffect, useRef, useMemo, startTransition } from "react";
-import {
-  RoleSchema,
-  type PublicUser,
-  type UpdateUserRequest,
-} from "@backtrade/types";
-import { useUpdateUser } from "../../../../../api/hooks/requests/users";
+import { useMemo } from "react";
+import type { PublicUser } from "@backtrade/types";
+import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
@@ -49,118 +45,20 @@ export function UserEditModal({
   // Use a key based on user.id and isOpen to reset form state
   const formKey = useMemo(() => `${user.id}-${isOpen}`, [user.id, isOpen]);
 
-  // Initialize state from user prop
-  const [email, setEmail] = useState<string>(user.email);
-  const [role, setRole] = useState<string>(user.role);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const {
+    // Form state
+    email,
+    setEmail,
+    role,
+    setRole,
+    errors,
 
-  const updateUserMutation = useUpdateUser(user.id.toString());
+    // Mutation state
+    isLoading,
 
-  // Reset form state when user changes or modal opens
-  const previousUserIdRef = useRef<number>(user.id);
-  const previousIsOpenRef = useRef<boolean>(isOpen);
-
-  useEffect(() => {
-    const userChanged = previousUserIdRef.current !== user.id;
-    const modalJustOpened = !previousIsOpenRef.current && isOpen;
-
-    if (isOpen && (userChanged || modalJustOpened)) {
-      previousUserIdRef.current = user.id;
-      previousIsOpenRef.current = isOpen;
-
-      // Use startTransition to defer state updates and avoid setState
-      startTransition(() => {
-        setEmail(user.email);
-        setRole(user.role);
-        setErrors({});
-      });
-    } else {
-      previousIsOpenRef.current = isOpen;
-    }
-  }, [user.id, user.email, user.role, isOpen]);
-
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  /**
-   * Validate form
-   */
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Invalid email format";
-    }
-
-    if (!role || !RoleSchema.safeParse(role).success) {
-      newErrors.role = "Invalid role";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  /**
-   * Handle form submission
-   */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validate()) {
-      return;
-    }
-
-    try {
-      const updateData: UpdateUserRequest = {};
-
-      if (email !== user.email) {
-        updateData.email = email;
-      }
-
-      if (role !== user.role) {
-        updateData.role = RoleSchema.parse(role);
-      }
-
-      // Only update if there are changes
-      if (Object.keys(updateData).length > 0) {
-        await updateUserMutation.execute(updateData);
-        onSuccess();
-      } else {
-        onClose();
-      }
-    } catch (error) {
-      setErrors({
-        submit:
-          error instanceof Error ? error.message : "Failed to update user",
-      });
-    }
-  };
+    // Handlers
+    handleSubmit,
+  } = useUserEditModal(user, isOpen, onClose, onSuccess);
 
   if (!isOpen) return null;
 
@@ -181,7 +79,7 @@ export function UserEditModal({
             className={styles.closeButton}
             onClick={onClose}
             aria-label="Close modal"
-            disabled={updateUserMutation.isLoading}
+            disabled={isLoading}
           >
             ×
           </button>
@@ -196,7 +94,7 @@ export function UserEditModal({
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
               hasError={!!errors.email}
-              disabled={updateUserMutation.isLoading}
+              disabled={isLoading}
               required
             />
 
@@ -213,7 +111,7 @@ export function UserEditModal({
                   { value: "ADMIN", label: "Admin" },
                 ]}
                 placeholder="Select role"
-                disabled={updateUserMutation.isLoading}
+                disabled={isLoading}
               />
               {errors.role && (
                 <span className={styles.error}>{errors.role}</span>
@@ -230,7 +128,7 @@ export function UserEditModal({
               variant="outline"
               size="medium"
               onClick={onClose}
-              disabled={updateUserMutation.isLoading}
+              disabled={isLoading}
               type="button"
             >
               Cancel
@@ -239,9 +137,9 @@ export function UserEditModal({
               variant="primary"
               size="medium"
               type="submit"
-              disabled={updateUserMutation.isLoading}
+              disabled={isLoading}
             >
-              {updateUserMutation.isLoading ? "Updating..." : "Update User"}
+              {isLoading ? "Updating..." : "Update User"}
             </Button>
           </div>
         </form>
