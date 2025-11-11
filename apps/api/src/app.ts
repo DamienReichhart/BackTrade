@@ -23,9 +23,8 @@ function createApp(): Express {
   app.use(pinoHttp());
 
   apiRouter.get("/health", (_req: Request, res: Response) => {
-      res.json({ status: "ok", time: new Date().toISOString() });
-    }
-  );
+    res.json({ status: "ok", time: new Date().toISOString() });
+  });
 
   app.use("/api/v1", apiRouter);
 

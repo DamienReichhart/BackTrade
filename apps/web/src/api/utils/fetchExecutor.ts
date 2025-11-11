@@ -61,7 +61,9 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
       }
 
       try {
-        const refreshedTokens = await refreshAccessToken(executorConfig.refreshToken);
+        const refreshedTokens = await refreshAccessToken(
+          executorConfig.refreshToken,
+        );
 
         // Update tokens using the callback
         if (executorConfig.onTokenRefresh) {
@@ -111,7 +113,10 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
   const responseData = await response.json();
 
   if (executorConfig.outputSchema) {
-    return validateApiOutput<TOutput>(executorConfig.outputSchema, responseData);
+    return validateApiOutput<TOutput>(
+      executorConfig.outputSchema,
+      responseData,
+    );
   }
 
   return responseData as TOutput;
