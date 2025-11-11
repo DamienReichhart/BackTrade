@@ -38,7 +38,7 @@ export function useSubscription(id: string) {
   });
 }
 
-export function useSubscriptionsByUser(userId: string, query?: DateRangeQuery) {
+export function useSubscriptionsByUser(userId: string | undefined, query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -48,12 +48,16 @@ export function useSubscriptionsByUser(userId: string, query?: DateRangeQuery) {
     });
   }
 
+  // Use placeholder URL when userId is undefined (query will be disabled)
   const url = query
-    ? `/users/${userId}/subscriptions?${searchParams.toString()}`
-    : `/users/${userId}/subscriptions`;
+    ? `/users/${userId ?? ""}/subscriptions?${searchParams.toString()}`
+    : `/users/${userId ?? ""}/subscriptions`;
 
   return useGet(url, {
     outputSchema: z.array(SubscriptionSchema),
+    queryOptions: {
+      enabled: !!userId && userId.length > 0,
+    },
   });
 }
 
