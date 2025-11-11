@@ -1,4 +1,3 @@
-import { Button } from "../../components";
 import { useAuthStore } from "../../context/AuthContext";
 import styles from "./Settings.module.css";
 import {
@@ -21,9 +20,6 @@ export function Settings() {
       {/* Header */}
       <header className={styles.header}>
         <h1 className={styles.title}>Settings</h1>
-        <Button variant="outline" size="medium">
-          Back to app
-        </Button>
       </header>
 
       {/* Settings Sections */}
