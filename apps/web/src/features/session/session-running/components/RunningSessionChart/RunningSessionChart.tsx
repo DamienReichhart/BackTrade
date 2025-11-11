@@ -7,14 +7,13 @@ import {
   type PriceFormatCustom,
 } from "lightweight-charts";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
-import { convertCandleToChartData } from "../../../../../utils";
+import { convertCandleToChartData, getCSSVar } from "../../../../../utils";
 import {
   getChartGridSettings,
   type ChartGridSettings,
 } from "../../../../../utils/localStorage";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
-import { getCSSVar } from "../../../../../utils";
 
 /**
  * RunningSessionChart component

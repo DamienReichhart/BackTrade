@@ -1,4 +1,3 @@
-
 const root = document.documentElement;
 
 /**
@@ -8,4 +7,4 @@ const root = document.documentElement;
  */
 export const getCSSVar = (varName: string) => {
   return getComputedStyle(root).getPropertyValue(varName).trim();
-}
+};

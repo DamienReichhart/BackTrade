@@ -83,7 +83,6 @@ export function calculateCandleDateRange(
   };
 }
 
-
 /**
  * Format a date string to a readable format
  */
