@@ -1,1 +1,0 @@
-export { SupportRequestList } from "./SupportRequestList";

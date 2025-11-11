@@ -7,7 +7,6 @@ export * from "./instrument";
 export * from "./dataset";
 export * from "./candle";
 export * from "./report";
-export * from "./support";
 export * from "./file";
 export * from "./plan";
 export * from "./subscription";

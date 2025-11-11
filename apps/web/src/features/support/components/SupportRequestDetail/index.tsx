@@ -1,1 +1,0 @@
-export { SupportRequestDetail } from "./SupportRequestDetail";

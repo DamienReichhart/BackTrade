@@ -1,1 +1,0 @@
-export { SupportRequestCard } from "./SupportRequestCard";
