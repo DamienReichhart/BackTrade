@@ -6,3 +6,4 @@ export { Input } from "./Input";
 export { PricingCard } from "./PricingCard";
 export { AuthenticatedLayout } from "./AuthenticatedLayout";
 export { Toggle } from "./Toggle";
+export { ConfirmModal } from "./ConfirmModal";
