@@ -1,13 +1,13 @@
 import styles from "./SessionInfo.module.css";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
 import { useSessionMetrics } from "../../hooks";
+import { formatCurrency, formatPercentage } from "./utils";
 
 /**
  * Session info component displaying session KPIs (balance, equity, drawdown, win rate, leverage).
  * Uses currentSession from the global store, which is set by SessionRunning.
  */
 export function SessionInfo() {
-  const currency = "€";
   const { currentSession } = useCurrentSessionStore();
   const { metrics, isLoading } = useSessionMetrics();
 
@@ -48,32 +48,24 @@ export function SessionInfo() {
         <div>
           <div className={styles.infoLabel}>Start balance</div>
           <div className={styles.infoValue}>
-            {currency}{" "}
-            {(currentSession?.initial_balance ?? 0).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {formatCurrency(currentSession?.initial_balance ?? 0)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Current equity</div>
-          <div className={styles.infoValue}>
-            {currency}{" "}
-            {metrics.equity.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </div>
+          <div className={styles.infoValue}>{formatCurrency(metrics.equity)}</div>
         </div>
         <div>
           <div className={styles.infoLabel}>Drawdown</div>
           <div className={styles.infoValue}>
-            -{metrics.drawdownPct.toFixed(1)}%
+            -{formatPercentage(metrics.drawdownPct)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Win rate</div>
-          <div className={styles.infoValue}>{metrics.winRate.toFixed(1)}%</div>
+          <div className={styles.infoValue}>
+            {formatPercentage(metrics.winRate)}
+          </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Leverage</div>

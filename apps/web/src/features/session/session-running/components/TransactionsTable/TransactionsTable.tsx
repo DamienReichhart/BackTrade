@@ -2,6 +2,11 @@ import styles from "./TransactionsTable.module.css";
 import { TransactionDetailsModal } from "../TransactionDetailsModal";
 import { useTransactionsTable } from "../../hooks";
 import { formatTime } from "@backtrade/utils";
+import {
+  formatAmount,
+  getAmountClassName,
+  formatBalanceAfter,
+} from "./utils";
 
 /**
  * Table listing account transactions (PNL, fees, deposits, withdrawals, etc.).
@@ -66,14 +71,10 @@ export function TransactionsTable() {
                     <td>{formatTime(t.created_at)}</td>
                     <td>#{t.id}</td>
                     <td>{t.transaction_type}</td>
-                    <td
-                      className={
-                        t.amount >= 0 ? styles.amountPos : styles.amountNeg
-                      }
-                    >
-                      {t.amount.toFixed(2)}
+                    <td className={styles[getAmountClassName(t.amount)]}>
+                      {formatAmount(t.amount)}
                     </td>
-                    <td>{t.balance_after.toFixed(2)}</td>
+                    <td>{formatBalanceAfter(t.balance_after)}</td>
                   </tr>
                 ))}
             </tbody>

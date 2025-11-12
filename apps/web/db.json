@@ -56443,6 +56443,15 @@
       "position_status": "OPEN",
       "opened_at": "2020-01-16T10:30:00Z",
       "id": 14
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "OPEN",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 15
     }
   ],
   "transactions": [

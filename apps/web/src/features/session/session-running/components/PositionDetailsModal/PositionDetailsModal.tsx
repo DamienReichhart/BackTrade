@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import { Button } from "../../../../../components";
 import type { Position } from "@backtrade/types";
 import { formatDateTime } from "@backtrade/utils";
+import { useModalBehavior } from "./hooks";
 import styles from "./PositionDetailsModal.module.css";
 
 interface PositionDetailsModalProps {
@@ -18,32 +18,7 @@ export function PositionDetailsModal({
   isOpen,
   onClose,
 }: PositionDetailsModalProps) {
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useModalBehavior(isOpen, onClose);
 
   if (!isOpen || !position) return null;
 
