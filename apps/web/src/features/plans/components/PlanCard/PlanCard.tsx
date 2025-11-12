@@ -35,7 +35,9 @@ export function PlanCard({
       <div className={styles.content}>
         <div className={styles.info}>
           <div className={styles.priceSection}>
-            <span className={styles.price}>{formatPrice(plan.price)}</span>
+            <span className={styles.price}>
+              {formatPrice(plan.price, plan.currency)}
+            </span>
             <span className={styles.period}>/month</span>
           </div>
           <div className={styles.infoItem}>

@@ -2,14 +2,14 @@
  * Format currency value for display
  *
  * @param value - Numeric value to format
- * @param currency - Currency symbol (default: "€")
+ * @param currency - ISO currency code (default: "EUR")
  * @returns Formatted currency string
  */
-export function formatCurrency(value: number, currency = "€"): string {
-  return `${currency} ${value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+export function formatCurrency(value: number, currency = "EUR"): string {
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
 }
 
 /**
