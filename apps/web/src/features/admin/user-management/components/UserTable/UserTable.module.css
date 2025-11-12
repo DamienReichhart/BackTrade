@@ -104,22 +104,20 @@
   color: var(--color-text-secondary);
 }
 
-.bannedBadge {
+.statusBadge {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
+}
+
+.bannedBadge {
   background-color: var(--color-danger-bg-20);
   color: var(--color-danger);
 }
 
 .activeBadge {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
   background-color: var(--color-success-bg-20);
   color: var(--color-success);
 }

@@ -166,9 +166,9 @@ export function UserTable({
                   </td>
                   <td>
                     <span
-                      className={
+                      className={`${styles.statusBadge} ${
                         styles[getStatusBadgeClassName(user.is_banned)]
-                      }
+                      }`}
                     >
                       {getStatusLabel(user.is_banned)}
                     </span>
