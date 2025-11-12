@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { PublicUser } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
+import { Button } from "../../../../../components";
 import styles from "./UserDetailsModal.module.css";
 
 /**
@@ -85,64 +86,67 @@ export function UserDetailsModal({
         </div>
 
         <div className={styles.content}>
-          <div className={styles.detailRow}>
-            <span className={styles.label}>ID</span>
-            <span className={styles.value}>{user.id}</span>
-          </div>
-
-          <div className={styles.detailRow}>
-            <span className={styles.label}>Email</span>
-            <span className={styles.value}>{user.email}</span>
-          </div>
-
-          <div className={styles.detailRow}>
-            <span className={styles.label}>Role</span>
-            <span
-              className={`${styles.badge} ${
-                user.role === "ADMIN"
-                  ? styles.roleAdmin
-                  : user.role === "USER"
-                    ? styles.roleUser
-                    : styles.roleAnonymous
-              }`}
-            >
-              {user.role}
-            </span>
-          </div>
-
-          <div className={styles.detailRow}>
-            <span className={styles.label}>Status</span>
-            <span
-              className={`${styles.badge} ${
-                user.is_banned ? styles.bannedBadge : styles.activeBadge
-              }`}
-            >
-              {user.is_banned ? "Banned" : "Active"}
-            </span>
-          </div>
-
-          {user.stripe_customer_id && (
-            <div className={styles.detailRow}>
-              <span className={styles.label}>Stripe Customer ID</span>
-              <span className={styles.value}>{user.stripe_customer_id}</span>
+          <div className={styles.section}>
+            <div className={styles.row}>
+              <span className={styles.label}>ID:</span>
+              <span className={styles.value}>{user.id}</span>
             </div>
-          )}
-
-          <div className={styles.detailRow}>
-            <span className={styles.label}>Created At</span>
-            <span className={styles.value}>{formatDate(user.created_at)}</span>
+            <div className={styles.row}>
+              <span className={styles.label}>Email:</span>
+              <span className={styles.value}>{user.email}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Role:</span>
+              <span
+                className={`${styles.badge} ${
+                  user.role === "ADMIN"
+                    ? styles.roleAdmin
+                    : user.role === "USER"
+                      ? styles.roleUser
+                      : styles.roleAnonymous
+                }`}
+              >
+                {user.role}
+              </span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Status:</span>
+              <span
+                className={`${styles.badge} ${
+                  user.is_banned ? styles.bannedBadge : styles.activeBadge
+                }`}
+              >
+                {user.is_banned ? "Banned" : "Active"}
+              </span>
+            </div>
+            {user.stripe_customer_id && (
+              <div className={styles.row}>
+                <span className={styles.label}>Stripe Customer ID:</span>
+                <span className={styles.value}>{user.stripe_customer_id}</span>
+              </div>
+            )}
           </div>
 
-          <div className={styles.detailRow}>
-            <span className={styles.label}>Updated At</span>
-            <span className={styles.value}>{formatDate(user.updated_at)}</span>
+          <div className={styles.section}>
+            <div className={styles.row}>
+              <span className={styles.label}>Created At:</span>
+              <span className={styles.value}>
+                {formatDate(user.created_at)}
+              </span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Updated At:</span>
+              <span className={styles.value}>
+                {formatDate(user.updated_at)}
+              </span>
+            </div>
           </div>
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.closeFooterButton} onClick={onClose}>
+          <Button variant="primary" size="medium" onClick={onClose}>
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(138, 164, 197, 0.03) 50%,
+    var(--color-accent-bg-03) 50%,
     transparent 100%
   );
 }

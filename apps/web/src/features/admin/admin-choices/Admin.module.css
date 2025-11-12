@@ -51,7 +51,7 @@
   background-color: var(--color-surface-tertiary);
   border-color: var(--color-accent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--color-shadow-overlay-10);
 }
 
 .menuItem.active {

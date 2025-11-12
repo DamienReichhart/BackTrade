@@ -7,7 +7,7 @@
   text-align: center;
   background: radial-gradient(
     ellipse at top,
-    rgba(138, 164, 197, 0.08) 0%,
+    var(--color-accent-bg-08) 0%,
     transparent 50%
   );
 }
