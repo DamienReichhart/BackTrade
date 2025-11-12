@@ -1,5 +1,6 @@
 import type { Subscription, Plan } from "@backtrade/types";
 import { PlanCard } from "../PlanCard/PlanCard";
+import { isCurrentPlan } from "./utils";
 import styles from "./PlansList.module.css";
 
 interface PlansListProps {
@@ -28,17 +29,14 @@ export function PlansList({
 
   return (
     <div className={styles.grid}>
-      {plans.map((plan) => {
-        const isCurrentPlan = currentSubscription?.plan_id === plan.id;
-        return (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            isCurrent={isCurrentPlan}
-            onChangeSubscription={onChangeSubscription}
-          />
-        );
-      })}
+      {plans.map((plan) => (
+        <PlanCard
+          key={plan.id}
+          plan={plan}
+          isCurrent={isCurrentPlan(currentSubscription, plan.id)}
+          onChangeSubscription={onChangeSubscription}
+        />
+      ))}
     </div>
   );
 }

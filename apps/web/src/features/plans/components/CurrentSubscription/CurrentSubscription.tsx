@@ -1,7 +1,7 @@
-import { useMemo } from "react";
 import type { Subscription, Plan } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
-import { getStatusColorClass } from "../../utils/subscriptions";
+import { usePlanLookup } from "./hooks";
+import { formatPeriod, formatPlanTitle, getStatusColor } from "./utils";
 import styles from "./CurrentSubscription.module.css";
 
 interface CurrentSubscriptionProps {
@@ -18,31 +18,20 @@ export function CurrentSubscription({
   subscription,
   plans,
 }: CurrentSubscriptionProps) {
-  // Find the plan associated with this subscription
-  const plan = useMemo(() => {
-    return plans.find((p) => p.id === subscription.plan_id);
-  }, [plans, subscription.plan_id]);
-
-  const getStatusColor = (status: string) => {
-    const colorClass = getStatusColorClass(status);
-    return colorClass ? (styles[colorClass] ?? "") : "";
-  };
-
-  const formatPeriod = (start: string, end: string) => {
-    return `${formatDate(start)} - ${formatDate(end)}`;
-  };
+  const plan = usePlanLookup(plans, subscription.plan_id);
 
   return (
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.titleSection}>
           <h3 className={styles.title}>
-            {plan?.code
-              ? plan.code.toUpperCase()
-              : `Plan #${subscription.plan_id}`}
+            {formatPlanTitle(plan?.code, subscription.plan_id)}
           </h3>
           <span
-            className={`${styles.status} ${getStatusColor(subscription.status)}`}
+            className={`${styles.status} ${getStatusColor(
+              subscription.status,
+              styles,
+            )}`}
           >
             {subscription.status}
           </span>
