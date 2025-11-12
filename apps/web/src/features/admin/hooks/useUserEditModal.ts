@@ -1,4 +1,4 @@
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect } from "react";
 import {
   RoleSchema,
   type PublicUser,
@@ -21,18 +21,6 @@ export function useUserEditModal(
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateUserMutation = useUpdateUser(user.id.toString());
-
-  // Reset form state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      startTransition(() => {
-        setEmail(user.email);
-        setRole(user.role);
-        setErrors({});
-      });
-    }
-  }, [isOpen, user.email, user.role]);
-
   // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
