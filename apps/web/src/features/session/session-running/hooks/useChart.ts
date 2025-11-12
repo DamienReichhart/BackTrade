@@ -74,7 +74,6 @@ export function useChart(
         chartRef.current.remove();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef]); // Only initialize once - don't recreate chart when settings change
 
   // Update chart grid and time scale when settings change

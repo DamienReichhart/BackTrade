@@ -3,4 +3,3 @@ export {
   getPnLClassName,
   formatPriceOrFallback,
 } from "./formatting";
-

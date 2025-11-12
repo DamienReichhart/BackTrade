@@ -3,4 +3,3 @@ export {
   getAmountClassName,
   formatBalanceAfter,
 } from "./formatting";
-

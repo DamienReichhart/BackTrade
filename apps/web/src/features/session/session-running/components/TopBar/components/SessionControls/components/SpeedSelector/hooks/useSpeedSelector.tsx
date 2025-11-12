@@ -84,4 +84,3 @@ export function useSpeedSelector(
     handleSpeedSelect,
   };
 }
-

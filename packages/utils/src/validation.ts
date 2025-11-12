@@ -9,12 +9,12 @@ export interface ValidationResult {
 /**
  * Email validation result (alias for ValidationResult for backward compatibility)
  */
-export interface EmailValidationResult extends ValidationResult {}
+export type EmailValidationResult = ValidationResult;
 
 /**
  * Password validation result (alias for ValidationResult for backward compatibility)
  */
-export interface PasswordValidationResult extends ValidationResult {}
+export type PasswordValidationResult = ValidationResult;
 
 /**
  * Validate email format

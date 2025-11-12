@@ -2,11 +2,7 @@ import styles from "./TransactionsTable.module.css";
 import { TransactionDetailsModal } from "../TransactionDetailsModal";
 import { useTransactionsTable } from "../../hooks";
 import { formatTime } from "@backtrade/utils";
-import {
-  formatAmount,
-  getAmountClassName,
-  formatBalanceAfter,
-} from "./utils";
+import { formatAmount, getAmountClassName, formatBalanceAfter } from "./utils";
 
 /**
  * Table listing account transactions (PNL, fees, deposits, withdrawals, etc.).

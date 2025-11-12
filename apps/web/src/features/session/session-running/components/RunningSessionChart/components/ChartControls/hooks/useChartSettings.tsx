@@ -101,4 +101,3 @@ export function useChartSettings(
     handleSecondsVisibleChange,
   };
 }
-

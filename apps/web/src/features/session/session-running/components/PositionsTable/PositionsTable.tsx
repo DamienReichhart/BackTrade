@@ -2,11 +2,7 @@ import styles from "./PositionsTable.module.css";
 import { PositionDetailsModal } from "../PositionDetailsModal";
 import { ClosePositionButton } from "./components";
 import { usePositionsTable } from "../../hooks";
-import {
-  formatPnL,
-  getPnLClassName,
-  formatPriceOrFallback,
-} from "./utils";
+import { formatPnL, getPnLClassName, formatPriceOrFallback } from "./utils";
 
 /**
  * Table for open positions as in the mockup.

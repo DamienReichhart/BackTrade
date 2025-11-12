@@ -11,7 +11,7 @@ export function InternalServerError() {
 
   const handleReportIssue = () => {
     // TODO: Implement issue reporting functionality
-    console.log("Report issue clicked");
+    // Report issue functionality will be implemented here
   };
 
   return (

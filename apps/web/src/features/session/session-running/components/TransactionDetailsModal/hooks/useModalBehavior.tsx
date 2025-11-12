@@ -34,4 +34,3 @@ export function useModalBehavior(isOpen: boolean, onClose: () => void) {
     };
   }, [isOpen]);
 }
-

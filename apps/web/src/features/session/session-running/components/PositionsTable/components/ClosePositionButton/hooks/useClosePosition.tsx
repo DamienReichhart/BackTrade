@@ -20,9 +20,8 @@ export function useClosePosition(
   const sessionId = currentSession?.id?.toString();
 
   const queryClient = useQueryClient();
-  const { execute: closePosition, isLoading: isClosing } = useClosePositionBusinessLogic(
-    String(positionId),
-  );
+  const { execute: closePosition, isLoading: isClosing } =
+    useClosePositionBusinessLogic(String(positionId));
 
   const handleClose = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -62,4 +61,3 @@ export function useClosePosition(
     handleClose,
   };
 }
-

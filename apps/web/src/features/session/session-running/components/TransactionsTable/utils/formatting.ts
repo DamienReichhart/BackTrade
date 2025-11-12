@@ -27,4 +27,3 @@ export function getAmountClassName(amount: number): string {
 export function formatBalanceAfter(balance: number): string {
   return balance.toFixed(2);
 }
-

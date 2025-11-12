@@ -31,4 +31,3 @@ export function formatPriceOrFallback(
 ): string {
   return price !== null && price !== undefined ? String(price) : fallback;
 }
-

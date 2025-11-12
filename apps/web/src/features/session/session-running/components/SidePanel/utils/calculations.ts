@@ -15,4 +15,3 @@ export function isOrderFormDisabled(
 ): boolean {
   return !hasSession || !hasPrice || isCreating || qty <= 0;
 }
-

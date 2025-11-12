@@ -34,7 +34,8 @@ export function usePauseResume(
   const isLoading = isPausing || isResuming;
 
   const canToggle = useMemo(
-    () => Boolean(sessionId && (isSessionRunning || isSessionPaused) && !isLoading),
+    () =>
+      Boolean(sessionId && (isSessionRunning || isSessionPaused) && !isLoading),
     [sessionId, isSessionRunning, isSessionPaused, isLoading],
   );
 
@@ -90,4 +91,3 @@ export function usePauseResume(
     handleClick,
   };
 }
-

@@ -53,7 +53,9 @@ export function SessionInfo() {
         </div>
         <div>
           <div className={styles.infoLabel}>Current equity</div>
-          <div className={styles.infoValue}>{formatCurrency(metrics.equity)}</div>
+          <div className={styles.infoValue}>
+            {formatCurrency(metrics.equity)}
+          </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Drawdown</div>
