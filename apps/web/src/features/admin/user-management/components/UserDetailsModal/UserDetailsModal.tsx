@@ -1,7 +1,7 @@
 import type { PublicUser } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
 import { Button } from "../../../../../components";
-import { useModalBehavior } from "./hooks";
+import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
 import {
   getRoleBadgeClassName,
   getStatusBadgeClassName,

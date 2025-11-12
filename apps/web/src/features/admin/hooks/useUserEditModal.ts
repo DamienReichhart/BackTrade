@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   RoleSchema,
   type PublicUser,
   type UpdateUserRequest,
 } from "@backtrade/types";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
+import { useModalBehavior } from "../../../hooks/useModalBehavior";
 import { validateEmail, validateRole } from "../utils/validation";
 
 /**
@@ -21,32 +22,9 @@ export function useUserEditModal(
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateUserMutation = useUpdateUser(user.id.toString());
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  // Handle modal behavior (Escape key, body scroll)
+  useModalBehavior(isOpen, onClose);
 
   /**
    * Validate form
