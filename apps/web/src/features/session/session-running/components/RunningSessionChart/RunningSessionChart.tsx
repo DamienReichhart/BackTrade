@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
 import {
   getChartGridSettings,
