@@ -6,6 +6,7 @@ import { ConfirmModal } from "../../../components/ConfirmModal";
 import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
 import { Select } from "../../../components/Select";
+import { ROLE_FILTER_OPTIONS, STATUS_FILTER_OPTIONS } from "./utils";
 import styles from "./UserManagement.module.css";
 
 /**
@@ -96,22 +97,13 @@ export function UserManagement() {
           <Select
             value={roleFilter}
             onChange={handleRoleFilterChange}
-            options={[
-              { value: "all", label: "All Roles" },
-              { value: "ANONYMOUS", label: "Anonymous" },
-              { value: "USER", label: "User" },
-              { value: "ADMIN", label: "Admin" },
-            ]}
+            options={ROLE_FILTER_OPTIONS}
             placeholder="All Roles"
           />
           <Select
             value={bannedFilter}
             onChange={handleBannedFilterChange}
-            options={[
-              { value: "all", label: "All Status" },
-              { value: "active", label: "Active" },
-              { value: "banned", label: "Banned" },
-            ]}
+            options={STATUS_FILTER_OPTIONS}
             placeholder="All Status"
           />
         </div>

@@ -8,3 +8,4 @@ export * from "./candles";
 export * from "./cookies";
 export * from "./localStorage";
 export * from "./css";
+export * from "./formatting";

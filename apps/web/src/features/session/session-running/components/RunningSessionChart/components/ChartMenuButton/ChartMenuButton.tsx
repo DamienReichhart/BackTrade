@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
 import { ChartControls } from "../ChartControls";
 import type { ChartGridSettings } from "../../../../../../../utils/localStorage";
+import { useMenuToggle } from "./hooks";
 import styles from "./ChartMenuButton.module.css";
 
 /**
@@ -20,29 +20,7 @@ interface ChartMenuButtonProps {
  * The menu appears in the top-left corner of the chart.
  */
 export function ChartMenuButton({ onSettingsChange }: ChartMenuButtonProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
-  const handleToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const { isMenuOpen, menuRef, handleToggle } = useMenuToggle();
 
   return (
     <div className={styles.menuButton} ref={menuRef}>

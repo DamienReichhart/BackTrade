@@ -2,6 +2,7 @@ import styles from "./SidePanel.module.css";
 import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
 import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
 import { useOrderForm, usePositionCreation } from "../../hooks";
+import { isOrderFormDisabled } from "./utils";
 
 /**
  * Right-side panel with order ticket and session KPIs as per mockup.
@@ -30,8 +31,12 @@ export function SidePanel() {
     createPositionWithSide("SELL", form.qty, form.tp, form.sl);
   };
 
-  const isDisabled =
-    !currentSession?.id || !currentPrice || isCreatingPosition || form.qty <= 0;
+  const isDisabled = isOrderFormDisabled(
+    !!currentSession?.id,
+    !!currentPrice,
+    isCreatingPosition,
+    form.qty,
+  );
 
   return (
     <div className={styles.panel}>

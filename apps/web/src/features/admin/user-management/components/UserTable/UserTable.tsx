@@ -2,6 +2,12 @@ import type { PublicUser } from "@backtrade/types";
 import type { SortField, SortOrder } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
 import { formatDate } from "@backtrade/utils";
+import { getSortIndicator } from "./utils/table";
+import {
+  getRoleBadgeClassName,
+  getStatusBadgeClassName,
+  getStatusLabel,
+} from "./utils/formatting";
 import styles from "./UserTable.module.css";
 
 /**
@@ -76,14 +82,6 @@ export function UserTable({
   onDelete,
   onBanToggle,
 }: UserTableProps) {
-  /**
-   * Get sort indicator for column header
-   */
-  const getSortIndicator = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortOrder === "asc" ? "↑" : "↓";
-  };
-
   return (
     <div className={styles.card}>
       <div className={styles.tableContainer}>
@@ -94,37 +92,37 @@ export function UserTable({
                 className={styles.sortableHeader}
                 onClick={() => onSort("id")}
               >
-                ID {getSortIndicator("id")}
+                ID {getSortIndicator("id", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
                 onClick={() => onSort("email")}
               >
-                Email {getSortIndicator("email")}
+                Email {getSortIndicator("email", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
                 onClick={() => onSort("role")}
               >
-                Role {getSortIndicator("role")}
+                Role {getSortIndicator("role", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
                 onClick={() => onSort("is_banned")}
               >
-                Status {getSortIndicator("is_banned")}
+                Status {getSortIndicator("is_banned", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
                 onClick={() => onSort("created_at")}
               >
-                Created {getSortIndicator("created_at")}
+                Created {getSortIndicator("created_at", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
                 onClick={() => onSort("updated_at")}
               >
-                Updated {getSortIndicator("updated_at")}
+                Updated {getSortIndicator("updated_at", sortField, sortOrder)}
               </th>
               <th className={styles.actionsHeader}>Actions</th>
             </tr>
@@ -160,22 +158,20 @@ export function UserTable({
                   <td>
                     <span
                       className={`${styles.roleBadge} ${
-                        user.role === "ADMIN"
-                          ? styles.roleAdmin
-                          : user.role === "USER"
-                            ? styles.roleUser
-                            : styles.roleAnonymous
+                        styles[getRoleBadgeClassName(user.role)]
                       }`}
                     >
                       {user.role}
                     </span>
                   </td>
                   <td>
-                    {user.is_banned ? (
-                      <span className={styles.bannedBadge}>Banned</span>
-                    ) : (
-                      <span className={styles.activeBadge}>Active</span>
-                    )}
+                    <span
+                      className={`${styles.statusBadge} ${
+                        styles[getStatusBadgeClassName(user.is_banned)]
+                      }`}
+                    >
+                      {getStatusLabel(user.is_banned)}
+                    </span>
                   </td>
                   <td className={styles.dateCell}>
                     {formatDate(user.created_at)}

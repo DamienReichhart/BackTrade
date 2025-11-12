@@ -2,6 +2,7 @@ import styles from "./PositionsTable.module.css";
 import { PositionDetailsModal } from "../PositionDetailsModal";
 import { ClosePositionButton } from "./components";
 import { usePositionsTable } from "../../hooks";
+import { formatPnL, getPnLClassName, formatPriceOrFallback } from "./utils";
 
 /**
  * Table for open positions as in the mockup.
@@ -74,17 +75,11 @@ export function PositionsTable() {
                     </td>
                     <td>{p.quantity_lots}</td>
                     <td>{p.entry_price}</td>
-                    <td
-                      className={
-                        (p.realized_pnl ?? 0) >= 0
-                          ? styles.pnlPos
-                          : styles.pnlNeg
-                      }
-                    >
-                      {Number(p.realized_pnl ?? 0).toFixed(2)}
+                    <td className={styles[getPnLClassName(p.realized_pnl)]}>
+                      {formatPnL(p.realized_pnl)}
                     </td>
-                    <td>{p.sl_price ?? "-"}</td>
-                    <td>{p.tp_price ?? "-"}</td>
+                    <td>{formatPriceOrFallback(p.sl_price)}</td>
+                    <td>{formatPriceOrFallback(p.tp_price)}</td>
                     <td>{p.position_status}</td>
                     <td onClick={(e) => e.stopPropagation()}>
                       <ClosePositionButton positionId={p.id} />

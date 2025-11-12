@@ -1,11 +1,11 @@
 import styles from "./SessionControls.module.css";
-import { useState } from "react";
 import {
   SpeedSelector,
   PauseResumeButton,
   CloseAllButton,
   ControlError,
 } from "./components";
+import { useControlError } from "./hooks";
 
 /**
  * SessionControls component
@@ -14,15 +14,7 @@ import {
  * Composes sub-components for speed selection, pause/resume, and close all operations
  */
 export function SessionControls() {
-  const [error, setError] = useState<string | null>(null);
-
-  const handleError = (errorMessage: string) => {
-    setError(errorMessage);
-  };
-
-  const handleSuccess = () => {
-    setError(null);
-  };
+  const { error, handleError, handleSuccess } = useControlError();
 
   return (
     <div className={styles.controls}>

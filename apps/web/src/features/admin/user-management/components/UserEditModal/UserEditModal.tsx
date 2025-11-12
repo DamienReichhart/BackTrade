@@ -4,6 +4,7 @@ import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
+import { ROLE_OPTIONS } from "../../utils";
 import styles from "./UserEditModal.module.css";
 
 /**
@@ -105,11 +106,7 @@ export function UserEditModal({
               <Select
                 value={role}
                 onChange={setRole}
-                options={[
-                  { value: "ANONYMOUS", label: "Anonymous" },
-                  { value: "USER", label: "User" },
-                  { value: "ADMIN", label: "Admin" },
-                ]}
+                options={ROLE_OPTIONS}
                 placeholder="Select role"
                 disabled={isLoading}
               />

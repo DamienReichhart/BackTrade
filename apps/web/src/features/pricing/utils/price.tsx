@@ -1,6 +1,4 @@
 /**
- * Format price with currency
+ * Re-export formatPrice from shared utilities
  */
-export function formatPrice(price: number, currency: string): string {
-  return `${currency}${price}`;
-}
+export { formatPrice } from "../../../utils/formatting";

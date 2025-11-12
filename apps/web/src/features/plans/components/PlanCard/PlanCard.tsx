@@ -1,5 +1,6 @@
 import { Button } from "../../../../components";
 import type { Plan } from "@backtrade/types";
+import { formatPrice, getButtonText } from "./utils";
 import styles from "./PlanCard.module.css";
 
 interface PlanCardProps {
@@ -35,7 +36,7 @@ export function PlanCard({
         <div className={styles.info}>
           <div className={styles.priceSection}>
             <span className={styles.price}>
-              {plan.price === 0 ? "Free" : `€${plan.price}`}
+              {formatPrice(plan.price, plan.currency)}
             </span>
             <span className={styles.period}>/month</span>
           </div>
@@ -56,7 +57,7 @@ export function PlanCard({
             onClick={handleSelectPlan}
             disabled={isCurrent}
           >
-            {isCurrent ? "Current Plan" : "Select Plan"}
+            {getButtonText(isCurrent)}
           </Button>
         </div>
       </div>

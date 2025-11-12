@@ -1,6 +1,5 @@
 import styles from "./CloseAllButton.module.css";
-import { useCloseAllPositions } from "../../../../../../../../../api/hooks/requests/positions";
-import { useCurrentSessionStore } from "../../../../../../../../../context/CurrentSessionContext";
+import { useCloseAll } from "./hooks";
 
 interface CloseAllButtonProps {
   /**
@@ -19,35 +18,18 @@ interface CloseAllButtonProps {
  * Closes all open positions in the session
  */
 export function CloseAllButton({ onError, onSuccess }: CloseAllButtonProps) {
-  const { currentSession } = useCurrentSessionStore();
-  const sessionId = currentSession?.id?.toString();
-
-  const { execute: closeAllPositions, isLoading: isClosing } =
-    useCloseAllPositions(sessionId ?? "");
-
-  const handleClick = async () => {
-    if (!sessionId) {
-      onError?.("Session ID is required");
-      return;
-    }
-
-    try {
-      await closeAllPositions();
-      onSuccess?.();
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to close all positions";
-      onError?.(errorMessage);
-    }
-  };
+  const { isDisabled, buttonText, handleClick } = useCloseAll(
+    onError,
+    onSuccess,
+  );
 
   return (
     <button
       className={styles.button}
       onClick={handleClick}
-      disabled={!sessionId || isClosing}
+      disabled={isDisabled}
     >
-      {isClosing ? "Closing..." : "Close all"}
+      {buttonText}
     </button>
   );
 }

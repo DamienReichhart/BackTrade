@@ -74,7 +74,7 @@ export function useChart(
         chartRef.current.remove();
       }
     };
-  }, [containerRef, gridSettings]); // Initialize with current settings
+  }, [containerRef]); // Only initialize once - don't recreate chart when settings change
 
   // Update chart grid and time scale when settings change
   useEffect(() => {
