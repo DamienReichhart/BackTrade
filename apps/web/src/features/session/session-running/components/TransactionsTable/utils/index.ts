@@ -1,5 +1,1 @@
-export {
-  formatAmount,
-  getAmountClassName,
-  formatBalanceAfter,
-} from "./formatting";
+export { formatAmount, getAmountClassName } from "./formatting";

@@ -17,13 +17,3 @@ export function formatAmount(amount: number): string {
 export function getAmountClassName(amount: number): string {
   return amount >= 0 ? "amountPos" : "amountNeg";
 }
-
-/**
- * Format balance after value for display
- *
- * @param balance - Balance value
- * @returns Formatted balance string with 2 decimal places
- */
-export function formatBalanceAfter(balance: number): string {
-  return balance.toFixed(2);
-}
