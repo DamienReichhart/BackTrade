@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /**
  * Hook to manage menu toggle functionality with outside click detection
@@ -26,9 +26,9 @@ export function useMenuToggle() {
     };
   }, [isMenuOpen]);
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = () => {
     setIsMenuOpen(!isMenuOpen);
-  }, [isMenuOpen]);
+  };
 
   return {
     isMenuOpen,
