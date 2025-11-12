@@ -1,7 +1,8 @@
 import type { Subscription, Plan } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
+import { formatPlanTitle } from "../../utils";
 import { usePlanLookup } from "./hooks";
-import { formatPeriod, formatPlanTitle, getStatusColor } from "./utils";
+import { formatPeriod, getStatusColor } from "./utils";
 import styles from "./CurrentSubscription.module.css";
 
 interface CurrentSubscriptionProps {

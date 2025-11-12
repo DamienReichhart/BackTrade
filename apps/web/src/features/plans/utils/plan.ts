@@ -11,3 +11,4 @@ export function formatPlanTitle(
 ): string {
   return planCode ? planCode.toUpperCase() : `Plan #${planId}`;
 }
+
