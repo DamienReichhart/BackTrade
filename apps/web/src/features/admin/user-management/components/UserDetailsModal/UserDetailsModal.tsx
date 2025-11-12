@@ -1,7 +1,12 @@
-import { useEffect } from "react";
 import type { PublicUser } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
 import { Button } from "../../../../../components";
+import { useModalBehavior } from "./hooks";
+import {
+  getRoleBadgeClassName,
+  getStatusBadgeClassName,
+  getStatusLabel,
+} from "./utils";
 import styles from "./UserDetailsModal.module.css";
 
 /**
@@ -34,32 +39,8 @@ export function UserDetailsModal({
   isOpen,
   onClose,
 }: UserDetailsModalProps) {
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  // Handle modal behavior (Escape key, body scroll)
+  useModalBehavior(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -99,11 +80,7 @@ export function UserDetailsModal({
               <span className={styles.label}>Role:</span>
               <span
                 className={`${styles.badge} ${
-                  user.role === "ADMIN"
-                    ? styles.roleAdmin
-                    : user.role === "USER"
-                      ? styles.roleUser
-                      : styles.roleAnonymous
+                  styles[getRoleBadgeClassName(user.role)]
                 }`}
               >
                 {user.role}
@@ -113,10 +90,10 @@ export function UserDetailsModal({
               <span className={styles.label}>Status:</span>
               <span
                 className={`${styles.badge} ${
-                  user.is_banned ? styles.bannedBadge : styles.activeBadge
+                  styles[getStatusBadgeClassName(user.is_banned)]
                 }`}
               >
-                {user.is_banned ? "Banned" : "Active"}
+                {getStatusLabel(user.is_banned)}
               </span>
             </div>
             {user.stripe_customer_id && (
