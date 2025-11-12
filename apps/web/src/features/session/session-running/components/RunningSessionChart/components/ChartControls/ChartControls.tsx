@@ -1,18 +1,7 @@
 import { Toggle, Select } from "../../../../../../../components";
-import type { ChartGridSettings } from "../../../../../../../utils/localStorage";
 import type { Timeframe } from "@backtrade/types";
 import { useChartSettings } from "./hooks";
 import styles from "./ChartControls.module.css";
-
-/**
- * ChartControls component props
- */
-interface ChartControlsProps {
-  /**
-   * Callback when grid settings change
-   */
-  onSettingsChange?: (settings: ChartGridSettings) => void;
-}
 
 /**
  * Timeframe options for the chart
@@ -35,9 +24,9 @@ const TIMEFRAME_OPTIONS: Array<{ value: Timeframe; label: string }> = [
  *
  * Provides toggle controls for chart grid lines visibility and time scale settings.
  * Also includes a timeframe selector for the chart.
- * Settings are persisted in localStorage.
+ * Settings are managed by the ChartSettingsStore and persisted in localStorage.
  */
-export function ChartControls({ onSettingsChange }: ChartControlsProps) {
+export function ChartControls() {
   const {
     vertLines,
     horzLines,
@@ -49,7 +38,7 @@ export function ChartControls({ onSettingsChange }: ChartControlsProps) {
     handleTimeVisibleChange,
     handleSecondsVisibleChange,
     handleTimeframeChange,
-  } = useChartSettings(onSettingsChange);
+  } = useChartSettings();
 
   return (
     <div className={styles.controls}>

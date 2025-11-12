@@ -1,9 +1,6 @@
-import { useRef, useState } from "react";
+import { useRef, useMemo } from "react";
 import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
-import {
-  getChartGridSettings,
-  type ChartGridSettings,
-} from "../../../../../utils/localStorage";
+import { useChartSettingsStore } from "../../../../../context/ChartSettingsContext";
 import { useChart, useChartData } from "../../hooks";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
@@ -17,8 +14,24 @@ import styles from "./RunningSessionChart.module.css";
 export function RunningSessionChart() {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const { candles } = useCurrentSessionCandlesStore();
-  const [gridSettings, setGridSettings] = useState<ChartGridSettings>(() =>
-    getChartGridSettings(),
+
+  // Subscribe to individual settings to avoid creating new objects on each render
+  const vertLines = useChartSettingsStore((state) => state.vertLines);
+  const horzLines = useChartSettingsStore((state) => state.horzLines);
+  const timeVisible = useChartSettingsStore((state) => state.timeVisible);
+  const secondsVisible = useChartSettingsStore((state) => state.secondsVisible);
+  const timeframe = useChartSettingsStore((state) => state.timeframe);
+
+  // Memoize the settings object to prevent unnecessary re-renders
+  const gridSettings = useMemo(
+    () => ({
+      vertLines,
+      horzLines,
+      timeVisible,
+      secondsVisible,
+      timeframe,
+    }),
+    [vertLines, horzLines, timeVisible, secondsVisible, timeframe],
   );
 
   // Initialize and manage chart lifecycle
@@ -27,15 +40,10 @@ export function RunningSessionChart() {
   // Update chart data when candles change
   useChartData(seriesRef, candles);
 
-  // Handle grid settings change from ChartControls
-  const handleGridSettingsChange = (settings: ChartGridSettings) => {
-    setGridSettings(settings);
-  };
-
   return (
     <div className={styles.chartContainer}>
       <div className={styles.menuButtonWrapper}>
-        <ChartMenuButton onSettingsChange={handleGridSettingsChange} />
+        <ChartMenuButton />
       </div>
       <div ref={chartContainerRef} className={styles.chart} />
     </div>

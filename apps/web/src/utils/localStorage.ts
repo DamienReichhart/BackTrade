@@ -155,10 +155,6 @@ export function setChartSecondsVisible(visible: boolean): void {
  */
 export function setChartTimeframe(timeframe: Timeframe): void {
   setLocalStorageItem(STORAGE_KEYS.CHART_TIMEFRAME, timeframe);
-  // Dispatch custom event to notify other components of timeframe change
-  window.dispatchEvent(
-    new CustomEvent("chartTimeframeChanged", { detail: { timeframe } }),
-  );
 }
 
 /**

@@ -1,137 +1,65 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  getChartGridSettings,
-  setChartGridVertLines,
-  setChartGridHorzLines,
-  setChartTimeVisible,
-  setChartSecondsVisible,
-  setChartTimeframe,
-  type ChartGridSettings,
-} from "../../../../../../../../utils/localStorage";
+import { useCallback } from "react";
 import type { Timeframe } from "@backtrade/types";
+import { useChartSettingsStore } from "../../../../../../../../context/ChartSettingsContext";
 
 /**
  * Hook to manage chart grid settings
  *
- * @param onSettingsChange - Callback when settings change
  * @returns Chart settings state and handlers
  */
-export function useChartSettings(
-  onSettingsChange?: (settings: ChartGridSettings) => void,
-) {
-  // Initialize state only once using function initializer
-  const [vertLines, setVertLines] = useState(
-    () => getChartGridSettings().vertLines,
+export function useChartSettings() {
+  // Get settings from store
+  const vertLines = useChartSettingsStore((state) => state.vertLines);
+  const horzLines = useChartSettingsStore((state) => state.horzLines);
+  const timeVisible = useChartSettingsStore((state) => state.timeVisible);
+  const secondsVisible = useChartSettingsStore((state) => state.secondsVisible);
+  const timeframe = useChartSettingsStore((state) => state.timeframe);
+  const setVertLines = useChartSettingsStore((state) => state.setVertLines);
+  const setHorzLines = useChartSettingsStore((state) => state.setHorzLines);
+  const setTimeVisible = useChartSettingsStore((state) => state.setTimeVisible);
+  const setSecondsVisible = useChartSettingsStore(
+    (state) => state.setSecondsVisible,
   );
-  const [horzLines, setHorzLines] = useState(
-    () => getChartGridSettings().horzLines,
-  );
-  const [timeVisible, setTimeVisible] = useState(
-    () => getChartGridSettings().timeVisible,
-  );
-  const [secondsVisible, setSecondsVisible] = useState(
-    () => getChartGridSettings().secondsVisible,
-  );
-  const [timeframe, setTimeframeState] = useState<Timeframe>(
-    () => getChartGridSettings().timeframe,
-  );
-
-  // Track if we've notified parent of initial settings
-  const hasNotifiedInitial = useRef(false);
-  const onSettingsChangeRef = useRef(onSettingsChange);
-
-  // Keep ref in sync with callback
-  useEffect(() => {
-    onSettingsChangeRef.current = onSettingsChange;
-  }, [onSettingsChange]);
-
-  // Notify parent of initial settings once on mount only
-  useEffect(() => {
-    if (!hasNotifiedInitial.current) {
-      const initialSettings = getChartGridSettings();
-      onSettingsChangeRef.current?.(initialSettings);
-      hasNotifiedInitial.current = true;
-    }
-  });
+  const setTimeframe = useChartSettingsStore((state) => state.setTimeframe);
 
   // Handle vertical lines toggle
   const handleVertLinesChange = useCallback(
     (checked: boolean) => {
       setVertLines(checked);
-      setChartGridVertLines(checked);
-      onSettingsChange?.({
-        vertLines: checked,
-        horzLines,
-        timeVisible,
-        secondsVisible,
-        timeframe,
-      });
     },
-    [horzLines, timeVisible, secondsVisible, timeframe, onSettingsChange],
+    [setVertLines],
   );
 
   // Handle horizontal lines toggle
   const handleHorzLinesChange = useCallback(
     (checked: boolean) => {
       setHorzLines(checked);
-      setChartGridHorzLines(checked);
-      onSettingsChange?.({
-        vertLines,
-        horzLines: checked,
-        timeVisible,
-        secondsVisible,
-        timeframe,
-      });
     },
-    [vertLines, timeVisible, secondsVisible, timeframe, onSettingsChange],
+    [setHorzLines],
   );
 
   // Handle time visibility toggle
   const handleTimeVisibleChange = useCallback(
     (checked: boolean) => {
       setTimeVisible(checked);
-      setChartTimeVisible(checked);
-      onSettingsChange?.({
-        vertLines,
-        horzLines,
-        timeVisible: checked,
-        secondsVisible,
-        timeframe,
-      });
     },
-    [vertLines, horzLines, secondsVisible, timeframe, onSettingsChange],
+    [setTimeVisible],
   );
 
   // Handle seconds visibility toggle
   const handleSecondsVisibleChange = useCallback(
     (checked: boolean) => {
       setSecondsVisible(checked);
-      setChartSecondsVisible(checked);
-      onSettingsChange?.({
-        vertLines,
-        horzLines,
-        timeVisible,
-        secondsVisible: checked,
-        timeframe,
-      });
     },
-    [vertLines, horzLines, timeVisible, timeframe, onSettingsChange],
+    [setSecondsVisible],
   );
 
   // Handle timeframe change
   const handleTimeframeChange = useCallback(
     (newTimeframe: Timeframe) => {
-      setTimeframeState(newTimeframe);
-      setChartTimeframe(newTimeframe);
-      onSettingsChange?.({
-        vertLines,
-        horzLines,
-        timeVisible,
-        secondsVisible,
-        timeframe: newTimeframe,
-      });
+      setTimeframe(newTimeframe);
     },
-    [vertLines, horzLines, timeVisible, secondsVisible, onSettingsChange],
+    [setTimeframe],
   );
 
   return {
