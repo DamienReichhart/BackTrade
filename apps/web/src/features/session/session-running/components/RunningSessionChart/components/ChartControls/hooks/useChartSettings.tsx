@@ -1,12 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getChartGridSettings,
   setChartGridVertLines,
   setChartGridHorzLines,
   setChartTimeVisible,
   setChartSecondsVisible,
+  setChartTimeframe,
   type ChartGridSettings,
 } from "../../../../../../../../utils/localStorage";
+import type { Timeframe } from "@backtrade/types";
 
 /**
  * Hook to manage chart grid settings
@@ -17,18 +19,40 @@ import {
 export function useChartSettings(
   onSettingsChange?: (settings: ChartGridSettings) => void,
 ) {
-  const initialSettings = getChartGridSettings();
-  const [vertLines, setVertLines] = useState(initialSettings.vertLines);
-  const [horzLines, setHorzLines] = useState(initialSettings.horzLines);
-  const [timeVisible, setTimeVisible] = useState(initialSettings.timeVisible);
+  // Initialize state only once using function initializer
+  const [vertLines, setVertLines] = useState(
+    () => getChartGridSettings().vertLines,
+  );
+  const [horzLines, setHorzLines] = useState(
+    () => getChartGridSettings().horzLines,
+  );
+  const [timeVisible, setTimeVisible] = useState(
+    () => getChartGridSettings().timeVisible,
+  );
   const [secondsVisible, setSecondsVisible] = useState(
-    initialSettings.secondsVisible,
+    () => getChartGridSettings().secondsVisible,
+  );
+  const [timeframe, setTimeframeState] = useState<Timeframe>(
+    () => getChartGridSettings().timeframe,
   );
 
-  // Notify parent of initial settings on mount
+  // Track if we've notified parent of initial settings
+  const hasNotifiedInitial = useRef(false);
+  const onSettingsChangeRef = useRef(onSettingsChange);
+
+  // Keep ref in sync with callback
   useEffect(() => {
-    onSettingsChange?.(initialSettings);
-  }, [onSettingsChange, initialSettings]);
+    onSettingsChangeRef.current = onSettingsChange;
+  }, [onSettingsChange]);
+
+  // Notify parent of initial settings once on mount only
+  useEffect(() => {
+    if (!hasNotifiedInitial.current) {
+      const initialSettings = getChartGridSettings();
+      onSettingsChangeRef.current?.(initialSettings);
+      hasNotifiedInitial.current = true;
+    }
+  });
 
   // Handle vertical lines toggle
   const handleVertLinesChange = useCallback(
@@ -40,9 +64,10 @@ export function useChartSettings(
         horzLines,
         timeVisible,
         secondsVisible,
+        timeframe,
       });
     },
-    [horzLines, timeVisible, secondsVisible, onSettingsChange],
+    [horzLines, timeVisible, secondsVisible, timeframe, onSettingsChange],
   );
 
   // Handle horizontal lines toggle
@@ -55,9 +80,10 @@ export function useChartSettings(
         horzLines: checked,
         timeVisible,
         secondsVisible,
+        timeframe,
       });
     },
-    [vertLines, timeVisible, secondsVisible, onSettingsChange],
+    [vertLines, timeVisible, secondsVisible, timeframe, onSettingsChange],
   );
 
   // Handle time visibility toggle
@@ -70,9 +96,10 @@ export function useChartSettings(
         horzLines,
         timeVisible: checked,
         secondsVisible,
+        timeframe,
       });
     },
-    [vertLines, horzLines, secondsVisible, onSettingsChange],
+    [vertLines, horzLines, secondsVisible, timeframe, onSettingsChange],
   );
 
   // Handle seconds visibility toggle
@@ -85,9 +112,26 @@ export function useChartSettings(
         horzLines,
         timeVisible,
         secondsVisible: checked,
+        timeframe,
       });
     },
-    [vertLines, horzLines, timeVisible, onSettingsChange],
+    [vertLines, horzLines, timeVisible, timeframe, onSettingsChange],
+  );
+
+  // Handle timeframe change
+  const handleTimeframeChange = useCallback(
+    (newTimeframe: Timeframe) => {
+      setTimeframeState(newTimeframe);
+      setChartTimeframe(newTimeframe);
+      onSettingsChange?.({
+        vertLines,
+        horzLines,
+        timeVisible,
+        secondsVisible,
+        timeframe: newTimeframe,
+      });
+    },
+    [vertLines, horzLines, timeVisible, secondsVisible, onSettingsChange],
   );
 
   return {
@@ -95,9 +139,11 @@ export function useChartSettings(
     horzLines,
     timeVisible,
     secondsVisible,
+    timeframe,
     handleVertLinesChange,
     handleHorzLinesChange,
     handleTimeVisibleChange,
     handleSecondsVisibleChange,
+    handleTimeframeChange,
   };
 }

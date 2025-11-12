@@ -1,13 +1,14 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSession } from "../../../../api/hooks/requests/sessions";
 import { useInstrument } from "../../../../api/hooks/requests/instruments";
 import { useCandlesByInstrument } from "../../../../api/hooks/requests/candles";
-import type { Candle, DateRangeQuery } from "@backtrade/types";
+import type { Candle, DateRangeQuery, Timeframe } from "@backtrade/types";
 import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
 import { useCurrentPriceStore } from "../../../../context/CurrentPriceContext";
 import { useCurrentSessionCandlesStore } from "../../../../context/CurrentSessionCandlesContext";
 import { calculateCandleDateRange } from "../../../../utils/time";
+import { getChartGridSettings } from "../../../../utils/localStorage";
 
 /**
  * Hook to fetch and manage session-related data
@@ -32,19 +33,42 @@ export function useSessionData() {
     enabled: hasValidSession,
   });
 
+  // Get timeframe from chart config (stored in localStorage)
+  // Use state to track changes and trigger re-fetch when timeframe changes
+  const [timeframe, setTimeframe] = useState(
+    () => getChartGridSettings().timeframe,
+  );
+
+  // Listen for timeframe changes from chart settings
+  useEffect(() => {
+    const handleTimeframeChange = (
+      event: CustomEvent<{ timeframe: Timeframe }>,
+    ) => {
+      setTimeframe(event.detail.timeframe);
+    };
+
+    window.addEventListener(
+      "chartTimeframeChanged",
+      handleTimeframeChange as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "chartTimeframeChanged",
+        handleTimeframeChange as EventListener,
+      );
+    };
+  });
+
   // Fetch chart candles (last 1000 candles on the configured timeframe)
   const chartDateRange = useMemo(() => {
     if (!session) return undefined;
-    return calculateCandleDateRange(
-      session.timeframe,
-      session.current_ts,
-      1000,
-    );
-  }, [session]);
+    return calculateCandleDateRange(timeframe, session.current_ts, 1000);
+  }, [session, timeframe]);
 
   const { data: chartCandles } = useCandlesByInstrument(
     instrumentId,
-    session?.timeframe ?? "M1",
+    timeframe,
     chartDateRange as DateRangeQuery | undefined,
     hasValidSession && !!session && !!chartDateRange,
   );
