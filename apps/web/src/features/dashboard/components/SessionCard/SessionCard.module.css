@@ -52,27 +52,27 @@
 }
 
 .statusRunning {
-  background-color: rgba(74, 222, 128, 0.1);
+  background-color: var(--color-success-bg);
   color: var(--color-success);
 }
 
 .statusPaused {
-  background-color: rgba(245, 158, 11, 0.1);
+  background-color: var(--color-warning-bg);
   color: var(--color-warning);
 }
 
 .statusCompleted {
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: var(--color-info-bg);
   color: var(--color-info);
 }
 
 .statusDraft {
-  background-color: rgba(138, 164, 197, 0.1);
+  background-color: var(--color-accent-bg-10);
   color: var(--color-accent);
 }
 
 .statusArchived {
-  background-color: rgba(156, 163, 175, 0.1);
+  background-color: var(--color-gray-400-bg-10);
   color: var(--color-gray-400);
 }
 

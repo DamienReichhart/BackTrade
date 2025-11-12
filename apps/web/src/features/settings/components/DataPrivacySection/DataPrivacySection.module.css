@@ -61,11 +61,11 @@
 
 .deleteButton {
   align-self: flex-start;
-  background-color: #dc2626;
+  background-color: var(--color-danger-dark);
 }
 
 .deleteButton:hover:not(:disabled) {
-  background-color: #b91c1c;
+  background-color: var(--color-danger-darker);
 }
 
 .errorMessage {

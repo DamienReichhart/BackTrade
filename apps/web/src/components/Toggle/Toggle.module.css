@@ -49,7 +49,7 @@
 }
 
 .toggle:focus-visible {
-  box-shadow: 0 0 0 3px rgba(138, 164, 197, 0.2);
+  box-shadow: 0 0 0 3px var(--color-accent-focus-20);
 }
 
 .toggle:disabled {

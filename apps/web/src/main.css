@@ -155,17 +155,40 @@
 
   /* Semantic Colors with Opacity */
   --color-success-bg: rgba(74, 222, 128, 0.1);
+  --color-success-bg-20: rgba(74, 222, 128, 0.2);
+  --color-success-light: rgba(74, 222, 128, 0.1);
   --color-success-border: rgba(74, 222, 128, 0.35);
   --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-danger-bg-20: rgba(239, 68, 68, 0.2);
   --color-danger-border: rgba(239, 68, 68, 0.3);
   --color-danger-border-35: rgba(239, 68, 68, 0.35);
   --color-danger-border-alt: rgba(239, 68, 68, 0.4);
+  --color-danger-dark: #dc2626;
+  --color-danger-darker: #b91c1c;
+  --color-error: var(--color-danger);
+  --color-error-light: rgba(239, 68, 68, 0.1);
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-light: rgba(245, 158, 11, 0.1);
   --color-warning-border: rgba(245, 158, 11, 0.4);
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+  --color-info-bg-20: rgba(59, 130, 246, 0.2);
+  --color-info-light: rgba(59, 130, 246, 0.1);
+  --color-accent-bg-10: rgba(138, 164, 197, 0.1);
+  --color-accent-bg-20: rgba(138, 164, 197, 0.2);
+  --color-accent-bg-08: rgba(138, 164, 197, 0.08);
+  --color-accent-bg-03: rgba(138, 164, 197, 0.03);
+  --color-accent-focus: rgba(138, 164, 197, 0.1);
+  --color-accent-focus-20: rgba(138, 164, 197, 0.2);
+  --color-text-on-accent: var(--color-text-inverse);
+  --color-gray-400-bg-10: rgba(156, 163, 175, 0.1);
 
   /* Modal & Overlay Colors */
   --color-modal-backdrop: rgba(0, 0, 0, 0.95);
   --color-modal-bg: #1a1f2e; /* Solid opaque background for modals */
   --color-shadow-overlay: rgba(0, 0, 0, 0.3);
+  --color-shadow-overlay-10: rgba(0, 0, 0, 0.1);
+  --color-shadow-overlay-08: rgba(0, 0, 0, 0.08);
+  --color-header-bg: rgba(11, 15, 20, 0.8);
 }
 
 /* ========================================================================

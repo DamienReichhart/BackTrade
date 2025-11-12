@@ -139,12 +139,12 @@
 }
 
 .roleAdmin {
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: var(--color-info-bg-20);
   color: var(--color-info);
 }
 
 .roleUser {
-  background-color: rgba(138, 164, 197, 0.2);
+  background-color: var(--color-accent-bg-20);
   color: var(--color-accent);
 }
 
@@ -154,12 +154,12 @@
 }
 
 .bannedBadge {
-  background-color: rgba(239, 68, 68, 0.2);
+  background-color: var(--color-danger-bg-20);
   color: var(--color-danger);
 }
 
 .activeBadge {
-  background-color: rgba(74, 222, 128, 0.2);
+  background-color: var(--color-success-bg-20);
   color: var(--color-success);
 }
 
