@@ -164,6 +164,7 @@
 
   /* Modal & Overlay Colors */
   --color-modal-backdrop: rgba(0, 0, 0, 0.95);
+  --color-modal-bg: #1a1f2e; /* Solid opaque background for modals */
   --color-shadow-overlay: rgba(0, 0, 0, 0.3);
 }
 
