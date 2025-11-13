@@ -15,7 +15,6 @@ export function SessionMetadata() {
 
   const name = currentSession?.name ?? "Session";
   const symbol = formatMetadata(currentSessionInstrument?.symbol);
-  const timeframe = formatMetadata(currentSession?.timeframe);
   const status = formatMetadata(currentSession?.session_status);
 
   return (
@@ -26,7 +25,6 @@ export function SessionMetadata() {
       <h2 className={styles.title}>{name}</h2>
       <div className={styles.metaRow}>
         <span className={styles.metaBadge}>{symbol}</span>
-        <span className={styles.metaBadge}>{timeframe}</span>
         <span className={styles.metaBadge}>{status}</span>
       </div>
       <Button

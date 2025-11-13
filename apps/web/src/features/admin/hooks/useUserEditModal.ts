@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, startTransition } from "react";
+import { useState } from "react";
 import {
   RoleSchema,
   type PublicUser,
   type UpdateUserRequest,
 } from "@backtrade/types";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
+import { useModalBehavior } from "../../../hooks/useModalBehavior";
 import { validateEmail, validateRole } from "../utils/validation";
 
 /**
@@ -22,55 +23,8 @@ export function useUserEditModal(
 
   const updateUserMutation = useUpdateUser(user.id.toString());
 
-  // Reset form state when user changes or modal opens
-  const previousUserIdRef = useRef<number>(user.id);
-  const previousIsOpenRef = useRef<boolean>(isOpen);
-
-  useEffect(() => {
-    const userChanged = previousUserIdRef.current !== user.id;
-    const modalJustOpened = !previousIsOpenRef.current && isOpen;
-
-    if (isOpen && (userChanged || modalJustOpened)) {
-      previousUserIdRef.current = user.id;
-      previousIsOpenRef.current = isOpen;
-
-      // Use startTransition to defer state updates and avoid setState
-      startTransition(() => {
-        setEmail(user.email);
-        setRole(user.role);
-        setErrors({});
-      });
-    } else {
-      previousIsOpenRef.current = isOpen;
-    }
-  }, [user.id, user.email, user.role, isOpen]);
-
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  // Handle modal behavior (Escape key, body scroll)
+  useModalBehavior(isOpen, onClose);
 
   /**
    * Validate form

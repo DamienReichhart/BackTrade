@@ -179,7 +179,7 @@ The production setup includes:
 
 ### Trading Sessions
 
-- Create sessions with custom instruments and timeframes
+- Create sessions with custom instruments
 - Configure initial balance, leverage, and risk parameters
 - Set spread, slippage, and commission models
 

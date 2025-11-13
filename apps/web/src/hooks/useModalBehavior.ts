@@ -12,7 +12,7 @@ import { useEffect } from "react";
  *
  * @example
  * ```tsx
- * const { } = useModalBehavior(isOpen, onClose);
+ * useModalBehavior(isOpen, onClose);
  * ```
  */
 export function useModalBehavior(isOpen: boolean, onClose: () => void): void {

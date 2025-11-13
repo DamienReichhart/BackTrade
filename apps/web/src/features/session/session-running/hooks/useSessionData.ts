@@ -7,6 +7,7 @@ import type { Candle, DateRangeQuery } from "@backtrade/types";
 import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
 import { useCurrentPriceStore } from "../../../../context/CurrentPriceContext";
 import { useCurrentSessionCandlesStore } from "../../../../context/CurrentSessionCandlesContext";
+import { useChartSettingsStore } from "../../../../context/ChartSettingsContext";
 import { calculateCandleDateRange } from "../../../../utils/time";
 
 /**
@@ -24,6 +25,7 @@ export function useSessionData() {
   } = useCurrentSessionStore();
   const { setCurrentPrice } = useCurrentPriceStore();
   const { setCandles, clearCandles } = useCurrentSessionCandlesStore();
+  const timeframe = useChartSettingsStore((state) => state.timeframe);
 
   const { data: session } = useSession(id);
   const hasValidSession = !!session && !!session.instrument_id;
@@ -35,16 +37,12 @@ export function useSessionData() {
   // Fetch chart candles (last 1000 candles on the configured timeframe)
   const chartDateRange = useMemo(() => {
     if (!session) return undefined;
-    return calculateCandleDateRange(
-      session.timeframe,
-      session.current_ts,
-      1000,
-    );
-  }, [session]);
+    return calculateCandleDateRange(timeframe, session.current_ts, 1000);
+  }, [session, timeframe]);
 
   const { data: chartCandles } = useCandlesByInstrument(
     instrumentId,
-    session?.timeframe ?? "M1",
+    timeframe,
     chartDateRange as DateRangeQuery | undefined,
     hasValidSession && !!session && !!chartDateRange,
   );

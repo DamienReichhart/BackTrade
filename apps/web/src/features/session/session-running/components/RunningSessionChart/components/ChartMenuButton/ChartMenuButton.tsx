@@ -1,17 +1,6 @@
 import { ChartControls } from "../ChartControls";
-import type { ChartGridSettings } from "../../../../../../../utils/localStorage";
 import { useMenuToggle } from "./hooks";
 import styles from "./ChartMenuButton.module.css";
-
-/**
- * ChartMenuButton component props
- */
-interface ChartMenuButtonProps {
-  /**
-   * Callback when grid settings change
-   */
-  onSettingsChange?: (settings: ChartGridSettings) => void;
-}
 
 /**
  * ChartMenuButton component
@@ -19,7 +8,7 @@ interface ChartMenuButtonProps {
  * Displays an icon button that opens a dropdown menu with chart configuration controls.
  * The menu appears in the top-left corner of the chart.
  */
-export function ChartMenuButton({ onSettingsChange }: ChartMenuButtonProps) {
+export function ChartMenuButton() {
   const { isMenuOpen, menuRef, handleToggle } = useMenuToggle();
 
   return (
@@ -60,7 +49,7 @@ export function ChartMenuButton({ onSettingsChange }: ChartMenuButtonProps) {
             <h3 className={styles.menuTitle}>Chart Settings</h3>
           </div>
           <div className={styles.menuContent}>
-            <ChartControls onSettingsChange={onSettingsChange} />
+            <ChartControls />
           </div>
         </div>
       )}

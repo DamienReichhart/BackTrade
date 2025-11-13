@@ -47,10 +47,6 @@ export function SessionCard({ session }: SessionCardProps) {
             </span>
           </div>
           <div className={styles.infoItem}>
-            <span className={styles.label}>Timeframe:</span>
-            <span className={styles.value}>{session.timeframe}</span>
-          </div>
-          <div className={styles.infoItem}>
             <span className={styles.label}>Initial Balance:</span>
             <span className={styles.value}>
               ${session.initial_balance.toLocaleString()}

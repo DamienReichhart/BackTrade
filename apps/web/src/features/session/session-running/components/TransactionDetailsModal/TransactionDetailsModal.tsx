@@ -1,7 +1,7 @@
 import { Button } from "../../../../../components";
 import type { Transaction } from "@backtrade/types";
 import { formatDateTime } from "@backtrade/utils";
-import { useModalBehavior } from "./hooks";
+import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
 import styles from "./TransactionDetailsModal.module.css";
 
 interface TransactionDetailsModalProps {

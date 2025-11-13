@@ -1,16 +1,10 @@
 import { z } from "zod";
 import { SessionSchema } from "../entities";
-import {
-  TimeframeSchema,
-  SpeedSchema,
-  SessionStatusSchema,
-  LeverageSchema,
-} from "../enums";
+import { SpeedSchema, SessionStatusSchema, LeverageSchema } from "../enums";
 
 export const CreateSessionRequestSchema = z.object({
   instrument_id: z.number().int().positive(),
   name: z.string().optional(),
-  timeframe: TimeframeSchema,
   speed: SpeedSchema,
   start_ts: z.iso.datetime(),
   current_ts: z.iso.datetime(),

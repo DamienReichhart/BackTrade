@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useModalBehavior } from "../../hooks/useModalBehavior";
 import { Button } from "../Button";
 import styles from "./ConfirmModal.module.css";
 
@@ -76,32 +76,8 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onCancel();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onCancel]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  // Handle modal behavior (Escape key, body scroll)
+  useModalBehavior(isOpen, onCancel);
 
   if (!isOpen) return null;
 

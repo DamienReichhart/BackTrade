@@ -42,7 +42,7 @@ BackTrade provides a deterministic historical trading environment where users ca
 
 ### 3.1 Session Creation
 
-Each user can create a session by specifying the trading instrument (e.g., XAUUSD, EURUSD), timeframe (1m, 5m, 15m, 1h, 4h, 1d), start and end timestamps, initial account balance, leverage multiplier, spread configuration (in ticks), slippage settings (in ticks), and commission structure (per trade).
+Each user can create a session by specifying the trading instrument (e.g., XAUUSD, EURUSD), start and end timestamps, initial account balance, leverage multiplier, spread configuration (in ticks), slippage settings (in ticks), and commission structure (per trade).
 
 ### 3.2 Session Execution
 

@@ -4,6 +4,8 @@
  * Provides type-safe access to localStorage with default values and error handling.
  */
 
+import type { Timeframe } from "@backtrade/types";
+
 /**
  * Storage keys for chart settings
  */
@@ -12,6 +14,7 @@ const STORAGE_KEYS = {
   CHART_GRID_HORZ_LINES: "chart.grid.horzLines",
   CHART_TIME_VISIBLE: "chart.time.timeVisible",
   CHART_SECONDS_VISIBLE: "chart.time.secondsVisible",
+  CHART_TIMEFRAME: "chart.timeframe",
 } as const;
 
 /**
@@ -81,6 +84,11 @@ export interface ChartGridSettings {
    * Whether seconds are visible on the time scale
    */
   secondsVisible: boolean;
+
+  /**
+   * Chart timeframe for displaying candles
+   */
+  timeframe: Timeframe;
 }
 
 /**
@@ -96,6 +104,10 @@ export function getChartGridSettings(): ChartGridSettings {
     secondsVisible: getLocalStorageItem(
       STORAGE_KEYS.CHART_SECONDS_VISIBLE,
       false,
+    ),
+    timeframe: getLocalStorageItem<Timeframe>(
+      STORAGE_KEYS.CHART_TIMEFRAME,
+      "M1",
     ),
   };
 }
@@ -137,6 +149,15 @@ export function setChartSecondsVisible(visible: boolean): void {
 }
 
 /**
+ * Set timeframe for chart
+ *
+ * @param timeframe - Timeframe to use for chart
+ */
+export function setChartTimeframe(timeframe: Timeframe): void {
+  setLocalStorageItem(STORAGE_KEYS.CHART_TIMEFRAME, timeframe);
+}
+
+/**
  * Update chart grid settings
  *
  * @param settings - Partial settings to update
@@ -155,5 +176,8 @@ export function updateChartGridSettings(
   }
   if (settings.secondsVisible !== undefined) {
     setChartSecondsVisible(settings.secondsVisible);
+  }
+  if (settings.timeframe !== undefined) {
+    setChartTimeframe(settings.timeframe);
   }
 }
