@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   InstrumentSchema,
   InstrumentListResponseSchema,
@@ -54,7 +54,7 @@ export function useCreateInstrument() {
 }
 
 export function useUpdateInstrument(id: string) {
-  return usePut(`/instruments/${id}`, {
+  return usePatch(`/instruments/${id}`, {
     inputSchema: UpdateInstrumentRequestSchema,
     outputSchema: InstrumentSchema,
   });

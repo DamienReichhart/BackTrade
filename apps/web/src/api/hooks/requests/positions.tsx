@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   PositionSchema,
   PositionListResponseSchema,
@@ -72,7 +72,7 @@ export function useCreatePosition() {
 }
 
 export function useUpdatePosition(id: string) {
-  return usePut(`/positions/${id}`, {
+  return usePatch(`/positions/${id}`, {
     inputSchema: UpdatePositionRequestSchema,
     outputSchema: PositionSchema,
   });

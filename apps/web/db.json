@@ -130,7 +130,7 @@
       "name": "EURUSD-M1-W45",
       "timeframe": "M1",
       "session_status": "RUNNING",
-      "speed": "2x",
+      "speed": "5x",
       "start_ts": "2020-01-16T09:00:00Z",
       "current_ts": "2020-01-16T10:30:00Z",
       "end_ts": null,

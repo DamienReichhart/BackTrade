@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   SessionSchema,
   SessionListResponseSchema,
@@ -47,7 +47,7 @@ export function useCreateSession() {
 }
 
 export function useUpdateSession(id: string) {
-  return usePut(`/sessions/${id}`, {
+  return usePatch(`/sessions/${id}`, {
     inputSchema: UpdateSessionRequestSchema,
     outputSchema: SessionSchema,
   });

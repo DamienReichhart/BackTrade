@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   DatasetSchema,
   DatasetListResponseSchema,
@@ -66,7 +66,7 @@ export function useCreateDataset() {
 }
 
 export function useUpdateDataset(id: string) {
-  return usePut(`/datasets/${id}`, {
+  return usePatch(`/datasets/${id}`, {
     inputSchema: UpdateDatasetRequestSchema,
     outputSchema: DatasetSchema,
   });

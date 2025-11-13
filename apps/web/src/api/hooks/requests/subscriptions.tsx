@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "../core";
+import { useGet, usePost, usePatch, useDelete } from "../core";
 import { z } from "zod";
 import {
   SubscriptionSchema,
@@ -72,7 +72,7 @@ export function useCreateSubscription() {
 }
 
 export function useUpdateSubscription(id: string) {
-  return usePut(`/subscriptions/${id}`, {
+  return usePatch(`/subscriptions/${id}`, {
     inputSchema: UpdateSubscriptionRequestSchema,
     outputSchema: SubscriptionSchema,
   });

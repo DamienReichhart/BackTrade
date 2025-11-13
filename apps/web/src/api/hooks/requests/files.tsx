@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   FileSchema,
   FileListResponseSchema,
@@ -65,7 +65,7 @@ export function useCreateFile() {
 }
 
 export function useUpdateFile(id: string) {
-  return usePut(`/files/${id}`, {
+  return usePatch(`/files/${id}`, {
     inputSchema: UpdateFileRequestSchema,
     outputSchema: FileSchema,
   });

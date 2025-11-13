@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   PublicUserSchema,
   UserListResponseSchema,
@@ -43,7 +43,7 @@ export function useCreateUser() {
 }
 
 export function useUpdateUser(id: string) {
-  return usePut(`/users/${id}`, {
+  return usePatch(`/users/${id}`, {
     inputSchema: UpdateUserRequestSchema,
     outputSchema: PublicUserSchema,
   });

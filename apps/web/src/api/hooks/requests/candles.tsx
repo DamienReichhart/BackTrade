@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import { z } from "zod";
 import {
   CandleSchema,
@@ -97,7 +97,7 @@ export function useCreateCandles() {
 }
 
 export function useUpdateCandle(id: string) {
-  return usePut(`/candles/${id}`, {
+  return usePatch(`/candles/${id}`, {
     inputSchema: UpdateCandleRequestSchema,
     outputSchema: CandleSchema,
   });
