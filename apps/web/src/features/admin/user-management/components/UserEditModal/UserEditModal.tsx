@@ -4,6 +4,7 @@ import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
+import { Checkbox } from "../../../../../components/Checkbox";
 import { ROLE_OPTIONS } from "../../utils";
 import styles from "./UserEditModal.module.css";
 
@@ -35,7 +36,7 @@ interface UserEditModalProps {
 /**
  * User Edit Modal component
  *
- * Modal for editing user details (email, role)
+ * Modal for editing user details (email, role, banned status)
  */
 export function UserEditModal({
   user,
@@ -52,6 +53,8 @@ export function UserEditModal({
     setEmail,
     role,
     setRole,
+    isBanned,
+    setIsBanned,
     errors,
 
     // Mutation state
@@ -113,6 +116,15 @@ export function UserEditModal({
               {errors.role && (
                 <span className={styles.error}>{errors.role}</span>
               )}
+            </div>
+
+            <div className={styles.field}>
+              <Checkbox
+                label="Banned"
+                checked={isBanned}
+                onChange={(e) => setIsBanned(e.target.checked)}
+                disabled={isLoading}
+              />
             </div>
 
             {errors.submit && (

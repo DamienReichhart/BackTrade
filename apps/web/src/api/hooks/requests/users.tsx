@@ -54,15 +54,3 @@ export function useDeleteUser(id: string) {
     outputSchema: EmptyResponseSchema,
   });
 }
-
-export function useBanUser(id: string) {
-  return usePost(`/users/${id}/ban`, {
-    outputSchema: EmptyResponseSchema,
-  });
-}
-
-export function useUnbanUser(id: string) {
-  return usePost(`/users/${id}/unban`, {
-    outputSchema: EmptyResponseSchema,
-  });
-}

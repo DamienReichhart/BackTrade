@@ -1,7 +1,8 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useClosePosition as useClosePositionBusinessLogic } from "../../../../../../../../api/hooks/requests/positions";
+import { useClosePosition as useClosePositionBusinessApi } from "../../../../../../../../api/hooks/requests/positions";
 import { useCurrentSessionStore } from "../../../../../../../../context/CurrentSessionContext";
+import { useCurrentPriceStore } from "../../../../../../../../context/CurrentPriceContext";
 
 /**
  * Hook to manage close position functionality
@@ -17,11 +18,12 @@ export function useClosePosition(
   onSuccess?: () => void,
 ) {
   const { currentSession } = useCurrentSessionStore();
+  const { currentPrice } = useCurrentPriceStore();
   const sessionId = currentSession?.id?.toString();
 
   const queryClient = useQueryClient();
   const { execute: closePosition, isLoading: isClosing } =
-    useClosePositionBusinessLogic(String(positionId));
+    useClosePositionBusinessApi(String(positionId));
 
   const handleClose = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -33,7 +35,16 @@ export function useClosePosition(
       }
 
       try {
-        await closePosition();
+        if (!currentPrice) {
+          onError?.("Current price is required");
+          return;
+        }
+
+        await closePosition({
+          position_status: "CLOSED",
+          exit_price: currentPrice,
+          closed_at: new Date().toISOString(),
+        });
 
         // Invalidate queries to refresh positions and transactions
         queryClient.invalidateQueries({
@@ -53,7 +64,7 @@ export function useClosePosition(
         onError?.(errorMessage);
       }
     },
-    [sessionId, closePosition, queryClient, onError, onSuccess],
+    [sessionId, currentPrice, closePosition, queryClient, onError, onSuccess],
   );
 
   return {

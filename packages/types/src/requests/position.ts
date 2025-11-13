@@ -45,6 +45,13 @@ export type CreatePositionResponse = z.infer<
   typeof CreatePositionResponseSchema
 >;
 
+export const ClosePositionRequestSchema = z.object({
+  position_status: PositionStatusSchema,
+  exit_price: z.number().positive(),
+  closed_at: z.iso.datetime(),
+});
+export type ClosePositionRequest = z.infer<typeof ClosePositionRequestSchema>;
+
 /**
  * Schema for position items in list responses.
  * Makes computed fields optional since the backend may not always include them.

@@ -19,6 +19,7 @@ export function useUserEditModal(
 ) {
   const [email, setEmail] = useState<string>(user.email);
   const [role, setRole] = useState<string>(user.role);
+  const [isBanned, setIsBanned] = useState<boolean>(user.is_banned);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateUserMutation = useUpdateUser(user.id.toString());
@@ -72,6 +73,10 @@ export function useUserEditModal(
         updateData.role = RoleSchema.parse(role);
       }
 
+      if (isBanned !== user.is_banned) {
+        updateData.is_banned = isBanned;
+      }
+
       // Only update if there are changes
       if (Object.keys(updateData).length > 0) {
         await updateUserMutation.execute(updateData);
@@ -93,6 +98,8 @@ export function useUserEditModal(
     setEmail,
     role,
     setRole,
+    isBanned,
+    setIsBanned,
     errors,
 
     // Mutation state

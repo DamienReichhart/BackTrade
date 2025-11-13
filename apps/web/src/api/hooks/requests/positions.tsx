@@ -6,6 +6,7 @@ import {
   CreatePositionResponseSchema,
   UpdatePositionRequestSchema,
   EmptyResponseSchema,
+  ClosePositionRequestSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 
@@ -85,7 +86,8 @@ export function useDeletePosition(id: string) {
 }
 
 export function useClosePosition(id: string) {
-  return usePost(`/positions/${id}/close`, {
+  return usePatch(`/positions/${id}`, {
+    inputSchema: ClosePositionRequestSchema,
     outputSchema: PositionSchema,
   });
 }
@@ -97,7 +99,7 @@ export function useLiquidatePosition(id: string) {
 }
 
 export function useCloseAllPositions(sessionId: string) {
-  return usePost(`/sessions/${sessionId}/positions/close-all`, {
+  return usePatch(`/sessions/${sessionId}/positions?closeAll=true`, {
     outputSchema: EmptyResponseSchema,
   });
 }
