@@ -22,6 +22,8 @@ export const UpdatePositionRequestSchema = z.object({
   commission_cost: z.number().nonnegative().optional(),
   slippage_cost: z.number().nonnegative().optional(),
   spread_cost: z.number().nonnegative().optional(),
+  tp_price: z.number().positive().nullable().optional(),
+  sl_price: z.number().positive().nullable().optional(),
 });
 export type UpdatePositionRequest = z.infer<typeof UpdatePositionRequestSchema>;
 

@@ -1,8 +1,9 @@
 import styles from "./PositionsTable.module.css";
 import { PositionDetailsModal } from "../PositionDetailsModal";
-import { ClosePositionButton } from "./components";
+import { ClosePositionButton, EditablePriceInput } from "./components";
 import { usePositionsTable } from "../../hooks";
-import { formatPnL, getPnLClassName, formatPriceOrFallback } from "./utils";
+import { formatPnL, getPnLClassName } from "./utils";
+import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
 
 /**
  * Table for open positions as in the mockup.
@@ -17,6 +18,8 @@ export function PositionsTable() {
     handleManageClick,
     closeModal,
   } = usePositionsTable();
+  const { currentSessionInstrument } = useCurrentSessionStore();
+  const pipSize = currentSessionInstrument?.pip_size ?? 1;
 
   return (
     <>
@@ -78,8 +81,22 @@ export function PositionsTable() {
                     <td className={styles[getPnLClassName(p.realized_pnl)]}>
                       {formatPnL(p.realized_pnl)}
                     </td>
-                    <td>{formatPriceOrFallback(p.sl_price)}</td>
-                    <td>{formatPriceOrFallback(p.tp_price)}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <EditablePriceInput
+                        positionId={p.id}
+                        value={p.sl_price}
+                        pipSize={pipSize}
+                        type="sl"
+                      />
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <EditablePriceInput
+                        positionId={p.id}
+                        value={p.tp_price}
+                        pipSize={pipSize}
+                        type="tp"
+                      />
+                    </td>
                     <td>{p.position_status}</td>
                     <td onClick={(e) => e.stopPropagation()}>
                       <ClosePositionButton positionId={p.id} />
