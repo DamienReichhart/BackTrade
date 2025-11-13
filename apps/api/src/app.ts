@@ -4,12 +4,13 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
-import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import pinoHttp from "pino-http";
 import { router as apiRouter } from "./routes/router.js";
+import { HealthSchema } from "@backtrade/types";
 
 function createApp(): Express {
   const app: Express = express();
@@ -23,7 +24,11 @@ function createApp(): Express {
   app.use(pinoHttp());
 
   apiRouter.get("/health", (_req: Request, res: Response) => {
-    res.json({ status: "ok", time: new Date().toISOString() });
+    const health = HealthSchema.parse({
+      status: "ok",
+      time: new Date().toISOString(),
+    });
+    res.json(health);
   });
 
   app.use("/api/v1", apiRouter);

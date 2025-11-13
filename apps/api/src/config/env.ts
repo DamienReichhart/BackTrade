@@ -1,9 +1,8 @@
-import "dotenv/config";
 import { z } from "zod";
 
 /**
  * Configuration for the API application
- * Loads environment variables from .env file
+ * Loads environment variables from .env file²
  */
 const envSchema = z.object({
   NODE_ENV: z

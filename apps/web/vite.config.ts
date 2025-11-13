@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],
@@ -16,13 +15,13 @@ export default defineConfig({
           // React core libraries
           "react-vendor": ["react", "react-dom"],
           // Routing
-          "router": ["react-router-dom"],
+          router: ["react-router-dom"],
           // State management and data fetching
           "data-vendor": ["@tanstack/react-query", "zustand"],
           // Validation
-          "validation": ["zod"],
+          validation: ["zod"],
           // Charting library (likely large)
-          "charts": ["lightweight-charts"],
+          charts: ["lightweight-charts"],
         },
       },
     },

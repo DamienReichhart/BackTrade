@@ -12,7 +12,4 @@ export default {
   coverageDirectory: "coverage",
   coverageReporters: ["text", "html", "lcov"],
   moduleFileExtensions: ["ts", "js", "json"],
-  moduleNameMapper: {
-    "^@backtrade/types$": "<rootDir>/../../packages/types/src",
-  },
 };
