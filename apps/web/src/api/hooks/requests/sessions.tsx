@@ -59,30 +59,6 @@ export function useDeleteSession(id: string) {
   });
 }
 
-export function useStartSession(id: string) {
-  return usePost(`/sessions/${id}/start`, {
-    outputSchema: SessionSchema,
-  });
-}
-
-export function usePauseSession(id: string) {
-  return usePost(`/sessions/${id}/pause`, {
-    outputSchema: SessionSchema,
-  });
-}
-
-export function useResumeSession(id: string) {
-  return usePost(`/sessions/${id}/resume`, {
-    outputSchema: SessionSchema,
-  });
-}
-
-export function useStopSession(id: string) {
-  return usePost(`/sessions/${id}/stop`, {
-    outputSchema: SessionSchema,
-  });
-}
-
 export function useArchiveSession(id: string) {
   return usePost(`/sessions/${id}/archive`, {
     outputSchema: SessionSchema,
