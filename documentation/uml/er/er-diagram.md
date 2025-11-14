@@ -104,7 +104,9 @@ erDiagram
       string uploaded_by_user_id FK
       datetime uploaded_at
       int records_count
-      string file_id FK
+      string file_name
+      string file_size
+      string file_md5
       boolean is_active
       datetime start_ts
       datetime end_ts
@@ -186,25 +188,6 @@ erDiagram
       datetime created_at
       datetime updated_at    }
 
-    FILE {
-      string id PK
-      string owner_id FK
-      string entity_id
-      string path
-      string size
-      string md5
-      datetime uploaded_at
-      datetime created_at
-      datetime updated_at
-    }
-
-    REPORT_FILE {
-      string id PK
-      string report_id FK
-      string file_id FK
-      datetime created_at
-      datetime updated_at
-    }
 
 
     USER ||--o{ SESSION : "owns"
@@ -216,9 +199,6 @@ erDiagram
     SESSION ||--o{ POSITION : "contains"
     SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
-    REPORT ||--|| REPORT_FILE : "contains"
-    REPORT_FILE ||--|| FILE : "reference"
-    DATASET ||--|| FILE : "reference"
     USER ||--o{ TRANSACTION : "has"
     SESSION ||--o{ TRANSACTION : "records"
     POSITION ||--o{ TRANSACTION : "linked"

@@ -60,7 +60,8 @@ export function useDeleteSession(id: string) {
 }
 
 export function useArchiveSession(id: string) {
-  return usePost(`/sessions/${id}/archive`, {
+  return usePatch(`/sessions/${id}`, {
+    inputSchema: UpdateSessionRequestSchema,
     outputSchema: SessionSchema,
   });
 }

@@ -2,6 +2,7 @@ import { AuthenticatedLayout } from "../components";
 import { Dashboard } from "../features/dashboard";
 import { Settings } from "../features/settings";
 import { Plans } from "../features/plans";
+import { PurchaseSuccess } from "../features/plans/components/PurchaseSuccess";
 import { AdminChoices } from "../features/admin";
 import { UserManagement } from "../features/admin/user-management";
 
@@ -27,6 +28,14 @@ export const dashboardRoutes = [
     element: (
       <AuthenticatedLayout>
         <Plans />
+      </AuthenticatedLayout>
+    ),
+  },
+  {
+    path: "/dashboard/plans/purchase-success",
+    element: (
+      <AuthenticatedLayout>
+        <PurchaseSuccess />
       </AuthenticatedLayout>
     ),
   },

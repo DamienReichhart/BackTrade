@@ -3,6 +3,7 @@ import {
   SpeedSelector,
   PauseResumeButton,
   CloseAllButton,
+  ArchiveButton,
   ControlError,
 } from "./components";
 import { useControlError } from "./hooks";
@@ -22,6 +23,7 @@ export function SessionControls() {
         <SpeedSelector onError={handleError} onSuccess={handleSuccess} />
         <PauseResumeButton onError={handleError} onSuccess={handleSuccess} />
         <CloseAllButton onError={handleError} onSuccess={handleSuccess} />
+        <ArchiveButton onError={handleError} onSuccess={handleSuccess} />
       </div>
       <ControlError error={error} />
     </div>

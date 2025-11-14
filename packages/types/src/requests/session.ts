@@ -14,6 +14,10 @@ export const CreateSessionRequestSchema = z.object({
   spread_pts: z.number().int().nonnegative(),
   slippage_pts: z.number().int().nonnegative(),
   commission_per_fill: z.number().nonnegative(),
+  user_id: z.number().int().positive(),
+  session_status: SessionStatusSchema,
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 export type CreateSessionRequest = z.infer<typeof CreateSessionRequestSchema>;
 

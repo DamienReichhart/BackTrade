@@ -6,7 +6,8 @@ import styles from "./PlansList.module.css";
 interface PlansListProps {
   plans: Plan[];
   currentSubscription: Subscription | undefined;
-  onChangeSubscription: (planId: number, planCode: string) => void;
+  isCreating?: boolean;
+  onChangeSubscription: (planId: number, planCode: string, plan: Plan) => void;
 }
 
 /**
@@ -17,6 +18,7 @@ interface PlansListProps {
 export function PlansList({
   plans,
   currentSubscription,
+  isCreating = false,
   onChangeSubscription,
 }: PlansListProps) {
   if (plans.length === 0) {
@@ -34,7 +36,10 @@ export function PlansList({
           key={plan.id}
           plan={plan}
           isCurrent={isCurrentPlan(currentSubscription, plan.id)}
-          onChangeSubscription={onChangeSubscription}
+          isCreating={isCreating}
+          onChangeSubscription={(planId, planCode) =>
+            onChangeSubscription(planId, planCode, plan)
+          }
         />
       ))}
     </div>
