@@ -141,6 +141,23 @@
       "commission_per_fill": 2,
       "created_at": "2020-01-16T09:00:00Z",
       "updated_at": "2024-01-16T10:30:00Z"
+    },
+    {
+      "instrument_id": 1,
+      "name": "TEST",
+      "speed": "1x",
+      "start_ts": "2020-01-16T10:32:00.000Z",
+      "current_ts": "2020-01-16T10:32:00.000Z",
+      "initial_balance": 800,
+      "leverage": 50,
+      "spread_pts": 0,
+      "slippage_pts": 0,
+      "commission_per_fill": 0,
+      "user_id": 1,
+      "session_status": "RUNNING",
+      "created_at": "2025-11-14T10:33:24.546Z",
+      "updated_at": "2025-11-14T10:33:24.546Z",
+      "id": 2
     }
   ],
   "candles": [

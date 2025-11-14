@@ -146,7 +146,14 @@ export function Select({
               className={`${styles.menuItem} ${
                 option.value === value ? styles.menuItemActive : ""
               }`}
-              onClick={() => handleSelect(option.value)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSelect(option.value);
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
               role="option"
               aria-selected={option.value === value}
             >
