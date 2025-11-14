@@ -56521,7 +56521,8 @@
       "quantity_lots": 1,
       "position_status": "OPEN",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 19
+      "id": 19,
+      "sl_price": 1.101
     },
     {
       "session_id": 1,
