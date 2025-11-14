@@ -183,8 +183,8 @@
   --color-gray-400-bg-10: rgba(156, 163, 175, 0.1);
 
   /* Modal & Overlay Colors */
-  --color-modal-backdrop: rgba(0, 0, 0, 0.95);
-  --color-modal-bg: #1a1f2e; /* Solid opaque background for modals */
+  --color-modal-backdrop: transparent;
+  --color-modal-bg: var(--color-principal); /* Match app's primary background */
   --color-shadow-overlay: rgba(0, 0, 0, 0.3);
   --color-shadow-overlay-10: rgba(0, 0, 0, 0.1);
   --color-shadow-overlay-08: rgba(0, 0, 0, 0.08);
