@@ -110,16 +110,34 @@
       "trial_end": null
     },
     {
-      "id": 6,
+      "user_id": 1,
+      "plan_id": 3,
+      "stripe_subscription_id": "sub_1763119035634_7ysmdph",
+      "current_period_start": "2025-11-14T11:17:15.634Z",
+      "current_period_end": "2025-12-14T11:17:15.634Z",
+      "status": "active",
+      "cancel_at_period_end": false,
+      "id": 6
+    },
+    {
       "user_id": 1,
       "plan_id": 1,
-      "stripe_subscription_id": "sub_6f7g8h9i0j1k2l3m",
+      "stripe_subscription_id": "sub_1763119160629_voct4tu",
+      "current_period_start": "2025-11-14T11:19:20.629Z",
+      "current_period_end": "2025-12-14T11:19:20.629Z",
       "status": "active",
-      "current_period_start": "2024-07-01T00:00:00Z",
-      "current_period_end": "2024-08-01T00:00:00Z",
       "cancel_at_period_end": false,
-      "canceled_at": null,
-      "trial_end": null
+      "id": 7
+    },
+    {
+      "user_id": 1,
+      "plan_id": 3,
+      "stripe_subscription_id": "sub_1763119169769_j4xc3m5",
+      "current_period_start": "2025-11-14T11:19:29.769Z",
+      "current_period_end": "2025-12-14T11:19:29.769Z",
+      "status": "active",
+      "cancel_at_period_end": false,
+      "id": 8
     }
   ],
   "sessions": [

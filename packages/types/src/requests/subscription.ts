@@ -7,6 +7,7 @@ export const CreateSubscriptionRequestSchema = z.object({
   stripe_subscription_id: z.string().min(1),
   current_period_start: z.iso.datetime(),
   current_period_end: z.iso.datetime(),
+  status: SubscriptionStatusSchema.optional(),
   cancel_at_period_end: z.boolean().default(false),
   trial_end: z.iso.datetime().optional(),
 });

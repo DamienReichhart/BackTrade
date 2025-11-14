@@ -16,7 +16,7 @@ export function Plans() {
   const { subscriptions, plans, currentSubscription, isLoading, error } =
     usePlansData();
 
-  const { handleChangeSubscription, handleManageSubscriptions } =
+  const { handleChangeSubscription, handleManageSubscriptions, isCreating } =
     useSubscriptionManagement();
 
   // Show loading state if either is loading
@@ -84,11 +84,13 @@ export function Plans() {
           <PlansList
             plans={plans}
             currentSubscription={currentSubscription}
-            onChangeSubscription={(planId, planCode) =>
+            isCreating={isCreating}
+            onChangeSubscription={(planId, planCode, plan) =>
               handleChangeSubscription(
                 planId,
                 planCode,
                 currentSubscription?.id,
+                plan,
               )
             }
           />

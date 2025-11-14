@@ -6,6 +6,7 @@ import styles from "./PlanCard.module.css";
 interface PlanCardProps {
   plan: Plan;
   isCurrent?: boolean;
+  isCreating?: boolean;
   onChangeSubscription: (planId: number, planCode: string) => void;
 }
 
@@ -17,6 +18,7 @@ interface PlanCardProps {
 export function PlanCard({
   plan,
   isCurrent = false,
+  isCreating = false,
   onChangeSubscription,
 }: PlanCardProps) {
   const handleSelectPlan = () => {
@@ -55,9 +57,9 @@ export function PlanCard({
             variant={isCurrent ? "outline" : "primary"}
             size="medium"
             onClick={handleSelectPlan}
-            disabled={isCurrent}
+            disabled={isCurrent || isCreating}
           >
-            {getButtonText(isCurrent)}
+            {isCreating ? "Processing..." : getButtonText(isCurrent)}
           </Button>
         </div>
       </div>
