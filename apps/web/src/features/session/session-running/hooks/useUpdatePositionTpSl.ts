@@ -60,7 +60,7 @@ export function useUpdatePositionTpSl(positionId: number) {
         queryKey: ["GET", `/positions`],
       });
       queryClient.invalidateQueries({
-        queryKey: ["GET", `sessions/${sessionId}/transactions`],
+        queryKey: ["GET", `/sessions/${sessionId}/transactions`],
       });
     }
   };
