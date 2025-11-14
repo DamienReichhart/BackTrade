@@ -26,7 +26,7 @@ BackTrade is a sophisticated trading backtesting platform that enables professio
 
 - ** Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
 - ** Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings (0.5x to 10x)
-- ** Advanced Analytics**: Comprehensive trading performance metrics and detailed session reports
+- ** Advanced Analytics**: Comprehensive trading performance metrics and detailed session analytics
 - ** Professional Tools**: Position management, risk controls, and sophisticated order execution
 - ** Role-Based Access**: Tiered subscription system with different session limits and features
 - ** Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and timeframes
@@ -196,10 +196,10 @@ The production setup includes:
 - Dynamic TP/SL modification
 - Bulk position management
 
-### Analytics & Reporting
+### Analytics
 
 - Comprehensive performance metrics
-- Detailed session reports
+- Detailed session analytics
 - Historical trade analysis
 - Risk assessment tools
 

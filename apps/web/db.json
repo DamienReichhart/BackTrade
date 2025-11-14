@@ -138,6 +138,16 @@
       "status": "active",
       "cancel_at_period_end": false,
       "id": 8
+    },
+    {
+      "user_id": 1,
+      "plan_id": 1,
+      "stripe_subscription_id": "sub_1763133760637_01npfhx",
+      "current_period_start": "2025-11-14T15:22:40.637Z",
+      "current_period_end": "2025-12-14T15:22:40.637Z",
+      "status": "active",
+      "cancel_at_period_end": false,
+      "id": 9
     }
   ],
   "sessions": [

@@ -1,5 +1,5 @@
 import { AuthenticatedLayout } from "../components";
-import { SessionRunning, SessionReport } from "../features/session";
+import { SessionRunning, SessionAnalytics } from "../features/session";
 import { PositionsList } from "../features/session/positions-list";
 import { TransactionsList } from "../features/session/transactions-list";
 import { SessionAdd } from "../features/session-add";
@@ -22,10 +22,10 @@ export const sessionsRoutes = [
     ),
   },
   {
-    path: "/dashboard/sessions/:id/report",
+    path: "/dashboard/sessions/:id/analytics",
     element: (
       <AuthenticatedLayout>
-        <SessionReport />
+        <SessionAnalytics />
       </AuthenticatedLayout>
     ),
   },

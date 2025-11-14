@@ -24,13 +24,13 @@ export function SessionRunning() {
   // Fetch and sync all session-related data
   const { session } = useSessionData();
 
-  // Redirect to report page if session is archived
+  // Redirect to analytics page if session is archived
   useEffect(() => {
     const sessionToCheck = session ?? currentSession;
     if (sessionToCheck?.session_status === "ARCHIVED" && id) {
-      navigate(`/dashboard/sessions/${id}/report`, { replace: true });
+      navigate(`/dashboard/sessions/${id}/analytics`, { replace: true });
     }
-  }, [session, currentSession, navigate]);
+  }, [session, currentSession, navigate, id]);
 
   return (
     <div className={styles.page}>

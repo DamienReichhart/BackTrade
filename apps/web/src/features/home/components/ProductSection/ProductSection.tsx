@@ -32,10 +32,10 @@ const productFeatures: ProductFeature[] = [
     features: ["Market only • no pending orders"],
   },
   {
-    id: "reporting",
-    title: "Reporting",
+    id: "analytics",
+    title: "Analytics",
     description:
-      "Per-session summary, equity curve, drawdowns, and exports. Net PnL and expectancy per trade.",
+      "Per-session analytics, equity curve, drawdowns, and exports. Net PnL and expectancy per trade.",
     features: ["JSON export"],
   },
 ];

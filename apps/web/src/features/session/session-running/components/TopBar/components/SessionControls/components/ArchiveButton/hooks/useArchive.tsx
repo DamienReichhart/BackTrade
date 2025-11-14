@@ -57,8 +57,8 @@ export function useArchive(
 
       onSuccess?.();
 
-      // Navigate to report page after successful archive
-      navigate(`/dashboard/sessions/${id}/report`);
+      // Navigate to analytics page after successful archive
+      navigate(`/dashboard/sessions/${id}/analytics`);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to archive session";

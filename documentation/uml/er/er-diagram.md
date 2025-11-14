@@ -180,14 +180,6 @@ erDiagram
       datetime updated_at
     }
 
-    REPORT {
-      string id PK
-      string session_id FK
-      json summary_json
-      json equity_curve_json
-      datetime created_at
-      datetime updated_at    }
-
 
 
     USER ||--o{ SESSION : "owns"
@@ -197,7 +189,6 @@ erDiagram
     INSTRUMENT ||--o{ DATASET : "feeds"
     INSTRUMENT ||--o{ SESSION : "used_in"
     SESSION ||--o{ POSITION : "contains"
-    SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
     USER ||--o{ TRANSACTION : "has"
     SESSION ||--o{ TRANSACTION : "records"

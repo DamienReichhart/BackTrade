@@ -16,7 +16,7 @@ export function RegisterInfoPanel() {
         items: [
           "Free plan with 1 active session",
           "Launch sessions in minutes",
-          "Complete session reports",
+          "Complete session analytics",
           "Export data to JSON",
         ],
       }}
