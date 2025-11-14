@@ -1,5 +1,5 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import type { executeFetch } from "../utils/fetchExecutor";
+import type { executeFetch, FetchResponse } from "../utils/fetchExecutor";
 import type { FetchExecutorConfig, HttpMethod } from ".";
 
 export interface QueryAndMutationHookConfig<TInput, TOutput> {
@@ -10,7 +10,10 @@ export interface QueryAndMutationHookConfig<TInput, TOutput> {
   /** Whether this is a GET request (query) or mutation */
   isQuery: boolean;
   /** React Query options (for queries only). Use `enabled` to control auto-fetch behavior */
-  queryOptions?: Omit<UseQueryOptions<TOutput, Error>, "queryKey" | "queryFn">;
+  queryOptions?: Omit<
+    UseQueryOptions<FetchResponse<TOutput>, Error>,
+    "queryKey" | "queryFn"
+  >;
   /** Fetch executor function */
   fetcher: typeof executeFetch<TInput, TOutput>;
   /** Fetch executor configuration */
