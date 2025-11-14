@@ -9,12 +9,3 @@ export const ReportSchema = z.object({
   updated_at: z.string(),
 });
 export type Report = z.infer<typeof ReportSchema>;
-
-export const ReportFileSchema = z.object({
-  id: z.number().int().positive(),
-  report_id: z.number().int().positive(),
-  file_id: z.number().int().positive(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
-export type ReportFile = z.infer<typeof ReportFileSchema>;

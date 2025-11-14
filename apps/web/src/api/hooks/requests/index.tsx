@@ -8,7 +8,6 @@ export * from "./instruments";
 export * from "./datasets";
 export * from "./candles";
 export * from "./reports";
-export * from "./files";
 export * from "./audit";
 export * from "./plans";
 export * from "./subscriptions";
