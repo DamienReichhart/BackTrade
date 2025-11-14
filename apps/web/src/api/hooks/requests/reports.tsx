@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   ReportSchema,
   ReportListResponseSchema,
@@ -64,7 +64,7 @@ export function useCreateReport() {
 }
 
 export function useUpdateReport(id: string) {
-  return usePut(`/reports/${id}`, {
+  return usePatch(`/reports/${id}`, {
     inputSchema: UpdateReportRequestSchema,
     outputSchema: ReportSchema,
   });

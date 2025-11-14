@@ -1,9 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  usePauseSession,
-  useResumeSession,
-} from "../../../../../../../../../../api/hooks/requests/sessions";
+import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
 import { useCurrentSessionStore } from "../../../../../../../../../../context/CurrentSessionContext";
 
 /**
@@ -22,16 +19,12 @@ export function usePauseResume(
   const sessionId = currentSession?.id?.toString();
 
   const queryClient = useQueryClient();
-  const { execute: pauseSession, isLoading: isPausing } = usePauseSession(
-    sessionId ?? "",
-  );
-  const { execute: resumeSession, isLoading: isResuming } = useResumeSession(
+  const { execute: updateSession, isLoading } = useUpdateSession(
     sessionId ?? "",
   );
 
   const isSessionPaused = sessionStatus === "PAUSED";
   const isSessionRunning = sessionStatus === "RUNNING";
-  const isLoading = isPausing || isResuming;
 
   const canToggle = useMemo(
     () =>
@@ -41,10 +34,10 @@ export function usePauseResume(
 
   const buttonText = useMemo(() => {
     if (isLoading) {
-      return isPausing ? "Pausing..." : "Resuming...";
+      return isSessionPaused ? "Resuming..." : "Pausing...";
     }
     return isSessionPaused ? "Resume" : "Pause";
-  }, [isLoading, isPausing, isSessionPaused]);
+  }, [isLoading, isSessionPaused]);
 
   const handleClick = useCallback(async () => {
     if (!sessionId) {
@@ -58,9 +51,10 @@ export function usePauseResume(
     }
 
     try {
-      const updatedSession = isSessionPaused
-        ? await resumeSession()
-        : await pauseSession();
+      const newStatus = isSessionPaused ? "RUNNING" : "PAUSED";
+      const updatedSession = await updateSession({
+        session_status: newStatus,
+      });
 
       // Update the session query cache with the mutation result
       queryClient.setQueryData(
@@ -77,8 +71,7 @@ export function usePauseResume(
     sessionId,
     isSessionPaused,
     isSessionRunning,
-    pauseSession,
-    resumeSession,
+    updateSession,
     queryClient,
     onError,
     onSuccess,

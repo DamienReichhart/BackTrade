@@ -5,20 +5,28 @@ minimum_pre_commit_version: "3.5.0"
 repos:
   - repo: local
     hooks:
-      # 1) Prettier (check only) — do not modify files during commit
+      # 1) Tests
+      - id: test
+        name: Tests
+        language: system
+        entry: pnpm test
+        pass_filenames: false
+
+      # 2) Prettier (check only) — do not modify files during commit
       - id: prettier
         name: Prettier (check formatting)
         language: system
-        entry: pnpm format
+        entry: pnpm format:check
+        pass_filenames: false
 
-      # 2) ESLint (no auto-fix on commit; fail on any warnings)
+      # 3) ESLint (no auto-fix on commit; fail on any warnings)
       - id: eslint
         name: ESLint (no warnings allowed)
         language: system
         entry: pnpm lint
         pass_filenames: false
 
-      # 3) TypeScript type-check across the workspace via Turbo tasks
+      # 4) TypeScript type-check across the workspace via Turbo tasks
       - id: typecheck
         name: TypeScript typecheck
         language: system

@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   PublicUserSchema,
   UserListResponseSchema,
@@ -43,7 +43,7 @@ export function useCreateUser() {
 }
 
 export function useUpdateUser(id: string) {
-  return usePut(`/users/${id}`, {
+  return usePatch(`/users/${id}`, {
     inputSchema: UpdateUserRequestSchema,
     outputSchema: PublicUserSchema,
   });
@@ -51,18 +51,6 @@ export function useUpdateUser(id: string) {
 
 export function useDeleteUser(id: string) {
   return useDelete(`/users/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
-}
-
-export function useBanUser(id: string) {
-  return usePost(`/users/${id}/ban`, {
-    outputSchema: EmptyResponseSchema,
-  });
-}
-
-export function useUnbanUser(id: string) {
-  return usePost(`/users/${id}/unban`, {
     outputSchema: EmptyResponseSchema,
   });
 }

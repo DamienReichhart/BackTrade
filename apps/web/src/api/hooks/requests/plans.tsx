@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   PlanSchema,
   CreatePlanRequestSchema,
@@ -45,7 +45,7 @@ export function useCreatePlan() {
 }
 
 export function useUpdatePlan(id: string) {
-  return usePut(`/plans/${id}`, {
+  return usePatch(`/plans/${id}`, {
     inputSchema: UpdatePlanRequestSchema,
     outputSchema: PlanSchema,
   });

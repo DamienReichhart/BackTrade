@@ -45,7 +45,15 @@ The token contains the following information :
 
 ```json
 {
-  "userId": "1",
+  "sub": {
+    "id": 1,
+    "email": "admin@backtrade.com",
+    "role": "ADMIN",
+    "is_banned": false,
+    "stripe_customer_id": "cus_admin123",
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": "2024-01-15T10:30:00.000Z"
+  },
   "iat": 123456,
   "exp": 123456
 }

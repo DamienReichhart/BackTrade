@@ -58,11 +58,6 @@ interface UserTableProps {
    * Callback when delete button is clicked
    */
   onDelete: (user: PublicUser) => void;
-
-  /**
-   * Callback when ban/unban button is clicked
-   */
-  onBanToggle: (user: PublicUser) => void;
 }
 
 /**
@@ -80,7 +75,6 @@ export function UserTable({
   onEdit,
   onView,
   onDelete,
-  onBanToggle,
 }: UserTableProps) {
   return (
     <div className={styles.card}>
@@ -194,13 +188,6 @@ export function UserTable({
                         onClick={() => onEdit(user)}
                       >
                         Edit
-                      </Button>
-                      <Button
-                        variant={user.is_banned ? "primary" : "outline"}
-                        size="small"
-                        onClick={() => onBanToggle(user)}
-                      >
-                        {user.is_banned ? "Unban" : "Ban"}
                       </Button>
                       <Button
                         variant="ghost"

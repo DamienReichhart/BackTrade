@@ -35,13 +35,9 @@ export function UserManagement() {
     selectedUserForDetails,
     isDeleteOpen,
     selectedUserForDelete,
-    isBanOpen,
-    selectedUserForBan,
 
     // Mutations
     deleteUserMutation,
-    banUserMutation,
-    unbanUserMutation,
 
     // Handlers
     handleSearchChange,
@@ -51,9 +47,7 @@ export function UserManagement() {
     handleEdit,
     handleView,
     handleDelete,
-    handleBanToggle,
     handleConfirmDelete,
-    handleConfirmBanToggle,
     handleUpdateSuccess,
     handleBackToAdmin,
 
@@ -61,7 +55,6 @@ export function UserManagement() {
     closeEditModal,
     closeDetailsModal,
     closeDeleteModal,
-    closeBanModal,
 
     // Pagination
     setPage,
@@ -120,7 +113,6 @@ export function UserManagement() {
         onEdit={handleEdit}
         onView={handleView}
         onDelete={handleDelete}
-        onBanToggle={handleBanToggle}
       />
 
       {/* Pagination */}
@@ -175,20 +167,6 @@ export function UserManagement() {
         isLoading={deleteUserMutation.isLoading}
         onConfirm={handleConfirmDelete}
         onCancel={closeDeleteModal}
-      />
-
-      {/* Ban/Unban Confirmation Modal */}
-      <ConfirmModal
-        isOpen={isBanOpen}
-        title={selectedUserForBan?.is_banned ? "Unban User" : "Ban User"}
-        message={`Are you sure you want to ${selectedUserForBan?.is_banned ? "unban" : "ban"} user "${selectedUserForBan?.email}"?`}
-        confirmLabel={selectedUserForBan?.is_banned ? "Unban" : "Ban"}
-        cancelLabel="Cancel"
-        confirmVariant={selectedUserForBan?.is_banned ? "primary" : "primary"}
-        cancelVariant="outline"
-        isLoading={banUserMutation.isLoading || unbanUserMutation.isLoading}
-        onConfirm={handleConfirmBanToggle}
-        onCancel={closeBanModal}
       />
     </div>
   );

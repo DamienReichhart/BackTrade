@@ -1,11 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useUsers,
-  useDeleteUser,
-  useBanUser,
-  useUnbanUser,
-} from "../../../api/hooks/requests/users";
+import { useUsers, useDeleteUser } from "../../../api/hooks/requests/users";
 import type { PublicUser, Role, SearchQueryUser } from "@backtrade/types";
 import { useModal } from "../../../hooks/useModal";
 
@@ -52,13 +47,6 @@ export function useUserManagement() {
     closeModal: closeDeleteModal,
   } = useModal<PublicUser>();
 
-  const {
-    isOpen: isBanOpen,
-    selectedItem: selectedUserForBan,
-    openModal: openBanModal,
-    closeModal: closeBanModal,
-  } = useModal<PublicUser>();
-
   // Build search query with filters
   const query: SearchQueryUser = useMemo(() => {
     const searchParams: SearchQueryUser = {
@@ -103,10 +91,6 @@ export function useUserManagement() {
 
   const deleteUserMutation = useDeleteUser(
     selectedUserForDelete?.id.toString() ?? "",
-  );
-  const banUserMutation = useBanUser(selectedUserForBan?.id.toString() ?? "");
-  const unbanUserMutation = useUnbanUser(
-    selectedUserForBan?.id.toString() ?? "",
   );
 
   /**
@@ -167,13 +151,6 @@ export function useUserManagement() {
   };
 
   /**
-   * Handle ban/unban user
-   */
-  const handleBanToggle = (user: PublicUser) => {
-    openBanModal(user);
-  };
-
-  /**
    * Confirm delete user
    */
   const handleConfirmDelete = async () => {
@@ -182,25 +159,6 @@ export function useUserManagement() {
     try {
       await deleteUserMutation.execute();
       closeDeleteModal();
-      await refetchUsers();
-    } catch {
-      // Error handling is done by the mutation hook
-    }
-  };
-
-  /**
-   * Confirm ban/unban user
-   */
-  const handleConfirmBanToggle = async () => {
-    if (!selectedUserForBan) return;
-
-    try {
-      if (selectedUserForBan.is_banned) {
-        await unbanUserMutation.execute();
-      } else {
-        await banUserMutation.execute();
-      }
-      closeBanModal();
       await refetchUsers();
     } catch {
       // Error handling is done by the mutation hook
@@ -242,13 +200,9 @@ export function useUserManagement() {
     selectedUserForDetails,
     isDeleteOpen,
     selectedUserForDelete,
-    isBanOpen,
-    selectedUserForBan,
 
     // Mutations
     deleteUserMutation,
-    banUserMutation,
-    unbanUserMutation,
 
     // Handlers
     handleSearchChange,
@@ -258,9 +212,7 @@ export function useUserManagement() {
     handleEdit,
     handleView,
     handleDelete,
-    handleBanToggle,
     handleConfirmDelete,
-    handleConfirmBanToggle,
     handleUpdateSuccess,
     handleBackToAdmin,
 
@@ -268,7 +220,6 @@ export function useUserManagement() {
     closeEditModal,
     closeDetailsModal,
     closeDeleteModal,
-    closeBanModal,
 
     // Pagination
     setPage,

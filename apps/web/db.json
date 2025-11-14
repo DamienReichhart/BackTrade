@@ -130,7 +130,7 @@
       "name": "EURUSD-M1-W45",
       "timeframe": "M1",
       "session_status": "RUNNING",
-      "speed": "2x",
+      "speed": "5x",
       "start_ts": "2020-01-16T09:00:00Z",
       "current_ts": "2020-01-16T10:30:00Z",
       "end_ts": null,
@@ -56320,8 +56320,10 @@
       "commission_cost": 2,
       "slippage_cost": 0.3,
       "spread_cost": 1.2,
-      "created_at": "2020-01-16T09:28:00Z",
-      "updated_at": "2020-01-16T09:28:00Z"
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T14:30:37.213Z"
     },
     {
       "session_id": 1,
@@ -56330,6 +56332,8 @@
       "quantity_lots": 1,
       "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
       "id": 2
     },
     {
@@ -56337,18 +56341,26 @@
       "side": "SELL",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 3
+      "id": 3,
+      "exit_price": 1.1161,
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "closed_at": "2025-11-13T14:52:05.326Z"
     },
     {
       "session_id": 1,
       "side": "SELL",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 4
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 4,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T14:54:07.919Z"
     },
     {
       "session_id": 1,
@@ -56357,9 +56369,13 @@
       "quantity_lots": 1,
       "tp_price": 1.117,
       "sl_price": 1.114,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 5
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 5,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T14:31:49.698Z"
     },
     {
       "session_id": 1,
@@ -56368,18 +56384,141 @@
       "quantity_lots": 1,
       "tp_price": 1.12,
       "sl_price": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 6
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 6,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:01:10.875Z"
     },
     {
       "session_id": 1,
       "side": "BUY",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 7
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 7,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T14:58:23.256Z"
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 8,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:01:09.525Z"
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 9,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:01:48.459Z"
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 10,
+      "exit_price": 1.1161,
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "closed_at": "2025-11-13T15:04:27.890Z"
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "id": 11,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:08:19.136Z"
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 12,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:08:22.342Z"
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 13,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:10:46.549Z"
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 14,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:12:44.581Z"
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 15,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:13:27.648Z"
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "CLOSED",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 16,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-13T15:14:29.581Z"
     },
     {
       "session_id": 1,
@@ -56387,17 +56526,12 @@
       "entry_price": 1.1161,
       "quantity_lots": 1,
       "position_status": "OPEN",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 8
-    },
-    {
-      "session_id": 1,
-      "side": "BUY",
-      "entry_price": 1.1161,
-      "quantity_lots": 1,
-      "position_status": "OPEN",
-      "opened_at": "2020-01-16T10:30:00Z",
-      "id": 9
+      "id": 17,
+      "tp_price": 1.238,
+      "sl_price": 1.1
     },
     {
       "session_id": 1,
@@ -56405,53 +56539,59 @@
       "entry_price": 1.1161,
       "quantity_lots": 1,
       "position_status": "OPEN",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 10
-    },
-    {
-      "session_id": 1,
-      "side": "BUY",
-      "entry_price": 1.1161,
-      "quantity_lots": 1,
-      "position_status": "OPEN",
-      "opened_at": "2020-01-16T10:30:00Z",
-      "id": 11
-    },
-    {
-      "session_id": 1,
-      "side": "BUY",
-      "entry_price": 1.1161,
-      "quantity_lots": 1,
-      "position_status": "OPEN",
-      "opened_at": "2020-01-16T10:30:00Z",
-      "id": 12
-    },
-    {
-      "session_id": 1,
-      "side": "BUY",
-      "entry_price": 1.1161,
-      "quantity_lots": 1,
-      "position_status": "OPEN",
-      "opened_at": "2020-01-16T10:30:00Z",
-      "id": 13
+      "id": 18,
+      "tp_price": 1,
+      "sl_price": 2
     },
     {
       "session_id": 1,
       "side": "SELL",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 14
+      "id": 19,
+      "sl_price": 1.101,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-14T08:11:38.087Z"
     },
     {
       "session_id": 1,
-      "side": "SELL",
+      "side": "BUY",
       "entry_price": 1.1161,
       "quantity_lots": 1,
       "position_status": "OPEN",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 15
+      "id": 20
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "position_status": "OPEN",
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 21
+    },
+    {
+      "session_id": 1,
+      "side": "BUY",
+      "entry_price": 1.1161,
+      "quantity_lots": 1,
+      "created_at": "2025-11-14T08:28:00Z",
+      "updated_at": "2025-11-14T08:28:00Z",
+      "position_status": "OPEN",
+      "opened_at": "2020-01-16T10:30:00Z",
+      "id": 22
     }
   ],
   "transactions": [
