@@ -1,0 +1,22 @@
+/**
+ * Session Report Page Styles
+ */
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-surface-primary);
+  padding: var(--spacing-lg);
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
