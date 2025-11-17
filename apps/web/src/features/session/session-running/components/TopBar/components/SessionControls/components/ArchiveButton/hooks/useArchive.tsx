@@ -49,14 +49,16 @@ export function useArchive(
       queryClient.invalidateQueries({ queryKey: ["GET", `/sessions/${id}`] });
 
       // Update the current session in the store
-      if (updatedSession) {
-        useCurrentSessionStore.getState().setCurrentSession(updatedSession);
+      if (updatedSession?.data) {
+        useCurrentSessionStore
+          .getState()
+          .setCurrentSession(updatedSession.data);
       }
 
       onSuccess?.();
 
-      // Navigate to report page after successful archive
-      navigate(`/dashboard/sessions/${id}/report`);
+      // Navigate to analytics page after successful archive
+      navigate(`/dashboard/sessions/${id}/analytics`);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to archive session";

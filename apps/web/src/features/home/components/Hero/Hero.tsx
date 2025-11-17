@@ -28,7 +28,7 @@ export function Hero() {
         <p className={styles.description}>
           Launch a session at any timestamp. Trade like it's live with your own
           clock. Strict fixed spread, slippage, and commission. No pending
-          orders. Complete reports for every session.
+          orders. Complete analytics for every session.
         </p>
 
         {/* CTA Buttons */}

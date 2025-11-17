@@ -4,6 +4,7 @@ export {
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
+  BannedError,
   InternalServerError,
   ServiceUnavailableError,
 } from "./components";

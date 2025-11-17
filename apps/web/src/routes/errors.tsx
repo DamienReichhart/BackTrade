@@ -2,6 +2,7 @@ import {
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
+  BannedError,
   InternalServerError,
   ServiceUnavailableError,
   NotFoundError,
@@ -19,6 +20,10 @@ export const errorsRoutes = [
   {
     path: "/error/403",
     element: <ForbiddenError />,
+  },
+  {
+    path: "/error/banned",
+    element: <BannedError />,
   },
   {
     path: "/error/500",

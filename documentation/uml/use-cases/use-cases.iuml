@@ -36,8 +36,8 @@ rectangle BackTrade {
     (Manage Positions) as UC_POSITIONS
   }
 
-  package "Analytics and Reporting" as E {
-    (View Analytics and Reports) as UC_ANALYTICS
+  package "Analytics" as E {
+    (View Analytics) as UC_ANALYTICS
   }
 
   package "Audit and Compliance" as G {

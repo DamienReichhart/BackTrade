@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { UseQueryOptions } from "@tanstack/react-query";
+import type { FetchResponse } from "../utils/fetchExecutor";
 
 /** HTTP request method type */
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -13,8 +14,14 @@ export interface UseFetchOptions<TInput = unknown, TOutput = unknown> {
   outputSchema?: z.ZodType<TOutput>;
   /** Additional HTTP request options */
   requestInit?: Omit<RequestInit, "body" | "method">;
-  /** React Query options. Use `enabled` to control auto-fetch behavior */
-  queryOptions?: Omit<UseQueryOptions<TOutput, Error>, "queryKey" | "queryFn">;
+  /** React Query options. Use `enabled` to control auto-fetch behavior.
+   * Note: Internally, React Query stores FetchResponse<TOutput>, but you can
+   * provide options as if working with TOutput directly for convenience.
+   */
+  queryOptions?: Omit<
+    UseQueryOptions<FetchResponse<TOutput>, Error>,
+    "queryKey" | "queryFn"
+  >;
 }
 
 export interface FetchExecutorConfig<TInput, TOutput> {

@@ -109,14 +109,28 @@ export function useLoginForm() {
       });
 
       // Login successful - store tokens and user
-      if (response && "accessToken" in response && "refreshToken" in response) {
-        login(response.accessToken, response.refreshToken);
+      if (
+        response?.data &&
+        "accessToken" in response.data &&
+        "refreshToken" in response.data
+      ) {
+        login(response.data.accessToken, response.data.refreshToken);
         navigate("/dashboard");
       }
     } catch (err) {
       // Handle login error
       const errorMessage =
         err instanceof Error ? err.message : "Login failed. Please try again.";
+
+      // Check if the error is with "banned" in the response
+      const lowerErrorMessage = errorMessage.toLowerCase();
+      const isBannedError = lowerErrorMessage.includes("banned");
+
+      if (isBannedError) {
+        navigate("/error/banned");
+        return;
+      }
+
       setErrors({
         email: errorMessage,
         password: undefined,

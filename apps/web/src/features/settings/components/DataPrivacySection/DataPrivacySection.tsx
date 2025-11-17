@@ -30,7 +30,7 @@ export function DataPrivacySection() {
         <div className={styles.dangerZone}>
           <h3 className={styles.dangerTitle}>Danger zone</h3>
           <p className={styles.dangerText}>
-            Deleting your account removes sessions, reports, and profile data.
+            Deleting your account removes sessions, analytics, and profile data.
             This action is irreversible.
           </p>
           {error && <p className={styles.errorMessage}>{error}</p>}

@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import type { QueryAndMutationHookConfig } from "../../types";
+import type { FetchResponse } from "../../utils/fetchExecutor";
 
 /**
  * Sets up React Query hooks.
@@ -17,7 +18,8 @@ export function useQueryAndMutation<TInput = unknown, TOutput = unknown>({
   const queryKey = [method, url];
 
   // Set up query hook for GET requests
-  const query = useQuery<TOutput, Error>({
+  // React Query stores the full FetchResponse, but we'll extract data in useFetch
+  const query = useQuery<FetchResponse<TOutput>, Error>({
     queryKey,
     queryFn: () => fetcher(undefined, executorConfig),
     ...queryOptions,
@@ -26,18 +28,23 @@ export function useQueryAndMutation<TInput = unknown, TOutput = unknown>({
   });
 
   // Set up mutation hook for POST/PUT/DELETE requests
-  const mutation = useMutation<TOutput, Error, TInput | undefined>({
+  // React Query stores the full FetchResponse, but we'll extract data in useFetch
+  const mutation = useMutation<
+    FetchResponse<TOutput>,
+    Error,
+    TInput | undefined
+  >({
     mutationFn: (body?: TInput) => fetcher(body, executorConfig, true),
   });
 
-  // Create consistent execute function that always returns Promise<TOutput>
-  const execute = async (body?: TInput): Promise<TOutput> => {
+  // Create consistent execute function that returns Promise with data and status
+  const execute = async (body?: TInput): Promise<FetchResponse<TOutput>> => {
     if (isQuery) {
       const result = await query.refetch();
       if (result.error) {
         throw result.error;
       }
-      return result.data as TOutput;
+      return result.data as FetchResponse<TOutput>;
     } else {
       return await mutation.mutateAsync(body);
     }

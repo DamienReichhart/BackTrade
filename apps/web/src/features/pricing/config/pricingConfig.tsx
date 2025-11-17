@@ -23,7 +23,7 @@ export const pricingTiers: PricingTier[] = [
       { text: "Deterministic OHLCV engine", included: true },
       { text: "Market entries only • immediate fills", included: true },
       { text: "Fixed spread, slippage, commission", included: true },
-      { text: "Session reports + JSON export", included: true },
+      { text: "Session analytics + JSON export", included: true },
     ],
     ctaText: "Create account",
     ctaVariant: "outline",

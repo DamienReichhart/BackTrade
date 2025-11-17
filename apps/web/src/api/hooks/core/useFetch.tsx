@@ -8,6 +8,7 @@ import type { UseFetchOptions } from "../../types";
  *
  * @param url - API endpoint URL (relative to API_BASE_URL)
  * @param options - Configuration options
+ * @returns Hook object with data, status, error, loading states, and execute function
  */
 export function useFetch<TOutput = unknown, TInput = unknown>(
   url: string,
@@ -44,7 +45,8 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   // Return consistent object shape for all methods
   if (isQuery) {
     return {
-      data: query.data ?? null,
+      data: query.data?.data ?? null,
+      status: query.data?.status ?? null,
       error: query.error ?? null,
       isLoading: query.isLoading || query.isFetching,
       isSuccess: query.isSuccess,
@@ -53,7 +55,8 @@ export function useFetch<TOutput = unknown, TInput = unknown>(
   }
 
   return {
-    data: mutation.data ?? null,
+    data: mutation.data?.data ?? null,
+    status: mutation.data?.status ?? null,
     error: mutation.error ?? null,
     isLoading: mutation.isPending,
     isSuccess: mutation.isSuccess,

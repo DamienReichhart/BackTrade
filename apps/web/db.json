@@ -138,6 +138,16 @@
       "status": "active",
       "cancel_at_period_end": false,
       "id": 8
+    },
+    {
+      "user_id": 1,
+      "plan_id": 1,
+      "stripe_subscription_id": "sub_1763133760637_01npfhx",
+      "current_period_start": "2025-11-14T15:22:40.637Z",
+      "current_period_end": "2025-12-14T15:22:40.637Z",
+      "status": "active",
+      "cancel_at_period_end": false,
+      "id": 9
     }
   ],
   "sessions": [
@@ -56344,7 +56354,7 @@
     {
       "id": 1,
       "session_id": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "side": "BUY",
       "entry_price": 1.23608,
       "quantity_lots": 1.2,
@@ -56358,7 +56368,7 @@
       "created_at": "2025-11-14T08:28:00Z",
       "updated_at": "2025-11-14T08:28:00Z",
       "exit_price": 1.1161,
-      "closed_at": "2025-11-13T14:30:37.213Z"
+      "closed_at": "2025-11-14T12:50:00.452Z"
     },
     {
       "session_id": 1,
@@ -56573,13 +56583,15 @@
       "side": "SELL",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "created_at": "2025-11-14T08:28:00Z",
       "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
       "id": 18,
       "tp_price": 1,
-      "sl_price": 2
+      "sl_price": 2,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-14T12:50:36.208Z"
     },
     {
       "session_id": 1,
@@ -56600,11 +56612,14 @@
       "side": "BUY",
       "entry_price": 1.1161,
       "quantity_lots": 1,
-      "position_status": "OPEN",
+      "position_status": "CLOSED",
       "created_at": "2025-11-14T08:28:00Z",
       "updated_at": "2025-11-14T08:28:00Z",
       "opened_at": "2020-01-16T10:30:00Z",
-      "id": 20
+      "id": 20,
+      "sl_price": 15,
+      "exit_price": 1.1161,
+      "closed_at": "2025-11-14T12:56:58.362Z"
     },
     {
       "session_id": 1,
@@ -56640,6 +56655,531 @@
       "balance_after": 90412.6,
       "created_at": "2020-01-16T09:28:12Z",
       "updated_at": "2020-01-16T09:28:12Z"
+    }
+  ],
+  "session_analytics": [
+    {
+      "session_id": 2,
+      "initial_balance": 800,
+      "final_balance": 1245.5,
+      "total_pnl": 445.5,
+      "total_pnl_percentage": 55.69,
+      "total_trades": 47,
+      "winning_trades": 28,
+      "losing_trades": 19,
+      "win_rate": 59.57,
+      "average_win": 35.25,
+      "average_loss": -18.75,
+      "profit_factor": 2.76,
+      "max_drawdown": 125.3,
+      "max_drawdown_percentage": 15.66,
+      "sharpe_ratio": 1.85,
+      "equity_curve": [
+        {
+          "timestamp": "2020-01-16T10:32:00.000Z",
+          "equity": 804.61
+        },
+        {
+          "timestamp": "2020-01-16T10:32:31.041Z",
+          "equity": 801.3
+        },
+        {
+          "timestamp": "2020-01-16T10:33:02.083Z",
+          "equity": 817.37
+        },
+        {
+          "timestamp": "2020-01-16T10:33:33.124Z",
+          "equity": 832.1
+        },
+        {
+          "timestamp": "2020-01-16T10:34:04.166Z",
+          "equity": 843.55
+        },
+        {
+          "timestamp": "2020-01-16T10:34:35.207Z",
+          "equity": 842.72
+        },
+        {
+          "timestamp": "2020-01-16T10:35:06.249Z",
+          "equity": 868.12
+        },
+        {
+          "timestamp": "2020-01-16T10:35:37.291Z",
+          "equity": 862.79
+        },
+        {
+          "timestamp": "2020-01-16T10:36:08.332Z",
+          "equity": 882.88
+        },
+        {
+          "timestamp": "2020-01-16T10:36:39.374Z",
+          "equity": 879.99
+        },
+        {
+          "timestamp": "2020-01-16T10:37:10.415Z",
+          "equity": 888.48
+        },
+        {
+          "timestamp": "2020-01-16T10:37:41.457Z",
+          "equity": 899.44
+        },
+        {
+          "timestamp": "2020-01-16T10:38:12.498Z",
+          "equity": 915.37
+        },
+        {
+          "timestamp": "2020-01-16T10:38:43.540Z",
+          "equity": 917.43
+        },
+        {
+          "timestamp": "2020-01-16T10:39:14.582Z",
+          "equity": 929.15
+        },
+        {
+          "timestamp": "2020-01-16T10:39:45.623Z",
+          "equity": 938.02
+        },
+        {
+          "timestamp": "2020-01-16T10:40:16.665Z",
+          "equity": 951.85
+        },
+        {
+          "timestamp": "2020-01-16T10:40:47.706Z",
+          "equity": 959.64
+        },
+        {
+          "timestamp": "2020-01-16T10:41:18.748Z",
+          "equity": 966.72
+        },
+        {
+          "timestamp": "2020-01-16T10:41:49.790Z",
+          "equity": 977.03
+        },
+        {
+          "timestamp": "2020-01-16T10:42:20.831Z",
+          "equity": 973.47
+        },
+        {
+          "timestamp": "2020-01-16T10:42:51.873Z",
+          "equity": 990.33
+        },
+        {
+          "timestamp": "2020-01-16T10:43:22.914Z",
+          "equity": 1007.91
+        },
+        {
+          "timestamp": "2020-01-16T10:43:53.956Z",
+          "equity": 992.73
+        },
+        {
+          "timestamp": "2020-01-16T10:44:24.997Z",
+          "equity": 1004.74
+        },
+        {
+          "timestamp": "2020-01-16T10:44:56.039Z",
+          "equity": 1014.5
+        },
+        {
+          "timestamp": "2020-01-16T10:45:27.081Z",
+          "equity": 1023.71
+        },
+        {
+          "timestamp": "2020-01-16T10:45:58.122Z",
+          "equity": 1027.11
+        },
+        {
+          "timestamp": "2020-01-16T10:46:29.164Z",
+          "equity": 1057.01
+        },
+        {
+          "timestamp": "2020-01-16T10:47:00.205Z",
+          "equity": 1072.68
+        },
+        {
+          "timestamp": "2020-01-16T10:47:31.247Z",
+          "equity": 1075.32
+        },
+        {
+          "timestamp": "2020-01-16T10:48:02.288Z",
+          "equity": 1081.43
+        },
+        {
+          "timestamp": "2020-01-16T10:48:33.330Z",
+          "equity": 1092.17
+        },
+        {
+          "timestamp": "2020-01-16T10:49:04.372Z",
+          "equity": 1085.9
+        },
+        {
+          "timestamp": "2020-01-16T10:49:35.413Z",
+          "equity": 1111.51
+        },
+        {
+          "timestamp": "2020-01-16T10:50:06.455Z",
+          "equity": 1124.15
+        },
+        {
+          "timestamp": "2020-01-16T10:50:37.496Z",
+          "equity": 1129.15
+        },
+        {
+          "timestamp": "2020-01-16T10:51:08.538Z",
+          "equity": 1137.77
+        },
+        {
+          "timestamp": "2020-01-16T10:51:39.580Z",
+          "equity": 1136.18
+        },
+        {
+          "timestamp": "2020-01-16T10:52:10.621Z",
+          "equity": 1150.03
+        },
+        {
+          "timestamp": "2020-01-16T10:52:41.663Z",
+          "equity": 1143.17
+        },
+        {
+          "timestamp": "2020-01-16T10:53:12.704Z",
+          "equity": 1150.9
+        },
+        {
+          "timestamp": "2020-01-16T10:53:43.746Z",
+          "equity": 1178.06
+        },
+        {
+          "timestamp": "2020-01-16T10:54:14.787Z",
+          "equity": 1192.28
+        },
+        {
+          "timestamp": "2020-01-16T10:54:45.829Z",
+          "equity": 1197.53
+        },
+        {
+          "timestamp": "2020-01-16T10:55:16.871Z",
+          "equity": 1207.88
+        },
+        {
+          "timestamp": "2020-01-16T10:55:47.912Z",
+          "equity": 1195.59
+        },
+        {
+          "timestamp": "2020-01-16T10:56:18.954Z",
+          "equity": 1210.5
+        },
+        {
+          "timestamp": "2020-01-16T10:56:49.995Z",
+          "equity": 1224.68
+        },
+        {
+          "timestamp": "2020-01-16T10:57:21.037Z",
+          "equity": 1223.48
+        }
+      ],
+      "drawdown_curve": [
+        {
+          "timestamp": "2020-01-16T10:32:00.000Z",
+          "drawdown": 0,
+          "peak": 804.61,
+          "equity": 804.61
+        },
+        {
+          "timestamp": "2020-01-16T10:32:31.041Z",
+          "drawdown": 0.41,
+          "peak": 804.61,
+          "equity": 801.3
+        },
+        {
+          "timestamp": "2020-01-16T10:33:02.083Z",
+          "drawdown": 0,
+          "peak": 817.37,
+          "equity": 817.37
+        },
+        {
+          "timestamp": "2020-01-16T10:33:33.124Z",
+          "drawdown": 0,
+          "peak": 832.1,
+          "equity": 832.1
+        },
+        {
+          "timestamp": "2020-01-16T10:34:04.166Z",
+          "drawdown": 0,
+          "peak": 843.55,
+          "equity": 843.55
+        },
+        {
+          "timestamp": "2020-01-16T10:34:35.207Z",
+          "drawdown": 0.1,
+          "peak": 843.55,
+          "equity": 842.72
+        },
+        {
+          "timestamp": "2020-01-16T10:35:06.249Z",
+          "drawdown": 0,
+          "peak": 868.12,
+          "equity": 868.12
+        },
+        {
+          "timestamp": "2020-01-16T10:35:37.291Z",
+          "drawdown": 0.61,
+          "peak": 868.12,
+          "equity": 862.79
+        },
+        {
+          "timestamp": "2020-01-16T10:36:08.332Z",
+          "drawdown": 0,
+          "peak": 882.88,
+          "equity": 882.88
+        },
+        {
+          "timestamp": "2020-01-16T10:36:39.374Z",
+          "drawdown": 0.33,
+          "peak": 882.88,
+          "equity": 879.99
+        },
+        {
+          "timestamp": "2020-01-16T10:37:10.415Z",
+          "drawdown": 0,
+          "peak": 888.48,
+          "equity": 888.48
+        },
+        {
+          "timestamp": "2020-01-16T10:37:41.457Z",
+          "drawdown": 0,
+          "peak": 899.44,
+          "equity": 899.44
+        },
+        {
+          "timestamp": "2020-01-16T10:38:12.498Z",
+          "drawdown": 0,
+          "peak": 915.37,
+          "equity": 915.37
+        },
+        {
+          "timestamp": "2020-01-16T10:38:43.540Z",
+          "drawdown": 0,
+          "peak": 917.43,
+          "equity": 917.43
+        },
+        {
+          "timestamp": "2020-01-16T10:39:14.582Z",
+          "drawdown": 0,
+          "peak": 929.15,
+          "equity": 929.15
+        },
+        {
+          "timestamp": "2020-01-16T10:39:45.623Z",
+          "drawdown": 0,
+          "peak": 938.02,
+          "equity": 938.02
+        },
+        {
+          "timestamp": "2020-01-16T10:40:16.665Z",
+          "drawdown": 0,
+          "peak": 951.85,
+          "equity": 951.85
+        },
+        {
+          "timestamp": "2020-01-16T10:40:47.706Z",
+          "drawdown": 0,
+          "peak": 959.64,
+          "equity": 959.64
+        },
+        {
+          "timestamp": "2020-01-16T10:41:18.748Z",
+          "drawdown": 0,
+          "peak": 966.72,
+          "equity": 966.72
+        },
+        {
+          "timestamp": "2020-01-16T10:41:49.790Z",
+          "drawdown": 0,
+          "peak": 977.03,
+          "equity": 977.03
+        },
+        {
+          "timestamp": "2020-01-16T10:42:20.831Z",
+          "drawdown": 0.36,
+          "peak": 977.03,
+          "equity": 973.47
+        },
+        {
+          "timestamp": "2020-01-16T10:42:51.873Z",
+          "drawdown": 0,
+          "peak": 990.33,
+          "equity": 990.33
+        },
+        {
+          "timestamp": "2020-01-16T10:43:22.914Z",
+          "drawdown": 0,
+          "peak": 1007.91,
+          "equity": 1007.91
+        },
+        {
+          "timestamp": "2020-01-16T10:43:53.956Z",
+          "drawdown": 1.51,
+          "peak": 1007.91,
+          "equity": 992.73
+        },
+        {
+          "timestamp": "2020-01-16T10:44:24.997Z",
+          "drawdown": 0.31,
+          "peak": 1007.91,
+          "equity": 1004.74
+        },
+        {
+          "timestamp": "2020-01-16T10:44:56.039Z",
+          "drawdown": 0,
+          "peak": 1014.5,
+          "equity": 1014.5
+        },
+        {
+          "timestamp": "2020-01-16T10:45:27.081Z",
+          "drawdown": 0,
+          "peak": 1023.71,
+          "equity": 1023.71
+        },
+        {
+          "timestamp": "2020-01-16T10:45:58.122Z",
+          "drawdown": 0,
+          "peak": 1027.11,
+          "equity": 1027.11
+        },
+        {
+          "timestamp": "2020-01-16T10:46:29.164Z",
+          "drawdown": 0,
+          "peak": 1057.01,
+          "equity": 1057.01
+        },
+        {
+          "timestamp": "2020-01-16T10:47:00.205Z",
+          "drawdown": 0,
+          "peak": 1072.68,
+          "equity": 1072.68
+        },
+        {
+          "timestamp": "2020-01-16T10:47:31.247Z",
+          "drawdown": 0,
+          "peak": 1075.32,
+          "equity": 1075.32
+        },
+        {
+          "timestamp": "2020-01-16T10:48:02.288Z",
+          "drawdown": 0,
+          "peak": 1081.43,
+          "equity": 1081.43
+        },
+        {
+          "timestamp": "2020-01-16T10:48:33.330Z",
+          "drawdown": 0,
+          "peak": 1092.17,
+          "equity": 1092.17
+        },
+        {
+          "timestamp": "2020-01-16T10:49:04.372Z",
+          "drawdown": 0.57,
+          "peak": 1092.17,
+          "equity": 1085.9
+        },
+        {
+          "timestamp": "2020-01-16T10:49:35.413Z",
+          "drawdown": 0,
+          "peak": 1111.51,
+          "equity": 1111.51
+        },
+        {
+          "timestamp": "2020-01-16T10:50:06.455Z",
+          "drawdown": 0,
+          "peak": 1124.15,
+          "equity": 1124.15
+        },
+        {
+          "timestamp": "2020-01-16T10:50:37.496Z",
+          "drawdown": 0,
+          "peak": 1129.15,
+          "equity": 1129.15
+        },
+        {
+          "timestamp": "2020-01-16T10:51:08.538Z",
+          "drawdown": 0,
+          "peak": 1137.77,
+          "equity": 1137.77
+        },
+        {
+          "timestamp": "2020-01-16T10:51:39.580Z",
+          "drawdown": 0.14,
+          "peak": 1137.77,
+          "equity": 1136.18
+        },
+        {
+          "timestamp": "2020-01-16T10:52:10.621Z",
+          "drawdown": 0,
+          "peak": 1150.03,
+          "equity": 1150.03
+        },
+        {
+          "timestamp": "2020-01-16T10:52:41.663Z",
+          "drawdown": 0.6,
+          "peak": 1150.03,
+          "equity": 1143.17
+        },
+        {
+          "timestamp": "2020-01-16T10:53:12.704Z",
+          "drawdown": 0,
+          "peak": 1150.9,
+          "equity": 1150.9
+        },
+        {
+          "timestamp": "2020-01-16T10:53:43.746Z",
+          "drawdown": 0,
+          "peak": 1178.06,
+          "equity": 1178.06
+        },
+        {
+          "timestamp": "2020-01-16T10:54:14.787Z",
+          "drawdown": 0,
+          "peak": 1192.28,
+          "equity": 1192.28
+        },
+        {
+          "timestamp": "2020-01-16T10:54:45.829Z",
+          "drawdown": 0,
+          "peak": 1197.53,
+          "equity": 1197.53
+        },
+        {
+          "timestamp": "2020-01-16T10:55:16.871Z",
+          "drawdown": 0,
+          "peak": 1207.88,
+          "equity": 1207.88
+        },
+        {
+          "timestamp": "2020-01-16T10:55:47.912Z",
+          "drawdown": 1.02,
+          "peak": 1207.88,
+          "equity": 1195.59
+        },
+        {
+          "timestamp": "2020-01-16T10:56:18.954Z",
+          "drawdown": 0,
+          "peak": 1210.5,
+          "equity": 1210.5
+        },
+        {
+          "timestamp": "2020-01-16T10:56:49.995Z",
+          "drawdown": 0,
+          "peak": 1224.68,
+          "equity": 1224.68
+        },
+        {
+          "timestamp": "2020-01-16T10:57:21.037Z",
+          "drawdown": 0.1,
+          "peak": 1224.68,
+          "equity": 1223.48
+        }
+      ],
+      "start_date": "2020-01-16T10:32:00.000Z",
+      "end_date": "2020-01-16T10:57:52.079Z"
     }
   ]
 }

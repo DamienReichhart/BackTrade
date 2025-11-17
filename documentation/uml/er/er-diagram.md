@@ -180,13 +180,13 @@ erDiagram
       datetime updated_at
     }
 
-    REPORT {
+    SESSION_ANALYTICS {
       string id PK
       string session_id FK
-      json summary_json
-      json equity_curve_json
+      string file_name
+      datetime modified_at
       datetime created_at
-      datetime updated_at    }
+    }
 
 
 
@@ -197,7 +197,6 @@ erDiagram
     INSTRUMENT ||--o{ DATASET : "feeds"
     INSTRUMENT ||--o{ SESSION : "used_in"
     SESSION ||--o{ POSITION : "contains"
-    SESSION ||--o{ REPORT : "generates"
     DATASET ||--o{ CANDLE : "provides"
     USER ||--o{ TRANSACTION : "has"
     SESSION ||--o{ TRANSACTION : "records"
@@ -206,5 +205,6 @@ erDiagram
     POSITION ||--o| CANDLE : "entry_candle"
     POSITION ||--o| CANDLE : "exit_candle"
     USER ||--o{ AUDIT_LOG : "activity"
+    SESSION ||--o| SESSION_ANALYTICS : "has"
 
 ```

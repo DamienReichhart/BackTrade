@@ -186,8 +186,12 @@ export function useRegisterForm() {
       });
 
       // Registration successful - store tokens and user
-      if (response && "accessToken" in response && "refreshToken" in response) {
-        login(response.accessToken, response.refreshToken);
+      if (
+        response?.data &&
+        "accessToken" in response.data &&
+        "refreshToken" in response.data
+      ) {
+        login(response.data.accessToken, response.data.refreshToken);
         navigate("/dashboard");
       }
     } catch (err) {
