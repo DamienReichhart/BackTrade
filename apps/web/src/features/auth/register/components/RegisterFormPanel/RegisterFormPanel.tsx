@@ -1,11 +1,7 @@
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Checkbox } from "../../../../../components/Checkbox";
-import {
-  FormHeader,
-  AlternativeOptions,
-  FormFooter,
-} from "../../../components";
+import { FormHeader, FormFooter } from "../../../components";
 import { useRegisterForm } from "../../../hooks";
 import styles from "./RegisterFormPanel.module.css";
 
@@ -99,16 +95,6 @@ export function RegisterFormPanel() {
           >
             {isLoading ? "Creating account..." : "Create account"}
           </Button>
-
-          {/* Alternative Registration Options */}
-          <AlternativeOptions
-            onSSOClick={() => {
-              // TODO: Implement SSO registration
-            }}
-            onMagicLinkClick={() => {
-              // TODO: Implement magic link registration
-            }}
-          />
 
           {/* Footer Links */}
           <FormFooter
