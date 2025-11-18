@@ -4,6 +4,7 @@ import {
   validatePassword,
   validatePasswordConfirmation,
 } from "../utils/validation";
+import { useAuthStore } from "../../../store/auth";
 
 /**
  * Password form state
@@ -27,8 +28,9 @@ export function useSecuritySection() {
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { user } = useAuthStore();
 
-  const { execute, isLoading } = useChangePassword();
+  const { execute, isLoading } = useChangePassword(user?.id.toString() ?? "");
 
   /**
    * Handle password field change
@@ -76,7 +78,6 @@ export function useSecuritySection() {
       await execute({
         currentPassword: passwords.current,
         newPassword: passwords.new,
-        confirmPassword: passwords.confirm,
       });
       setSuccess(true);
       setPasswords({ current: "", new: "", confirm: "" });

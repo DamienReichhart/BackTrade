@@ -1,4 +1,4 @@
-import { usePost, useGet } from "..";
+import { usePost, useGet, usePut } from "..";
 import {
   LoginRequestSchema,
   RegisterRequestSchema,
@@ -43,8 +43,8 @@ export function useRefreshToken() {
   });
 }
 
-export function useChangePassword() {
-  return usePost("/auth/change-password", {
+export function useChangePassword(id: string) {
+  return usePut(`/users/${id}/password`, {
     inputSchema: ChangePasswordRequestSchema,
     outputSchema: EmptyResponseSchema,
   });
