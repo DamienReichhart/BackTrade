@@ -20,7 +20,6 @@ export interface PasswordFormState {
  * @returns Security section state and handlers
  */
 export function useSecuritySection() {
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [passwords, setPasswords] = useState<PasswordFormState>({
     current: "",
     new: "",
@@ -104,8 +103,6 @@ export function useSecuritySection() {
     isLoading || !passwords.current || !passwords.new || !passwords.confirm;
 
   return {
-    twoFactorEnabled,
-    setTwoFactorEnabled,
     passwords,
     error,
     success,

@@ -5,7 +5,6 @@ export const UserSchema = z.object({
   id: z.number().int().positive(),
   email: z.string().email(),
   password_hash: z.string(),
-  mfa_secret: z.string().optional(),
   role: RoleSchema,
   is_banned: z.boolean().default(false),
   stripe_customer_id: z.string().optional(),
@@ -16,7 +15,6 @@ export type User = z.infer<typeof UserSchema>;
 
 export const PublicUserSchema = UserSchema.omit({
   password_hash: true,
-  mfa_secret: true,
 });
 export type PublicUser = z.infer<typeof PublicUserSchema>;
 

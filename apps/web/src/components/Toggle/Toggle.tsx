@@ -37,7 +37,6 @@ interface ToggleProps {
  * @example
  * ```tsx
  * <Toggle label="Enable notifications" checked={enabled} onChange={setEnabled} />
- * <Toggle label="Two-factor authentication" />
  * ```
  */
 export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(

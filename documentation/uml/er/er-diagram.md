@@ -21,7 +21,6 @@ erDiagram
       string id PK
       string email UK
       string password_hash
-      string mfa_secret
       enum role
       boolean is_banned
       string stripe_customer_id UK
