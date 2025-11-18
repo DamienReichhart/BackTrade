@@ -1,4 +1,4 @@
-import { useAuthStore } from "../../context/AuthContext";
+import { useAuthStore } from "../../store/auth";
 import styles from "./Settings.module.css";
 import {
   AccountSection,

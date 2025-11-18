@@ -5,7 +5,7 @@ import {
   type ISeriesApi,
   CandlestickSeries,
 } from "lightweight-charts";
-import type { ChartGridSettings } from "../../../../utils/localStorage";
+import type { ChartGridSettings } from "../../../../utils/browser/localStorage";
 import { createChartConfig } from "../utils/chart";
 
 /**

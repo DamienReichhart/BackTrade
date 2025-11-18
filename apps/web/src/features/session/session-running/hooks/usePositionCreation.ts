@@ -1,8 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import type { CreatePositionRequest } from "@backtrade/types";
 import { useCreatePosition } from "../../../../api/hooks/requests/positions";
-import { useCurrentPriceStore } from "../../../../context/CurrentPriceContext";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
+import {
+  useCurrentPriceStore,
+  useCurrentSessionStore,
+} from "../../../../store/session";
 import type { OrderFormActions } from "./useOrderForm";
 
 /**

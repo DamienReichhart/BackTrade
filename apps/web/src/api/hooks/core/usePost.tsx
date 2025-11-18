@@ -1,5 +1,5 @@
 import { useFetch } from "./useFetch";
-import type { UseFetchOptions } from "../../types";
+import type { UseFetchOptions } from "../../../types/api";
 
 /**
  * POST request hook built on React Query

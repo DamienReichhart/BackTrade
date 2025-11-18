@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { CreateSessionRequest, Speed, Leverage } from "@backtrade/types";
 import { useCreateSession } from "../../../api/hooks/requests/sessions";
 import { useInstruments } from "../../../api/hooks/requests/instruments";
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import type { SelectOption } from "../../../types/ui";
 import {
   validateInstrument,

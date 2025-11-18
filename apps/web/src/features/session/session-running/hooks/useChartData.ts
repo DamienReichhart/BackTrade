@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { ISeriesApi } from "lightweight-charts";
 import type { Candle } from "@backtrade/types";
-import { convertCandleToChartData } from "../../../../utils/candles";
+import { convertCandleToChartData } from "../../../../utils/data/candles";
 
 /**
  * Hook to update chart data when candles change

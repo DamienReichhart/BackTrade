@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import type { Transaction } from "@backtrade/types";
 import { useModal } from "../../../../hooks/useModal";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../store/session";
 import { useTransactionsBySession } from "../../../../api/hooks/requests/transactions";
 
 /**

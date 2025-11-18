@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import type { Timeframe } from "@backtrade/types";
-import { useChartSettingsStore } from "../../../../../../../../context/ChartSettingsContext";
+import { useChartSettingsStore } from "../../../../../../../../store/chart";
 
 /**
  * Hook to manage chart grid settings

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useCloseAllPositions } from "../../../../../../../../../../api/hooks/requests/positions";
-import { useCurrentSessionStore } from "../../../../../../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 
 /**
  * Hook to manage close all positions functionality

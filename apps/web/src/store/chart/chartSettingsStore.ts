@@ -8,7 +8,7 @@ import {
   setChartTimeVisible,
   setChartSecondsVisible,
   setChartTimeframe,
-} from "../utils/localStorage";
+} from "../../utils/browser/localStorage";
 
 interface ChartSettingsState {
   vertLines: boolean;

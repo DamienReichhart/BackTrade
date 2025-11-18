@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
 import { validateEmail } from "../utils/validation";
 

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Subscription, Plan } from "@backtrade/types";
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import { useSubscriptionsByUser } from "../../../api/hooks/requests/subscriptions";
 import { usePlans } from "../../../api/hooks/requests/plans";
 import { findCurrentSubscription } from "../utils/subscriptions";

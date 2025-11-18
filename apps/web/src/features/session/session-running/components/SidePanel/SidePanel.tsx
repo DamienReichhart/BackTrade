@@ -1,6 +1,8 @@
 import styles from "./SidePanel.module.css";
-import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
-import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
+import {
+  useCurrentPriceStore,
+  useCurrentSessionStore,
+} from "../../../../../store/session";
 import { useOrderForm, usePositionCreation } from "../../hooks";
 import { isOrderFormDisabled } from "./utils";
 

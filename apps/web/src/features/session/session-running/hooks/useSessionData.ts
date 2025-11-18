@@ -4,11 +4,13 @@ import { useSession } from "../../../../api/hooks/requests/sessions";
 import { useInstrument } from "../../../../api/hooks/requests/instruments";
 import { useCandlesByInstrument } from "../../../../api/hooks/requests/candles";
 import type { Candle, DateRangeQuery } from "@backtrade/types";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
-import { useCurrentPriceStore } from "../../../../context/CurrentPriceContext";
-import { useCurrentSessionCandlesStore } from "../../../../context/CurrentSessionCandlesContext";
-import { useChartSettingsStore } from "../../../../context/ChartSettingsContext";
-import { calculateCandleDateRange } from "../../../../utils/time";
+import {
+  useCurrentSessionStore,
+  useCurrentPriceStore,
+  useCurrentSessionCandlesStore,
+} from "../../../../store/session";
+import { useChartSettingsStore } from "../../../../store/chart";
+import { calculateCandleDateRange } from "../../../../utils/data/candles";
 
 /**
  * Hook to fetch and manage session-related data

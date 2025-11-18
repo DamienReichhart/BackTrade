@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Speed } from "@backtrade/types";
 import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
-import { useCurrentSessionStore } from "../../../../../../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 
 /**
  * Available speed options

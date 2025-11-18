@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { UseQueryOptions } from "@tanstack/react-query";
-import type { FetchResponse } from "../utils/fetchExecutor";
+import type { FetchResponse } from "../../api/utils/fetchExecutor";
 
 /** HTTP request method type */
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

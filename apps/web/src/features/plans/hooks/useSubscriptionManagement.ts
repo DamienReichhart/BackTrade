@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import { useCreateSubscription } from "../../../api/hooks/requests/subscriptions";
 import type { Plan } from "@backtrade/types";
 

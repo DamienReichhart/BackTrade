@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import type { QueryAndMutationHookConfig } from "../../types";
+import type { QueryAndMutationHookConfig } from "../../../types/api";
 import type { FetchResponse } from "../../utils/fetchExecutor";
 
 /**

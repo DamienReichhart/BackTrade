@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { usePlans } from "../../../api/hooks/requests/plans";
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import { pricingTiers, comparisonData } from "../config/pricingConfig";
 import { mergePlanData } from "../utils/plans";
 

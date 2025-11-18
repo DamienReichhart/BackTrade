@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../index";
 import { validateApiInput, validateApiOutput } from "./validations";
 import { refreshAccessToken } from "./tokenRefresh";
-import type { FetchExecutorConfig } from "../types";
+import type { FetchExecutorConfig } from "../../types/api";
 
 /**
  * Response object containing both data and HTTP status code.

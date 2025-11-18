@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdatePosition } from "../../../../api/hooks/requests/positions";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../store/session";
 import type { UpdatePositionRequest } from "@backtrade/types";
 
 /**

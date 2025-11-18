@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import type { Position, Transaction } from "@backtrade/types";
 import { usePositionsBySession } from "../../../../api/hooks/requests/positions";
 import { useTransactionsBySession } from "../../../../api/hooks/requests/transactions";
-import { useCurrentPriceStore } from "../../../../context/CurrentPriceContext";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
+import {
+  useCurrentPriceStore,
+  useCurrentSessionStore,
+} from "../../../../store/session";
 import { calculateSessionMetrics } from "../utils/sessionMetrics";
 
 /**

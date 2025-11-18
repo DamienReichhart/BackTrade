@@ -1,5 +1,5 @@
 import styles from "./SessionInfo.module.css";
-import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../store/session";
 import { useSessionMetrics } from "../../hooks";
 import { formatCurrency, formatPercentage } from "./utils";
 

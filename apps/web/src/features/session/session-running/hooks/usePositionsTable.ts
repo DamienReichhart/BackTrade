@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import type { Position } from "@backtrade/types";
 import { useModal } from "../../../../hooks/useModal";
-import { useCurrentSessionStore } from "../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../store/session";
 import { usePositionsBySession } from "../../../../api/hooks/requests/positions";
 
 /**

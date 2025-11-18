@@ -3,7 +3,7 @@ import { PositionDetailsModal } from "../PositionDetailsModal";
 import { ClosePositionButton, EditablePriceInput } from "./components";
 import { usePositionsTable } from "../../hooks";
 import { formatPnL, getPnLClassName } from "./utils";
-import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../store/session";
 
 /**
  * Table for open positions as in the mockup.

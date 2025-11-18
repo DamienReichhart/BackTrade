@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useClosePosition as useClosePositionBusinessApi } from "../../../../../../../../api/hooks/requests/positions";
-import { useCurrentSessionStore } from "../../../../../../../../context/CurrentSessionContext";
-import { useCurrentPriceStore } from "../../../../../../../../context/CurrentPriceContext";
+import {
+  useCurrentSessionStore,
+  useCurrentPriceStore,
+} from "../../../../../../../../store/session";
 
 /**
  * Hook to manage close position functionality
