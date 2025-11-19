@@ -1,12 +1,14 @@
 import { useCallback, useState } from "react";
 import { type ZodType } from "zod";
 import { validateApiOutput } from "../../utils/validations";
+import { useAuthStore } from "../../../store";
 
 /**
  * Hook to fetch data from a form (does not use React Query for simplicity)
  */
 export function usePostForm<TOutput = unknown>(
   endpoint: string,
+  method: "POST" | "PUT" | "PATCH",
   outputSchema: ZodType<TOutput>,
 ) {
   const [data, setData] = useState<FormData>(() => new FormData());
@@ -16,6 +18,8 @@ export function usePostForm<TOutput = unknown>(
   const [status, setStatus] = useState<number | null>(null);
   const [result, setResult] = useState<TOutput | null>(null);
 
+  const { accessToken } = useAuthStore();
+
   const execute = useCallback(async (): Promise<TOutput> => {
     setIsLoading(true);
     setError(null);
@@ -24,7 +28,11 @@ export function usePostForm<TOutput = unknown>(
     setResult(null);
     try {
       const response = await fetch(endpoint, {
-        method: "POST",
+        method,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: data,
       });
       const responseData = await response.json();
