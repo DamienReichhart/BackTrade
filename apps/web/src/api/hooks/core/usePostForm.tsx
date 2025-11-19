@@ -18,7 +18,6 @@ export function usePostForm<TOutput = unknown>(
   const [error, setError] = useState<Error | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
-  const [result, setResult] = useState<FetchResponse<TOutput> | null>(null);
 
   const { accessToken, refreshToken, login } = useAuthStore();
 
@@ -30,7 +29,6 @@ export function usePostForm<TOutput = unknown>(
       setError(null);
       setIsSuccess(false);
       setStatus(null);
-      setResult(null);
       try {
         const response = await fetch(endpoint, {
           method,
@@ -40,19 +38,17 @@ export function usePostForm<TOutput = unknown>(
           },
           body: data,
         });
-        const responseData = await response.json();
+        let responseData = await response.json();
         setStatus(response.status);
 
         if (!response.ok) {
           if (retryOnUnauthorized) {
-            const retryResult = await retryIfUnauthorized<TOutput>(
+            responseData = await retryIfUnauthorized<TOutput>(
               response,
               refreshToken,
               () => execute(false),
               login,
             );
-            setResult(retryResult);
-            return retryResult;
           }
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -61,12 +57,11 @@ export function usePostForm<TOutput = unknown>(
           outputSchema,
           responseData,
         );
-        setResult({
+        setIsSuccess(true);
+        return {
           data: validatedData,
           status: response.status,
-        });
-        setIsSuccess(true);
-        return result as FetchResponse<TOutput>;
+        } as FetchResponse<TOutput>;
       } catch (fetchError) {
         setError(fetchError as Error);
         throw fetchError;
@@ -85,6 +80,5 @@ export function usePostForm<TOutput = unknown>(
     error,
     isSuccess,
     status,
-    result,
   };
 }
