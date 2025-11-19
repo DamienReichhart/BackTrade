@@ -4,16 +4,19 @@ import { validateApiOutput } from "../../utils/validations";
 import { useAuthStore } from "../../../store";
 import { retryIfUnauthorized } from "../../utils/retryIfUnauthorized";
 import { type FetchResponse } from "../../utils";
+import { API_BASE_URL } from "../../index";
 
 /**
- * Hook to fetch data from a form (does not use React Query for simplicity)
+ * Hook to post form data with file uploads (does not use React Query for simplicity)
+ *
+ * Note: Do not set Content-Type header for multipart/form-data as the browser
+ * will set it automatically with the correct boundary parameter
  */
 export function usePostForm<TOutput = unknown>(
   endpoint: string,
   method: "POST" | "PUT" | "PATCH",
   outputSchema: ZodType<TOutput>,
 ) {
-  const [data, setData] = useState<FormData>(() => new FormData());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -23,6 +26,7 @@ export function usePostForm<TOutput = unknown>(
 
   const execute = useCallback(
     async (
+      formData: FormData,
       retryOnUnauthorized: boolean = true,
     ): Promise<FetchResponse<TOutput>> => {
       setIsLoading(true);
@@ -30,13 +34,12 @@ export function usePostForm<TOutput = unknown>(
       setIsSuccess(false);
       setStatus(null);
       try {
-        const response = await fetch(endpoint, {
+        const response = await fetch(API_BASE_URL + endpoint, {
           method,
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: data,
+          body: formData,
         });
         let responseData = await response.json();
         setStatus(response.status);
@@ -46,7 +49,7 @@ export function usePostForm<TOutput = unknown>(
             responseData = await retryIfUnauthorized<TOutput>(
               response,
               refreshToken,
-              () => execute(false),
+              () => execute(formData, false),
               login,
             );
           }
@@ -69,12 +72,10 @@ export function usePostForm<TOutput = unknown>(
         setIsLoading(false);
       }
     },
-    [data, endpoint, outputSchema],
+    [endpoint, method, outputSchema, accessToken, refreshToken, login],
   );
 
   return {
-    data,
-    setData,
     execute,
     isLoading,
     error,
