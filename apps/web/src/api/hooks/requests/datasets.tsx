@@ -77,15 +77,3 @@ export function useDeleteDataset(id: string) {
     outputSchema: EmptyResponseSchema,
   });
 }
-
-export function useActivateDataset(id: string) {
-  return usePost(`/datasets/${id}/activate`, {
-    outputSchema: DatasetSchema,
-  });
-}
-
-export function useDeactivateDataset(id: string) {
-  return usePost(`/datasets/${id}/deactivate`, {
-    outputSchema: DatasetSchema,
-  });
-}

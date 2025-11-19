@@ -9,8 +9,6 @@ export const DatasetSchema = z.object({
   uploaded_at: z.iso.datetime(),
   records_count: z.number().int().nonnegative(),
   file_name: z.string(),
-  file_size: z.string(),
-  file_md5: z.string(),
   is_active: z.boolean().default(true),
   start_ts: z.iso.datetime(),
   end_ts: z.iso.datetime(),

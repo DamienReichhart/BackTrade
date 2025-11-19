@@ -104,8 +104,6 @@ erDiagram
       datetime uploaded_at
       int records_count
       string file_name
-      string file_size
-      string file_md5
       boolean is_active
       datetime start_ts
       datetime end_ts
