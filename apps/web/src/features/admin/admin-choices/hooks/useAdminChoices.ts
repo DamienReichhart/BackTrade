@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export type AdminSection = "user-management" | "data-management";
+export type AdminSection = "user-management" | "dataset-management";
 
 /**
  * Hook for managing admin choices navigation

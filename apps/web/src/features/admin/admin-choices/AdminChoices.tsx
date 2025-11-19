@@ -27,7 +27,7 @@ export function AdminChoices() {
           </button>
           <button
             className={styles.menuItem}
-            onClick={() => handleMenuClick("data-management")}
+            onClick={() => handleMenuClick("dataset-management")}
           >
             <span className={styles.menuItemLabel}>Data Management</span>
           </button>
