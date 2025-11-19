@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../index";
 import { validateApiInput, validateApiOutput } from "./validations";
-import { refreshAccessToken } from "./tokenRefresh";
+import { retryIfUnauthorized } from "./retryIfUnauthorized";
 import type { FetchExecutorConfig } from "../../types/api";
 
 /**
@@ -26,7 +26,6 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
   retryOnUnauthorized: boolean = true,
 ): Promise<FetchResponse<TOutput>> {
   let validatedBody: TInput | undefined = body;
-
   // Validate input with Zod schema if provided
   if (body !== undefined && executorConfig.inputSchema) {
     validatedBody = validateApiInput<TInput>(executorConfig.inputSchema, body);
@@ -55,53 +54,14 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
 
   // Handle unauthorized responses with token refresh
   if (!response.ok) {
-    const errorText = await response.text();
-
-    if (
-      (response.status === 401 || response.status === 403) &&
-      retryOnUnauthorized
-    ) {
-      // Attempt to refresh the token
-      if (!executorConfig.refreshToken) {
-        throw new Error(
-          `HTTP ${response.status}: ${errorText || response.statusText}`,
-        );
-      }
-
-      try {
-        const refreshedTokens = await refreshAccessToken(
-          executorConfig.refreshToken,
-        );
-
-        // Update tokens using the callback
-        if (executorConfig.onTokenRefresh) {
-          executorConfig.onTokenRefresh(
-            refreshedTokens.accessToken,
-            refreshedTokens.refreshToken,
-          );
-        }
-
-        // Retry the request with the new token
-        const retryResult = await executeFetch(
-          body,
-          {
-            ...executorConfig,
-            accessToken: refreshedTokens.accessToken,
-            refreshToken: refreshedTokens.refreshToken,
-          },
-          false,
-        );
-        return retryResult;
-      } catch (refreshError) {
-        throw new Error(
-          `Token refresh failed: ${refreshError instanceof Error ? refreshError.message : "Unknown error"}`,
-        );
-      }
+    if (retryOnUnauthorized) {
+      return await retryIfUnauthorized<TOutput>(
+        response,
+        executorConfig.refreshToken,
+        () => executeFetch(body, executorConfig, false),
+        executorConfig.onTokenRefresh ?? (() => {}),
+      );
     }
-
-    throw new Error(
-      `HTTP ${response.status}: ${errorText || response.statusText}`,
-    );
   }
 
   // Capture status code before processing response

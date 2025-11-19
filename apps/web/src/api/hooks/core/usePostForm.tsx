@@ -2,6 +2,8 @@ import { useCallback, useState } from "react";
 import { type ZodType } from "zod";
 import { validateApiOutput } from "../../utils/validations";
 import { useAuthStore } from "../../../store";
+import { retryIfUnauthorized } from "../../utils/retryIfUnauthorized";
+import { type FetchResponse } from "../../utils";
 
 /**
  * Hook to fetch data from a form (does not use React Query for simplicity)
@@ -16,48 +18,64 @@ export function usePostForm<TOutput = unknown>(
   const [error, setError] = useState<Error | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
-  const [result, setResult] = useState<TOutput | null>(null);
+  const [result, setResult] = useState<FetchResponse<TOutput> | null>(null);
 
-  const { accessToken } = useAuthStore();
+  const { accessToken, refreshToken, login } = useAuthStore();
 
-  const execute = useCallback(async (): Promise<TOutput> => {
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
-    setStatus(null);
-    setResult(null);
-    try {
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: data,
-      });
-      const responseData = await response.json();
-      setStatus(response.status);
+  const execute = useCallback(
+    async (
+      retryOnUnauthorized: boolean = true,
+    ): Promise<FetchResponse<TOutput>> => {
+      setIsLoading(true);
+      setError(null);
+      setIsSuccess(false);
+      setStatus(null);
+      setResult(null);
+      try {
+        const response = await fetch(endpoint, {
+          method,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: data,
+        });
+        const responseData = await response.json();
+        setStatus(response.status);
 
-      if (!response.ok) {
-        throw new Error(
-          `Request failed with status ${response.status}: ${JSON.stringify(responseData)}`,
+        if (!response.ok) {
+          if (retryOnUnauthorized) {
+            const retryResult = await retryIfUnauthorized<TOutput>(
+              response,
+              refreshToken,
+              () => execute(false),
+              login,
+            );
+            setResult(retryResult);
+            return retryResult;
+          }
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const validatedData = validateApiOutput<TOutput>(
+          outputSchema,
+          responseData,
         );
+        setResult({
+          data: validatedData,
+          status: response.status,
+        });
+        setIsSuccess(true);
+        return result as FetchResponse<TOutput>;
+      } catch (fetchError) {
+        setError(fetchError as Error);
+        throw fetchError;
+      } finally {
+        setIsLoading(false);
       }
-
-      const validatedData = validateApiOutput<TOutput>(
-        outputSchema,
-        responseData,
-      );
-      setResult(validatedData);
-      setIsSuccess(true);
-      return validatedData;
-    } catch (fetchError) {
-      setError(fetchError as Error);
-      throw fetchError;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [data, endpoint, outputSchema]);
+    },
+    [data, endpoint, outputSchema],
+  );
 
   return {
     data,
