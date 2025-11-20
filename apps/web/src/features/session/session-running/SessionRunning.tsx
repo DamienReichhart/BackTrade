@@ -6,8 +6,8 @@ import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData } from "./hooks";
 import styles from "./SessionRunning.module.css";
-import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../../api";
+import { useEffect } from "react";
 
 /**
  * Running Session page
@@ -17,13 +17,15 @@ import { API_BASE_URL } from "../../../api";
  */
 export function SessionRunning() {
   const { session } = useSessionData();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (session?.session_status == "ARCHIVED") {
+      window.location.href = `${API_BASE_URL}/sessions/${session.id}/analyticsFile`;
+    }
+  }, [session]);
 
   if (!session) {
     return <div>No session found</div>;
-  }
-  if (session.session_status == "ARCHIVED") {
-    navigate(`${API_BASE_URL}/sessions/${session.id}/analyticsFile`);
   }
 
   return (
