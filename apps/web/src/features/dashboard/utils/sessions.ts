@@ -12,10 +12,6 @@ export function getSessionStatusColorClass(status: string): string {
       return "statusRunning";
     case "PAUSED":
       return "statusPaused";
-    case "COMPLETED":
-      return "statusCompleted";
-    case "DRAFT":
-      return "statusDraft";
     case "ARCHIVED":
       return "statusArchived";
     default:

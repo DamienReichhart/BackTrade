@@ -6,6 +6,8 @@ import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData } from "./hooks";
 import styles from "./SessionRunning.module.css";
+import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../../api";
 
 /**
  * Running Session page
@@ -14,7 +16,15 @@ import styles from "./SessionRunning.module.css";
  * order/estimates panel on the right, and tables below.
  */
 export function SessionRunning() {
-  useSessionData();
+  const { session } = useSessionData();
+  const navigate = useNavigate();
+
+  if (!session) {
+    return <div>No session found</div>;
+  }
+  if (session.session_status == "ARCHIVED") {
+    navigate(`${API_BASE_URL}/sessions/${session.id}/analyticsFile`);
+  }
 
   return (
     <div className={styles.page}>

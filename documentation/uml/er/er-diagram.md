@@ -7,7 +7,7 @@ erDiagram
     %% ENUMS (defined in code)
     %% =========================
     %% role: ANONYMOUS | ADMIN
-    %% session_status: DRAFT | RUNNING | PAUSED | COMPLETED | ARCHIVED
+    %% session_status: RUNNING | PAUSED | ARCHIVED
     %% position_status: OPEN | CLOSED | LIQUIDATED
     %% timeframe: M1 | M5 | M10 | M15 | M30 | H1 | H2 | H4 | D1 | W1
     %% side: BUY | SELL
