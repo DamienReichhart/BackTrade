@@ -5,8 +5,6 @@ import { TimeframeSchema } from "../enums";
 export const CreateDatasetRequestSchema = z.object({
   instrument_id: z.number().int().positive(),
   timeframe: TimeframeSchema,
-  start_ts: z.iso.datetime(),
-  end_ts: z.iso.datetime(),
 });
 export type CreateDatasetRequest = z.infer<typeof CreateDatasetRequestSchema>;
 

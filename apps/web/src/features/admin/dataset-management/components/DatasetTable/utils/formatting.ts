@@ -23,5 +23,7 @@ export function getStatusLabel(isActive: boolean): string {
  * Format dataset date range
  */
 export function formatDateRange(dataset: Dataset): string {
-  return `${formatDate(dataset.start_ts)} - ${formatDate(dataset.end_ts)}`;
+  const startDate = dataset.start_ts ? formatDate(dataset.start_ts) : "—";
+  const endDate = dataset.end_ts ? formatDate(dataset.end_ts) : "—";
+  return `${startDate} - ${endDate}`;
 }

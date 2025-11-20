@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useDatasetManagement } from "./hooks";
-import { DatasetTable } from "./components/DatasetTable";
+import { DatasetTable, CreateDatasetModal } from "./components";
 import { Button } from "../../../components/Button";
 import styles from "./DatasetManagement.module.css";
 
@@ -9,6 +10,8 @@ import styles from "./DatasetManagement.module.css";
  * Admin page for managing datasets with sorting
  */
 export function DatasetManagement() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   const {
     // State
     sortField,
@@ -20,7 +23,24 @@ export function DatasetManagement() {
     // Handlers
     handleSort,
     handleBackToAdmin,
+    refetchDatasets,
   } = useDatasetManagement();
+
+  const handleCreateDataset = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleDatasetCreated = () => {
+    refetchDatasets();
+  };
+
+  const handleFileUploadSuccess = () => {
+    refetchDatasets();
+  };
 
   return (
     <div className={styles.container}>
@@ -28,9 +48,14 @@ export function DatasetManagement() {
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <h1 className={styles.title}>Dataset Management</h1>
-          <Button variant="outline" onClick={handleBackToAdmin}>
-            Back to Admin
-          </Button>
+          <div className={styles.headerActions}>
+            <Button variant="primary" onClick={handleCreateDataset}>
+              Create Dataset
+            </Button>
+            <Button variant="outline" onClick={handleBackToAdmin}>
+              Back to Admin
+            </Button>
+          </div>
         </div>
         <p className={styles.subtitle}>
           Manage datasets, view statistics, and monitor data uploads
@@ -45,6 +70,14 @@ export function DatasetManagement() {
         sortField={sortField}
         sortOrder={sortOrder}
         onSort={handleSort}
+        onFileUploadSuccess={handleFileUploadSuccess}
+      />
+
+      {/* Create Dataset Modal */}
+      <CreateDatasetModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        onSuccess={handleDatasetCreated}
       />
     </div>
   );

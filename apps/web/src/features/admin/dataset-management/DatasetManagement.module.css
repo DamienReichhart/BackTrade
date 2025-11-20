@@ -33,6 +33,12 @@
   margin: 0;
 }
 
+.headerActions {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {

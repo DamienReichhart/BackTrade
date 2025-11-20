@@ -75,28 +75,40 @@ export function useDatasetManagement() {
           bValue = b.timeframe;
           break;
         case "file_name":
-          aValue = a.file_name;
-          bValue = b.file_name;
+          aValue = a.file_name ?? "";
+          bValue = b.file_name ?? "";
           break;
         case "records_count":
-          aValue = a.records_count;
-          bValue = b.records_count;
+          aValue = a.records_count ?? 0;
+          bValue = b.records_count ?? 0;
           break;
         case "is_active":
           aValue = a.is_active ? 1 : 0;
           bValue = b.is_active ? 1 : 0;
           break;
         case "uploaded_at":
-          aValue = new Date(a.uploaded_at).getTime();
-          bValue = new Date(b.uploaded_at).getTime();
+          aValue = a.uploaded_at
+            ? new Date(a.uploaded_at).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.uploaded_at
+            ? new Date(b.uploaded_at).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         case "start_ts":
-          aValue = new Date(a.start_ts).getTime();
-          bValue = new Date(b.start_ts).getTime();
+          aValue = a.start_ts
+            ? new Date(a.start_ts).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.start_ts
+            ? new Date(b.start_ts).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         case "end_ts":
-          aValue = new Date(a.end_ts).getTime();
-          bValue = new Date(b.end_ts).getTime();
+          aValue = a.end_ts
+            ? new Date(a.end_ts).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.end_ts
+            ? new Date(b.end_ts).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         case "created_at":
           aValue = new Date(a.created_at).getTime();

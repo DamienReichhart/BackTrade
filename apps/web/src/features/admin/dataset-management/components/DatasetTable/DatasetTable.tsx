@@ -3,6 +3,7 @@ import type { SortField, SortOrder } from "../../hooks";
 import { formatDate, formatDateTime } from "@backtrade/utils";
 import { getSortIndicator } from "./utils/table";
 import { getStatusBadgeClassName, getStatusLabel } from "./utils/formatting";
+import { FileUploadButton } from "../FileUploadButton";
 import styles from "./DatasetTable.module.css";
 
 /**
@@ -38,6 +39,11 @@ interface DatasetTableProps {
    * Callback when sort field is clicked
    */
   onSort: (field: SortField) => void;
+
+  /**
+   * Callback when file upload is successful
+   */
+  onFileUploadSuccess?: () => void;
 }
 
 /**
@@ -52,6 +58,7 @@ export function DatasetTable({
   sortField,
   sortOrder,
   onSort,
+  onFileUploadSuccess,
 }: DatasetTableProps) {
   return (
     <div className={styles.card}>
@@ -115,26 +122,27 @@ export function DatasetTable({
               >
                 Uploaded {getSortIndicator("uploaded_at", sortField, sortOrder)}
               </th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading && (
               <tr>
-                <td className={styles.empty} colSpan={9}>
+                <td className={styles.empty} colSpan={10}>
                   Loading datasets...
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td className={styles.error} colSpan={9}>
+                <td className={styles.error} colSpan={10}>
                   Error loading datasets: {error.message}
                 </td>
               </tr>
             )}
             {!isLoading && !error && datasets.length === 0 && (
               <tr>
-                <td className={styles.empty} colSpan={9}>
+                <td className={styles.empty} colSpan={10}>
                   No datasets found
                 </td>
               </tr>
@@ -150,9 +158,11 @@ export function DatasetTable({
                       {dataset.timeframe}
                     </span>
                   </td>
-                  <td className={styles.fileNameCell}>{dataset.file_name}</td>
+                  <td className={styles.fileNameCell}>
+                    {dataset.file_name ?? "No file"}
+                  </td>
                   <td className={styles.recordsCell}>
-                    {dataset.records_count.toLocaleString()}
+                    {(dataset.records_count ?? 0).toLocaleString()}
                   </td>
                   <td>
                     <span
@@ -164,13 +174,22 @@ export function DatasetTable({
                     </span>
                   </td>
                   <td className={styles.dateCell}>
-                    {formatDate(dataset.start_ts)}
+                    {dataset.start_ts ? formatDate(dataset.start_ts) : "—"}
                   </td>
                   <td className={styles.dateCell}>
-                    {formatDate(dataset.end_ts)}
+                    {dataset.end_ts ? formatDate(dataset.end_ts) : "—"}
                   </td>
                   <td className={styles.dateCell}>
-                    {formatDateTime(dataset.uploaded_at)}
+                    {dataset.uploaded_at
+                      ? formatDateTime(dataset.uploaded_at)
+                      : "Not uploaded"}
+                  </td>
+                  <td className={styles.actionsCell}>
+                    <FileUploadButton
+                      datasetId={dataset.id}
+                      hasFile={!!dataset.file_name}
+                      onSuccess={onFileUploadSuccess}
+                    />
                   </td>
                 </tr>
               ))}

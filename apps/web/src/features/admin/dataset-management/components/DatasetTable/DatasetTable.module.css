@@ -113,6 +113,11 @@
   color: var(--color-danger);
 }
 
+.actionsCell {
+  text-align: center;
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .table {
