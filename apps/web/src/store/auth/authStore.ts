@@ -26,7 +26,10 @@ const REFRESH_TOKEN_COOKIE = "refresh_token";
 function getUserFromAccessToken(
   _accessToken: string | undefined,
 ): PublicUser | null {
-  // Hardcoded user for testing purposes
+  // Hardcoded user for testing purposes + set cookies for testing purposes
+  setCookie(ACCESS_TOKEN_COOKIE, "FAKE_ACCESS_TOKEN", 7);
+  setCookie(REFRESH_TOKEN_COOKIE, "FAKE_REFRESH_TOKEN", 7);
+
   return {
     id: 1,
     email: "admin@backtrade.com",
