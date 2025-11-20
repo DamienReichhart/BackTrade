@@ -30,16 +30,10 @@ export const ForgotPasswordRequestSchema = z.object({
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
-export const ResetPasswordRequestSchema = z
-  .object({
-    code: z.string(),
-    newPassword: z.string().min(8),
-    confirmPassword: z.string().min(8),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+export const ResetPasswordRequestSchema = z.object({
+  code: z.string(),
+  newPassword: z.string().min(8),
+});
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({

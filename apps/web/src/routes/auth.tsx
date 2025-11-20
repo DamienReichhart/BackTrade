@@ -1,4 +1,4 @@
-import { Login, Register } from "../features/auth";
+import { Login, Register, ForgotPassword } from "../features/auth";
 
 export const authRoutes = [
   {
@@ -8,5 +8,9 @@ export const authRoutes = [
   {
     path: "/signup",
     element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 ];
