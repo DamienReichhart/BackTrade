@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SubscriptionStatusSchema } from "../enums";
+import { SubscriptionSchema } from "../entities";
 
 export const CreateSubscriptionRequestSchema = z.object({
   user_id: z.number().int().positive(),
@@ -23,4 +24,9 @@ export const UpdateSubscriptionRequestSchema = z.object({
 });
 export type UpdateSubscriptionRequest = z.infer<
   typeof UpdateSubscriptionRequestSchema
+>;
+
+export const SubscriptionListResponseSchema = z.array(SubscriptionSchema);
+export type SubscriptionListResponse = z.infer<
+  typeof SubscriptionListResponseSchema
 >;

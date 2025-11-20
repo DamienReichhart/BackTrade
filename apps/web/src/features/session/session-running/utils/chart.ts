@@ -1,5 +1,5 @@
 import type { PriceFormatCustom } from "lightweight-charts";
-import type { ChartGridSettings } from "../../../../utils/localStorage";
+import type { ChartGridSettings } from "../../../../utils/browser/localStorage";
 import { getCSSVar } from "../../../../utils";
 
 /**

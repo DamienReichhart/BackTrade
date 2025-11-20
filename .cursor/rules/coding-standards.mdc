@@ -14,7 +14,7 @@ description: Coding standards and best practices
 ## File Naming
 
 - **Components**: PascalCase (e.g., `Button.tsx`)
-- **Utilities**: camelCase (e.g., `formatDate.ts`)
+- **Utilities**: camelCase (e.g., `utils.ts`)
 - **Types**: camelCase with `.ts` extension (e.g., `types.ts`)
 - **Config**: camelCase (e.g., `pricingConfig.tsx`)
 

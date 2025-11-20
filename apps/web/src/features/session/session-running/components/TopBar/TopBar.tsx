@@ -1,16 +1,13 @@
 import styles from "./TopBar.module.css";
 import { SessionMetadata } from "./components/SessionMetadata/SessionMetadata";
-import { SessionControls } from "./components/SessionControls/SessionControls";
 
 /**
- * Top bar with session metadata and controls
- * Matches the mockup header area.
+ * Top bar with session metadata and back button
  */
 export function TopBar() {
   return (
     <div className={styles.topBar}>
       <SessionMetadata />
-      <SessionControls />
     </div>
   );
 }

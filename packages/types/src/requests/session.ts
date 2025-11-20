@@ -32,3 +32,13 @@ export type UpdateSessionRequest = z.infer<typeof UpdateSessionRequestSchema>;
 
 export const SessionListResponseSchema = z.array(SessionSchema);
 export type SessionListResponse = z.infer<typeof SessionListResponseSchema>;
+
+export const SessionInfoResponseSchema = z.object({
+  start_balance: z.number().nonnegative(),
+  current_equity: z.number().nonnegative(),
+  drawdown: z.number().nonnegative(),
+  win_rate: z.number().nonnegative(),
+  leverage: LeverageSchema,
+  margin_level: z.number().nonnegative(),
+});
+export type SessionInfoResponse = z.infer<typeof SessionInfoResponseSchema>;

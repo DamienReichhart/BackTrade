@@ -1,7 +1,7 @@
 /**
  * Re-export formatPrice from shared utilities
  */
-export { formatPrice } from "../../../../../utils/formatting";
+export { formatPrice } from "../../../../../utils/formatting/currency";
 
 /**
  * Get button text based on whether plan is current

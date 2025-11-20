@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./SessionMetadata.module.css";
-import { useCurrentSessionStore } from "../../../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../../../store/session";
 import { Button } from "../../../../../../../components";
 import { formatMetadata } from "./utils";
 

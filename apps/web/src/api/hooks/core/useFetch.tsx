@@ -1,7 +1,7 @@
-import { useAuthStore } from "../../../context/AuthContext";
+import { useAuthStore } from "../../../store/auth";
 import { executeFetch } from "../../utils/fetchExecutor";
 import { useQueryAndMutation } from "./useQueryAndMutation";
-import type { UseFetchOptions } from "../../types";
+import type { UseFetchOptions } from "../../../types/api";
 
 /**
  * Unified GET/POST/PUT/DELETE hook built on React Query

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useArchiveSession } from "../../../../../../../../../../api/hooks/requests/sessions";
-import { useCurrentSessionStore } from "../../../../../../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatLocalDateTimeToISO } from "../../../../../../../../../session-add/utils";
 

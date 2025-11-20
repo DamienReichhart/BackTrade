@@ -1,4 +1,4 @@
-import { usePost, useGet } from "..";
+import { usePost, usePut } from "..";
 import {
   LoginRequestSchema,
   RegisterRequestSchema,
@@ -7,7 +7,6 @@ import {
   ResetPasswordRequestSchema,
   RefreshTokenRequestSchema,
   AuthResponseSchema,
-  PublicUserSchema,
   EmptyResponseSchema,
 } from "@backtrade/types";
 
@@ -43,29 +42,23 @@ export function useRefreshToken() {
   });
 }
 
-export function useChangePassword() {
-  return usePost("/auth/change-password", {
+export function useChangePassword(id: string) {
+  return usePut(`/users/${id}/password`, {
     inputSchema: ChangePasswordRequestSchema,
     outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useForgotPassword() {
-  return usePost("/auth/forgot-password", {
+  return usePost("/auth/users/requester/password", {
     inputSchema: ForgotPasswordRequestSchema,
     outputSchema: EmptyResponseSchema,
   });
 }
 
 export function useResetPassword() {
-  return usePost("/auth/reset-password", {
+  return usePost("/auth/users/resetter/password", {
     inputSchema: ResetPasswordRequestSchema,
     outputSchema: EmptyResponseSchema,
-  });
-}
-
-export function useMe() {
-  return useGet("/auth/me", {
-    outputSchema: PublicUserSchema,
   });
 }

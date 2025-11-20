@@ -208,7 +208,7 @@ Utilities should be imported from the feature's utils:
 
 ```tsx
 // In hooks
-import { validateEmail, validatePassword } from "../utils/validation";
+import { validateEmail, validatePassword } from "@backtrade/validation";
 import { calculateMetrics } from "../utils/calculations";
 
 // In components

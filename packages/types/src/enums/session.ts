@@ -1,12 +1,6 @@
 import { z } from "zod";
 
-export const SessionStatusSchema = z.enum([
-  "DRAFT",
-  "RUNNING",
-  "PAUSED",
-  "COMPLETED",
-  "ARCHIVED",
-]);
+export const SessionStatusSchema = z.enum(["RUNNING", "PAUSED", "ARCHIVED"]);
 export type SessionStatus = z.infer<typeof SessionStatusSchema>;
 
 export const TimeframeSchema = z.enum([

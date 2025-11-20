@@ -2,11 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Checkbox } from "../../../../../components/Checkbox";
-import {
-  FormHeader,
-  AlternativeOptions,
-  FormFooter,
-} from "../../../components";
+import { FormHeader, FormFooter } from "../../../components";
 import { useLoginForm } from "../../../hooks";
 import styles from "./LoginFormPanel.module.css";
 
@@ -14,7 +10,6 @@ import styles from "./LoginFormPanel.module.css";
  * Login form panel component
  *
  * Displays the login form on the right side with email/password inputs,
- * SSO, and magic link options
  */
 export function LoginFormPanel() {
   const {
@@ -79,16 +74,6 @@ export function LoginFormPanel() {
           >
             {isLoading ? "Signing in..." : "Continue"}
           </Button>
-
-          {/* Alternative Login Options */}
-          <AlternativeOptions
-            onSSOClick={() => {
-              // TODO: Implement SSO login
-            }}
-            onMagicLinkClick={() => {
-              // TODO: Implement magic link login
-            }}
-          />
 
           {/* Footer Links */}
           <FormFooter

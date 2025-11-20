@@ -5,6 +5,7 @@ import { Plans } from "../features/plans";
 import { PurchaseSuccess } from "../features/plans/components/PurchaseSuccess";
 import { AdminChoices } from "../features/admin";
 import { UserManagement } from "../features/admin/user-management";
+import { DatasetManagement } from "../features/admin/dataset-management";
 
 export const dashboardRoutes = [
   {
@@ -52,6 +53,14 @@ export const dashboardRoutes = [
     element: (
       <AuthenticatedLayout>
         <UserManagement />
+      </AuthenticatedLayout>
+    ),
+  },
+  {
+    path: "/dashboard/admin/dataset-management",
+    element: (
+      <AuthenticatedLayout>
+        <DatasetManagement />
       </AuthenticatedLayout>
     ),
   },

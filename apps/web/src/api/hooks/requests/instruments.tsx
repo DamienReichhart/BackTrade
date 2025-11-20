@@ -14,7 +14,7 @@ import {
  * Schemas are defined once and automatically applied
  */
 
-export function useInstruments(query: SearchQuery) {
+export function useInstruments(query?: SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

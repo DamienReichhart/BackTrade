@@ -1,6 +1,6 @@
 import { useRef, useMemo } from "react";
-import { useCurrentSessionCandlesStore } from "../../../../../context/CurrentSessionCandlesContext";
-import { useChartSettingsStore } from "../../../../../context/ChartSettingsContext";
+import { useCurrentSessionCandlesStore } from "../../../../../store/session";
+import { useChartSettingsStore } from "../../../../../store/chart";
 import { useChart, useChartData } from "../../hooks";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";

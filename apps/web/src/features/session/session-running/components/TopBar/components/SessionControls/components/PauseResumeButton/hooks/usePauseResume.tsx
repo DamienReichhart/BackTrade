@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
-import { useCurrentSessionStore } from "../../../../../../../../../../context/CurrentSessionContext";
+import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 
 /**
  * Hook to manage pause/resume session functionality

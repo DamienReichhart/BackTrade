@@ -7,7 +7,7 @@ erDiagram
     %% ENUMS (defined in code)
     %% =========================
     %% role: ANONYMOUS | ADMIN
-    %% session_status: DRAFT | RUNNING | PAUSED | COMPLETED | ARCHIVED
+    %% session_status: RUNNING | PAUSED | ARCHIVED
     %% position_status: OPEN | CLOSED | LIQUIDATED
     %% timeframe: M1 | M5 | M10 | M15 | M30 | H1 | H2 | H4 | D1 | W1
     %% side: BUY | SELL
@@ -21,7 +21,6 @@ erDiagram
       string id PK
       string email UK
       string password_hash
-      string mfa_secret
       enum role
       boolean is_banned
       string stripe_customer_id UK
@@ -105,8 +104,6 @@ erDiagram
       datetime uploaded_at
       int records_count
       string file_name
-      string file_size
-      string file_md5
       boolean is_active
       datetime start_ts
       datetime end_ts

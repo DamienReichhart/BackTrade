@@ -8,4 +8,5 @@ export * from "./dataset";
 export * from "./candle";
 export * from "./plan";
 export * from "./subscription";
+export * from "./audit";
 export * from "./common";

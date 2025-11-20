@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useAuthStore } from "../../context/AuthContext";
+import { useAuthStore } from "../../store/auth";
 import { Button } from "../Button";
 import styles from "./AuthenticatedLayout.module.css";
 import logoSvg from "../../assets/logo.svg";

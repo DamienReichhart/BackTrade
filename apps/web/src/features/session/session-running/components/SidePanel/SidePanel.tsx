@@ -1,11 +1,14 @@
 import styles from "./SidePanel.module.css";
-import { useCurrentPriceStore } from "../../../../../context/CurrentPriceContext";
-import { useCurrentSessionStore } from "../../../../../context/CurrentSessionContext";
+import {
+  useCurrentPriceStore,
+  useCurrentSessionStore,
+} from "../../../../../store/session";
 import { useOrderForm, usePositionCreation } from "../../hooks";
 import { isOrderFormDisabled } from "./utils";
+import { SessionControls } from "../TopBar/components/SessionControls/SessionControls";
 
 /**
- * Right-side panel with order ticket and session KPIs as per mockup.
+ * Right-side panel with order ticket and session controls.
  */
 export function SidePanel() {
   const currency = "€";
@@ -109,6 +112,14 @@ export function SidePanel() {
           >
             {isCreatingPosition ? "Creating..." : "Sell Market"}
           </button>
+        </div>
+      </div>
+
+      {/* Session Controls */}
+      <div className={styles.controlsWrapper}>
+        <div className={styles.card}>
+          <div className={styles.sectionHeader}>Session controls</div>
+          <SessionControls />
         </div>
       </div>
     </div>

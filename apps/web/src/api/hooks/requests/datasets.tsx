@@ -1,4 +1,4 @@
-import { useGet, usePost, usePatch, useDelete } from "..";
+import { useGet, usePost, usePatch, useDelete, usePostForm } from "..";
 import {
   DatasetSchema,
   DatasetListResponseSchema,
@@ -78,14 +78,6 @@ export function useDeleteDataset(id: string) {
   });
 }
 
-export function useActivateDataset(id: string) {
-  return usePost(`/datasets/${id}/activate`, {
-    outputSchema: DatasetSchema,
-  });
-}
-
-export function useDeactivateDataset(id: string) {
-  return usePost(`/datasets/${id}/deactivate`, {
-    outputSchema: DatasetSchema,
-  });
+export function useUploadDataset(id: string) {
+  return usePostForm(`/datasets/${id}/file`, "POST", EmptyResponseSchema);
 }

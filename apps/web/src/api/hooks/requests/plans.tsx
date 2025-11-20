@@ -1,13 +1,12 @@
 import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   PlanSchema,
+  PlanListResponseSchema,
   CreatePlanRequestSchema,
   UpdatePlanRequestSchema,
   EmptyResponseSchema,
-  type Plan,
   type SearchQuery,
 } from "@backtrade/types";
-import { z } from "zod";
 
 /**
  * Plan Management API Hooks
@@ -26,8 +25,8 @@ export function usePlans(query?: SearchQuery) {
 
   const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
-  return useGet<Plan[]>(url, {
-    outputSchema: z.array(PlanSchema),
+  return useGet(url, {
+    outputSchema: PlanListResponseSchema,
   });
 }
 

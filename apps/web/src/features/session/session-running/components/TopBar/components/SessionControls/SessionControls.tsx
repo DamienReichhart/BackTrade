@@ -2,6 +2,7 @@ import styles from "./SessionControls.module.css";
 import {
   SpeedSelector,
   PauseResumeButton,
+  SkipBarButton,
   CloseAllButton,
   ArchiveButton,
   ControlError,
@@ -22,6 +23,7 @@ export function SessionControls() {
       <div className={styles.buttons}>
         <SpeedSelector onError={handleError} onSuccess={handleSuccess} />
         <PauseResumeButton onError={handleError} onSuccess={handleSuccess} />
+        <SkipBarButton onError={handleError} onSuccess={handleSuccess} />
         <CloseAllButton onError={handleError} onSuccess={handleSuccess} />
         <ArchiveButton onError={handleError} onSuccess={handleSuccess} />
       </div>

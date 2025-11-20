@@ -6,6 +6,8 @@ import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData } from "./hooks";
 import styles from "./SessionRunning.module.css";
+import { API_BASE_URL } from "../../../api";
+import { useEffect } from "react";
 
 /**
  * Running Session page
@@ -14,7 +16,17 @@ import styles from "./SessionRunning.module.css";
  * order/estimates panel on the right, and tables below.
  */
 export function SessionRunning() {
-  useSessionData();
+  const { session } = useSessionData();
+
+  useEffect(() => {
+    if (session?.session_status == "ARCHIVED") {
+      window.location.href = `${API_BASE_URL}/sessions/${session.id}/analyticsFile`;
+    }
+  }, [session]);
+
+  if (!session) {
+    return <div>No session found</div>;
+  }
 
   return (
     <div className={styles.page}>

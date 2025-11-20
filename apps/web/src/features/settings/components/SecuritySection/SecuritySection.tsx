@@ -1,16 +1,14 @@
-import { Button, Input, Toggle } from "../../../../components";
+import { Button, Input } from "../../../../components";
 import { useSecuritySection } from "../../hooks";
 import styles from "./SecuritySection.module.css";
 
 /**
  * Security section component
  *
- * Handles password changes and two-factor authentication settings
+ * Handles password changes
  */
 export function SecuritySection() {
   const {
-    twoFactorEnabled,
-    setTwoFactorEnabled,
     passwords,
     error,
     success,
@@ -90,16 +88,6 @@ export function SecuritySection() {
               Clear
             </Button>
           </div>
-        </div>
-
-        {/* Two-Factor Authentication Subsection */}
-        <div className={styles.subsection}>
-          <h3 className={styles.subtitle}>Two-factor authentication</h3>
-          <Toggle
-            label="Enable 2FA with an authenticator app"
-            checked={twoFactorEnabled}
-            onChange={setTwoFactorEnabled}
-          />
         </div>
       </div>
     </section>

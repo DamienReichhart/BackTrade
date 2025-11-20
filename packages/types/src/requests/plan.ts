@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PlanSchema } from "../entities";
 
 export const CreatePlanRequestSchema = z.object({
   code: z.string().min(1),
@@ -17,3 +18,6 @@ export const UpdatePlanRequestSchema = z.object({
   price: z.number().nonnegative().optional(),
 });
 export type UpdatePlanRequest = z.infer<typeof UpdatePlanRequestSchema>;
+
+export const PlanListResponseSchema = z.array(PlanSchema);
+export type PlanListResponse = z.infer<typeof PlanListResponseSchema>;

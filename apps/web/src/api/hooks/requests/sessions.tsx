@@ -5,6 +5,7 @@ import {
   CreateSessionRequestSchema,
   UpdateSessionRequestSchema,
   EmptyResponseSchema,
+  SessionInfoResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 
@@ -63,5 +64,14 @@ export function useArchiveSession(id: string) {
   return usePatch(`/sessions/${id}`, {
     inputSchema: UpdateSessionRequestSchema,
     outputSchema: SessionSchema,
+  });
+}
+
+export function useSessionInfo(id: string) {
+  return useGet(`/sessions/${id}/info`, {
+    outputSchema: SessionInfoResponseSchema,
+    queryOptions: {
+      enabled: !!id && id !== "",
+    },
   });
 }

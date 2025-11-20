@@ -76,9 +76,9 @@ export const comparisonData: ComparisonRow[] = [
   },
   {
     feature: "Session lifecycle",
-    free: "Draft → Running → Paused → Completed → Archived",
-    trader: "Draft → Running → Paused → Completed → Archived",
-    expert: "Draft → Running → Paused → Completed → Archived",
+    free: "Running → Paused → Archived",
+    trader: "Running → Paused → Archived",
+    expert: "Running → Paused → Archived",
   },
   {
     feature: "Entries and fills",
