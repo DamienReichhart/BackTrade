@@ -23,9 +23,13 @@ export function useTransactionsTable() {
   } = useModal<Transaction>();
 
   const { data: transactionsData, isLoading: loading } =
-    useTransactionsBySession(sessionId, undefined, {
-      enabled: hasValidSession,
-    });
+    useTransactionsBySession(
+      sessionId,
+      { page: 1, limit: 10, order: "desc", sort: "created_at" },
+      {
+        enabled: hasValidSession,
+      },
+    );
 
   const transactions: Transaction[] = Array.isArray(transactionsData)
     ? transactionsData

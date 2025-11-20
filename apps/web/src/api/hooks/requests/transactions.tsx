@@ -5,6 +5,7 @@ import {
   CreateTransactionRequestSchema,
   EmptyResponseSchema,
   type DateRangeQuery,
+  type PaginationQuery,
 } from "@backtrade/types";
 
 /**
@@ -58,7 +59,7 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
 
 export function useTransactionsBySession(
   sessionId: string,
-  query?: DateRangeQuery,
+  query?: PaginationQuery,
   queryOptions?: { enabled?: boolean },
 ) {
   const searchParams = new URLSearchParams();
