@@ -103,6 +103,14 @@ export function validateDateRange(
   const start = new Date(startDate);
   const end = new Date(endDate);
 
+  if (isNaN(start.getTime())) {
+    return { isValid: false, error: "Start date is invalid" };
+  }
+
+  if (isNaN(end.getTime())) {
+    return { isValid: false, error: "End date is invalid" };
+  }
+
   if (start >= end) {
     return { isValid: false, error: "End date must be after start date" };
   }
