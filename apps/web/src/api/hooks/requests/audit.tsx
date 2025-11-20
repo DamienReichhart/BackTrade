@@ -1,6 +1,9 @@
 import { useGet } from "..";
-import { AuditLogSchema, type DateRangeQuery } from "@backtrade/types";
-import { z } from "zod";
+import {
+  AuditLogSchema,
+  AuditLogListResponseSchema,
+  type DateRangeQuery,
+} from "@backtrade/types";
 
 /**
  * Audit Log Management API Hooks
@@ -20,7 +23,7 @@ export function useAuditLogs(query?: DateRangeQuery) {
   const url = query ? `/audit/logs?${searchParams.toString()}` : "/audit/logs";
 
   return useGet(url, {
-    outputSchema: z.array(AuditLogSchema),
+    outputSchema: AuditLogListResponseSchema,
   });
 }
 
@@ -45,7 +48,7 @@ export function useAuditLogsByUser(userId: string, query?: DateRangeQuery) {
     : `/users/${userId}/audit-logs`;
 
   return useGet(url, {
-    outputSchema: z.array(AuditLogSchema),
+    outputSchema: AuditLogListResponseSchema,
   });
 }
 
@@ -68,6 +71,6 @@ export function useAuditLogsByEntity(
     : `/audit/entities/${entityType}/${entityId}`;
 
   return useGet(url, {
-    outputSchema: z.array(AuditLogSchema),
+    outputSchema: AuditLogListResponseSchema,
   });
 }

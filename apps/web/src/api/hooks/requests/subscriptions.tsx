@@ -1,7 +1,7 @@
 import { useGet, usePost, usePatch, useDelete } from "../core";
-import { z } from "zod";
 import {
   SubscriptionSchema,
+  SubscriptionListResponseSchema,
   CreateSubscriptionRequestSchema,
   UpdateSubscriptionRequestSchema,
   EmptyResponseSchema,
@@ -28,7 +28,7 @@ export function useSubscriptions(query?: DateRangeQuery) {
     : "/subscriptions";
 
   return useGet(url, {
-    outputSchema: z.array(SubscriptionSchema),
+    outputSchema: SubscriptionListResponseSchema,
   });
 }
 
@@ -57,7 +57,7 @@ export function useSubscriptionsByUser(
     : `/users/${userId ?? ""}/subscriptions`;
 
   return useGet(url, {
-    outputSchema: z.array(SubscriptionSchema),
+    outputSchema: SubscriptionListResponseSchema,
     queryOptions: {
       enabled: !!userId && userId.length > 0,
     },
