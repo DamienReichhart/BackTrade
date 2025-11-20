@@ -51,6 +51,11 @@ export function useSecuritySection() {
     setError(null);
     setSuccess(false);
 
+    if (!user?.id) {
+      setError("User information is not available. Please log in again.");
+      return;
+    }
+
     // Validate current password
     if (!passwords.current) {
       setError("Current password is required");
