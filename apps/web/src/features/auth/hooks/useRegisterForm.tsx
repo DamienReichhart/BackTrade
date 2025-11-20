@@ -7,7 +7,7 @@ import {
   validateEmail,
   validatePassword,
   validatePasswordConfirmation,
-} from "../utils/validation";
+} from "@backtrade/utils";
 
 /**
  * Register form state

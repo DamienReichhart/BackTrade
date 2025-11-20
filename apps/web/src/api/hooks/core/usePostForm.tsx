@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { type ZodType } from "zod";
-import { validateApiOutput } from "../../utils/validations";
+import { validateApiOutput } from "@backtrade/utils";
 import { useAuthStore } from "../../../store";
 import { retryIfUnauthorized } from "../../utils/retryIfUnauthorized";
 import { type FetchResponse } from "../../utils";

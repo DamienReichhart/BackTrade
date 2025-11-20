@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../../../api/hooks/requests/auth";
 import { useAuthStore } from "../../../store/auth";
-import { validateEmail, validatePassword } from "../utils/validation";
+import { validateEmail, validatePassword } from "@backtrade/utils";
 
 /**
  * Login form state

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../index";
-import { validateApiInput, validateApiOutput } from "./validations";
+import { validateApiInput, validateApiOutput } from "@backtrade/utils";
 import { retryIfUnauthorized } from "./retryIfUnauthorized";
 import type { FetchExecutorConfig } from "../../types/api";
 

@@ -3,7 +3,7 @@ import { useChangePassword } from "../../../api/hooks/requests/auth";
 import {
   validatePassword,
   validatePasswordConfirmation,
-} from "../utils/validation";
+} from "@backtrade/utils";
 import { useAuthStore } from "../../../store/auth";
 
 /**

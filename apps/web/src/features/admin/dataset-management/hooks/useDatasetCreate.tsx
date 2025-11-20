@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useCreateDataset } from "../../../../api/hooks/requests/datasets";
 import type { Timeframe } from "@backtrade/types";
-import { validateTimeframe, validateInstrumentId } from "../utils/validation";
+import { validateTimeframe, validateInstrumentId } from "@backtrade/utils";
 
 /**
  * Form state for dataset creation

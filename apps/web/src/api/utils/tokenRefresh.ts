@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../index";
-import { validateApiOutput } from "./validations";
+import { validateApiOutput } from "@backtrade/utils";
 import { AuthResponseSchema, type AuthResponse } from "@backtrade/types";
 
 /**

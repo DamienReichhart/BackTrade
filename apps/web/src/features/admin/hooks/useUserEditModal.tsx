@@ -6,7 +6,7 @@ import {
 } from "@backtrade/types";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
 import { useModalBehavior } from "../../../hooks/useModalBehavior";
-import { validateEmail, validateRole } from "../utils/validation";
+import { validateEmail, validateRole } from "@backtrade/utils";
 
 /**
  * Hook for managing user edit modal state and logic

@@ -20,7 +20,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@backtrade/types": "workspace:*"
+    "@backtrade/types": "workspace:*",
+    "zod": "^4.1.12"
   },
   "license": "PROPRIETARY",
   "author": "REICHHART Damien",

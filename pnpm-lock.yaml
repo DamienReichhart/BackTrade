@@ -255,6 +255,9 @@ importers:
       "@backtrade/types":
         specifier: workspace:*
         version: link:../types
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       "@backtrade/eslint-config":
         specifier: workspace:*

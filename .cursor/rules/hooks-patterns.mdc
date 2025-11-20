@@ -116,7 +116,7 @@ export function useFeatureData(id: string) {
 
 ```tsx
 import { useState } from "react";
-import { validateEmail } from "../utils/validation";
+import { validateEmail } from "@backtrade/utils";
 
 export function useFormState() {
   const [formState, setFormState] = useState({

@@ -1,20 +1,4 @@
-/**
- * Validation result interface
- */
-export interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-/**
- * Email validation result (alias for ValidationResult for backward compatibility)
- */
-export type EmailValidationResult = ValidationResult;
-
-/**
- * Password validation result (alias for ValidationResult for backward compatibility)
- */
-export type PasswordValidationResult = ValidationResult;
+import type { ValidationResult } from "./types";
 
 /**
  * Validate email format
@@ -75,4 +59,41 @@ export function validatePasswordConfirmation(
   }
 
   return validatePassword(password);
+}
+
+/**
+ * Validate name
+ *
+ * @param name - Name to validate
+ * @returns Validation result with isValid flag and optional error message
+ */
+export function validateName(name: string): ValidationResult {
+  if (name.length === 0) {
+    return { isValid: false, error: "Enter your name." };
+  }
+
+  if (name.length < 2) {
+    return { isValid: false, error: "Name must be at least 2 characters." };
+  }
+
+  return { isValid: true };
+}
+
+/**
+ * Validate role
+ *
+ * @param role - Role to validate
+ * @returns Validation result with isValid flag and optional error message
+ */
+export function validateRole(role: string): ValidationResult {
+  if (!role) {
+    return { isValid: false, error: "Role is required" };
+  }
+
+  const validRoles = ["ANONYMOUS", "USER", "ADMIN"];
+  if (!validRoles.includes(role)) {
+    return { isValid: false, error: "Invalid role" };
+  }
+
+  return { isValid: true };
 }

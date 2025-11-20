@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../../../store/auth";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
-import { validateEmail } from "../utils/validation";
+import { validateEmail } from "@backtrade/utils";
 
 /**
  * Hook to manage account section state and operations

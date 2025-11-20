@@ -1,10 +1,16 @@
 /**
- * Validation result interface
+ * Frontend-specific validation utilities for session-add feature
+ * Generic validations are in @backtrade/utils
  */
-interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
+
+import {
+  type ValidationResult,
+  validateRequired,
+  validateRequiredString,
+  validatePositiveNumber,
+  validateNonNegativeNumber,
+  validateDateRange,
+} from "@backtrade/utils";
 
 /**
  * Validate datetime-local input value
@@ -76,67 +82,54 @@ export function formatISOToLocalDateTime(isoDateTime: string): string {
 
 /**
  * Validate instrument selection
+ * Wrapper around validateRequired for convenience
  */
 export const validateInstrument = (
   instrumentId: number | null,
 ): string | undefined => {
-  if (!instrumentId) {
-    return "Please select an instrument.";
-  }
-  return undefined;
+  const result = validateRequired(instrumentId, "Instrument");
+  return result.isValid ? undefined : result.error;
 };
 
 /**
  * Validate speed selection
+ * Wrapper around validateRequiredString for convenience
  */
 export const validateSpeed = (speed: string): string | undefined => {
-  if (!speed) {
-    return "Please select a speed.";
-  }
-  return undefined;
+  const result = validateRequiredString(speed, "Speed");
+  return result.isValid ? undefined : result.error;
 };
 
 /**
  * Validate leverage selection
+ * Wrapper around validateRequired for convenience
  */
 export const validateLeverage = (
   leverage: number | null,
 ): string | undefined => {
-  if (leverage === null) {
-    return "Please select a leverage.";
-  }
-  return undefined;
+  const result = validateRequired(leverage, "Leverage");
+  return result.isValid ? undefined : result.error;
 };
 
 /**
  * Validate initial balance
+ * Wrapper around validatePositiveNumber for convenience
  */
 export const validateInitialBalance = (value: string): string | undefined => {
-  if (!value || value.trim() === "") {
-    return "Initial balance is required.";
-  }
-  const num = parseFloat(value);
-  if (isNaN(num) || num <= 0) {
-    return "Initial balance must be a positive number.";
-  }
-  return undefined;
+  const result = validatePositiveNumber(value, "Initial balance");
+  return result.isValid ? undefined : result.error;
 };
 
 /**
  * Validate numeric field (spread, slippage, commission)
+ * Wrapper around validateNonNegativeNumber for convenience
  */
 export const validateNumericField = (
   value: string,
   fieldName: string,
 ): string | undefined => {
-  if (!value || value.trim() === "") {
-    return `${fieldName} is required.`;
-  }
-  const num = parseFloat(value);
-  if (isNaN(num) || num < 0) {
-    return `${fieldName} must be a non-negative number.`;
-  }
-  return undefined;
+  const result = validateNonNegativeNumber(value, fieldName);
+  return result.isValid ? undefined : result.error;
 };
 
 /**
@@ -157,14 +150,19 @@ export const validateDateTimeField = (
   return undefined;
 };
 
+/**
+ * Validate start timestamp vs end timestamp
+ * Converts datetime-local to ISO format before validation
+ * Wrapper around validateDateRange for convenience
+ */
 export const validateStartTsVsEndTs = (
   startTs: string,
   endTs: string,
 ): string | undefined => {
-  const startDate = new Date(formatLocalDateTimeToISO(startTs));
-  const endDate = new Date(formatLocalDateTimeToISO(endTs));
-  if (endDate < startDate) {
-    return "End time must be after or equal to start time.";
-  }
-  return undefined;
+  // Convert datetime-local to ISO format for validation
+  const startISO = formatLocalDateTimeToISO(startTs);
+  const endISO = formatLocalDateTimeToISO(endTs);
+
+  const result = validateDateRange(startISO, endISO);
+  return result.isValid ? undefined : result.error;
 };

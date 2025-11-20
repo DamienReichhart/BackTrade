@@ -14,7 +14,7 @@ import {
   validateDateTimeField,
   formatLocalDateTimeToISO,
   validateStartTsVsEndTs,
-} from "../utils";
+} from "../utils/validation";
 
 /**
  * Speed options for the select dropdown

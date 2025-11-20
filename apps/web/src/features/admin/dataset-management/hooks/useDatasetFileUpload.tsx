@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useUploadDataset } from "../../../../api/hooks/requests/datasets";
-import { validateFile } from "../utils/validation";
+import { validateFile } from "@backtrade/utils";
 
 /**
  * Hook for managing dataset file upload
