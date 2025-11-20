@@ -9,6 +9,7 @@
   /types            # zod schemas + inferred types used by both sides
   /config           # env loader with zod
   /tsconfig         # base tsconfig
+  /utils            # Utils func
 /docker
   /config           # Config files for containers
   /datas            # Local containers volumes
