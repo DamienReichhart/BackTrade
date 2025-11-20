@@ -1,7 +1,7 @@
 export { useChart } from "./useChart";
 export { useChartData } from "./useChartData";
 export { useSessionData } from "./useSessionData";
-export { useSessionMetrics } from "./useSessionMetrics";
+export { useSessionInfo } from "./useSessionInfo";
 export { useOrderForm } from "./useOrderForm";
 export { usePositionCreation } from "./usePositionCreation";
 export { usePositionsTable } from "./usePositionsTable";

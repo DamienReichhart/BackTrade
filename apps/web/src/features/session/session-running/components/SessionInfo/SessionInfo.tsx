@@ -1,17 +1,15 @@
 import styles from "./SessionInfo.module.css";
-import { useCurrentSessionStore } from "../../../../../store/session";
-import { useSessionMetrics } from "../../hooks";
+import { useSessionInfo } from "../../hooks";
 import { formatCurrency, formatPercentage } from "./utils";
 
 /**
- * Session info component displaying session KPIs (balance, equity, drawdown, win rate, leverage).
- * Uses currentSession from the global store, which is set by SessionRunning.
+ * Session info component displaying session KPIs (balance, equity, drawdown, win rate, leverage, margin level).
+ * Fetches data from the API endpoint /sessions/:id/info.
  */
 export function SessionInfo() {
-  const { currentSession } = useCurrentSessionStore();
-  const { metrics, isLoading } = useSessionMetrics();
+  const { sessionInfo, isLoading } = useSessionInfo();
 
-  if (isLoading) {
+  if (isLoading || !sessionInfo) {
     return (
       <div className={styles.card}>
         <div className={styles.sectionHeader}>Session info</div>
@@ -36,6 +34,10 @@ export function SessionInfo() {
             <div className={styles.infoLabel}>Leverage</div>
             <div className={styles.infoValue}>Loading…</div>
           </div>
+          <div>
+            <div className={styles.infoLabel}>Margin level</div>
+            <div className={styles.infoValue}>Loading…</div>
+          </div>
         </div>
       </div>
     );
@@ -48,31 +50,35 @@ export function SessionInfo() {
         <div>
           <div className={styles.infoLabel}>Start balance</div>
           <div className={styles.infoValue}>
-            {formatCurrency(currentSession?.initial_balance ?? 0)}
+            {formatCurrency(sessionInfo.start_balance)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Current equity</div>
           <div className={styles.infoValue}>
-            {formatCurrency(metrics.equity)}
+            {formatCurrency(sessionInfo.current_equity)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Drawdown</div>
           <div className={styles.infoValue}>
-            -{formatPercentage(metrics.drawdownPct)}
+            -{formatPercentage(sessionInfo.drawdown)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Win rate</div>
           <div className={styles.infoValue}>
-            {formatPercentage(metrics.winRate)}
+            {formatPercentage(sessionInfo.win_rate)}
           </div>
         </div>
         <div>
           <div className={styles.infoLabel}>Leverage</div>
+          <div className={styles.infoValue}>× {sessionInfo.leverage}</div>
+        </div>
+        <div>
+          <div className={styles.infoLabel}>Margin level</div>
           <div className={styles.infoValue}>
-            × {currentSession?.leverage ?? 0}
+            {formatPercentage(sessionInfo.margin_level)}
           </div>
         </div>
       </div>
