@@ -13,6 +13,14 @@
     border-color var(--transition-fast);
   cursor: pointer;
   border-color: var(--color-border-accent);
+  white-space: nowrap;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: var(--font-size-sm);
 }
 
 .button:hover:not(:disabled) {
@@ -23,4 +31,12 @@
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Mobile: Full width button */
+@media (max-width: 767px) {
+  .button {
+    width: 100%;
+    padding: 10px 12px;
+  }
 }
