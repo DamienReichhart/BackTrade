@@ -107,6 +107,9 @@ BackTrade/
    ```bash
    # Using pnpm directly
    pnpm dev
+
+   # If using json-server (not recomanded)
+   cd apps/web && pnpm fake-api
    ```
 
 4. **Access the application**
@@ -157,7 +160,7 @@ pnpm test:coverage
 2. **Deploy with Docker**
 
    ```bash
-   pnpm docker-prod
+   make docker-prod
    ```
 
 3. **Environment Configuration**
