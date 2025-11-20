@@ -127,7 +127,7 @@ export function validateFile(file: File | null): {
   // Check file size (max 1000MB)
   const maxSize = 1000 * 1024 * 1024;
   if (file.size > maxSize) {
-    return { isValid: false, error: "File size must not exceed 100MB" };
+    return { isValid: false, error: "File size must not exceed 1000MB" };
   }
 
   // Check file extension (CSV)

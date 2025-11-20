@@ -46,7 +46,16 @@ export function useSkipBar(
       // Calculate new current_ts by adding timeframe duration
       const currentTime = new Date(currentSession.current_ts);
       const timeframeMs = timeframeToMilliseconds(timeframe);
-      const newTime = new Date(currentTime.getTime() + timeframeMs);
+      let newTime = new Date(currentTime.getTime() + timeframeMs);
+
+      // Validate against session end_ts boundary
+      if (currentSession.end_ts) {
+        const endTs = new Date(currentSession.end_ts);
+        if (newTime.getTime() > endTs.getTime()) {
+          // Clamp to end_ts if new time exceeds session boundary
+          newTime = endTs;
+        }
+      }
 
       // Format as ISO datetime string (YYYY-MM-DDTHH:mm:ssZ)
       const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";

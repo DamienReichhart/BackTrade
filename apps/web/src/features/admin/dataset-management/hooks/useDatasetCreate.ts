@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useCreateDataset } from "../../../../api/hooks/requests/datasets";
 import type { Timeframe } from "@backtrade/types";
-import { validateTimeframe } from "../utils/validation";
+import { validateTimeframe, validateInstrumentId } from "../utils/validation";
 
 /**
  * Form state for dataset creation
@@ -54,9 +54,13 @@ export function useDatasetCreate() {
   const validate = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Validate instrument_id (just check if selected)
-    if (!formState.instrument_id || formState.instrument_id.trim() === "") {
-      newErrors.instrument_id = "Please select an instrument";
+    // Validate instrument_id
+    const instrumentIdValidation = validateInstrumentId(
+      formState.instrument_id,
+    );
+    if (!instrumentIdValidation.isValid) {
+      newErrors.instrument_id =
+        instrumentIdValidation.error ?? "Invalid instrument";
     }
 
     // Validate timeframe
