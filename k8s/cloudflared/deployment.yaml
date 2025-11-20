@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backtrade-cloudflared
+  namespace: backtrade
+  labels:
+    app: cloudflared
+    component: tunnel
+spec:
+  replicas: 1 # Maximum 1 pod for cloudflared because cloudflare tunnel cannot have 2 connections at the same time
+  selector:
+    matchLabels:
+      app: cloudflared
+      component: tunnel
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+        component: tunnel
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          command: ["cloudflared", "tunnel", "run"]
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: backtrade-secrets
+                  key: TUNNEL_TOKEN
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          # Note: Cloudflared doesn't support standard HTTP health checks

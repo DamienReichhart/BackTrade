@@ -1,0 +1,12 @@
+# Secrets
+secrets/secrets.yaml
+secrets/*.env
+secrets/*.pem
+secrets/*.key
+
+# Generated files
+*.generated.yaml
+
+# Kustomize build outputs
+kustomization-build.yaml
+

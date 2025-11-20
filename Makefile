@@ -7,7 +7,7 @@
 .DEFAULT_GOAL := clean-install
 
 # Phony targets (targets that don't represent files)
-.PHONY: install dev test test-watch test-coverage typecheck lint format build build-api build-web clean clean-install docker-dev docker-prod docker-stop docker-logs docker-clean db-reset check
+.PHONY: install dev test test-watch test-coverage typecheck lint format build build-api build-web clean clean-install docker-dev docker-prod docker-stop docker-logs docker-clean db-reset check fake-api
 
 # Variables
 NODE_VERSION := 24
@@ -39,6 +39,9 @@ dev: ## Start development servers
 	@echo "Starting development servers..."
 	pnpm dev
 
+fake-api: ## Start fake API
+	@echo "Starting fake API..."
+	cd apps/web && pnpm fake-api
 ##@ Code Quality
 
 test: ## Run all tests
