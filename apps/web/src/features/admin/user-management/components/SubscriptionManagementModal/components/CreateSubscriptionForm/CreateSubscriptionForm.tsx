@@ -53,7 +53,12 @@ export function CreateSubscriptionForm({
   onSubmit,
   onCancel,
 }: CreateSubscriptionFormProps) {
-  const isFormValid = !!form.plan_id && !!form.stripe_subscription_id;
+  const isFormValid =
+    !!form.plan_id &&
+    !!form.stripe_subscription_id &&
+    !!form.current_period_start &&
+    !!form.current_period_end &&
+    new Date(form.current_period_start) < new Date(form.current_period_end);
 
   return (
     <div className={styles.form}>
