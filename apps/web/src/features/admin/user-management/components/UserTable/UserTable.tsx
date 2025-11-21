@@ -58,6 +58,11 @@ interface UserTableProps {
    * Callback when delete button is clicked
    */
   onDelete: (user: PublicUser) => void;
+
+  /**
+   * Callback when manage subscriptions button is clicked
+   */
+  onManageSubscriptions: (user: PublicUser) => void;
 }
 
 /**
@@ -75,6 +80,7 @@ export function UserTable({
   onEdit,
   onView,
   onDelete,
+  onManageSubscriptions,
 }: UserTableProps) {
   return (
     <div className={styles.card}>
@@ -188,6 +194,13 @@ export function UserTable({
                         onClick={() => onEdit(user)}
                       >
                         Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        onClick={() => onManageSubscriptions(user)}
+                      >
+                        Manage Subscriptions
                       </Button>
                       <Button
                         variant="ghost"

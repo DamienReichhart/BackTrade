@@ -66,7 +66,7 @@
       "user_id": 1,
       "plan_id": 3,
       "stripe_subscription_id": "sub_2b3c4d5e6f7g8h9i",
-      "status": "trialing",
+      "status": "canceled",
       "current_period_start": "2025-11-15T00:00:00Z",
       "current_period_end": "2025-12-15T00:00:00Z",
       "cancel_at_period_end": false,
@@ -148,6 +148,16 @@
       "status": "active",
       "cancel_at_period_end": false,
       "id": 9
+    },
+    {
+      "user_id": 1,
+      "plan_id": 2,
+      "stripe_subscription_id": "none",
+      "current_period_start": "2025-11-21T10:02:14.079Z",
+      "current_period_end": "2025-12-21T10:02:14.079Z",
+      "status": "active",
+      "cancel_at_period_end": true,
+      "id": 10
     }
   ],
   "sessions": [

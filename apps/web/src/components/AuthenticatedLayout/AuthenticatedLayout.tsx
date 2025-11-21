@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth";
 import { Button } from "../Button";
 import styles from "./AuthenticatedLayout.module.css";
@@ -28,7 +28,13 @@ interface AuthenticatedLayoutProps {
  */
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <div className={styles.layout}>
@@ -67,7 +73,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             <Button
               variant="ghost"
               size="medium"
-              onClick={logout}
+              onClick={handleLogout}
               className={styles.logoutButton}
             >
               Logout
