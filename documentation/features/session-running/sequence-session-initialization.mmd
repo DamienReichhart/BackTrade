@@ -1,0 +1,69 @@
+sequenceDiagram
+    participant User
+    participant Router
+    participant SessionRunning
+    participant useSessionData
+    participant ReactQuery
+    participant API
+    participant Stores
+    participant RunningSessionChart
+    participant useChart
+    participant LightweightCharts
+    participant useIndicatorEngine
+    participant IndicatorEngine
+    
+    User->>Router: Navigate to /dashboard/sessions/:id
+    Router->>SessionRunning: Render component
+    
+    SessionRunning->>useSessionData: Initialize hook
+    
+    useSessionData->>Router: Extract session ID from params
+    useSessionData->>ReactQuery: useSession(id)
+    ReactQuery->>API: GET /sessions/:id
+    API-->>ReactQuery: Session data
+    ReactQuery-->>useSessionData: session
+    
+    alt Session has instrument_id
+        useSessionData->>ReactQuery: useInstrument(instrumentId)
+        ReactQuery->>API: GET /instruments/:id
+        API-->>ReactQuery: Instrument data
+        ReactQuery-->>useSessionData: instrument
+    end
+    
+    useSessionData->>useSessionData: Calculate candle date range
+    useSessionData->>ReactQuery: useCandlesByInstrument(id, timeframe, range)
+    ReactQuery->>API: GET /instruments/:id/candles
+    API-->>ReactQuery: Candle array
+    ReactQuery-->>useSessionData: chartCandles
+    
+    useSessionData->>useSessionData: Derive currentPrice from last candle
+    
+    useSessionData->>Stores: setCurrentSession(session)
+    useSessionData->>Stores: setCurrentSessionInstrument(instrument)
+    useSessionData->>Stores: setCurrentPrice(currentPrice)
+    useSessionData->>Stores: setCandles(chartCandles)
+    
+    SessionRunning->>RunningSessionChart: Render chart component
+    
+    RunningSessionChart->>useChart: Initialize chart
+    useChart->>LightweightCharts: createChart(container, options)
+    LightweightCharts-->>useChart: chart instance
+    useChart->>LightweightCharts: addSeries(CandlestickSeries)
+    LightweightCharts-->>useChart: series instance
+    useChart->>LightweightCharts: createSeriesMarkers(series)
+    LightweightCharts-->>useChart: markersPlugin
+    
+    RunningSessionChart->>useChartData: Sync candles to chart
+    useChartData->>LightweightCharts: series.setData(chartData)
+    
+    RunningSessionChart->>useIndicatorEngine: Initialize indicators
+    useIndicatorEngine->>IndicatorEngine: new IndicatorEngine()
+    useIndicatorEngine->>IndicatorEngine: setChart(chart)
+    useIndicatorEngine->>IndicatorEngine: setIndicators(indicators)
+    IndicatorEngine->>IndicatorEngine: Create indicator instances
+    IndicatorEngine->>LightweightCharts: Add indicator series
+    useIndicatorEngine->>IndicatorEngine: setCandles(candles)
+    IndicatorEngine->>IndicatorEngine: Update all indicator data
+    
+    RunningSessionChart->>User: Display chart with data
+

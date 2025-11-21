@@ -1,0 +1,50 @@
+sequenceDiagram
+    participant API
+    participant ReactQuery
+    participant useSessionData
+    participant Stores
+    participant RunningSessionChart
+    participant useChartData
+    participant LightweightCharts
+    participant usePositionMarkers
+    participant useChartMarkers
+    participant useIndicatorEngine
+    participant IndicatorEngine
+    participant IndicatorRuntimes
+    
+    Note over API: New candle data available
+    
+    API->>ReactQuery: Candle data update
+    ReactQuery->>useSessionData: chartCandles updated
+    useSessionData->>useSessionData: Derive currentPrice from last candle
+    useSessionData->>Stores: setCurrentPrice(currentPrice)
+    useSessionData->>Stores: setCandles(chartCandles)
+    
+    Stores->>RunningSessionChart: candles state updated
+    RunningSessionChart->>useChartData: candles prop changed
+    
+    useChartData->>useChartData: Convert candles to chart format
+    useChartData->>LightweightCharts: series.setData(chartData)
+    LightweightCharts->>LightweightCharts: Update candlestick series
+    
+    RunningSessionChart->>usePositionMarkers: Rebuild markers
+    usePositionMarkers->>Stores: Read positions from query
+    usePositionMarkers->>usePositionMarkers: Build marker array
+    usePositionMarkers->>RunningSessionChart: markers array
+    
+    RunningSessionChart->>useChartMarkers: markers prop changed
+    useChartMarkers->>LightweightCharts: markersPlugin.setMarkers(markers)
+    LightweightCharts->>LightweightCharts: Update position markers
+    
+    RunningSessionChart->>useIndicatorEngine: candles prop changed
+    useIndicatorEngine->>IndicatorEngine: setCandles(candles)
+    
+    loop For each active indicator
+        IndicatorEngine->>IndicatorRuntimes: runtime.updateData(candles)
+        IndicatorRuntimes->>IndicatorRuntimes: Calculate indicator values
+        IndicatorRuntimes->>LightweightCharts: series.setData(indicatorData)
+        LightweightCharts->>LightweightCharts: Update indicator series
+    end
+    
+    LightweightCharts->>LightweightCharts: Re-render chart with all updates
+
