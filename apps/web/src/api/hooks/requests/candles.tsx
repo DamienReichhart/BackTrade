@@ -77,7 +77,7 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
   });
 }
 
-export function useCanldesBySession(id: string) {
+export function useCandlesBySession(id: string) {
   return useGet(`/sessions/${id}/candles`, {
     outputSchema: CandleListResponseSchema,
     queryOptions: {
