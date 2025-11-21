@@ -29,12 +29,20 @@ interface AuthenticatedLayoutProps {
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  // Filter nav items based on user role - hide Admin section for non-admin users
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.label === "Admin") {
+      return user?.role === "ADMIN";
+    }
+    return true;
+  });
 
   return (
     <div className={styles.layout}>
@@ -50,7 +58,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
           {/* Navigation */}
           <nav className={styles.navigation}>
             <ul className={styles.navList}>
-              {navItems.map((item) => {
+              {filteredNavItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 return (
                   <li key={item.label} className={styles.navItem}>
