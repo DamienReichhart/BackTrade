@@ -1,9 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createChart,
   type IChartApi,
   type ISeriesApi,
   CandlestickSeries,
+  createSeriesMarkers,
+  type ISeriesMarkersPluginApi,
+  type Time,
 } from "lightweight-charts";
 import type { ChartGridSettings } from "../../../../utils/browser/localStorage";
 import { createChartConfig } from "../utils/chart";
@@ -14,6 +17,8 @@ import { createChartConfig } from "../utils/chart";
 export interface ChartRefs {
   chartRef: React.RefObject<IChartApi | null>;
   seriesRef: React.RefObject<ISeriesApi<"Candlestick"> | null>;
+  markersPluginRef: React.RefObject<ISeriesMarkersPluginApi<Time> | null>;
+  isReady: boolean;
 }
 
 /**
@@ -29,6 +34,8 @@ export function useChart(
 ): ChartRefs {
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const markersPluginRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   // Initialize chart (only once when container is available)
   useEffect(() => {
@@ -54,8 +61,14 @@ export function useChart(
       config.candlestickSeries,
     ) as ISeriesApi<"Candlestick">;
 
+    const markersPlugin = createSeriesMarkers(candlestickSeries);
+
     chartRef.current = chart;
     seriesRef.current = candlestickSeries;
+    markersPluginRef.current = markersPlugin;
+
+    // Defer state update to avoid cascading renders
+    queueMicrotask(() => setIsReady(true));
 
     // Handle resize
     const handleResize = () => {
@@ -73,6 +86,11 @@ export function useChart(
       if (chartRef.current) {
         chartRef.current.remove();
       }
+      markersPluginRef.current?.detach();
+      markersPluginRef.current = null;
+      seriesRef.current = null;
+      chartRef.current = null;
+      setIsReady(false);
     };
   }, [containerRef]); // Only initialize once - don't recreate chart when settings change
 
@@ -95,5 +113,7 @@ export function useChart(
   return {
     chartRef,
     seriesRef,
+    markersPluginRef,
+    isReady,
   };
 }

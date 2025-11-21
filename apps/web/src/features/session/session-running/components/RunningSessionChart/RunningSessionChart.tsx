@@ -1,7 +1,13 @@
 import { useRef, useMemo } from "react";
 import { useCurrentSessionCandlesStore } from "../../../../../store/session";
 import { useChartSettingsStore } from "../../../../../store/chart";
-import { useChart, useChartData } from "../../hooks";
+import {
+  useChart,
+  useChartData,
+  useChartMarkers,
+  useSessionPositions,
+  usePositionMarkers,
+} from "../../hooks";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import styles from "./RunningSessionChart.module.css";
 
@@ -35,10 +41,18 @@ export function RunningSessionChart() {
   );
 
   // Initialize and manage chart lifecycle
-  const { seriesRef } = useChart(chartContainerRef, gridSettings);
+  const { seriesRef, markersPluginRef, isReady } = useChart(
+    chartContainerRef,
+    gridSettings,
+  );
 
   // Update chart data when candles change
   useChartData(seriesRef, candles);
+
+  // Build and display entry/exit markers
+  const { positions } = useSessionPositions();
+  const markers = usePositionMarkers(positions);
+  useChartMarkers(markersPluginRef, markers, isReady);
 
   return (
     <div className={styles.chartContainer}>
