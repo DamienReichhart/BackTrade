@@ -4,6 +4,7 @@ import { useArchiveSession } from "../../../../../../../../../../api/hooks/reque
 import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatLocalDateTimeToISO } from "../../../../../../../../../session-add/utils";
+import { redirectToSessionAnalytics } from "../../../../../../../../../../utils";
 
 /**
  * Hook to manage archive session functionality
@@ -58,7 +59,7 @@ export function useArchive(
       onSuccess?.();
 
       // Navigate to analytics page after successful archive
-      navigate(`/dashboard/sessions/${id}/analytics`);
+      redirectToSessionAnalytics(String(id));
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to archive session";

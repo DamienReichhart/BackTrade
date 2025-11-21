@@ -182,7 +182,7 @@
       "slippage_pts": 0,
       "commission_per_fill": 0,
       "user_id": 1,
-      "session_status": "RUNNING",
+      "session_status": "ARCHIVED",
       "created_at": "2025-11-14T10:33:24.546Z",
       "updated_at": "2025-11-14T10:33:24.546Z",
       "id": 2
