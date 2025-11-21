@@ -108,7 +108,7 @@ BackTrade/
    # Using pnpm directly
    pnpm dev
 
-   # If using json-server (not recomanded)
+   # If using json-server (not recommended)
    cd apps/web && pnpm fake-api
    ```
 
