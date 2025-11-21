@@ -1,4 +1,9 @@
-import { type InputHTMLAttributes, forwardRef, useId } from "react";
+import {
+  type InputHTMLAttributes,
+  type ReactNode,
+  forwardRef,
+  useId,
+} from "react";
 import styles from "./Checkbox.module.css";
 
 /**
@@ -7,9 +12,9 @@ import styles from "./Checkbox.module.css";
 interface CheckboxProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   /**
-   * Label text for the checkbox
+   * Label text or content for the checkbox
    */
-  label?: string;
+  label?: string | ReactNode;
 }
 
 /**

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/Button";
 import { Input } from "../../../../../components/Input";
 import { Checkbox } from "../../../../../components/Checkbox";
@@ -78,7 +79,28 @@ export function RegisterFormPanel() {
           {/* Terms Acceptance */}
           <div className={styles.formOptions}>
             <Checkbox
-              label="I accept the Terms of Service and Privacy Policy"
+              label={
+                <>
+                  I accept the{" "}
+                  <Link
+                    to="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    to="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Privacy Policy
+                  </Link>
+                </>
+              }
               checked={formState.acceptTerms}
               onChange={(e) => handleAcceptTermsChange(e.target.checked)}
             />

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../Button";
 import { Navigation } from "./Navigation";
 import styles from "./Header.module.css";
-import logoSvg from "../../assets/logo.svg";
+import logoPng from "../../../assets/logo.png";
 
 /**
  * Main header component with logo and navigation
@@ -19,7 +19,7 @@ export function Header() {
         <div className={styles.content}>
           {/* Logo */}
           <Link to="/" className={styles.logoLink}>
-            <img src={logoSvg} alt="BackTrade" className={styles.logo} />
+            <img src={logoPng} alt="BackTrade" className={styles.logo} />
             <span className={styles.brandName}>BackTrade</span>
           </Link>
 

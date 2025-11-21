@@ -47,6 +47,13 @@ export function useUserManagement() {
     closeModal: closeDeleteModal,
   } = useModal<PublicUser>();
 
+  const {
+    isOpen: isSubscriptionsOpen,
+    selectedItem: selectedUserForSubscriptions,
+    openModal: openSubscriptionsModal,
+    closeModal: closeSubscriptionsModal,
+  } = useModal<PublicUser>();
+
   // Build search query with filters
   const query: SearchQueryUser = useMemo(() => {
     const searchParams: SearchQueryUser = {
@@ -151,6 +158,13 @@ export function useUserManagement() {
   };
 
   /**
+   * Handle manage subscriptions
+   */
+  const handleManageSubscriptions = (user: PublicUser) => {
+    openSubscriptionsModal(user);
+  };
+
+  /**
    * Confirm delete user
    */
   const handleConfirmDelete = async () => {
@@ -200,6 +214,8 @@ export function useUserManagement() {
     selectedUserForDetails,
     isDeleteOpen,
     selectedUserForDelete,
+    isSubscriptionsOpen,
+    selectedUserForSubscriptions,
 
     // Mutations
     deleteUserMutation,
@@ -212,6 +228,7 @@ export function useUserManagement() {
     handleEdit,
     handleView,
     handleDelete,
+    handleManageSubscriptions,
     handleConfirmDelete,
     handleUpdateSuccess,
     handleBackToAdmin,
@@ -220,6 +237,7 @@ export function useUserManagement() {
     closeEditModal,
     closeDetailsModal,
     closeDeleteModal,
+    closeSubscriptionsModal,
 
     // Pagination
     setPage,

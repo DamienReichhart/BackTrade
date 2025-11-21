@@ -2,6 +2,7 @@ import { useUserManagement } from "../hooks";
 import { UserTable } from "./components/UserTable";
 import { UserEditModal } from "./components/UserEditModal";
 import { UserDetailsModal } from "./components/UserDetailsModal";
+import { SubscriptionManagementModal } from "./components/SubscriptionManagementModal";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
@@ -35,6 +36,8 @@ export function UserManagement() {
     selectedUserForDetails,
     isDeleteOpen,
     selectedUserForDelete,
+    isSubscriptionsOpen,
+    selectedUserForSubscriptions,
 
     // Mutations
     deleteUserMutation,
@@ -47,6 +50,7 @@ export function UserManagement() {
     handleEdit,
     handleView,
     handleDelete,
+    handleManageSubscriptions,
     handleConfirmDelete,
     handleUpdateSuccess,
     handleBackToAdmin,
@@ -55,6 +59,7 @@ export function UserManagement() {
     closeEditModal,
     closeDetailsModal,
     closeDeleteModal,
+    closeSubscriptionsModal,
 
     // Pagination
     setPage,
@@ -113,6 +118,7 @@ export function UserManagement() {
         onEdit={handleEdit}
         onView={handleView}
         onDelete={handleDelete}
+        onManageSubscriptions={handleManageSubscriptions}
       />
 
       {/* Pagination */}
@@ -168,6 +174,15 @@ export function UserManagement() {
         onConfirm={handleConfirmDelete}
         onCancel={closeDeleteModal}
       />
+
+      {/* Subscription Management Modal */}
+      {selectedUserForSubscriptions && (
+        <SubscriptionManagementModal
+          user={selectedUserForSubscriptions}
+          isOpen={isSubscriptionsOpen}
+          onClose={closeSubscriptionsModal}
+        />
+      )}
     </div>
   );
 }
