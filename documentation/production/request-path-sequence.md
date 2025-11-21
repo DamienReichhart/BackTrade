@@ -1,6 +1,3 @@
-
-
-
 ```mermaid
 sequenceDiagram
     participant Client

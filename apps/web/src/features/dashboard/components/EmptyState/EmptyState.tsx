@@ -9,11 +9,8 @@ import styles from "./EmptyState.module.css";
 export function EmptyState() {
   return (
     <div className={styles.empty}>
-      <div className={styles.icon}>📊</div>
-      <h2 className={styles.title}>No sessions yet</h2>
-      <p className={styles.message}>
-        Get started by creating your first trading session
-      </p>
+      <h2 className={styles.title}>No sessions found</h2>
+      <p className={styles.message}>Create your first trading session</p>
       <Button variant="primary" size="medium">
         Create Session
       </Button>

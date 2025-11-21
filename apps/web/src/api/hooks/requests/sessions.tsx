@@ -7,6 +7,7 @@ import {
   EmptyResponseSchema,
   SessionInfoResponseSchema,
   type DateRangeQuery,
+  type SearchQuery,
 } from "@backtrade/types";
 
 /**
@@ -14,7 +15,7 @@ import {
  * Schemas are defined once and automatically applied
  */
 
-export function useSessions(query?: DateRangeQuery) {
+export function useSessions(query?: DateRangeQuery | SearchQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
