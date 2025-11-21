@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ChangeEvent } from "react";
 import type { Session, SearchQuery } from "@backtrade/types";
 import { useSessions } from "../../../api/hooks/requests/sessions";
 
@@ -49,7 +49,7 @@ export function useSessionList() {
   /**
    * Handle search input change
    */
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setPage(1); // Reset to first page on search
   };
