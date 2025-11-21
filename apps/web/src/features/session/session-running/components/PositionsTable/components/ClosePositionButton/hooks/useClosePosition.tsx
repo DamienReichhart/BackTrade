@@ -22,6 +22,7 @@ export function useClosePosition(
   const { currentSession } = useCurrentSessionStore();
   const { currentPrice } = useCurrentPriceStore();
   const sessionId = currentSession?.id?.toString();
+  const closedAt = currentSession?.current_ts;
 
   const queryClient = useQueryClient();
   const { execute: closePosition, isLoading: isClosing } =
@@ -42,10 +43,15 @@ export function useClosePosition(
           return;
         }
 
+        if (!closedAt) {
+          onError?.("Closed at timestamp is required");
+          return;
+        }
+
         await closePosition({
           position_status: "CLOSED",
           exit_price: currentPrice,
-          closed_at: new Date().toISOString(),
+          closed_at: closedAt,
         });
 
         // Invalidate queries to refresh positions and transactions
@@ -66,7 +72,15 @@ export function useClosePosition(
         onError?.(errorMessage);
       }
     },
-    [sessionId, currentPrice, closePosition, queryClient, onError, onSuccess],
+    [
+      sessionId,
+      currentPrice,
+      closedAt,
+      closePosition,
+      queryClient,
+      onError,
+      onSuccess,
+    ],
   );
 
   return {

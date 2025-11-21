@@ -1,0 +1,179 @@
+graph TB
+    subgraph "Session Running Page"
+        SessionRunning["SessionRunning<br/>(Root Component)"]
+        
+        subgraph "Top Bar"
+            TopBar["TopBar"]
+            SessionMetadata["SessionMetadata"]
+        end
+        
+        subgraph "Chart Area"
+            RunningSessionChart["RunningSessionChart"]
+            ChartMenuButton["ChartMenuButton"]
+            IndicatorConfigurator["IndicatorConfigurator"]
+            ChartContainer["Chart Container<br/>(Lightweight Charts)"]
+        end
+        
+        subgraph "Side Panel"
+            SidePanel["SidePanel"]
+            OrderTicket["Order Ticket"]
+            SessionControls["SessionControls"]
+            SpeedSelector["SpeedSelector"]
+            PauseResumeButton["PauseResumeButton"]
+            SkipBarButton["SkipBarButton"]
+            CloseAllButton["CloseAllButton"]
+            ArchiveButton["ArchiveButton"]
+        end
+        
+        subgraph "Tables"
+            PositionsTable["PositionsTable"]
+            TransactionsTable["TransactionsTable"]
+            PositionDetailsModal["PositionDetailsModal"]
+            TransactionDetailsModal["TransactionDetailsModal"]
+        end
+        
+        SessionInfo["SessionInfo"]
+    end
+    
+    subgraph "Hooks Layer"
+        useSessionData["useSessionData"]
+        useChart["useChart"]
+        useChartData["useChartData"]
+        useChartMarkers["useChartMarkers"]
+        usePositionMarkers["usePositionMarkers"]
+        useOrderForm["useOrderForm"]
+        usePositionCreation["usePositionCreation"]
+        useSessionPositions["useSessionPositions"]
+        usePositionsTable["usePositionsTable"]
+        useTransactionsTable["useTransactionsTable"]
+        useSessionInfo["useSessionInfo"]
+        useIndicatorEngine["useIndicatorEngine"]
+    end
+    
+    subgraph "State Management (Zustand)"
+        CurrentSessionStore["useCurrentSessionStore<br/>- currentSession<br/>- currentSessionInstrument"]
+        CurrentPriceStore["useCurrentPriceStore<br/>- currentPrice"]
+        CandlesStore["useCurrentSessionCandlesStore<br/>- candles"]
+        ChartSettingsStore["useChartSettingsStore<br/>- timeframe<br/>- grid settings"]
+        IndicatorSettingsStore["useIndicatorSettingsStore<br/>- indicators[]"]
+    end
+    
+    subgraph "API Layer (React Query)"
+        SessionAPI["Session API Hooks"]
+        PositionAPI["Position API Hooks"]
+        TransactionAPI["Transaction API Hooks"]
+        InstrumentAPI["Instrument API Hooks"]
+        CandleAPI["Candle API Hooks"]
+    end
+    
+    subgraph "Indicator System"
+        IndicatorEngine["IndicatorEngine"]
+        IndicatorRegistry["IndicatorRegistry"]
+        IndicatorRuntimes["Indicator Runtimes<br/>(SMA, EMA, RSI, BB)"]
+    end
+    
+    subgraph "External Libraries"
+        LightweightCharts["Lightweight Charts"]
+        ReactQuery["React Query"]
+    end
+    
+    %% Component relationships
+    SessionRunning --> TopBar
+    SessionRunning --> RunningSessionChart
+    SessionRunning --> SidePanel
+    SessionRunning --> PositionsTable
+    SessionRunning --> TransactionsTable
+    SessionRunning --> SessionInfo
+    
+    TopBar --> SessionMetadata
+    
+    RunningSessionChart --> ChartMenuButton
+    RunningSessionChart --> IndicatorConfigurator
+    RunningSessionChart --> ChartContainer
+    
+    SidePanel --> OrderTicket
+    SidePanel --> SessionControls
+    
+    SessionControls --> SpeedSelector
+    SessionControls --> PauseResumeButton
+    SessionControls --> SkipBarButton
+    SessionControls --> CloseAllButton
+    SessionControls --> ArchiveButton
+    
+    PositionsTable --> PositionDetailsModal
+    TransactionsTable --> TransactionDetailsModal
+    
+    %% Hooks usage
+    SessionRunning --> useSessionData
+    RunningSessionChart --> useChart
+    RunningSessionChart --> useChartData
+    RunningSessionChart --> useChartMarkers
+    RunningSessionChart --> usePositionMarkers
+    RunningSessionChart --> useIndicatorEngine
+    
+    OrderTicket --> useOrderForm
+    OrderTicket --> usePositionCreation
+    PositionsTable --> usePositionsTable
+    TransactionsTable --> useTransactionsTable
+    SessionInfo --> useSessionInfo
+    
+    usePositionsTable --> useSessionPositions
+    
+    %% Store connections
+    useSessionData --> CurrentSessionStore
+    useSessionData --> CurrentPriceStore
+    useSessionData --> CandlesStore
+    useSessionData --> ChartSettingsStore
+    
+    RunningSessionChart --> ChartSettingsStore
+    RunningSessionChart --> IndicatorSettingsStore
+    
+    OrderTicket --> CurrentSessionStore
+    OrderTicket --> CurrentPriceStore
+    PositionsTable --> CurrentSessionStore
+    TransactionsTable --> CurrentSessionStore
+    
+    %% API connections
+    useSessionData --> SessionAPI
+    useSessionData --> InstrumentAPI
+    useSessionData --> CandleAPI
+    usePositionCreation --> PositionAPI
+    useSessionPositions --> PositionAPI
+    useTransactionsTable --> TransactionAPI
+    useSessionInfo --> SessionAPI
+    
+    SpeedSelector --> SessionAPI
+    PauseResumeButton --> SessionAPI
+    SkipBarButton --> SessionAPI
+    CloseAllButton --> PositionAPI
+    ArchiveButton --> SessionAPI
+    
+    %% Indicator system
+    useIndicatorEngine --> IndicatorEngine
+    IndicatorEngine --> IndicatorRegistry
+    IndicatorEngine --> IndicatorRuntimes
+    IndicatorRuntimes --> ChartContainer
+    
+    %% External library usage
+    useChart --> LightweightCharts
+    ChartContainer --> LightweightCharts
+    SessionAPI --> ReactQuery
+    PositionAPI --> ReactQuery
+    TransactionAPI --> ReactQuery
+    InstrumentAPI --> ReactQuery
+    CandleAPI --> ReactQuery
+    
+    classDef component fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef hook fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef store fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef api fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef system fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef external fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    
+    class SessionRunning,TopBar,SessionMetadata,RunningSessionChart,ChartMenuButton,IndicatorConfigurator,ChartContainer,SidePanel,OrderTicket,SessionControls,PositionsTable,TransactionsTable,SessionInfo component
+    class useSessionData,useChart,useChartData,useChartMarkers,usePositionMarkers,useOrderForm,usePositionCreation,useSessionPositions,usePositionsTable,useTransactionsTable,useSessionInfo,useIndicatorEngine hook
+    class CurrentSessionStore,CurrentPriceStore,CandlesStore,ChartSettingsStore,IndicatorSettingsStore store
+    class SessionAPI,PositionAPI,TransactionAPI,InstrumentAPI,CandleAPI api
+    class IndicatorEngine,IndicatorRegistry,IndicatorRuntimes system
+    class LightweightCharts,ReactQuery external
+

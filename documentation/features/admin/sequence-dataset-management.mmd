@@ -1,0 +1,91 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant DM as DatasetManagement
+    participant Hook as useDatasetManagement
+    participant Table as DatasetTable
+    participant API as Dataset APIs
+    participant Backend as Backend API
+    
+    Note over Admin,Backend: View Datasets Flow
+    
+    Admin->>DM: Navigate to Dataset Management
+    DM->>Hook: useDatasetManagement()
+    Hook->>API: useDatasets()
+    API->>Backend: GET /datasets
+    Backend-->>API: DatasetListResponse
+    API-->>Hook: datasets array
+    Hook->>Hook: Sort datasets client-side
+    Hook-->>DM: sortedDatasets, isLoading
+    DM->>Table: Render DatasetTable with datasets
+    Table->>Admin: Display datasets table
+    
+    Note over Admin,Backend: Sort Datasets
+    
+    Admin->>Table: Click sortable column header
+    Table->>Hook: handleSort(field)
+    Hook->>Hook: Toggle sortOrder or set sortField
+    Hook->>Hook: Sort datasets array client-side
+    Hook-->>DM: Updated sortedDatasets
+    DM->>Table: Re-render with sorted data
+    Table->>Admin: Display sorted table with indicators
+    
+    Note over Admin,Backend: Create Dataset Flow
+    
+    Admin->>DM: Click Create Dataset button
+    DM->>DM: setIsCreateModalOpen(true)
+    DM->>DM: Render CreateDatasetModal
+    
+    Admin->>DM: Select instrument & timeframe
+    DM->>DM: useDatasetCreate hook
+    DM->>DM: handleChange(field, value)
+    
+    Admin->>DM: Submit form
+    DM->>DM: handleSubmit()
+    DM->>DM: Validate form
+    alt Validation fails
+        DM->>DM: Display errors
+    else Validation succeeds
+        DM->>API: useCreateDataset.execute({instrument_id, timeframe})
+        API->>Backend: POST /datasets<br/>{instrument_id, timeframe}
+        Backend-->>API: Created Dataset
+        API-->>DM: Success
+        DM->>DM: resetForm()<br/>closeModal()
+        DM->>Hook: refetchDatasets()
+        Hook->>API: useDatasets()
+        API->>Backend: GET /datasets
+        Backend-->>API: Updated DatasetListResponse
+        API-->>Hook: Updated datasets
+        Hook-->>DM: Updated datasets list
+        DM->>Table: Re-render with new dataset
+    end
+    
+    Note over Admin,Backend: Upload Dataset File Flow
+    
+    Admin->>Table: Click Upload button on dataset row
+    Table->>Table: Render FileUploadButton
+    Admin->>Table: Select CSV file
+    Table->>Table: useDatasetFileUpload hook
+    Table->>Table: handleFileSelect(file)
+    Table->>Table: Validate file (CSV, size, etc.)
+    alt File invalid
+        Table->>Admin: Display error message
+    else File valid
+        Admin->>Table: Confirm upload
+        Table->>Table: handleUpload(file)
+        Table->>Table: Create FormData with file
+        Table->>API: useUploadDataset.execute(formData)
+        API->>Backend: POST /datasets/:id/upload<br/>multipart/form-data
+        Backend->>Backend: Process CSV file<br/>Parse OHLCV data<br/>Store records
+        Backend-->>API: Updated Dataset with:<br/>file_name, records_count,<br/>start_ts, end_ts, uploaded_at
+        API-->>Table: Success response
+        Table->>Table: onFileUploadSuccess()
+        Table->>DM: Trigger refetch
+        DM->>Hook: refetchDatasets()
+        Hook->>API: useDatasets()
+        API->>Backend: GET /datasets
+        Backend-->>API: Updated DatasetListResponse
+        API-->>Hook: Updated datasets with file info
+        Hook-->>DM: Updated datasets
+        DM->>Table: Re-render with updated dataset info
+    end
+

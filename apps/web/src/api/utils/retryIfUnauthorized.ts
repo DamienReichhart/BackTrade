@@ -11,7 +11,7 @@ export async function retryIfUnauthorized<TOutput>(
   ) => void | undefined,
 ) {
   const errorText = await response.text();
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     // Attempt to refresh the token
     if (!refreshToken) {
       throw new Error(

@@ -1,0 +1,56 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant UM as UserManagement
+    participant Hook as useUserManagement
+    participant API as API Hooks
+    participant Backend as Backend API
+    
+    Note over Admin,Backend: User List View Flow
+    
+    Admin->>UM: Navigate to User Management
+    UM->>Hook: Initialize hook
+    Hook->>API: useUsers(query)
+    API->>Backend: GET /users?page=1&limit=20&sort=created_at&order=desc
+    Backend-->>API: UserListResponse
+    API-->>Hook: users data
+    Hook-->>UM: users, isLoading, error
+    UM->>UM: Render UserTable
+    
+    Note over Admin,Backend: Search & Filter Flow
+    
+    Admin->>UM: Enter search query
+    UM->>Hook: handleSearchChange(query)
+    Hook->>Hook: setSearchQuery(query)<br/>setPage(1)
+    Hook->>Hook: Build query with filters
+    Hook->>API: useUsers(newQuery)
+    API->>Backend: GET /users?q=email&role=USER&is_banned=false
+    Backend-->>API: Filtered UserListResponse
+    API-->>Hook: filtered users
+    Hook-->>UM: Updated users list
+    UM->>UM: Re-render UserTable
+    
+    Note over Admin,Backend: Sort Flow
+    
+    Admin->>UM: Click sortable column header
+    UM->>Hook: handleSort(field)
+    Hook->>Hook: Toggle sortOrder or set new sortField
+    Hook->>Hook: Build query with sort params
+    Hook->>API: useUsers(query with sort)
+    API->>Backend: GET /users?sort=email&order=asc
+    Backend-->>API: Sorted UserListResponse
+    API-->>Hook: Sorted users
+    Hook-->>UM: Updated users list
+    UM->>UM: Re-render UserTable with sort indicators
+    
+    Note over Admin,Backend: Pagination Flow
+    
+    Admin->>UM: Click Next/Previous
+    UM->>Hook: setPage(newPage)
+    Hook->>Hook: Build query with new page
+    Hook->>API: useUsers(query with page)
+    API->>Backend: GET /users?page=2&limit=20
+    Backend-->>API: UserListResponse (page 2)
+    API-->>Hook: Users for page 2
+    Hook-->>UM: Updated users list
+    UM->>UM: Re-render UserTable
+

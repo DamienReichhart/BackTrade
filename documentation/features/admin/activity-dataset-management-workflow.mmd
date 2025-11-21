@@ -1,0 +1,58 @@
+flowchart TD
+    Start([Admin navigates to Dataset Management]) --> LoadDatasets[Load datasets list]
+    
+    LoadDatasets --> FetchDatasets[Fetch datasets from API]
+    FetchDatasets --> SortClient[Sort datasets client-side]
+    SortClient --> DisplayTable[Display DatasetTable]
+    
+    DisplayTable --> DatasetAction{Dataset action?}
+    
+    DatasetAction -->|Sort| SortFlow[Click column header]
+    DatasetAction -->|Create| CreateFlow[Click Create Dataset]
+    DatasetAction -->|Upload| UploadFlow[Click Upload button]
+    
+    SortFlow --> UpdateSort[Toggle sort order<br/>or set new sortField]
+    UpdateSort --> SortClient
+    
+    CreateFlow --> OpenCreateModal[Open CreateDatasetModal]
+    OpenCreateModal --> LoadInstruments[Load available instruments]
+    LoadInstruments --> DisplayForm[Display create form:<br/>Instrument dropdown<br/>Timeframe dropdown]
+    DisplayForm --> UserFills{User fills form?}
+    UserFills -->|Yes| ValidateCreate[Validate form:<br/>instrument_id required<br/>timeframe required]
+    UserFills -->|No| CancelCreate[Close modal]
+    ValidateCreate --> CreateValid{Valid?}
+    CreateValid -->|No| ShowCreateErrors[Display validation errors]
+    ShowCreateErrors --> DisplayForm
+    CreateValid -->|Yes| SubmitCreate[Submit create request]
+    SubmitCreate --> CreateSuccess{Success?}
+    CreateSuccess -->|No| ShowCreateError[Display error message]
+    ShowCreateError --> DisplayForm
+    CreateSuccess -->|Yes| ResetForm[Reset form state]
+    ResetForm --> CloseCreateModal[Close modal]
+    CloseCreateModal --> RefetchDatasets[Refetch datasets list]
+    RefetchDatasets --> FetchDatasets
+    CancelCreate --> DisplayTable
+    
+    UploadFlow --> OpenFileDialog[Open file picker]
+    OpenFileDialog --> SelectFile[User selects CSV file]
+    SelectFile --> ValidateFile[Validate file:<br/>- File type is CSV<br/>- File size limits<br/>- File structure]
+    ValidateFile --> FileValid{Valid?}
+    FileValid -->|No| ShowFileError[Display file error]
+    ShowFileError --> OpenFileDialog
+    FileValid -->|Yes| CreateFormData[Create FormData<br/>with file]
+    CreateFormData --> SubmitUpload[Submit upload request]
+    SubmitUpload --> UploadProgress[Show upload progress]
+    UploadProgress --> BackendProcess[Backend processes file:<br/>- Parse CSV<br/>- Validate OHLCV data<br/>- Calculate statistics<br/>- Store records]
+    BackendProcess --> UploadSuccess{Success?}
+    UploadSuccess -->|No| ShowUploadError[Display upload error]
+    ShowUploadError --> OpenFileDialog
+    UploadSuccess -->|Yes| UpdateDataset[Backend updates dataset:<br/>- file_name<br/>- records_count<br/>- start_ts, end_ts<br/>- uploaded_at<br/>- is_active]
+    UpdateDataset --> RefetchDatasets
+    RefetchDatasets --> FetchDatasets
+    
+    style Start fill:#e1f5ff
+    style DisplayTable fill:#c8e6c9
+    style CreateFlow fill:#fff3e0
+    style UploadFlow fill:#f3e5f5
+    style BackendProcess fill:#e1bee7
+

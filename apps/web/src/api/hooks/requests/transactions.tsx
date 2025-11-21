@@ -1,9 +1,8 @@
-import { useGet, usePost, useDelete } from "..";
+import { useGet, usePost } from "..";
 import {
   TransactionSchema,
   TransactionListResponseSchema,
   CreateTransactionRequestSchema,
-  EmptyResponseSchema,
   type DateRangeQuery,
   type PaginationQuery,
 } from "@backtrade/types";
@@ -88,11 +87,5 @@ export function useCreateTransaction() {
   return usePost("/transactions", {
     inputSchema: CreateTransactionRequestSchema,
     outputSchema: TransactionSchema,
-  });
-}
-
-export function useDeleteTransaction(id: string) {
-  return useDelete(`/transactions/${id}`, {
-    outputSchema: EmptyResponseSchema,
   });
 }

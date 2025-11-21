@@ -1,0 +1,78 @@
+flowchart TD
+    Start([Admin navigates to User Management]) --> LoadUsers[Load users list]
+    
+    LoadUsers --> BuildQuery{Build query with<br/>filters & pagination}
+    BuildQuery --> FetchUsers[Fetch users from API]
+    FetchUsers --> DisplayTable[Display UserTable]
+    
+    DisplayTable --> UserAction{User action?}
+    
+    UserAction -->|Search| SearchFlow[Enter search query]
+    UserAction -->|Filter| FilterFlow[Select role/status filter]
+    UserAction -->|Sort| SortFlow[Click column header]
+    UserAction -->|Pagination| PageFlow[Click Next/Previous]
+    UserAction -->|Edit| EditFlow[Click Edit button]
+    UserAction -->|View| ViewFlow[Click View button]
+    UserAction -->|Delete| DeleteFlow[Click Delete button]
+    UserAction -->|Subscriptions| SubFlow[Click Manage Subscriptions]
+    
+    SearchFlow --> UpdateQuery[Update search query<br/>Reset to page 1]
+    FilterFlow --> UpdateQuery
+    SortFlow --> UpdateSort[Toggle sort order<br/>or set new field]
+    PageFlow --> UpdatePage[Set new page number]
+    
+    UpdateQuery --> BuildQuery
+    UpdateSort --> BuildQuery
+    UpdatePage --> BuildQuery
+    
+    EditFlow --> OpenEditModal[Open UserEditModal]
+    OpenEditModal --> EditForm[Display edit form<br/>with current values]
+    EditForm --> UserModifies{User modifies fields?}
+    UserModifies -->|Yes| ValidateForm[Validate form fields]
+    UserModifies -->|No| CloseEditModal[Close modal]
+    ValidateForm --> ValidationResult{Valid?}
+    ValidationResult -->|No| ShowErrors[Display validation errors]
+    ShowErrors --> EditForm
+    ValidationResult -->|Yes| SubmitUpdate[Submit update request]
+    SubmitUpdate --> UpdateSuccess{Success?}
+    UpdateSuccess -->|No| ShowError[Display error message]
+    ShowError --> EditForm
+    UpdateSuccess -->|Yes| RefetchUsers[Refetch users list]
+    RefetchUsers --> DisplayTable
+    CloseEditModal --> DisplayTable
+    
+    ViewFlow --> OpenDetailsModal[Open UserDetailsModal]
+    OpenDetailsModal --> DisplayDetails[Display read-only user details]
+    DisplayDetails --> CloseDetails[User closes modal]
+    CloseDetails --> DisplayTable
+    
+    DeleteFlow --> OpenDeleteModal[Open ConfirmModal]
+    OpenDeleteModal --> ConfirmDelete{User confirms?}
+    ConfirmDelete -->|No| CancelDelete[Close modal]
+    ConfirmDelete -->|Yes| ExecuteDelete[Execute delete request]
+    ExecuteDelete --> DeleteSuccess{Success?}
+    DeleteSuccess -->|No| ShowDeleteError[Display error]
+    ShowDeleteError --> OpenDeleteModal
+    DeleteSuccess -->|Yes| RefetchUsers
+    CancelDelete --> DisplayTable
+    
+    SubFlow --> OpenSubModal[Open SubscriptionManagementModal]
+    OpenSubModal --> LoadSubscriptions[Load user subscriptions<br/>Load available plans]
+    LoadSubscriptions --> DisplaySubscriptions[Display subscription list<br/>with CRUD options]
+    DisplaySubscriptions --> SubAction{Subscription action?}
+    SubAction -->|Create| CreateSub[Create new subscription]
+    SubAction -->|Edit| EditSub[Edit subscription]
+    SubAction -->|Delete| DeleteSub[Delete subscription]
+    SubAction -->|Close| CloseSubModal[Close modal]
+    CreateSub --> RefetchSubscriptions[Refetch subscriptions]
+    EditSub --> RefetchSubscriptions
+    DeleteSub --> RefetchSubscriptions
+    RefetchSubscriptions --> DisplaySubscriptions
+    CloseSubModal --> DisplayTable
+    
+    style Start fill:#e1f5ff
+    style DisplayTable fill:#c8e6c9
+    style EditFlow fill:#fff3e0
+    style DeleteFlow fill:#ffcdd2
+    style SubFlow fill:#f3e5f5
+

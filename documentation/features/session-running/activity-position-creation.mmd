@@ -1,0 +1,34 @@
+flowchart TD
+    Start([User clicks Buy/Sell Market]) --> ValidateSession{Session exists?}
+    ValidateSession -->|No| Error1[Display error: Session required]
+    ValidateSession -->|Yes| ValidatePrice{Current price available?}
+    
+    ValidatePrice -->|No| Error2[Display error: Price not available]
+    ValidatePrice -->|Yes| ValidateQty{Quantity > 0?}
+    
+    ValidateQty -->|No| Error3[Display error: Quantity must be > 0]
+    ValidateQty -->|Yes| ValidateTimestamp{Session timestamp available?}
+    
+    ValidateTimestamp -->|No| Error4[Display error: Timestamp not available]
+    ValidateTimestamp -->|Yes| BuildRequest[Build CreatePositionRequest]
+    
+    BuildRequest --> CreateAPI[POST /sessions/:id/positions]
+    
+    CreateAPI --> APISuccess{API Success?}
+    APISuccess -->|No| Error5[Display error: Failed to create position]
+    APISuccess -->|Yes| End([Position created successfully])
+    
+    Error1 --> End
+    Error2 --> End
+    Error3 --> End
+    Error4 --> End
+    Error5 --> End
+    
+    style Start fill:#e1f5ff
+    style End fill:#c8e6c9
+    style Error1 fill:#ffcdd2
+    style Error2 fill:#ffcdd2
+    style Error3 fill:#ffcdd2
+    style Error4 fill:#ffcdd2
+    style Error5 fill:#ffcdd2
+

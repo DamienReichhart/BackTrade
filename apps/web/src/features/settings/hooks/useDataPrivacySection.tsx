@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../store/auth";
 import { useDeleteUser } from "../../../api/hooks/requests/users";
+import { useLogout } from "../../../api/hooks/requests/auth";
 
 /**
  * Hook to manage data privacy section state and operations
@@ -15,6 +16,7 @@ export function useDataPrivacySection() {
   const [error, setError] = useState<string | null>(null);
 
   const { execute, isLoading } = useDeleteUser(user?.id.toString() ?? "");
+  const { execute: logoutApi } = useLogout();
 
   /**
    * Handle account deletion
@@ -26,6 +28,12 @@ export function useDataPrivacySection() {
 
     try {
       await execute();
+      // Call logout API endpoint before clearing local state
+      try {
+        await logoutApi();
+      } catch {
+        // Do nothing
+      }
       // Logout and redirect to home after successful deletion
       logout();
       navigate("/");

@@ -1,8 +1,8 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Position } from "@backtrade/types";
 import { useModal } from "../../../../hooks/useModal";
-import { useCurrentSessionStore } from "../../../../store/session";
-import { usePositionsBySession } from "../../../../api/hooks/requests/positions";
+import { useSessionPositions } from "./useSessionPositions";
 
 /**
  * Hook to manage positions table data and interactions
@@ -10,11 +10,13 @@ import { usePositionsBySession } from "../../../../api/hooks/requests/positions"
  * @returns Positions table state and handlers
  */
 export function usePositionsTable() {
-  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentSession } = useCurrentSessionStore();
-  const sessionId = currentSession ? String(currentSession.id) : id;
-  const hasValidSession = !!sessionId && sessionId !== "";
+  const {
+    positions,
+    isLoading: loading,
+    hasValidSession,
+    sessionId,
+  } = useSessionPositions();
 
   const {
     isOpen,
@@ -23,26 +25,10 @@ export function usePositionsTable() {
     closeModal,
   } = useModal<Position>();
 
-  const { data: positionsData, isLoading: loading } = usePositionsBySession(
-    sessionId,
-    undefined,
-    { enabled: hasValidSession },
+  const openPositions = useMemo(
+    () => positions.filter((p) => p.position_status === "OPEN"),
+    [positions],
   );
-
-  const positions: Position[] = Array.isArray(positionsData)
-    ? positionsData.map((p) => ({
-        ...p,
-        realized_pnl: p.realized_pnl ?? 0,
-        commission_cost: p.commission_cost ?? 0,
-        slippage_cost: p.slippage_cost ?? 0,
-        spread_cost: p.spread_cost ?? 0,
-        created_at: p.created_at ?? "",
-        updated_at: p.updated_at ?? "",
-      }))
-    : [];
-
-  // Filter to show only OPEN positions
-  const openPositions = positions.filter((p) => p.position_status === "OPEN");
 
   const handleRowClick = (position: Position) => {
     openModal(position);
@@ -53,7 +39,7 @@ export function usePositionsTable() {
     if (!hasValidSession) {
       return;
     }
-    navigate(`/sessions/${sessionId}/positions/list`);
+    navigate(`/dashboard/sessions/${sessionId}/positions/list`);
   };
 
   return {

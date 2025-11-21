@@ -1,0 +1,47 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant Router as React Router
+    participant Layout as AuthenticatedLayout
+    participant Choices as AdminChoices
+    participant UserMgmt as UserManagement
+    participant DatasetMgmt as DatasetManagement
+    
+    Note over Admin,DatasetMgmt: Admin Feature Navigation Flow
+    
+    Admin->>Router: Navigate to /dashboard/admin
+    Router->>Layout: Render AuthenticatedLayout
+    Layout->>Layout: Check authentication<br/>Check admin role
+    alt Not authenticated or not admin
+        Layout->>Router: Redirect to login
+    else Authenticated and admin
+        Layout->>Choices: Render AdminChoices
+        Choices->>Admin: Display menu:<br/>- User Management<br/>- Dataset Management
+        
+        alt Admin selects User Management
+            Admin->>Choices: Click User Management button
+            Choices->>Router: Navigate to /dashboard/admin/user-management
+            Router->>Layout: Render AuthenticatedLayout
+            Layout->>UserMgmt: Render UserManagement
+            UserMgmt->>UserMgmt: Initialize useUserManagement hook
+            UserMgmt->>UserMgmt: Fetch users list
+            UserMgmt->>Admin: Display User Management page
+            
+            Admin->>UserMgmt: Click Back to Admin
+            UserMgmt->>Router: Navigate to /dashboard/admin
+            Router->>Choices: Render AdminChoices
+            
+        else Admin selects Dataset Management
+            Admin->>Choices: Click Dataset Management button
+            Choices->>Router: Navigate to /dashboard/admin/dataset-management
+            Router->>Layout: Render AuthenticatedLayout
+            Layout->>DatasetMgmt: Render DatasetManagement
+            DatasetMgmt->>DatasetMgmt: Initialize useDatasetManagement hook
+            DatasetMgmt->>DatasetMgmt: Fetch datasets list
+            DatasetMgmt->>Admin: Display Dataset Management page
+            
+            Admin->>DatasetMgmt: Click Back to Admin
+            DatasetMgmt->>Router: Navigate to /dashboard/admin
+            Router->>Choices: Render AdminChoices
+        end
+    end
+

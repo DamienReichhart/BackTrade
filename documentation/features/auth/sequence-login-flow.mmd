@@ -1,0 +1,83 @@
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Login
+    participant LoginFormPanel
+    participant useLoginForm
+    participant ValidationUtils
+    participant useLogin
+    participant useFetch
+    participant executeFetch
+    participant API
+    participant AuthStore
+    participant CookieUtils
+    participant JWTUtils
+    participant Router
+    
+    User->>Browser: Navigate to /signin
+    Browser->>Router: Route to Login component
+    Router->>Login: Render Login page
+    Login->>LoginFormPanel: Render form panel
+    Login->>LoginInfoPanel: Render info panel
+    
+    User->>LoginFormPanel: Enter email
+    LoginFormPanel->>useLoginForm: handleEmailChange(email)
+    useLoginForm->>ValidationUtils: validateEmail(email)
+    ValidationUtils-->>useLoginForm: validation result
+    useLoginForm-->>LoginFormPanel: Update form state & errors
+    
+    User->>LoginFormPanel: Enter password
+    LoginFormPanel->>useLoginForm: handlePasswordChange(password)
+    useLoginForm->>ValidationUtils: validatePassword(password)
+    ValidationUtils-->>useLoginForm: validation result
+    useLoginForm-->>LoginFormPanel: Update form state & errors
+    
+    User->>LoginFormPanel: Click "Continue" button
+    LoginFormPanel->>useLoginForm: handleSubmit(event)
+    
+    useLoginForm->>ValidationUtils: validateEmail(formState.email)
+    useLoginForm->>ValidationUtils: validatePassword(formState.password)
+    
+    alt Validation fails
+        ValidationUtils-->>useLoginForm: Validation errors
+        useLoginForm-->>LoginFormPanel: Set errors, prevent submission
+        LoginFormPanel->>User: Display validation errors
+    else Validation succeeds
+        useLoginForm->>useLogin: execute({ email, password })
+        useLogin->>useFetch: Execute POST /auth/login
+        useFetch->>executeFetch: executeFetch(body, config)
+        executeFetch->>API: POST /auth/login<br/>{ email, password }
+        
+        alt Login successful
+            API-->>executeFetch: 200 OK<br/>{ accessToken, refreshToken, user }
+            executeFetch-->>useFetch: AuthResponse
+            useFetch-->>useLogin: AuthResponse
+            useLogin-->>useLoginForm: AuthResponse
+            
+            useLoginForm->>AuthStore: login(accessToken, refreshToken)
+            AuthStore->>CookieUtils: setCookie("access_token", accessToken, 7)
+            AuthStore->>CookieUtils: setCookie("refresh_token", refreshToken, 7)
+            AuthStore->>JWTUtils: getUserFromToken(accessToken)
+            JWTUtils-->>AuthStore: PublicUser
+            AuthStore->>AuthStore: Update state: { accessToken, refreshToken, user }
+            
+            useLoginForm->>Router: navigate("/dashboard")
+            Router->>Browser: Navigate to dashboard
+            Browser->>User: Display dashboard
+        else Login failed (banned user)
+            API-->>executeFetch: 403 Forbidden<br/>{ error: "User is banned" }
+            executeFetch-->>useFetch: Error
+            useFetch-->>useLogin: Error
+            useLogin-->>useLoginForm: Error
+            useLoginForm->>Router: navigate("/error/banned")
+            Router->>Browser: Navigate to banned error page
+        else Login failed (invalid credentials)
+            API-->>executeFetch: 401 Unauthorized<br/>{ error: "Invalid credentials" }
+            executeFetch-->>useFetch: Error
+            useFetch-->>useLogin: Error
+            useLogin-->>useLoginForm: Error
+            useLoginForm-->>LoginFormPanel: Set email error
+            LoginFormPanel->>User: Display error message
+        end
+    end
+

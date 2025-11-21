@@ -1,12 +1,7 @@
-import { useGet, usePost, usePatch, useDelete } from "..";
-import { z } from "zod";
+import { useGet } from "..";
 import {
   CandleSchema,
   CandleListResponseSchema,
-  CreateCandleRequestSchema,
-  CreateCandlesRequestSchema,
-  UpdateCandleRequestSchema,
-  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 
@@ -82,29 +77,11 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
   });
 }
 
-export function useCreateCandle() {
-  return usePost("/candles", {
-    inputSchema: CreateCandleRequestSchema,
-    outputSchema: CandleSchema,
-  });
-}
-
-export function useCreateCandles() {
-  return usePost("/candles/bulk", {
-    inputSchema: CreateCandlesRequestSchema,
-    outputSchema: z.array(CandleSchema),
-  });
-}
-
-export function useUpdateCandle(id: string) {
-  return usePatch(`/candles/${id}`, {
-    inputSchema: UpdateCandleRequestSchema,
-    outputSchema: CandleSchema,
-  });
-}
-
-export function useDeleteCandle(id: string) {
-  return useDelete(`/candles/${id}`, {
-    outputSchema: EmptyResponseSchema,
+export function useCandlesBySession(id: string) {
+  return useGet(`/sessions/${id}/candles`, {
+    outputSchema: CandleListResponseSchema,
+    queryOptions: {
+      enabled: !!id && id !== "",
+    },
   });
 }

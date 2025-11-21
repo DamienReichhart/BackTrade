@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant UM as UserManagement
+    participant Confirm as ConfirmModal
+    participant Hook as useUserManagement
+    participant API as useDeleteUser
+    participant Backend as Backend API
+    
+    Note over Admin,Backend: Delete User Flow
+    
+    Admin->>UM: Click Delete button on user
+    UM->>Hook: handleDelete(user)
+    Hook->>Hook: openDeleteModal(user)
+    Hook->>UM: Set isDeleteOpen=true<br/>selectedUserForDelete=user
+    UM->>Confirm: Render ConfirmModal
+    
+    Note over Admin,Backend: Confirmation Dialog
+    
+    Confirm->>Admin: Display confirmation message:<br/>"Delete user email@example.com?"
+    
+    alt Admin cancels
+        Admin->>Confirm: Click Cancel
+        Confirm->>Hook: closeDeleteModal()
+        Hook->>UM: Set isDeleteOpen=false
+        UM->>Confirm: Unmount modal
+    else Admin confirms
+        Admin->>Confirm: Click Delete button
+        Confirm->>Hook: handleConfirmDelete()
+        Hook->>API: deleteUserMutation.execute()
+        API->>Backend: DELETE /users/:id
+        Backend-->>API: Success response
+        API-->>Hook: Delete successful
+        Hook->>Hook: closeDeleteModal()
+        Hook->>UM: Set isDeleteOpen=false
+        Hook->>UM: refetchUsers()
+        UM->>UM: Execute GET /users query
+        UM->>UM: Re-render UserTable<br/>(user removed from list)
+        Confirm->>Confirm: Unmount modal
+    end
+

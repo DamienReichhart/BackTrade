@@ -1,0 +1,60 @@
+sequenceDiagram
+    participant User
+    participant SidePanel
+    participant OrderTicket
+    participant useOrderForm
+    participant usePositionCreation
+    participant ReactQuery
+    participant API
+    participant Stores
+    participant PositionsTable
+    participant TransactionsTable
+    
+    User->>OrderTicket: Enter quantity, TP, SL
+    OrderTicket->>useOrderForm: setQty(qty)
+    OrderTicket->>useOrderForm: setTp(tp)
+    OrderTicket->>useOrderForm: setSl(sl)
+    
+    User->>OrderTicket: Click "Buy Market" or "Sell Market"
+    OrderTicket->>usePositionCreation: createPositionWithSide(side, qty, tp, sl)
+    
+    usePositionCreation->>usePositionCreation: validatePosition(qty)
+    
+    alt Validation fails
+        usePositionCreation->>useOrderForm: setError(errorMessage)
+        useOrderForm-->>OrderTicket: Display error
+    else Validation succeeds
+        usePositionCreation->>Stores: Read currentSession
+        usePositionCreation->>Stores: Read currentPrice
+        
+        usePositionCreation->>usePositionCreation: Build CreatePositionRequest
+        Note over usePositionCreation: {<br/>session_id,<br/>side,<br/>entry_price: currentPrice,<br/>quantity_lots: qty,<br/>tp_price: tp,<br/>sl_price: sl,<br/>position_status: "OPEN",<br/>opened_at: currentSession.current_ts<br/>}
+        
+        usePositionCreation->>ReactQuery: useCreatePosition()
+        ReactQuery->>API: POST /sessions/:id/positions
+        API-->>ReactQuery: Created position
+        ReactQuery-->>usePositionCreation: Success
+        
+        usePositionCreation->>ReactQuery: Invalidate positions query
+        usePositionCreation->>ReactQuery: Invalidate transactions query
+        usePositionCreation->>ReactQuery: Invalidate session query
+        
+        ReactQuery->>API: Refetch GET /sessions/:id/positions
+        API-->>ReactQuery: Updated positions list
+        ReactQuery-->>PositionsTable: Updated positions data
+        
+        ReactQuery->>API: Refetch GET /sessions/:id/transactions
+        API-->>ReactQuery: Updated transactions list
+        ReactQuery-->>TransactionsTable: Updated transactions data
+        
+        ReactQuery->>API: Refetch GET /sessions/:id
+        API-->>ReactQuery: Updated session data
+        ReactQuery-->>Stores: Update currentSession
+        
+        usePositionCreation->>useOrderForm: reset()
+        useOrderForm-->>OrderTicket: Clear form
+        
+        PositionsTable->>User: Display new position
+        TransactionsTable->>User: Display new transaction
+    end
+

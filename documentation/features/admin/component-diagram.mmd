@@ -1,0 +1,84 @@
+graph TB
+    subgraph "Admin Feature"
+        AdminChoices[AdminChoices<br/>Landing Page]
+        
+        subgraph "User Management"
+            UserManagement[UserManagement<br/>Main Page]
+            UserTable[UserTable<br/>Display & Actions]
+            UserEditModal[UserEditModal<br/>Edit User]
+            UserDetailsModal[UserDetailsModal<br/>View Details]
+            SubscriptionManagementModal[SubscriptionManagementModal<br/>Manage Subscriptions]
+            ConfirmModal[ConfirmModal<br/>Delete Confirmation]
+        end
+        
+        subgraph "Dataset Management"
+            DatasetManagement[DatasetManagement<br/>Main Page]
+            DatasetTable[DatasetTable<br/>Display & Actions]
+            CreateDatasetModal[CreateDatasetModal<br/>Create Dataset]
+            FileUploadButton[FileUploadButton<br/>Upload CSV]
+        end
+        
+        subgraph "Hooks Layer"
+            useAdminChoices[useAdminChoices<br/>Navigation]
+            useUserManagement[useUserManagement<br/>User State & Logic]
+            useUserEditModal[useUserEditModal<br/>Edit Form Logic]
+            useDatasetManagement[useDatasetManagement<br/>Dataset State & Logic]
+            useDatasetCreate[useDatasetCreate<br/>Create Form Logic]
+            useDatasetFileUpload[useDatasetFileUpload<br/>Upload Logic]
+            useSubscriptionManagementModal[useSubscriptionManagementModal<br/>Subscription CRUD]
+        end
+        
+        subgraph "API Layer"
+            useUsers[useUsers<br/>GET /users]
+            useUpdateUser[useUpdateUser<br/>PATCH /users/:id]
+            useDeleteUser[useDeleteUser<br/>DELETE /users/:id]
+            useDatasets[useDatasets<br/>GET /datasets]
+            useCreateDataset[useCreateDataset<br/>POST /datasets]
+            useUploadDataset[useUploadDataset<br/>POST /datasets/:id/upload]
+            useSubscriptionsByUser[useSubscriptionsByUser<br/>GET /users/:id/subscriptions]
+            useCreateSubscription[useCreateSubscription<br/>POST /subscriptions]
+            useUpdateSubscription[useUpdateSubscription<br/>PATCH /subscriptions/:id]
+            useDeleteSubscription[useDeleteSubscription<br/>DELETE /subscriptions/:id]
+        end
+    end
+    
+    AdminChoices -->|Navigate| UserManagement
+    AdminChoices -->|Navigate| DatasetManagement
+    
+    UserManagement --> UserTable
+    UserManagement --> UserEditModal
+    UserManagement --> UserDetailsModal
+    UserManagement --> SubscriptionManagementModal
+    UserManagement --> ConfirmModal
+    UserManagement --> useUserManagement
+    
+    UserTable -->|Actions| UserManagement
+    UserEditModal --> useUserEditModal
+    SubscriptionManagementModal --> useSubscriptionManagementModal
+    
+    useUserManagement --> useUsers
+    useUserManagement --> useDeleteUser
+    useUserEditModal --> useUpdateUser
+    useSubscriptionManagementModal --> useSubscriptionsByUser
+    useSubscriptionManagementModal --> useCreateSubscription
+    useSubscriptionManagementModal --> useUpdateSubscription
+    useSubscriptionManagementModal --> useDeleteSubscription
+    
+    DatasetManagement --> DatasetTable
+    DatasetManagement --> CreateDatasetModal
+    DatasetTable --> FileUploadButton
+    DatasetManagement --> useDatasetManagement
+    
+    CreateDatasetModal --> useDatasetCreate
+    FileUploadButton --> useDatasetFileUpload
+    
+    useDatasetManagement --> useDatasets
+    useDatasetCreate --> useCreateDataset
+    useDatasetFileUpload --> useUploadDataset
+    
+    style AdminChoices fill:#e1f5ff
+    style UserManagement fill:#fff3e0
+    style DatasetManagement fill:#c8e6c9
+    style useUserManagement fill:#f3e5f5
+    style useDatasetManagement fill:#f3e5f5
+
