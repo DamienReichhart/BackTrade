@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, type MouseEvent } from "react";
 import { Toggle } from "../../../../../../../../components/Toggle";
 import type { IndicatorConfig } from "../../../../toolkit";
 import styles from "./IndicatorCard.module.css";
@@ -43,7 +43,7 @@ export const IndicatorCard = memo(
     };
 
     const handleAction =
-      (action: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
+      (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
         action();
       };
