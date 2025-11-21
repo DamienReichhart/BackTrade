@@ -13,11 +13,11 @@
     }
   },
   "scripts": {
-    "dev": "tsc --watch --project tsconfig.json",
-    "build": "tsc --project tsconfig.json",
+    "dev": "npx tsc --watch --project tsconfig.json",
+    "build": "npx tsc --project tsconfig.json",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "npx tsc --noEmit"
   },
   "dependencies": {
     "@backtrade/types": "workspace:*",
