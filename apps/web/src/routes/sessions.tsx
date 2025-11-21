@@ -22,7 +22,7 @@ export const sessionsRoutes = [
     ),
   },
   {
-    path: "/sessions/:id/positions/list",
+    path: "/dashboard/sessions/:id/positions/list",
     element: (
       <AuthenticatedLayout>
         <PositionsList />
@@ -30,7 +30,7 @@ export const sessionsRoutes = [
     ),
   },
   {
-    path: "/sessions/:id/transactions/list",
+    path: "/dashboard/sessions/:id/transactions/list",
     element: (
       <AuthenticatedLayout>
         <TransactionsList />

@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth";
+import { useLogout } from "../../api/hooks/requests/auth";
 import { Button } from "../Button";
 import styles from "./AuthenticatedLayout.module.css";
 import logoPng from "../../../assets/logo.png";
@@ -30,10 +31,19 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuthStore();
+  const { execute: logoutApi } = useLogout();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      // Call logout API endpoint
+      await logoutApi();
+    } catch {
+      // Do nothing
+    } finally {
+      // Always clear local state and navigate
+      logout();
+      navigate("/");
+    }
   };
 
   // Filter nav items based on user role - hide Admin section for non-admin users

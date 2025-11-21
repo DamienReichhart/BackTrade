@@ -44,7 +44,7 @@ export function useTransactionsTable() {
     if (!currentSession) {
       return;
     }
-    navigate(`/sessions/${currentSession.id}/transactions/list`);
+    navigate(`/dashboard/sessions/${currentSession.id}/transactions/list`);
   };
 
   return {

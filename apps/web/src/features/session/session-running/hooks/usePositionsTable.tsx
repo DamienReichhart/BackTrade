@@ -39,7 +39,7 @@ export function usePositionsTable() {
     if (!hasValidSession) {
       return;
     }
-    navigate(`/sessions/${sessionId}/positions/list`);
+    navigate(`/dashboard/sessions/${sessionId}/positions/list`);
   };
 
   return {

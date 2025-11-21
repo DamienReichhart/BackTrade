@@ -1,0 +1,108 @@
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Register
+    participant RegisterFormPanel
+    participant useRegisterForm
+    participant ValidationUtils
+    participant useRegister
+    participant useFetch
+    participant executeFetch
+    participant API
+    participant AuthStore
+    participant CookieUtils
+    participant JWTUtils
+    participant Router
+    
+    User->>Browser: Navigate to /signup
+    Browser->>Router: Route to Register component
+    Router->>Register: Render Register page
+    Register->>RegisterFormPanel: Render form panel
+    Register->>RegisterInfoPanel: Render info panel
+    
+    User->>RegisterFormPanel: Enter name
+    RegisterFormPanel->>useRegisterForm: handleNameChange(name)
+    useRegisterForm->>ValidationUtils: validateName(name)
+    ValidationUtils-->>useRegisterForm: validation result
+    useRegisterForm-->>RegisterFormPanel: Update form state & errors
+    
+    User->>RegisterFormPanel: Enter email
+    RegisterFormPanel->>useRegisterForm: handleEmailChange(email)
+    useRegisterForm->>ValidationUtils: validateEmail(email)
+    ValidationUtils-->>useRegisterForm: validation result
+    useRegisterForm-->>RegisterFormPanel: Update form state & errors
+    
+    User->>RegisterFormPanel: Enter password
+    RegisterFormPanel->>useRegisterForm: handlePasswordChange(password)
+    useRegisterForm->>ValidationUtils: validatePassword(password)
+    ValidationUtils-->>useRegisterForm: validation result
+    
+    alt confirmPassword has value
+        useRegisterForm->>ValidationUtils: validatePasswordConfirmation(password, confirmPassword)
+        ValidationUtils-->>useRegisterForm: validation result
+    end
+    useRegisterForm-->>RegisterFormPanel: Update form state & errors
+    
+    User->>RegisterFormPanel: Enter confirm password
+    RegisterFormPanel->>useRegisterForm: handleConfirmPasswordChange(confirmPassword)
+    useRegisterForm->>ValidationUtils: validatePasswordConfirmation(password, confirmPassword)
+    ValidationUtils-->>useRegisterForm: validation result
+    useRegisterForm-->>RegisterFormPanel: Update form state & errors
+    
+    User->>RegisterFormPanel: Accept terms checkbox
+    RegisterFormPanel->>useRegisterForm: handleAcceptTermsChange(checked)
+    useRegisterForm-->>RegisterFormPanel: Update form state
+    
+    User->>RegisterFormPanel: Click "Create account" button
+    RegisterFormPanel->>useRegisterForm: handleSubmit(event)
+    
+    useRegisterForm->>ValidationUtils: validateName(formState.name)
+    useRegisterForm->>ValidationUtils: validateEmail(formState.email)
+    useRegisterForm->>ValidationUtils: validatePassword(formState.password)
+    useRegisterForm->>ValidationUtils: validatePasswordConfirmation(password, confirmPassword)
+    
+    alt Validation fails
+        ValidationUtils-->>useRegisterForm: Validation errors
+        useRegisterForm-->>RegisterFormPanel: Set errors, prevent submission
+        RegisterFormPanel->>User: Display validation errors
+    else Terms not accepted
+        useRegisterForm-->>RegisterFormPanel: Prevent submission
+    else Validation succeeds
+        useRegisterForm->>useRegister: execute({ email, password, confirmPassword })
+        useRegister->>useFetch: Execute POST /auth/register
+        useFetch->>executeFetch: executeFetch(body, config)
+        executeFetch->>API: POST /auth/register<br/>{ email, password, confirmPassword }
+        
+        alt Registration successful
+            API-->>executeFetch: 201 Created<br/>{ accessToken, refreshToken, user }
+            executeFetch-->>useFetch: AuthResponse
+            useFetch-->>useRegister: AuthResponse
+            useRegister-->>useRegisterForm: AuthResponse
+            
+            useRegisterForm->>AuthStore: login(accessToken, refreshToken)
+            AuthStore->>CookieUtils: setCookie("access_token", accessToken, 7)
+            AuthStore->>CookieUtils: setCookie("refresh_token", refreshToken, 7)
+            AuthStore->>JWTUtils: getUserFromToken(accessToken)
+            JWTUtils-->>AuthStore: PublicUser
+            AuthStore->>AuthStore: Update state: { accessToken, refreshToken, user }
+            
+            useRegisterForm->>Router: navigate("/dashboard")
+            Router->>Browser: Navigate to dashboard
+            Browser->>User: Display dashboard
+        else Registration failed (email exists)
+            API-->>executeFetch: 409 Conflict<br/>{ error: "Email already registered" }
+            executeFetch-->>useFetch: Error
+            useFetch-->>useRegister: Error
+            useRegister-->>useRegisterForm: Error
+            useRegisterForm-->>RegisterFormPanel: Set email error
+            RegisterFormPanel->>User: Display error message
+        else Registration failed (validation error)
+            API-->>executeFetch: 400 Bad Request<br/>{ error: "Validation failed" }
+            executeFetch-->>useFetch: Error
+            useFetch-->>useRegister: Error
+            useRegister-->>useRegisterForm: Error
+            useRegisterForm-->>RegisterFormPanel: Set appropriate field error
+            RegisterFormPanel->>User: Display error message
+        end
+    end
+

@@ -1,0 +1,47 @@
+sequenceDiagram
+    participant Component
+    participant useFetch
+    participant executeFetch
+    participant API
+    participant retryIfUnauthorized
+    participant refreshAccessToken
+    participant useRefreshToken
+    participant AuthStore
+    participant CookieUtils
+    
+    Component->>useFetch: Execute API request
+    useFetch->>executeFetch: executeFetch(body, config)
+    executeFetch->>API: GET/POST/PUT/DELETE /api/endpoint<br/>Authorization: Bearer {accessToken}
+    
+    alt Request successful
+        API-->>executeFetch: 200 OK<br/>{ data }
+        executeFetch-->>useFetch: FetchResponse
+        useFetch-->>Component: Data returned
+    else Request unauthorized (401)
+        API-->>executeFetch: 401 Unauthorized
+        executeFetch->>retryIfUnauthorized: retryIfUnauthorized(response, refreshToken, retryFunction, onTokenRefresh)
+        
+        retryIfUnauthorized->>retryIfUnauthorized: Check if refreshToken exists
+        
+        alt No refresh token
+            retryIfUnauthorized-->>executeFetch: Throw error
+            executeFetch-->>useFetch: Error
+            useFetch-->>Component: Error (authentication required)
+        else Refresh token exists
+            retryIfUnauthorized->>refreshAccessToken: refreshAccessToken(refreshToken)
+            refreshAccessToken->>useRefreshToken: POST /auth/refresh<br/>{ refreshToken }
+            useRefreshToken->>API: POST /auth/refresh<br/>{ refreshToken }
+            
+            alt Token refresh successful
+                API-->>useRefreshToken: 200 OK<br/>{ accessToken, refreshToken }
+                useRefreshToken-->>refreshAccessToken: AuthResponse
+                refreshAccessToken-->>retryIfUnauthorized: AuthResponse
+                
+                retryIfUnauthorized->>AuthStore: onTokenRefresh(newAccessToken, newRefreshToken)
+                AuthStore->>CookieUtils: setCookie("access_token", newAccessToken, 7)
+                AuthStore->>CookieUtils: setCookie("refresh_token", newRefreshToken, 7)
+                AuthStore->>AuthStore: Update state: { accessToken, refreshToken, user }
+            end
+        end
+end
+
