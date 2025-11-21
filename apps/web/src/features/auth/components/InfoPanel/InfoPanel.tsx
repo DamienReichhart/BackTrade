@@ -1,4 +1,4 @@
-import logoSvg from "../../../../../assets/logo.svg";
+import logoPng from "../../../../../assets/logo.png";
 import styles from "./InfoPanel.module.css";
 
 interface InfoPanelProps {
@@ -31,7 +31,7 @@ export function InfoPanel({
       <div className={styles.content}>
         {/* Logo */}
         <div className={styles.logoContainer}>
-          <img src={logoSvg} alt="BackTrade" className={styles.logo} />
+          <img src={logoPng} alt="BackTrade" className={styles.logo} />
           <span className={styles.brandName}>BackTrade</span>
         </div>
 

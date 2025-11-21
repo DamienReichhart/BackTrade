@@ -1,4 +1,4 @@
-import logoSvg from "../../../../../assets/logo.svg";
+import logoPng from "../../../../../assets/logo.png";
 import styles from "./FormHeader.module.css";
 
 interface FormHeaderProps {
@@ -16,7 +16,7 @@ export function FormHeader({ label }: FormHeaderProps) {
     <div className={styles.formHeader}>
       <div className={styles.formLabel}>{label}</div>
       <div className={styles.logoContainer}>
-        <img src={logoSvg} alt="BackTrade" className={styles.logo} />
+        <img src={logoPng} alt="BackTrade" className={styles.logo} />
         <span className={styles.brandName}>BackTrade</span>
       </div>
       <div className={styles.secureBadge}>SECURE AREA</div>

@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/auth";
 import { Button } from "../Button";
 import styles from "./AuthenticatedLayout.module.css";
-import logoSvg from "../../assets/logo.svg";
+import logoPng from "../../../assets/logo.png";
 
 interface NavItem {
   label: string;
@@ -37,7 +37,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
         <div className={styles.content}>
           {/* Logo */}
           <div className={styles.logoSection}>
-            <img src={logoSvg} alt="BackTrade" className={styles.logo} />
+            <img src={logoPng} alt="BackTrade" className={styles.logo} />
             <span className={styles.brandName}>BackTrade</span>
           </div>
 
