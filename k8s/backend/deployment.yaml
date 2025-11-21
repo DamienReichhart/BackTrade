@@ -26,6 +26,13 @@ spec:
             - containerPort: 3000
               name: http
               protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: NODE_ENV
               valueFrom:
