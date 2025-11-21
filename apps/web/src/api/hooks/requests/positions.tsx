@@ -92,12 +92,6 @@ export function useClosePosition(id: string) {
   });
 }
 
-export function useLiquidatePosition(id: string) {
-  return usePost(`/positions/${id}/liquidate`, {
-    outputSchema: PositionSchema,
-  });
-}
-
 export function useCloseAllPositions(sessionId: string) {
   return usePatch(`/sessions/${sessionId}/positions?closeAll=true`, {
     outputSchema: EmptyResponseSchema,

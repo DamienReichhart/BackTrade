@@ -83,15 +83,3 @@ export function useDeleteSubscription(id: string) {
     outputSchema: EmptyResponseSchema,
   });
 }
-
-export function useCancelSubscription(id: string) {
-  return usePost(`/subscriptions/${id}/cancel`, {
-    outputSchema: SubscriptionSchema,
-  });
-}
-
-export function useReactivateSubscription(id: string) {
-  return usePost(`/subscriptions/${id}/reactivate`, {
-    outputSchema: SubscriptionSchema,
-  });
-}

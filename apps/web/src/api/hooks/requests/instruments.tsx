@@ -1,10 +1,7 @@
-import { useGet, usePost, usePatch, useDelete } from "..";
+import { useGet } from "..";
 import {
   InstrumentSchema,
   InstrumentListResponseSchema,
-  CreateInstrumentRequestSchema,
-  UpdateInstrumentRequestSchema,
-  EmptyResponseSchema,
   type SearchQuery,
   type Instrument,
 } from "@backtrade/types";
@@ -43,37 +40,5 @@ export function useInstrument(
       enabled: queryOptions?.enabled ?? true,
       ...queryOptions,
     },
-  });
-}
-
-export function useCreateInstrument() {
-  return usePost("/instruments", {
-    inputSchema: CreateInstrumentRequestSchema,
-    outputSchema: InstrumentSchema,
-  });
-}
-
-export function useUpdateInstrument(id: string) {
-  return usePatch(`/instruments/${id}`, {
-    inputSchema: UpdateInstrumentRequestSchema,
-    outputSchema: InstrumentSchema,
-  });
-}
-
-export function useDeleteInstrument(id: string) {
-  return useDelete(`/instruments/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
-}
-
-export function useEnableInstrument(id: string) {
-  return usePost(`/instruments/${id}/enable`, {
-    outputSchema: InstrumentSchema,
-  });
-}
-
-export function useDisableInstrument(id: string) {
-  return usePost(`/instruments/${id}/disable`, {
-    outputSchema: InstrumentSchema,
   });
 }

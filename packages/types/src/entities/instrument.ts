@@ -5,7 +5,6 @@ export const InstrumentSchema = z.object({
   symbol: z.string(),
   display_name: z.string(),
   pip_size: z.number().positive(),
-  enabled: z.boolean().default(true),
   created_at: z.string(),
   updated_at: z.string(),
 });

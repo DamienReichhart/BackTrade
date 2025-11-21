@@ -104,12 +104,10 @@ export function useSessionAddForm() {
    */
   const instrumentOptions: SelectOption[] = useMemo(() => {
     if (!instruments) return [];
-    return instruments
-      .filter((instrument) => instrument.enabled)
-      .map((instrument) => ({
-        value: String(instrument.id),
-        label: `${instrument.display_name} (${instrument.symbol})`,
-      }));
+    return instruments.map((instrument) => ({
+      value: String(instrument.id),
+      label: `${instrument.display_name} (${instrument.symbol})`,
+    }));
   }, [instruments]);
 
   /**
