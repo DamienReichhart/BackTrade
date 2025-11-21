@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant UM as UserManagement
+    participant SubModal as SubscriptionManagementModal
+    participant Hook as useSubscriptionManagementModal
+    participant SubAPI as Subscription APIs
+    participant PlanAPI as Plans API
+    participant Backend as Backend API
+    
+    Note over Admin,Backend: Open Subscription Management
+    
+    Admin->>UM: Click Manage Subscriptions
+    UM->>Hook: handleManageSubscriptions(user)
+    Hook->>UM: Open subscription modal
+    UM->>SubModal: Render SubscriptionManagementModal
+    SubModal->>Hook: useSubscriptionManagementModal(user)
+    Hook->>SubAPI: useSubscriptionsByUser(userId)
+    Hook->>PlanAPI: usePlans()
+    SubAPI->>Backend: GET /users/:id/subscriptions
+    PlanAPI->>Backend: GET /plans
+    Backend-->>SubAPI: Subscriptions array
+    Backend-->>PlanAPI: Plans array
+    SubAPI-->>Hook: subscriptions data
+    PlanAPI-->>Hook: plans data
+    Hook-->>SubModal: subscriptions, plans, isLoading
+    SubModal->>SubModal: Render SubscriptionListView
+    
+    Note over Admin,Backend: Create Subscription
+    
+    Admin->>SubModal: Click Create Subscription
+    SubModal->>Hook: handleStartCreate()
+    Hook->>Hook: setIsCreating(true)<br/>Initialize createForm
+    SubModal->>SubModal: Show CreateSubscriptionSection
+    
+    Admin->>SubModal: Fill form (plan, dates, status)
+    SubModal->>Hook: setCreateForm(formData)
+    Hook->>Hook: Update createForm state
+    
+    Admin->>SubModal: Submit create form
+    SubModal->>Hook: handleCreate()
+    Hook->>SubAPI: createSubscriptionMutation.execute(formData)
+    SubAPI->>Backend: POST /subscriptions<br/>{user_id, plan_id, status, ...}
+    Backend-->>SubAPI: Created Subscription
+    SubAPI-->>Hook: Success
+    Hook->>Hook: setIsCreating(false)<br/>resetCreateForm()
+    Hook->>SubAPI: refetchSubscriptions()
+    SubAPI->>Backend: GET /users/:id/subscriptions
+    Backend-->>SubAPI: Updated subscriptions
+    SubAPI-->>Hook: Updated list
+    Hook-->>SubModal: Updated subscriptions
+    SubModal->>SubModal: Re-render list with new subscription
+    
+    Note over Admin,Backend: Edit Subscription
+    
+    Admin->>SubModal: Click Edit on subscription
+    SubModal->>Hook: handleStartEdit(subscription)
+    Hook->>Hook: setEditingSubscriptionId(id)<br/>setEditForm({status, cancel_at_period_end, ...})
+    SubModal->>SubModal: Show edit form inline
+    
+    Admin->>SubModal: Modify subscription fields
+    SubModal->>Hook: setEditForm(updatedFields)
+    Hook->>Hook: Update editForm state
+    
+    Admin->>SubModal: Click Save
+    SubModal->>Hook: handleUpdate()
+    Hook->>SubAPI: updateSubscriptionMutation.execute(editForm)
+    SubAPI->>Backend: PATCH /subscriptions/:id<br/>{status?, cancel_at_period_end?, ...}
+    Backend-->>SubAPI: Updated Subscription
+    SubAPI-->>Hook: Success
+    Hook->>Hook: setEditingSubscriptionId(null)<br/>reset editForm
+    Hook->>SubAPI: refetchSubscriptions()
+    SubAPI-->>Hook: Updated subscriptions
+    Hook-->>SubModal: Updated list
+    SubModal->>SubModal: Re-render with updated subscription
+    
+    Note over Admin,Backend: Delete Subscription
+    
+    Admin->>SubModal: Click Delete on subscription
+    SubModal->>Hook: handleDelete(subscription)
+    Hook->>Hook: setSubscriptionToDelete(subscription)
+    SubModal->>SubModal: Show ConfirmModal
+    
+    Admin->>SubModal: Confirm deletion
+    SubModal->>Hook: handleConfirmDelete()
+    Hook->>SubAPI: deleteSubscriptionMutation.execute()
+    SubAPI->>Backend: DELETE /subscriptions/:id
+    Backend-->>SubAPI: Success
+    SubAPI-->>Hook: Delete successful
+    Hook->>Hook: Clear delete state
+    Hook->>SubAPI: refetchSubscriptions()
+    SubAPI-->>Hook: Updated subscriptions
+    Hook-->>SubModal: Updated list
+    SubModal->>SubModal: Re-render without deleted subscription
+
