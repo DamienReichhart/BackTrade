@@ -6,7 +6,7 @@ import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData } from "./hooks";
 import styles from "./SessionRunning.module.css";
-import { API_BASE_URL } from "../../../api";
+import { redirectToSessionAnalytics } from "../../../utils";
 import { useEffect } from "react";
 
 /**
@@ -20,7 +20,7 @@ export function SessionRunning() {
 
   useEffect(() => {
     if (session?.session_status == "ARCHIVED") {
-      window.location.href = `${API_BASE_URL}/sessions/${session.id}/analyticsFile`;
+      redirectToSessionAnalytics(String(session.id));
     }
   }, [session]);
 

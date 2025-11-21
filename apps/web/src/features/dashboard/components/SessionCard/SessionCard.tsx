@@ -3,6 +3,7 @@ import type { Session } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
 import { useSessionCard } from "../../hooks/useSessionCard";
 import { getSessionStatusColorClass } from "../../utils/sessions";
+import { getSessionAnalyticsUrl } from "../../../../utils";
 import { API_BASE_URL } from "../../../../api";
 import styles from "./SessionCard.module.css";
 
@@ -26,7 +27,7 @@ export function SessionCard({ session }: SessionCardProps) {
 
   const linkRoute =
     session.session_status === "ARCHIVED"
-      ? `${API_BASE_URL}/sessions/${session.id}/analyticsFile`
+      ? getSessionAnalyticsUrl(String(session.id))
       : `/dashboard/sessions/${session.id}`;
 
   return (
