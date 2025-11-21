@@ -1,0 +1,36 @@
+
+
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant LB as LoadBalancer<br/>(backtrade-proxy)
+    participant Proxy as Nginx Proxy
+    participant API as Backend<br/>(API)
+    participant Frontend as Frontend
+    participant DB as PostgreSQL<br/>(TimescaleDB)
+
+    rect rgba(100, 150, 200, 0.1)
+    note over Client,DB: Traffic Flow Through Proxy
+    Client->>LB: HTTP/HTTPS Request
+    LB->>Proxy: Forward to backtrade-proxy:80
+    Proxy->>API: /api/* routes to backend:3000
+    Proxy->>Frontend: /* routes to frontend:80
+    end
+
+    rect rgba(100, 200, 150, 0.1)
+    note over API,DB: Backend Operations
+    API->>DB: Query/Update via DATABASE_URL
+    DB-->>API: Query Results
+    API-->>Proxy: Response
+    Proxy-->>Client: Response
+    end
+
+    rect rgba(200, 150, 100, 0.1)
+    note over Frontend,Client: Static Content Delivery
+    Frontend-->>Proxy: Static Assets
+    Proxy-->>Client: Frontend UI
+    end
+
+
+```
