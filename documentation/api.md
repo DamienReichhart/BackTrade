@@ -91,7 +91,8 @@ The token is not automatically renewable or Refresh token
 ```json
 {
   "error": {
-    "message": "Error description"
+    "message": "Error description",
+    "code": "error code"
   }
 }
 ```
