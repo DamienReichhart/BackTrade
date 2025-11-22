@@ -96,7 +96,7 @@ The token is not automatically renewable or Refresh token
 }
 ```
 
-| Verb | Endpoint | Request body | Response type | Status codes | Function |
+| Verb | Endpoint | Request body | Response type | Status codes | Description |
 | ---- | -------- | ------------ | ------------- | ------------ | -------- |
 
 ## API Routes
