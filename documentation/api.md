@@ -96,10 +96,16 @@ The token is not automatically renewable or Refresh token
 }
 ```
 
-| Verb | Endpoint | Request body | Response type | Status codes | Description |
-| ---- | -------- | ------------ | ------------- | ------------ | -------- |
+## Schemas
+
+| Name | Content | Description |
+| ---- | ------- | ---------- |
 
 ## API Routes
+
+| Verb | Endpoint | Request body | Response type | Status codes | Description |
+| ---- | -------- | ------------ | ------------- | ------------ | ----------- |
+
 
 ### Authentication and authorization
 
