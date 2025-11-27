@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@backtrade/types": "workspace:*",
-    "zod": "^4.1.13"
+    "zod": "^4.1.12"
   },
   "license": "PROPRIETARY",
   "author": "REICHHART Damien",

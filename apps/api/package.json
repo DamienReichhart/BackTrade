@@ -23,7 +23,7 @@
     "helmet": "8.1.0",
     "pino": "10.1.0",
     "pino-http": "11.0.0",
-    "zod": "4.1.13"
+    "zod": "4.1.12"
   },
   "devDependencies": {
     "@backtrade/eslint-config": "workspace:*",

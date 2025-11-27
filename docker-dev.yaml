@@ -2,7 +2,7 @@ services:
   dev:
     build:
       context: .
-      dockerfile: /docker/images/dev.dockerfile
+      dockerfile: ./docker/images/dev.dockerfile
     ports:
       - "3000:3000"
       - "5173:5173"
@@ -33,14 +33,29 @@ services:
   postgres:
     build:
       context: .
-      dockerfile: docker/images/postgres.dockerfile
+      dockerfile: ./docker/images/postgres.dockerfile
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/datas/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
       backtrade:
         ipv4_address: 192.168.250.2
+  
+
+  redis:
+    build:
+      context: .
+      dockerfile: ./docker/images/redis.dockerfile
+    ports:
+      - "6379:6379"
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.3
+
+volumes:
+  postgres_data:
+    driver: local
 
 networks:
   backtrade:

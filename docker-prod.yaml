@@ -51,6 +51,15 @@ services:
         ipv4_address: 192.168.250.4
     restart: always
 
+  redis:
+    build:
+      context: .
+      dockerfile: docker/images/redis.dockerfile
+    networks:
+      backtrade:
+        ipv4_address: 192.168.250.5
+    restart: always
+
 volumes:
   backtrade_db:
     driver: local
