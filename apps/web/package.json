@@ -18,7 +18,7 @@
   "dependencies": {
     "@backtrade/types": "workspace:*",
     "@backtrade/utils": "workspace:*",
-    "@tanstack/react-query": "^5.90.10",
+    "@tanstack/react-query": "^5.90.11",
     "lightweight-charts": "^5.0.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -49,7 +49,7 @@
     "ts-jest": "^29.4.5",
     "typescript": "5.9.3",
     "typescript-eslint": "8.47.0",
-    "vite": "7.2.4"
+    "vite": "7.2.2"
   },
   "license": "PROPRIETARY",
   "author": "REICHHART Damien"

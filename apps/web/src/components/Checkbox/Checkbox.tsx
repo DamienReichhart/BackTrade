@@ -9,8 +9,10 @@ import styles from "./Checkbox.module.css";
 /**
  * Checkbox component props
  */
-interface CheckboxProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+interface CheckboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> {
   /**
    * Label text or content for the checkbox
    */

@@ -35,15 +35,13 @@ export interface ColoredIndicatorConfig extends IndicatorConfigBase {
 }
 
 export interface SmaIndicatorConfig
-  extends LineIndicatorConfig,
-    ColoredIndicatorConfig {
+  extends LineIndicatorConfig, ColoredIndicatorConfig {
   type: "sma";
   period: number;
 }
 
 export interface EmaIndicatorConfig
-  extends LineIndicatorConfig,
-    ColoredIndicatorConfig {
+  extends LineIndicatorConfig, ColoredIndicatorConfig {
   type: "ema";
   period: number;
   smoothing?: number;
@@ -61,8 +59,7 @@ export interface BollingerBandsIndicatorConfig extends LineIndicatorConfig {
 }
 
 export interface RsiIndicatorConfig
-  extends LineIndicatorConfig,
-    ColoredIndicatorConfig {
+  extends LineIndicatorConfig, ColoredIndicatorConfig {
   type: "rsi";
   period: number;
   overbought: number;

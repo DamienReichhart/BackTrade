@@ -9,7 +9,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import pinoHttp from "pino-http";
-import { router as apiRouter } from "./routes/router.js";
+import { router as apiRouter } from "./routes/router";
 import { HealthSchema } from "@backtrade/types";
 
 function createApp(): Express {
