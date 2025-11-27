@@ -12,13 +12,13 @@ import { verify, hash, argon2id } from "argon2";
  * @param password - The plain text password to hash
  * @returns Promise resolving to the hashed password string
  */
-export async function hashPassword(password: string): string {
-    return await hash(password, {
-        type: argon2id,
-        memoryCost: 2 ** 16,         // 64MB
-        timeCost: 3,                 // iterations
-        parallelism: 1,              // threads
-      });
+export async function hashPassword(password: string): Promise<string> {
+  return await hash(password, {
+    type: argon2id,
+    memoryCost: 2 ** 16, // 64MB
+    timeCost: 3, // iterations
+    parallelism: 1, // threads
+  });
 }
 
 /**
@@ -29,8 +29,8 @@ export async function hashPassword(password: string): string {
  * @returns Promise resolving to true if password matches, false otherwise
  */
 export async function verifyPassword(
-    password: string,
-    hashedPassword: string,
+  password: string,
+  hashedPassword: string,
 ): Promise<boolean> {
-    return await verify(hashedPassword, password);
+  return await verify(hashedPassword, password);
 }

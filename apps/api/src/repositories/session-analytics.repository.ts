@@ -11,49 +11,51 @@ import { prisma } from "../libs/prisma";
  * Get all session analytics matching optional filter conditions
  */
 export async function getAllSessionAnalytics(
-    where?: Prisma.SessionAnalyticsWhereInput,
+  where?: Prisma.SessionAnalyticsWhereInput,
 ): Promise<SessionAnalytics[]> {
-    return prisma.sessionAnalytics.findMany({ where });
+  return prisma.sessionAnalytics.findMany({ where });
 }
 
 /**
  * Get a session analytics by ID
  */
 export async function getSessionAnalyticsById(
-    id: number | string,
+  id: number | string,
 ): Promise<SessionAnalytics | null> {
-    return prisma.sessionAnalytics.findUnique({
-        where: { id: Number(id) },
-    });
+  return prisma.sessionAnalytics.findUnique({
+    where: { id: Number(id) },
+  });
 }
 
 /**
  * Create a new session analytics
  */
 export async function createSessionAnalytics(
-    data: Prisma.SessionAnalyticsCreateInput,
+  data: Prisma.SessionAnalyticsCreateInput,
 ): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.create({ data });
+  return prisma.sessionAnalytics.create({ data });
 }
 
 /**
  * Update an existing session analytics
  */
 export async function updateSessionAnalytics(
-    id: number | string,
-    data: Prisma.SessionAnalyticsUpdateInput,
+  id: number | string,
+  data: Prisma.SessionAnalyticsUpdateInput,
 ): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.update({
-        where: { id: Number(id) },
-        data,
-    });
+  return prisma.sessionAnalytics.update({
+    where: { id: Number(id) },
+    data,
+  });
 }
 
 /**
  * Delete a session analytics by ID
  */
-export async function deleteSessionAnalytics(id: number | string): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.delete({
-        where: { id: Number(id) },
-    });
+export async function deleteSessionAnalytics(
+  id: number | string,
+): Promise<SessionAnalytics> {
+  return prisma.sessionAnalytics.delete({
+    where: { id: Number(id) },
+  });
 }

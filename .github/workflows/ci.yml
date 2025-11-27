@@ -30,8 +30,8 @@ jobs:
           echo "pnpm=$(pnpm -v)" >> $GITHUB_OUTPUT
         shell: bash
 
-  lint:
-    name: Lint
+  prisma-generate:
+    name: Generate Prisma Client
     runs-on: self-hosted
     needs: setup
     steps:
@@ -40,36 +40,59 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
+      - name: Generate Prisma Client
+        shell: bash
+        run: pnpm --filter @backtrade/api prisma:generate
+
+  lint:
+    name: Lint
+    runs-on: self-hosted
+    needs: [setup, prisma-generate]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          node-version: "22.19"
+          pnpm-version: "10.18.1"
+      - name: Generate Prisma Client
+        shell: bash
+        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/lint
 
   typecheck:
     name: Typecheck
     runs-on: self-hosted
-    needs: setup
+    needs: [setup, prisma-generate]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
+      - name: Generate Prisma Client
+        shell: bash
+        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/typecheck
 
   test:
     name: Test
     runs-on: self-hosted
-    needs: setup
+    needs: [setup, prisma-generate]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
+      - name: Generate Prisma Client
+        shell: bash
+        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/test
 
   coverage:
     name: Coverage
     runs-on: self-hosted
-    needs: setup
+    needs: [setup, prisma-generate]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,6 +101,9 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
+      - name: Generate Prisma Client
+        shell: bash
+        run: pnpm --filter @backtrade/api prisma:generate
       - name: Run Coverage
         uses: ./.github/actions/test-coverage
       - name: Upload API coverage artifact

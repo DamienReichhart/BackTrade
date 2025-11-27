@@ -11,47 +11,51 @@ import { prisma } from "../libs/prisma";
  * Get all transactions matching optional filter conditions
  */
 export async function getAllTransactions(
-    where?: Prisma.TransactionWhereInput,
+  where?: Prisma.TransactionWhereInput,
 ): Promise<Transaction[]> {
-    return prisma.transaction.findMany({ where });
+  return prisma.transaction.findMany({ where });
 }
 
 /**
  * Get a transaction by ID
  */
-export async function getTransactionById(id: number | string): Promise<Transaction | null> {
-    return prisma.transaction.findUnique({
-        where: { id: Number(id) },
-    });
+export async function getTransactionById(
+  id: number | string,
+): Promise<Transaction | null> {
+  return prisma.transaction.findUnique({
+    where: { id: Number(id) },
+  });
 }
 
 /**
  * Create a new transaction
  */
 export async function createTransaction(
-    data: Prisma.TransactionCreateInput,
+  data: Prisma.TransactionCreateInput,
 ): Promise<Transaction> {
-    return prisma.transaction.create({ data });
+  return prisma.transaction.create({ data });
 }
 
 /**
  * Update an existing transaction
  */
 export async function updateTransaction(
-    id: number | string,
-    data: Prisma.TransactionUpdateInput,
+  id: number | string,
+  data: Prisma.TransactionUpdateInput,
 ): Promise<Transaction> {
-    return prisma.transaction.update({
-        where: { id: Number(id) },
-        data,
-    });
+  return prisma.transaction.update({
+    where: { id: Number(id) },
+    data,
+  });
 }
 
 /**
  * Delete a transaction by ID
  */
-export async function deleteTransaction(id: number | string): Promise<Transaction> {
-    return prisma.transaction.delete({
-        where: { id: Number(id) },
-    });
+export async function deleteTransaction(
+  id: number | string,
+): Promise<Transaction> {
+  return prisma.transaction.delete({
+    where: { id: Number(id) },
+  });
 }

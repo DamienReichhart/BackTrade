@@ -15,6 +15,7 @@ module.exports = [
       "*.config.cjs",
       "*.config.ts",
       "src/generated/**",
+      "prisma/seed",
     ],
   },
   {
