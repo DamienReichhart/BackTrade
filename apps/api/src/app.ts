@@ -11,6 +11,7 @@ import helmet from "helmet";
 import pinoHttp from "pino-http";
 import { router as apiRouter } from "./routes/router.js";
 import { HealthSchema } from "@backtrade/types";
+import { prisma } from "./libs/prisma.js";
 
 function createApp(): Express {
   const app: Express = express();
