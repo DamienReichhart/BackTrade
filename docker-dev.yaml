@@ -11,6 +11,14 @@ services:
       - ./packages:/app/packages
       - ./assets:/app/assets
       - ./eslint-config.js:/app/eslint-config.js
+      # Exclude node_modules from volume mounts to preserve installed dependencies
+      - /app/node_modules
+      - /app/apps/api/node_modules
+      - /app/apps/web/node_modules
+      - /app/packages/eslint-config/node_modules
+      - /app/packages/tsconfig/node_modules
+      - /app/packages/types/node_modules
+      - /app/packages/utils/node_modules
     networks:
       backtrade:
         ipv4_address: 192.168.250.1

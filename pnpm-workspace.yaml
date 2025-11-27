@@ -3,7 +3,8 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
-  - "@prisma/engines"
+  - '@prisma/engines'
+  - bcrypt
   - esbuild
   - prisma
   - unrs-resolver

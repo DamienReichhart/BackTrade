@@ -1,83 +1,53 @@
-import type { Prisma, AuditLog } from "../generated/prisma/client";
+/**
+ * Audit Log Repository
+ *
+ * Data access layer for AuditLog model operations.
+ */
+
+import type { AuditLog, Prisma } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
-import type { IBaseRepository } from "./base.repository";
 
 /**
- * Repository for AuditLog model operations
- *
- * Provides CRUD operations for managing audit logs in the database
+ * Get all audit logs matching optional filter conditions
  */
-export class AuditLogRepository
-  implements
-    IBaseRepository<
-      AuditLog,
-      Prisma.AuditLogCreateInput,
-      Prisma.AuditLogUpdateInput,
-      Prisma.AuditLogWhereInput
-    >
-{
-  /**
-   * Get all audit logs
-   *
-   * @param where - Optional filter conditions
-   * @returns Promise resolving to an array of audit logs
-   */
-  async getAll(where?: Prisma.AuditLogWhereInput): Promise<AuditLog[]> {
-    return prisma.auditLog.findMany({
-      where,
-    });
-  }
+export async function getAllAuditLogs(where?: Prisma.AuditLogWhereInput): Promise<AuditLog[]> {
+    return prisma.auditLog.findMany({ where });
+}
 
-  /**
-   * Get an audit log by ID
-   *
-   * @param id - The audit log ID
-   * @returns Promise resolving to the audit log or null if not found
-   */
-  async getById(id: number | string): Promise<AuditLog | null> {
+/**
+ * Get an audit log by ID
+ */
+export async function getAuditLogById(id: number | string): Promise<AuditLog | null> {
     return prisma.auditLog.findUnique({
-      where: { id: Number(id) },
+        where: { id: Number(id) },
     });
-  }
+}
 
-  /**
-   * Create a new audit log
-   *
-   * @param data - The audit log data to create
-   * @returns Promise resolving to the created audit log
-   */
-  async add(data: Prisma.AuditLogCreateInput): Promise<AuditLog> {
-    return prisma.auditLog.create({
-      data,
-    });
-  }
+/**
+ * Create a new audit log
+ */
+export async function createAuditLog(data: Prisma.AuditLogCreateInput): Promise<AuditLog> {
+    return prisma.auditLog.create({ data });
+}
 
-  /**
-   * Update an existing audit log
-   *
-   * @param id - The audit log ID to update
-   * @param data - The audit log data to update
-   * @returns Promise resolving to the updated audit log
-   */
-  async update(
+/**
+ * Update an existing audit log
+ */
+export async function updateAuditLog(
     id: number | string,
     data: Prisma.AuditLogUpdateInput,
-  ): Promise<AuditLog> {
+): Promise<AuditLog> {
     return prisma.auditLog.update({
-      where: { id: Number(id) },
-      data,
+        where: { id: Number(id) },
+        data,
     });
-  }
+}
 
-  /**
-   * Delete an audit log by ID
-   *
-   * @param id - The audit log ID to delete
-   * @returns Promise resolving to the deleted audit log
-   */
-  async delete(id: number | string): Promise<AuditLog> {
+/**
+ * Delete an audit log by ID
+ */
+export async function deleteAuditLog(id: number | string): Promise<AuditLog> {
     return prisma.auditLog.delete({
-      where: { id: Number(id) },
+        where: { id: Number(id) },
     });
-  }
 }

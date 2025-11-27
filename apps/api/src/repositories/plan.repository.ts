@@ -1,83 +1,50 @@
-import type { Prisma, Plan } from "../generated/prisma/client";
+/**
+ * Plan Repository
+ *
+ * Data access layer for subscription Plan model operations.
+ */
+
+import type { Plan, Prisma } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
-import type { IBaseRepository } from "./base.repository";
 
 /**
- * Repository for Plan model operations
- *
- * Provides CRUD operations for managing subscription plans in the database
+ * Get all plans matching optional filter conditions
  */
-export class PlanRepository
-  implements
-    IBaseRepository<
-      Plan,
-      Prisma.PlanCreateInput,
-      Prisma.PlanUpdateInput,
-      Prisma.PlanWhereInput
-    >
-{
-  /**
-   * Get all plans
-   *
-   * @param where - Optional filter conditions
-   * @returns Promise resolving to an array of plans
-   */
-  async getAll(where?: Prisma.PlanWhereInput): Promise<Plan[]> {
-    return prisma.plan.findMany({
-      where,
-    });
-  }
+export async function getAllPlans(where?: Prisma.PlanWhereInput): Promise<Plan[]> {
+    return prisma.plan.findMany({ where });
+}
 
-  /**
-   * Get a plan by ID
-   *
-   * @param id - The plan ID
-   * @returns Promise resolving to the plan or null if not found
-   */
-  async getById(id: number | string): Promise<Plan | null> {
+/**
+ * Get a plan by ID
+ */
+export async function getPlanById(id: number | string): Promise<Plan | null> {
     return prisma.plan.findUnique({
-      where: { id: Number(id) },
+        where: { id: Number(id) },
     });
-  }
+}
 
-  /**
-   * Create a new plan
-   *
-   * @param data - The plan data to create
-   * @returns Promise resolving to the created plan
-   */
-  async add(data: Prisma.PlanCreateInput): Promise<Plan> {
-    return prisma.plan.create({
-      data,
-    });
-  }
+/**
+ * Create a new plan
+ */
+export async function createPlan(data: Prisma.PlanCreateInput): Promise<Plan> {
+    return prisma.plan.create({ data });
+}
 
-  /**
-   * Update an existing plan
-   *
-   * @param id - The plan ID to update
-   * @param data - The plan data to update
-   * @returns Promise resolving to the updated plan
-   */
-  async update(
-    id: number | string,
-    data: Prisma.PlanUpdateInput,
-  ): Promise<Plan> {
+/**
+ * Update an existing plan
+ */
+export async function updatePlan(id: number | string, data: Prisma.PlanUpdateInput): Promise<Plan> {
     return prisma.plan.update({
-      where: { id: Number(id) },
-      data,
+        where: { id: Number(id) },
+        data,
     });
-  }
+}
 
-  /**
-   * Delete a plan by ID
-   *
-   * @param id - The plan ID to delete
-   * @returns Promise resolving to the deleted plan
-   */
-  async delete(id: number | string): Promise<Plan> {
+/**
+ * Delete a plan by ID
+ */
+export async function deletePlan(id: number | string): Promise<Plan> {
     return prisma.plan.delete({
-      where: { id: Number(id) },
+        where: { id: Number(id) },
     });
-  }
 }
