@@ -1,8 +1,10 @@
 import { prisma } from "../../src/libs/prisma";
-import { users } from "./users";
+import { getUsers } from "./users";
 
 async function seed() {
   console.log("🌱 Starting database seed...");
+
+  const users = await getUsers();
 
   for (const user of users) {
     await prisma.user.upsert({

@@ -4,6 +4,7 @@ packages:
 
 onlyBuiltDependencies:
   - '@prisma/engines'
+  - argon2
   - bcrypt
   - esbuild
   - prisma
