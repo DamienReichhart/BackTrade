@@ -40,9 +40,6 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
-      - name: Generate Prisma Client
-        shell: bash
-        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/lint
 
   typecheck:
@@ -55,9 +52,6 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
-      - name: Generate Prisma Client
-        shell: bash
-        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/typecheck
 
   test:
@@ -70,9 +64,6 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
-      - name: Generate Prisma Client
-        shell: bash
-        run: pnpm --filter @backtrade/api prisma:generate
       - uses: ./.github/actions/test
 
   coverage:
@@ -87,9 +78,6 @@ jobs:
         with:
           node-version: "22.19"
           pnpm-version: "10.18.1"
-      - name: Generate Prisma Client
-        shell: bash
-        run: pnpm --filter @backtrade/api prisma:generate
       - name: Run Coverage
         uses: ./.github/actions/test-coverage
       - name: Upload API coverage artifact
