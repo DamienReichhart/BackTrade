@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client"
@@ -11,4 +6,387 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum Role {
+  ANONYMOUS
+  USER
+  ADMIN
+}
+
+enum SessionStatus {
+  RUNNING
+  PAUSED
+  ARCHIVED
+}
+
+enum Timeframe {
+  M1
+  M5
+  M10
+  M15
+  M30
+  H1
+  H2
+  H4
+  D1
+  W1
+}
+
+enum Speed {
+  SPEED_0_5X @map("0.5x")
+  SPEED_1X   @map("1x")
+  SPEED_2X   @map("2x")
+  SPEED_3X   @map("3x")
+  SPEED_5X   @map("5x")
+  SPEED_10X  @map("10x")
+  SPEED_15X  @map("15x")
+}
+
+enum PositionStatus {
+  OPEN
+  CLOSED
+  LIQUIDATED
+}
+
+enum Side {
+  BUY
+  SELL
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  COMMISSION
+  PNL
+  SLIPPAGE
+  SPREAD
+  ADJUSTMENT
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  trialing
+  active_unpaid
+}
+
+enum EntityType {
+  USER
+  SESSION
+  TRANSACTION
+  SUBSCRIPTION
+  POSITION
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  ROLE_CHANGE
+  BAN
+  UNBAN
+}
+
+// ============================================================================
+// USER & AUTH MODELS
+// ============================================================================
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  password_hash      String
+  role               Role     @default(USER)
+  is_banned          Boolean  @default(false)
+  stripe_customer_id String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // Relations
+  sessions            Session[]
+  user_sessions       UserSession[]
+  password_codes      UserPasswordChangeCode[]
+  transactions        Transaction[]
+  subscriptions       Subscription[]
+  audit_logs          AuditLog[]
+  uploaded_datasets   Dataset[]
+
+  @@map("users")
+}
+
+model UserSession {
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  ip_address         String
+  user_agent         String
+  device_info        String
+  refresh_token_hash String
+  issued_at          DateTime @default(now())
+  last_seen          DateTime @default(now())
+  expires_at         DateTime
+  is_active          Boolean  @default(true)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("user_sessions")
+}
+
+model UserPasswordChangeCode {
+  code       String   @id
+  user_id    Int
+  created_at DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("user_password_change_codes")
+}
+
+// ============================================================================
+// SUBSCRIPTION & BILLING MODELS
+// ============================================================================
+
+model Plan {
+  id                Int     @id @default(autoincrement())
+  code              String  @unique
+  stripe_product_id String
+  stripe_price_id   String
+  currency          String  @db.Char(3)
+  price             Decimal @db.Decimal(10, 2)
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id                     Int                @id @default(autoincrement())
+  user_id                Int
+  plan_id                Int
+  stripe_subscription_id String             @unique
+  status                 SubscriptionStatus
+  current_period_start   DateTime
+  current_period_end     DateTime
+  cancel_at_period_end   Boolean            @default(false)
+  canceled_at            DateTime?
+  trial_end              DateTime?
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [plan_id], references: [id])
+
+  @@index([user_id])
+  @@index([plan_id])
+  @@map("subscriptions")
+}
+
+model StripeEvent {
+  id              Int       @id @default(autoincrement())
+  stripe_event_id String    @unique
+  type            String
+  payload         Json
+  received_at     DateTime  @default(now())
+  processed_at    DateTime?
+  success         Boolean   @default(false)
+  error           String?
+
+  @@map("stripe_events")
+}
+
+// ============================================================================
+// TRADING MODELS
+// ============================================================================
+
+model Instrument {
+  id           Int      @id @default(autoincrement())
+  symbol       String   @unique
+  display_name String
+  pip_size     Decimal  @db.Decimal(10, 8)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  sessions Session[]
+  datasets Dataset[]
+  candles  Candle[]
+
+  @@map("instruments")
+}
+
+model Session {
+  id                  Int           @id @default(autoincrement())
+  user_id             Int
+  instrument_id       Int
+  name                String?
+  session_status      SessionStatus @default(PAUSED)
+  speed               Speed         @default(SPEED_1X)
+  start_ts            DateTime
+  current_ts          DateTime
+  end_ts              DateTime?
+  initial_balance     Decimal       @db.Decimal(18, 8)
+  leverage            Int           @default(1)
+  spread_pts          Decimal       @default(0) @db.Decimal(10, 4)
+  slippage_pts        Decimal       @default(0) @db.Decimal(10, 4)
+  commission_per_fill Decimal       @default(0) @db.Decimal(10, 4)
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+
+  // Relations
+  user              User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  instrument        Instrument         @relation(fields: [instrument_id], references: [id])
+  positions         Position[]
+  transactions      Transaction[]
+  session_analytics SessionAnalytics[]
+
+  @@index([user_id])
+  @@index([instrument_id])
+  @@map("sessions")
+}
+
+model Position {
+  id              Int            @id @default(autoincrement())
+  session_id      Int
+  position_status PositionStatus @default(OPEN)
+  side            Side
+  quantity_lots   Decimal        @db.Decimal(18, 8)
+  tp_price        Decimal?       @db.Decimal(18, 8)
+  sl_price        Decimal?       @db.Decimal(18, 8)
+  entry_price     Decimal        @db.Decimal(18, 8)
+  exit_price      Decimal?       @db.Decimal(18, 8)
+  opened_at       DateTime
+  closed_at       DateTime?
+  realized_pnl    Decimal?       @db.Decimal(18, 8)
+  commission_cost Decimal?       @db.Decimal(18, 8)
+  slippage_cost   Decimal?       @db.Decimal(18, 8)
+  spread_cost     Decimal?       @db.Decimal(18, 8)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  // Relations
+  session      Session       @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([session_id])
+  @@map("positions")
+}
+
+model Transaction {
+  id               Int             @id @default(autoincrement())
+  user_id          Int
+  session_id       Int?
+  position_id      Int?
+  transaction_type TransactionType
+  amount           Decimal         @db.Decimal(18, 8)
+  balance_after    Decimal         @db.Decimal(18, 8)
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  session  Session?  @relation(fields: [session_id], references: [id], onDelete: SetNull)
+  position Position? @relation(fields: [position_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([session_id])
+  @@index([position_id])
+  @@map("transactions")
+}
+
+// ============================================================================
+// MARKET DATA MODELS
+// ============================================================================
+
+model Dataset {
+  id                  Int       @id @default(autoincrement())
+  instrument_id       Int
+  timeframe           Timeframe
+  uploaded_by_user_id Int
+  uploaded_at         DateTime?
+  records_count       Int?
+  file_name           String?
+  is_active           Boolean   @default(false)
+  start_ts            DateTime?
+  end_ts              DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  // Relations
+  instrument       Instrument @relation(fields: [instrument_id], references: [id])
+  uploaded_by_user User       @relation(fields: [uploaded_by_user_id], references: [id])
+
+  @@unique([instrument_id, timeframe])
+  @@index([instrument_id])
+  @@index([uploaded_by_user_id])
+  @@map("datasets")
+}
+
+model Candle {
+  id            Int       @id @default(autoincrement())
+  instrument_id Int
+  timeframe     Timeframe
+  ts            DateTime
+  open          Decimal   @db.Decimal(18, 8)
+  high          Decimal   @db.Decimal(18, 8)
+  low           Decimal   @db.Decimal(18, 8)
+  close         Decimal   @db.Decimal(18, 8)
+  volume        Decimal   @db.Decimal(18, 8)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  instrument Instrument @relation(fields: [instrument_id], references: [id])
+
+  @@unique([instrument_id, timeframe, ts])
+  @@index([instrument_id, timeframe])
+  @@index([ts])
+  @@map("candles")
+}
+
+// ============================================================================
+// ANALYTICS & AUDIT MODELS
+// ============================================================================
+
+model SessionAnalytics {
+  id          Int      @id @default(autoincrement())
+  session_id  Int
+  file_name   String
+  modified_at DateTime
+  created_at  DateTime @default(now())
+
+  // Relations
+  session Session @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([session_id])
+  @@map("session_analytics")
+}
+
+model AuditLog {
+  id           Int         @id @default(autoincrement())
+  user_id      Int
+  entity_type  EntityType
+  entity_id    String
+  audit_action AuditAction
+  details      Json
+  ip_address   String
+  user_agent   String
+  created_at   DateTime    @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+  @@map("audit_logs")
 }
