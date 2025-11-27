@@ -35,6 +35,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/prisma-generate
+        with:
+          database-url: ${{ secrets.DATABASE_URL }}
       - uses: ./.github/actions/lint
 
   typecheck:
@@ -45,6 +47,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/prisma-generate
+        with:
+          database-url: ${{ secrets.DATABASE_URL }}
       - uses: ./.github/actions/typecheck
 
   test:
@@ -55,6 +59,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/prisma-generate
+        with:
+          database-url: ${{ secrets.DATABASE_URL }}
       - uses: ./.github/actions/test
 
   coverage:
@@ -68,6 +74,8 @@ jobs:
         uses: ./.github/actions/setup
       - name: Generate Prisma Client
         uses: ./.github/actions/prisma-generate
+        with:
+          database-url: ${{ secrets.DATABASE_URL }}
       - name: Run Coverage
         uses: ./.github/actions/test-coverage
       - name: Upload API coverage artifact
@@ -107,4 +115,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/prisma-generate
+        with:
+          database-url: ${{ secrets.DATABASE_URL }}
       - uses: ./.github/actions/build
