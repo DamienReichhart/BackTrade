@@ -26,7 +26,6 @@ services:
     networks:
       backtrade:
         ipv4_address: 192.168.250.2
-  
 
   redis:
     build:

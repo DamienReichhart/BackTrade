@@ -8,11 +8,18 @@ const tseslint = require("typescript-eslint");
  */
 module.exports = [
   {
-    ignores: ["dist", "node_modules", "coverage", "*.config.cjs"],
+    ignores: [
+      "dist",
+      "node_modules",
+      "coverage",
+      "*.config.cjs",
+      "*.config.ts",
+      "src/generated/**",
+    ],
   },
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
-    ignores: ["**/*.config.{js,cjs,mjs}"],
+    ignores: ["**/*.config.{js,cjs,mjs,ts}", "src/generated/**"],
     ...js.configs.recommended,
     ...tseslint.configs.recommended[0],
     languageOptions: {
