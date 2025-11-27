@@ -10,22 +10,7 @@ services:
       - ./apps:/app/apps
       - ./packages:/app/packages
       - ./assets:/app/assets
-      - ./documentation:/app/documentation
       - ./eslint-config.js:/app/eslint-config.js
-      - ./LICENSE:/app/LICENSE
-      - ./package.json:/app/package.json
-      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
-      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
-      - ./turbo.json:/app/turbo.json
-      - ./README.md:/app/README.md
-      # Exclude node_modules from being overridden
-      - /app/node_modules
-      - /app/apps/api/node_modules
-      - /app/apps/web/node_modules
-      - /app/packages/config/node_modules
-      - /app/packages/eslint-config/node_modules
-      - /app/packages/tsconfig/node_modules
-      - /app/packages/types/node_modules
     networks:
       backtrade:
         ipv4_address: 192.168.250.1
