@@ -8,7 +8,7 @@ export const transport =
           {
             target: "pino/file",
             options: { destination: 1 }, // stdout
-            level: "info"
+            level: ENV.LOG_LEVEL
           }
         ]
       })
@@ -21,7 +21,7 @@ export const transport =
               translateTime: "SYS:standard",
               singleLine: false
             },
-            level: "debug"
+            level: ENV.LOG_LEVEL
           }
         ]
       });
