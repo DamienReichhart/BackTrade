@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 
 export const serializers = {
     req: (req: Request) => ({
-      id: req.id,
+      id: req.id ?? "unknown",
       method: req.method,
       url: req.url,
       remoteAddress: req.ip
