@@ -5,7 +5,7 @@ import { ENV } from "../config/env";
 
 export const logger = pino(
   {
-    level: ENV.LOG_LEVEL,
+    level: ENV.API_LOG_LEVEL,
     serializers,
     base: {
       pid: false,

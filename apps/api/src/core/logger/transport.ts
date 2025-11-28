@@ -3,7 +3,7 @@ import path from "node:path";
 import { ENV } from "../../config/env";
 
 function getLogFilePath(filename: string): string {
-  return path.resolve(ENV.LOG_DIR, filename);
+  return path.resolve(ENV.API_LOG_DIR, filename);
 }
 
 export const transport = pino.transport({
@@ -13,7 +13,7 @@ export const transport = pino.transport({
       ? {
           target: "pino/file",
           options: { destination: 1 },
-          level: ENV.LOG_LEVEL,
+          level: ENV.API_LOG_LEVEL,
         }
       : {
           target: "pino-pretty",
@@ -22,7 +22,7 @@ export const transport = pino.transport({
             translateTime: "SYS:standard",
             singleLine: false,
           },
-          level: ENV.LOG_LEVEL,
+          level: ENV.API_LOG_LEVEL,
         },
     {
       target: "pino/file",
@@ -30,7 +30,7 @@ export const transport = pino.transport({
         destination: getLogFilePath("app.log"),
         mkdir: true,
       },
-      level: ENV.LOG_LEVEL,
+      level: ENV.API_LOG_LEVEL,
     },
     // error.log - only error level and above
     {
