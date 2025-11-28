@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all subscriptions matching optional filter conditions
  */
-export async function getAllSubscriptions(
+async function getAllSubscriptions(
   where?: Prisma.SubscriptionWhereInput,
 ): Promise<Subscription[]> {
   return prisma.subscription.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllSubscriptions(
 /**
  * Get a subscription by ID
  */
-export async function getSubscriptionById(
+async function getSubscriptionById(
   id: number | string,
 ): Promise<Subscription | null> {
   return prisma.subscription.findUnique({
@@ -30,7 +30,7 @@ export async function getSubscriptionById(
 /**
  * Create a new subscription
  */
-export async function createSubscription(
+async function createSubscription(
   data: Prisma.SubscriptionCreateInput,
 ): Promise<Subscription> {
   return prisma.subscription.create({ data });
@@ -39,7 +39,7 @@ export async function createSubscription(
 /**
  * Update an existing subscription
  */
-export async function updateSubscription(
+async function updateSubscription(
   id: number | string,
   data: Prisma.SubscriptionUpdateInput,
 ): Promise<Subscription> {
@@ -52,10 +52,18 @@ export async function updateSubscription(
 /**
  * Delete a subscription by ID
  */
-export async function deleteSubscription(
+async function deleteSubscription(
   id: number | string,
 ): Promise<Subscription> {
   return prisma.subscription.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllSubscriptions,
+  getSubscriptionById,
+  createSubscription,
+  updateSubscription,
+  deleteSubscription,
+};

@@ -13,7 +13,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all user password change codes matching optional filter conditions
  */
-export async function getAllUserPasswordChangeCodes(
+async function getAllUserPasswordChangeCodes(
   where?: Prisma.UserPasswordChangeCodeWhereInput,
 ): Promise<UserPasswordChangeCode[]> {
   return prisma.userPasswordChangeCode.findMany({ where });
@@ -22,7 +22,7 @@ export async function getAllUserPasswordChangeCodes(
 /**
  * Get a user password change code by code
  */
-export async function getUserPasswordChangeCodeByCode(
+async function getUserPasswordChangeCodeByCode(
   code: number | string,
 ): Promise<UserPasswordChangeCode | null> {
   return prisma.userPasswordChangeCode.findUnique({
@@ -33,7 +33,7 @@ export async function getUserPasswordChangeCodeByCode(
 /**
  * Create a new user password change code
  */
-export async function createUserPasswordChangeCode(
+async function createUserPasswordChangeCode(
   data: Prisma.UserPasswordChangeCodeCreateInput,
 ): Promise<UserPasswordChangeCode> {
   return prisma.userPasswordChangeCode.create({ data });
@@ -42,7 +42,7 @@ export async function createUserPasswordChangeCode(
 /**
  * Update an existing user password change code
  */
-export async function updateUserPasswordChangeCode(
+async function updateUserPasswordChangeCode(
   code: number | string,
   data: Prisma.UserPasswordChangeCodeUpdateInput,
 ): Promise<UserPasswordChangeCode> {
@@ -55,10 +55,18 @@ export async function updateUserPasswordChangeCode(
 /**
  * Delete a user password change code by code
  */
-export async function deleteUserPasswordChangeCode(
+async function deleteUserPasswordChangeCode(
   code: number | string,
 ): Promise<UserPasswordChangeCode> {
   return prisma.userPasswordChangeCode.delete({
     where: { code: String(code) },
   });
 }
+
+export default {
+  getAllUserPasswordChangeCodes,
+  getUserPasswordChangeCodeByCode,
+  createUserPasswordChangeCode,
+  updateUserPasswordChangeCode,
+  deleteUserPasswordChangeCode,
+};

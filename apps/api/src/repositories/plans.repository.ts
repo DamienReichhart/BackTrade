@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all plans matching optional filter conditions
  */
-export async function getAllPlans(
+async function getAllPlans(
   where?: Prisma.PlanWhereInput,
 ): Promise<Plan[]> {
   return prisma.plan.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllPlans(
 /**
  * Get a plan by ID
  */
-export async function getPlanById(id: number | string): Promise<Plan | null> {
+async function getPlanById(id: number | string): Promise<Plan | null> {
   return prisma.plan.findUnique({
     where: { id: Number(id) },
   });
@@ -28,14 +28,14 @@ export async function getPlanById(id: number | string): Promise<Plan | null> {
 /**
  * Create a new plan
  */
-export async function createPlan(data: Prisma.PlanCreateInput): Promise<Plan> {
+async function createPlan(data: Prisma.PlanCreateInput): Promise<Plan> {
   return prisma.plan.create({ data });
 }
 
 /**
  * Update an existing plan
  */
-export async function updatePlan(
+async function updatePlan(
   id: number | string,
   data: Prisma.PlanUpdateInput,
 ): Promise<Plan> {
@@ -48,8 +48,16 @@ export async function updatePlan(
 /**
  * Delete a plan by ID
  */
-export async function deletePlan(id: number | string): Promise<Plan> {
+async function deletePlan(id: number | string): Promise<Plan> {
   return prisma.plan.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllPlans,
+  getPlanById,
+  createPlan,
+  updatePlan,
+  deletePlan,
+};

@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all user sessions matching optional filter conditions
  */
-export async function getAllUserSessions(
+async function getAllUserSessions(
   where?: Prisma.UserSessionWhereInput,
 ): Promise<UserSession[]> {
   return prisma.userSession.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllUserSessions(
 /**
  * Get a user session by ID
  */
-export async function getUserSessionById(
+async function getUserSessionById(
   id: number | string,
 ): Promise<UserSession | null> {
   return prisma.userSession.findUnique({
@@ -30,7 +30,7 @@ export async function getUserSessionById(
 /**
  * Create a new user session
  */
-export async function createUserSession(
+async function createUserSession(
   data: Prisma.UserSessionCreateInput,
 ): Promise<UserSession> {
   return prisma.userSession.create({ data });
@@ -39,7 +39,7 @@ export async function createUserSession(
 /**
  * Update an existing user session
  */
-export async function updateUserSession(
+async function updateUserSession(
   id: number | string,
   data: Prisma.UserSessionUpdateInput,
 ): Promise<UserSession> {
@@ -52,10 +52,18 @@ export async function updateUserSession(
 /**
  * Delete a user session by ID
  */
-export async function deleteUserSession(
+async function deleteUserSession(
   id: number | string,
 ): Promise<UserSession> {
   return prisma.userSession.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllUserSessions,
+  getUserSessionById,
+  createUserSession,
+  updateUserSession,
+  deleteUserSession,
+};

@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all candles matching optional filter conditions
  */
-export async function getAllCandles(
+async function getAllCandles(
   where?: Prisma.CandleWhereInput,
 ): Promise<Candle[]> {
   return prisma.candle.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllCandles(
 /**
  * Get a candle by ID
  */
-export async function getCandleById(
+async function getCandleById(
   id: number | string,
 ): Promise<Candle | null> {
   return prisma.candle.findUnique({
@@ -30,7 +30,7 @@ export async function getCandleById(
 /**
  * Create a new candle
  */
-export async function createCandle(
+async function createCandle(
   data: Prisma.CandleCreateInput,
 ): Promise<Candle> {
   return prisma.candle.create({ data });
@@ -39,7 +39,7 @@ export async function createCandle(
 /**
  * Update an existing candle
  */
-export async function updateCandle(
+async function updateCandle(
   id: number | string,
   data: Prisma.CandleUpdateInput,
 ): Promise<Candle> {
@@ -52,8 +52,16 @@ export async function updateCandle(
 /**
  * Delete a candle by ID
  */
-export async function deleteCandle(id: number | string): Promise<Candle> {
+async function deleteCandle(id: number | string): Promise<Candle> {
   return prisma.candle.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllCandles,
+  getCandleById,
+  createCandle,
+  updateCandle,
+  deleteCandle,
+};

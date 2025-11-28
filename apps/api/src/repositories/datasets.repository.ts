@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all datasets matching optional filter conditions
  */
-export async function getAllDatasets(
+async function getAllDatasets(
   where?: Prisma.DatasetWhereInput,
 ): Promise<Dataset[]> {
   return prisma.dataset.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllDatasets(
 /**
  * Get a dataset by ID
  */
-export async function getDatasetById(
+async function getDatasetById(
   id: number | string,
 ): Promise<Dataset | null> {
   return prisma.dataset.findUnique({
@@ -30,7 +30,7 @@ export async function getDatasetById(
 /**
  * Create a new dataset
  */
-export async function createDataset(
+async function createDataset(
   data: Prisma.DatasetCreateInput,
 ): Promise<Dataset> {
   return prisma.dataset.create({ data });
@@ -39,7 +39,7 @@ export async function createDataset(
 /**
  * Update an existing dataset
  */
-export async function updateDataset(
+async function updateDataset(
   id: number | string,
   data: Prisma.DatasetUpdateInput,
 ): Promise<Dataset> {
@@ -52,8 +52,16 @@ export async function updateDataset(
 /**
  * Delete a dataset by ID
  */
-export async function deleteDataset(id: number | string): Promise<Dataset> {
+async function deleteDataset(id: number | string): Promise<Dataset> {
   return prisma.dataset.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllDatasets,
+  getDatasetById,
+  createDataset,
+  updateDataset,
+  deleteDataset,
+};

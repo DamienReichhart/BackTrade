@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all audit logs matching optional filter conditions
  */
-export async function getAllAuditLogs(
+async function getAllAuditLogs(
   where?: Prisma.AuditLogWhereInput,
 ): Promise<AuditLog[]> {
   return prisma.auditLog.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllAuditLogs(
 /**
  * Get an audit log by ID
  */
-export async function getAuditLogById(
+async function getAuditLogById(
   id: number | string,
 ): Promise<AuditLog | null> {
   return prisma.auditLog.findUnique({
@@ -30,7 +30,7 @@ export async function getAuditLogById(
 /**
  * Create a new audit log
  */
-export async function createAuditLog(
+async function createAuditLog(
   data: Prisma.AuditLogCreateInput,
 ): Promise<AuditLog> {
   return prisma.auditLog.create({ data });
@@ -39,7 +39,7 @@ export async function createAuditLog(
 /**
  * Update an existing audit log
  */
-export async function updateAuditLog(
+async function updateAuditLog(
   id: number | string,
   data: Prisma.AuditLogUpdateInput,
 ): Promise<AuditLog> {
@@ -52,8 +52,16 @@ export async function updateAuditLog(
 /**
  * Delete an audit log by ID
  */
-export async function deleteAuditLog(id: number | string): Promise<AuditLog> {
+async function deleteAuditLog(id: number | string): Promise<AuditLog> {
   return prisma.auditLog.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllAuditLogs,
+  getAuditLogById,
+  createAuditLog,
+  updateAuditLog,
+  deleteAuditLog,
+};

@@ -1,19 +1,14 @@
+import "dotenv/config";
 import { z } from "zod";
 
-/**
- * Configuration for the API application
- * Loads environment variables from .env file²
- */
-const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
-  PORT: z.coerce.number().default(3000),
-  HOST: z.string().default("0.0.0.0"),
+const EnvSchema = z.object({
+    HOST: z.string(),
+    PORT: z.coerce.number().int().positive(),
+    DATABASE_URL: z.string(),
+    NODE_ENV: z.enum(["development", "production", "test"]),
+    REDIS_HOST: z.string(),
+    REDIS_PORT: z.coerce.number().int().positive(),
+    REDIS_PASSWORD: z.string(),
 });
 
-export const env = envSchema.parse({
-  NODE_ENV: process.env.NODE_ENV,
-  PORT: process.env.PORT,
-  HOST: process.env.HOST,
-});
+export const ENV = EnvSchema.parse(process.env);

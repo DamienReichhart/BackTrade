@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all sessions matching optional filter conditions
  */
-export async function getAllSessions(
+async function getAllSessions(
   where?: Prisma.SessionWhereInput,
 ): Promise<Session[]> {
   return prisma.session.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllSessions(
 /**
  * Get a session by ID
  */
-export async function getSessionById(
+async function getSessionById(
   id: number | string,
 ): Promise<Session | null> {
   return prisma.session.findUnique({
@@ -30,7 +30,7 @@ export async function getSessionById(
 /**
  * Create a new session
  */
-export async function createSession(
+async function createSession(
   data: Prisma.SessionCreateInput,
 ): Promise<Session> {
   return prisma.session.create({ data });
@@ -39,7 +39,7 @@ export async function createSession(
 /**
  * Update an existing session
  */
-export async function updateSession(
+async function updateSession(
   id: number | string,
   data: Prisma.SessionUpdateInput,
 ): Promise<Session> {
@@ -52,8 +52,16 @@ export async function updateSession(
 /**
  * Delete a session by ID
  */
-export async function deleteSession(id: number | string): Promise<Session> {
+async function deleteSession(id: number | string): Promise<Session> {
   return prisma.session.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllSessions,
+  getSessionById,
+  createSession,
+  updateSession,
+  deleteSession,
+};

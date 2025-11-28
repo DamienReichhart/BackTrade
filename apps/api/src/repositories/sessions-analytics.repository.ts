@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all session analytics matching optional filter conditions
  */
-export async function getAllSessionAnalytics(
+async function getAllSessionAnalytics(
   where?: Prisma.SessionAnalyticsWhereInput,
 ): Promise<SessionAnalytics[]> {
   return prisma.sessionAnalytics.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllSessionAnalytics(
 /**
  * Get a session analytics by ID
  */
-export async function getSessionAnalyticsById(
+async function getSessionAnalyticsById(
   id: number | string,
 ): Promise<SessionAnalytics | null> {
   return prisma.sessionAnalytics.findUnique({
@@ -30,7 +30,7 @@ export async function getSessionAnalyticsById(
 /**
  * Create a new session analytics
  */
-export async function createSessionAnalytics(
+async function createSessionAnalytics(
   data: Prisma.SessionAnalyticsCreateInput,
 ): Promise<SessionAnalytics> {
   return prisma.sessionAnalytics.create({ data });
@@ -39,7 +39,7 @@ export async function createSessionAnalytics(
 /**
  * Update an existing session analytics
  */
-export async function updateSessionAnalytics(
+async function updateSessionAnalytics(
   id: number | string,
   data: Prisma.SessionAnalyticsUpdateInput,
 ): Promise<SessionAnalytics> {
@@ -52,10 +52,18 @@ export async function updateSessionAnalytics(
 /**
  * Delete a session analytics by ID
  */
-export async function deleteSessionAnalytics(
+async function deleteSessionAnalytics(
   id: number | string,
 ): Promise<SessionAnalytics> {
   return prisma.sessionAnalytics.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllSessionAnalytics,
+  getSessionAnalyticsById,
+  createSessionAnalytics,
+  updateSessionAnalytics,
+  deleteSessionAnalytics,
+};

@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all users matching optional filter conditions
  */
-export async function getAllUsers(
+async function getAllUsers(
   where?: Prisma.UserWhereInput,
 ): Promise<User[]> {
   return prisma.user.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllUsers(
 /**
  * Get a user by ID
  */
-export async function getUserById(id: number | string): Promise<User | null> {
+async function getUserById(id: number | string): Promise<User | null> {
   return prisma.user.findUnique({
     where: { id: Number(id) },
   });
@@ -28,14 +28,14 @@ export async function getUserById(id: number | string): Promise<User | null> {
 /**
  * Create a new user
  */
-export async function createUser(data: Prisma.UserCreateInput): Promise<User> {
+async function createUser(data: Prisma.UserCreateInput): Promise<User> {
   return prisma.user.create({ data });
 }
 
 /**
  * Update an existing user
  */
-export async function updateUser(
+async function updateUser(
   id: number | string,
   data: Prisma.UserUpdateInput,
 ): Promise<User> {
@@ -48,8 +48,16 @@ export async function updateUser(
 /**
  * Delete a user by ID
  */
-export async function deleteUser(id: number | string): Promise<User> {
+async function deleteUser(id: number | string): Promise<User> {
   return prisma.user.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+};

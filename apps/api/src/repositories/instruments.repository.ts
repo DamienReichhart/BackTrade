@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all instruments matching optional filter conditions
  */
-export async function getAllInstruments(
+async function getAllInstruments(
   where?: Prisma.InstrumentWhereInput,
 ): Promise<Instrument[]> {
   return prisma.instrument.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllInstruments(
 /**
  * Get an instrument by ID
  */
-export async function getInstrumentById(
+async function getInstrumentById(
   id: number | string,
 ): Promise<Instrument | null> {
   return prisma.instrument.findUnique({
@@ -30,7 +30,7 @@ export async function getInstrumentById(
 /**
  * Create a new instrument
  */
-export async function createInstrument(
+async function createInstrument(
   data: Prisma.InstrumentCreateInput,
 ): Promise<Instrument> {
   return prisma.instrument.create({ data });
@@ -39,7 +39,7 @@ export async function createInstrument(
 /**
  * Update an existing instrument
  */
-export async function updateInstrument(
+async function updateInstrument(
   id: number | string,
   data: Prisma.InstrumentUpdateInput,
 ): Promise<Instrument> {
@@ -52,10 +52,18 @@ export async function updateInstrument(
 /**
  * Delete an instrument by ID
  */
-export async function deleteInstrument(
+async function deleteInstrument(
   id: number | string,
 ): Promise<Instrument> {
   return prisma.instrument.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllInstruments,
+  getInstrumentById,
+  createInstrument,
+  updateInstrument,
+  deleteInstrument,
+};

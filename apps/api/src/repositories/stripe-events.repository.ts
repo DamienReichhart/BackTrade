@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all stripe events matching optional filter conditions
  */
-export async function getAllStripeEvents(
+async function getAllStripeEvents(
   where?: Prisma.StripeEventWhereInput,
 ): Promise<StripeEvent[]> {
   return prisma.stripeEvent.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllStripeEvents(
 /**
  * Get a stripe event by ID
  */
-export async function getStripeEventById(
+async function getStripeEventById(
   id: number | string,
 ): Promise<StripeEvent | null> {
   return prisma.stripeEvent.findUnique({
@@ -30,7 +30,7 @@ export async function getStripeEventById(
 /**
  * Create a new stripe event
  */
-export async function createStripeEvent(
+async function createStripeEvent(
   data: Prisma.StripeEventCreateInput,
 ): Promise<StripeEvent> {
   return prisma.stripeEvent.create({ data });
@@ -39,7 +39,7 @@ export async function createStripeEvent(
 /**
  * Update an existing stripe event
  */
-export async function updateStripeEvent(
+async function updateStripeEvent(
   id: number | string,
   data: Prisma.StripeEventUpdateInput,
 ): Promise<StripeEvent> {
@@ -52,10 +52,18 @@ export async function updateStripeEvent(
 /**
  * Delete a stripe event by ID
  */
-export async function deleteStripeEvent(
+async function deleteStripeEvent(
   id: number | string,
 ): Promise<StripeEvent> {
   return prisma.stripeEvent.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllStripeEvents,
+  getStripeEventById,
+  createStripeEvent,
+  updateStripeEvent,
+  deleteStripeEvent,
+};

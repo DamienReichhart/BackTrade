@@ -2,28 +2,30 @@
  * Repositories Module
  *
  * Central export point for all repository functions.
+ * Note: Repositories use default exports. Import directly from individual files:
+ * import usersRepo from "./repositories/users.repository";
  */
 
 // User-related repositories
-export * from "./users.repository";
-export * from "./user-sessions.repository";
-export * from "./user-password-change-codes.repository";
+export { default as usersRepo } from "./users.repository";
+export { default as userSessionsRepo } from "./user-sessions.repository";
+export { default as userPasswordChangeCodesRepo } from "./user-password-change-codes.repository";
 
 // Billing repositories
-export * from "./plans.repository";
-export * from "./subscriptions.repository";
-export * from "./stripe-events.repository";
+export { default as plansRepo } from "./plans.repository";
+export { default as subscriptionsRepo } from "./subscriptions.repository";
+export { default as stripeEventsRepo } from "./stripe-events.repository";
 
 // Trading repositories
-export * from "./instruments.repository";
-export * from "./sessions.repository";
-export * from "./positions.repository";
-export * from "./transactions.repository";
+export { default as instrumentsRepo } from "./instruments.repository";
+export { default as sessionsRepo } from "./sessions.repository";
+export { default as positionsRepo } from "./positions.repository";
+export { default as transactionsRepo } from "./transactions.repository";
 
 // Data repositories
-export * from "./datasets.repository";
-export * from "./candles.repository";
+export { default as datasetsRepo } from "./datasets.repository";
+export { default as candlesRepo } from "./candles.repository";
 
 // Analytics repositories
-export * from "./sessions-analytics.repository";
-export * from "./audit-logs.repository";
+export { default as sessionsAnalyticsRepo } from "./sessions-analytics.repository";
+export { default as auditLogsRepo } from "./audit-logs.repository";

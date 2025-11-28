@@ -10,7 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all transactions matching optional filter conditions
  */
-export async function getAllTransactions(
+async function getAllTransactions(
   where?: Prisma.TransactionWhereInput,
 ): Promise<Transaction[]> {
   return prisma.transaction.findMany({ where });
@@ -19,7 +19,7 @@ export async function getAllTransactions(
 /**
  * Get a transaction by ID
  */
-export async function getTransactionById(
+async function getTransactionById(
   id: number | string,
 ): Promise<Transaction | null> {
   return prisma.transaction.findUnique({
@@ -30,7 +30,7 @@ export async function getTransactionById(
 /**
  * Create a new transaction
  */
-export async function createTransaction(
+async function createTransaction(
   data: Prisma.TransactionCreateInput,
 ): Promise<Transaction> {
   return prisma.transaction.create({ data });
@@ -39,7 +39,7 @@ export async function createTransaction(
 /**
  * Update an existing transaction
  */
-export async function updateTransaction(
+async function updateTransaction(
   id: number | string,
   data: Prisma.TransactionUpdateInput,
 ): Promise<Transaction> {
@@ -52,10 +52,18 @@ export async function updateTransaction(
 /**
  * Delete a transaction by ID
  */
-export async function deleteTransaction(
+async function deleteTransaction(
   id: number | string,
 ): Promise<Transaction> {
   return prisma.transaction.delete({
     where: { id: Number(id) },
   });
 }
+
+export default {
+  getAllTransactions,
+  getTransactionById,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
+};

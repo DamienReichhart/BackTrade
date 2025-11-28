@@ -12,7 +12,7 @@ import { verify, hash, argon2id } from "argon2";
  * @param password - The plain text password to hash
  * @returns Promise resolving to the hashed password string
  */
-export async function hashPassword(password: string): Promise<string> {
+async function hashPassword(password: string): Promise<string> {
   return await hash(password, {
     type: argon2id,
     memoryCost: 2 ** 16, // 64MB
@@ -28,9 +28,15 @@ export async function hashPassword(password: string): Promise<string> {
  * @param hashedPassword - The bcrypt hash to compare against
  * @returns Promise resolving to true if password matches, false otherwise
  */
-export async function verifyPassword(
+async function verifyPassword(
   password: string,
   hashedPassword: string,
 ): Promise<boolean> {
   return await verify(hashedPassword, password);
 }
+
+
+export default {
+  hashPassword,
+  verifyPassword,
+};
