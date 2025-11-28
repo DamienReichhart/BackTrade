@@ -10,9 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all users matching optional filter conditions
  */
-async function getAllUsers(
-  where?: Prisma.UserWhereInput,
-): Promise<User[]> {
+async function getAllUsers(where?: Prisma.UserWhereInput): Promise<User[]> {
   return prisma.user.findMany({ where });
 }
 

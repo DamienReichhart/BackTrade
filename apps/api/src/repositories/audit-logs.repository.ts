@@ -19,9 +19,7 @@ async function getAllAuditLogs(
 /**
  * Get an audit log by ID
  */
-async function getAuditLogById(
-  id: number | string,
-): Promise<AuditLog | null> {
+async function getAuditLogById(id: number | string): Promise<AuditLog | null> {
   return prisma.auditLog.findUnique({
     where: { id: Number(id) },
   });

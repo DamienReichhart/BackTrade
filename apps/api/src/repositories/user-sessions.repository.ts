@@ -52,9 +52,7 @@ async function updateUserSession(
 /**
  * Delete a user session by ID
  */
-async function deleteUserSession(
-  id: number | string,
-): Promise<UserSession> {
+async function deleteUserSession(id: number | string): Promise<UserSession> {
   return prisma.userSession.delete({
     where: { id: Number(id) },
   });

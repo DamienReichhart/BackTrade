@@ -19,9 +19,7 @@ async function getAllPositions(
 /**
  * Get a position by ID
  */
-async function getPositionById(
-  id: number | string,
-): Promise<Position | null> {
+async function getPositionById(id: number | string): Promise<Position | null> {
   return prisma.position.findUnique({
     where: { id: Number(id) },
   });

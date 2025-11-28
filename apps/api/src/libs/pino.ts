@@ -9,13 +9,12 @@ export const logger = pino(
     serializers,
     base: {
       pid: false,
-      service: "api-backend"
-    }
+      service: "api-backend",
+    },
   },
-  transport
+  transport,
 );
 
 export function getModuleLogger(moduleName: string) {
-    return logger.child({ module: moduleName });
-  }
-  
+  return logger.child({ module: moduleName });
+}

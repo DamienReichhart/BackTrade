@@ -1,8 +1,4 @@
-import express, {
-  type Express,
-  type Request,
-  type Response,
-} from "express";
+import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";

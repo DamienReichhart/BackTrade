@@ -19,9 +19,7 @@ async function getAllDatasets(
 /**
  * Get a dataset by ID
  */
-async function getDatasetById(
-  id: number | string,
-): Promise<Dataset | null> {
+async function getDatasetById(id: number | string): Promise<Dataset | null> {
   return prisma.dataset.findUnique({
     where: { id: Number(id) },
   });

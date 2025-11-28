@@ -10,9 +10,7 @@ import { prisma } from "../libs/prisma";
 /**
  * Get all plans matching optional filter conditions
  */
-async function getAllPlans(
-  where?: Prisma.PlanWhereInput,
-): Promise<Plan[]> {
+async function getAllPlans(where?: Prisma.PlanWhereInput): Promise<Plan[]> {
   return prisma.plan.findMany({ where });
 }
 

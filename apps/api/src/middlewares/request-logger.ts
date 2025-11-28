@@ -6,13 +6,9 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   logger.info({ req }, "incoming request");
 
   res.on("finish", () => {
-    const duration =
-      Number(process.hrtime.bigint() - startTime) / 1_000_000;
+    const duration = Number(process.hrtime.bigint() - startTime) / 1_000_000;
 
-    logger.info(
-      { req, res, durationMs: duration },
-      "request completed"
-    );
+    logger.info({ req, res, durationMs: duration }, "request completed");
   });
 
   next();

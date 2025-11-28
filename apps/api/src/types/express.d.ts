@@ -5,4 +5,3 @@ declare namespace Express {
     id?: string;
   }
 }
-

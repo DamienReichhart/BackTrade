@@ -19,9 +19,7 @@ async function getAllCandles(
 /**
  * Get a candle by ID
  */
-async function getCandleById(
-  id: number | string,
-): Promise<Candle | null> {
+async function getCandleById(id: number | string): Promise<Candle | null> {
   return prisma.candle.findUnique({
     where: { id: Number(id) },
   });
@@ -30,9 +28,7 @@ async function getCandleById(
 /**
  * Create a new candle
  */
-async function createCandle(
-  data: Prisma.CandleCreateInput,
-): Promise<Candle> {
+async function createCandle(data: Prisma.CandleCreateInput): Promise<Candle> {
   return prisma.candle.create({ data });
 }
 

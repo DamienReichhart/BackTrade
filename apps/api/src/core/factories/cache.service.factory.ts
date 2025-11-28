@@ -40,10 +40,10 @@ export interface CacheService<T> {
 
 /**
  * Factory function to create a cache service for any entity type
- * 
+ *
  * @param config - Configuration object with prefix, TTL, and entity name
  * @returns A cache service object with cache, get, and invalidate methods
- * 
+ *
  * @example
  * ```typescript
  * const userCacheService = createCacheService<User>({
@@ -53,7 +53,9 @@ export interface CacheService<T> {
  * });
  * ```
  */
-export function createCacheService<T>(config: CacheServiceConfig): CacheService<T> {
+export function createCacheService<T>(
+  config: CacheServiceConfig,
+): CacheService<T> {
   const { prefix, ttl, entityName } = config;
 
   async function cache(id: number, data: T): Promise<void> {
@@ -90,4 +92,3 @@ export function createCacheService<T>(config: CacheServiceConfig): CacheService<
     invalidate,
   };
 }
-

@@ -5,7 +5,9 @@ export async function getUsers() {
   return [
     {
       email: "admin@backtrade.damien-reichhart.fr",
-      password_hash: await hashService.hashPassword("TheMostSecuredPasswordInTheWorld"),
+      password_hash: await hashService.hashPassword(
+        "TheMostSecuredPasswordInTheWorld",
+      ),
       role: Role.ADMIN,
     },
   ];

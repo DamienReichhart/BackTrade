@@ -52,9 +52,7 @@ async function updateTransaction(
 /**
  * Delete a transaction by ID
  */
-async function deleteTransaction(
-  id: number | string,
-): Promise<Transaction> {
+async function deleteTransaction(id: number | string): Promise<Transaction> {
   return prisma.transaction.delete({
     where: { id: Number(id) },
   });

@@ -52,9 +52,7 @@ async function updateInstrument(
 /**
  * Delete an instrument by ID
  */
-async function deleteInstrument(
-  id: number | string,
-): Promise<Instrument> {
+async function deleteInstrument(id: number | string): Promise<Instrument> {
   return prisma.instrument.delete({
     where: { id: Number(id) },
   });

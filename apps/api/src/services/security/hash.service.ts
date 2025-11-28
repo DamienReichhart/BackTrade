@@ -35,7 +35,6 @@ async function verifyPassword(
   return await verify(hashedPassword, password);
 }
 
-
 export default {
   hashPassword,
   verifyPassword,

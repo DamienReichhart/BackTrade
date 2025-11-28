@@ -52,9 +52,7 @@ async function updateStripeEvent(
 /**
  * Delete a stripe event by ID
  */
-async function deleteStripeEvent(
-  id: number | string,
-): Promise<StripeEvent> {
+async function deleteStripeEvent(id: number | string): Promise<StripeEvent> {
   return prisma.stripeEvent.delete({
     where: { id: Number(id) },
   });

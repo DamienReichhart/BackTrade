@@ -19,9 +19,7 @@ async function getAllSessions(
 /**
  * Get a session by ID
  */
-async function getSessionById(
-  id: number | string,
-): Promise<Session | null> {
+async function getSessionById(id: number | string): Promise<Session | null> {
   return prisma.session.findUnique({
     where: { id: Number(id) },
   });

@@ -52,9 +52,7 @@ async function updateSubscription(
 /**
  * Delete a subscription by ID
  */
-async function deleteSubscription(
-  id: number | string,
-): Promise<Subscription> {
+async function deleteSubscription(id: number | string): Promise<Subscription> {
   return prisma.subscription.delete({
     where: { id: Number(id) },
   });
