@@ -38,7 +38,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       backtrade:
-        ipv4_address: 192.168.250.2
+        ipv4_address: 192.168.250.11
     restart: always
 
   frontend:
@@ -47,7 +47,7 @@ services:
       dockerfile: docker/images/frontend.prod.dockerfile
     networks:
       backtrade:
-        ipv4_address: 192.168.250.3
+        ipv4_address: 192.168.250.12
     restart: always
 
   postgres:
@@ -62,7 +62,7 @@ services:
       - backtrade_db:/var/lib/postgresql/data
     networks:
       backtrade:
-        ipv4_address: 192.168.250.4
+        ipv4_address: 192.168.250.21
     restart: always
 
   redis:
@@ -73,7 +73,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       backtrade:
-        ipv4_address: 192.168.250.5
+        ipv4_address: 192.168.250.22
     restart: always
 
 volumes:
