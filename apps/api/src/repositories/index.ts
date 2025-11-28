@@ -5,25 +5,25 @@
  */
 
 // User-related repositories
-export * from "./user.repository";
-export * from "./user-session.repository";
-export * from "./user-password-change-code.repository";
+export * from "./users.repository";
+export * from "./user-sessions.repository";
+export * from "./user-password-change-codes.repository";
 
 // Billing repositories
-export * from "./plan.repository";
-export * from "./subscription.repository";
-export * from "./stripe-event.repository";
+export * from "./plans.repository";
+export * from "./subscriptions.repository";
+export * from "./stripe-events.repository";
 
 // Trading repositories
-export * from "./instrument.repository";
-export * from "./session.repository";
-export * from "./position.repository";
-export * from "./transaction.repository";
+export * from "./instruments.repository";
+export * from "./sessions.repository";
+export * from "./positions.repository";
+export * from "./transactions.repository";
 
 // Data repositories
-export * from "./dataset.repository";
-export * from "./candle.repository";
+export * from "./datasets.repository";
+export * from "./candles.repository";
 
 // Analytics repositories
-export * from "./session-analytics.repository";
-export * from "./audit-log.repository";
+export * from "./sessions-analytics.repository";
+export * from "./audit-logs.repository";
