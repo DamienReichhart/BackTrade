@@ -4,7 +4,7 @@ import { redis } from "../../libs/redis";
 /**
  * Configuration options for creating a cache service
  */
-export interface CacheServiceConfig<T> {
+export interface CacheServiceConfig {
   /** Redis key prefix (e.g., "user:", "session:") */
   prefix: string;
   /** Time to live in seconds */
@@ -53,7 +53,7 @@ export interface CacheService<T> {
  * });
  * ```
  */
-export function createCacheService<T>(config: CacheServiceConfig<T>): CacheService<T> {
+export function createCacheService<T>(config: CacheServiceConfig): CacheService<T> {
   const { prefix, ttl, entityName } = config;
 
   async function cache(id: number, data: T): Promise<void> {
