@@ -1,6 +1,10 @@
 import { logger } from "../../libs/pino";
 import { redis } from "../../libs/redis";
 
+const cacheLogger = logger.child({
+  service: "cache",
+});
+
 /**
  * Configuration options for creating a cache service
  */
@@ -62,7 +66,7 @@ export function createCacheService<T>(
     try {
       await redis.set(`${prefix}${id}`, JSON.stringify(data), "EX", ttl);
     } catch (error) {
-      logger.error({ error }, `Error caching ${entityName}`);
+      cacheLogger.error({ error }, `Error caching ${entityName}`);
       throw error;
     }
   }
@@ -72,7 +76,7 @@ export function createCacheService<T>(
       const result = await redis.get(`${prefix}${id}`);
       return result ? (JSON.parse(result) as T) : null;
     } catch (error) {
-      logger.error({ error }, `Error getting cached ${entityName}`);
+      cacheLogger.error({ error }, `Error getting cached ${entityName}`);
       throw error;
     }
   }
@@ -81,7 +85,7 @@ export function createCacheService<T>(
     try {
       await redis.del(`${prefix}${id}`);
     } catch (error) {
-      logger.error({ error }, `Error invalidating cached ${entityName}`);
+      cacheLogger.error({ error }, `Error invalidating cached ${entityName}`);
       throw error;
     }
   }
