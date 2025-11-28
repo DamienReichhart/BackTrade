@@ -2,15 +2,15 @@ import express, {
   type Express,
   type Request,
   type Response,
-  type NextFunction,
 } from "express";
 import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import pinoHttp from "pino-http";
 import { router as apiRouter } from "./routes/router";
 import { HealthSchema } from "@backtrade/types";
+import { requestLogger } from "./middlewares/request-logger";
+import { errorHandler } from "./middlewares/error-handler";
 
 function createApp(): Express {
   const app: Express = express();
@@ -19,9 +19,9 @@ function createApp(): Express {
   app.use(helmet());
   app.use(cors({ origin: true, credentials: true }));
   app.use(compression());
-  app.use(express.json({ limit: "10mb" }));
+  app.use(express.json({ limit: "100mb" }));
   app.use(rateLimit({ windowMs: 60_000, max: 120 }));
-  app.use(pinoHttp());
+  app.use(requestLogger);
 
   apiRouter.get("/health", (_req: Request, res: Response) => {
     const health = HealthSchema.parse({
@@ -33,10 +33,7 @@ function createApp(): Express {
 
   app.use("/api/v1", apiRouter);
 
-  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    void _next; // preserve 4-arg signature for Express error middleware without unused-var lint error
-    res.status(500).json({ error: "internal_error" });
-  });
+  app.use(errorHandler);
 
   return app;
 }

@@ -1,9 +1,10 @@
 import { ENV } from "./config/env";
 import { createApp } from "./app";
+import { logger } from "./libs/pino";
 
 const app = createApp();
 const server = app.listen(ENV.PORT, ENV.HOST, () => {
-  process.stdout.write(`api listening on http://${ENV.HOST}:${ENV.PORT}\n`);
+  logger.info(`api listening on http://${ENV.HOST}:${ENV.PORT}`);
 });
 
 process.on("SIGINT", () => server.close(() => process.exit(0)));

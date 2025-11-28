@@ -1,7 +1,6 @@
-import type { User } from "../../generated/prisma/client";
+import type { User, Prisma } from "../../generated/prisma/client";
 import usersRepo from "../../repositories/users.repository";
 import usersCacheService from "../cache/users.cache.service"
-import { Prisma } from "../../generated/prisma/client";
 
 async function getUserById(id: number): Promise<User | null> {
   const cachedUser = await usersCacheService.getCachedUser(id);
