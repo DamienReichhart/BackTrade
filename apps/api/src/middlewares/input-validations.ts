@@ -1,4 +1,4 @@
-import type {Request, Response, NextFunction} from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { z } from "zod";
 import { logger } from "../libs/pino";
 import { ErrorResponseSchema } from "@backtrade/types";
@@ -11,7 +11,10 @@ function inputValidations(schema: z.ZodType<unknown>) {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
-      inputValidationsLogger.error({ err: result.error }, "Input validation failed");
+      inputValidationsLogger.error(
+        { err: result.error },
+        "Input validation failed",
+      );
       const error = ErrorResponseSchema.parse({
         message: result.error.message,
         code: 400,
@@ -22,4 +25,4 @@ function inputValidations(schema: z.ZodType<unknown>) {
   };
 }
 
-export default inputValidations
+export default inputValidations;

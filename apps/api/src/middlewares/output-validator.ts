@@ -32,9 +32,10 @@ export function responseValidator(schema: z.ZodType<unknown>) {
           message: "Invalid server response format",
           code: 500,
         });
-        
+
         // Set flag to prevent recursion when sending error response
         isValidating = true;
+        res.status(errorResponse.code);
         const result = originalJson(errorResponse);
         isValidating = false;
         return result;
