@@ -9,8 +9,8 @@ const EnvSchema = z.object({
     REDIS_HOST: z.string(),
     REDIS_PORT: z.coerce.number().int().positive(),
     REDIS_PASSWORD: z.string(),
-    LOG_LEVEL: z.enum(["FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "SILENT"]),
-    LOG_DIR: z.string(),
+    LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]),
+    LOG_DIR: z.string().default("."),
 });
 
 export const ENV = EnvSchema.parse(process.env);
