@@ -1,4 +1,4 @@
-import WebError from "../web-errors";
+import WebError from "./web-error";
 
 class NotFoundError extends WebError {
     constructor(message: string) {
