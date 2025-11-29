@@ -102,21 +102,28 @@ BackTrade/
    pnpm install
    ```
 
-3. **Start development environment**
+3. **Configure environment variables**
+
+   Before starting the development environment, you must create two `.env` files:
+
+   - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
+   - **Root environment file**: 
+     - For Docker development: Create `.env` in the root directory based on `.env.development.example`
+     - For Docker production: Create `.env` in the root directory based on `.env.production.example`
 
    ```bash
-   # Using pnpm directly
-   pnpm dev
+   # Copy API environment file
+   cp apps/api/.env.example apps/api/.env
 
-   # If using json-server (not recommended)
-   cd apps/web && pnpm fake-api
+   # Copy root environment file (for development)
+   cp .env.development.example .env
    ```
 
-4. **Access the application**
-   - **Frontend**: http://localhost:5173
-   - **API**: http://localhost:3000
+   **Important**: Edit both `.env` files and fill in the required values before proceeding.
 
-### Docker Development
+4.a Docker Development (recommanded)
+
+**Note**: Ensure you have created the `.env` files as described in step 3 of the Installation section before starting Docker services.
 
 For a complete development environment with database:
 
@@ -129,6 +136,20 @@ Initialize the database (run Prisma migrations and seed data):
 ```bash
 docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
 ```
+
+4.b **Start development environment (not recommanded)**
+
+   ```bash
+   # Using pnpm directly
+   pnpm dev
+
+   # If using json-server (not recommended)
+   cd apps/web && pnpm fake-api
+   ```
+
+5. **Access the application**
+   - **Frontend**: http://localhost:5173
+   - **API**: http://localhost:3000
 
 ### Code Quality
 
@@ -216,23 +237,18 @@ The production setup includes:
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+The project requires **two** `.env` files to be configured:
 
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/backtrade"
+1. **API Environment File** (`apps/api/.env`):
+   - Copy from `apps/api/.env.example`
+   - Contains API-specific configuration (database URL, Redis, logging, etc.)
 
-# API Configuration
-API_PORT=3000
-API_HOST=0.0.0.0
+2. **Root Environment File** (`.env` in the root directory):
+   - For development: Copy from `.env.development.example`
+   - For production: Copy from `.env.production.example`
+   - Contains Docker service configuration (PostgreSQL, Redis, Cloudflare Tunnel, etc.)
 
-# Security
-JWT_SECRET="your-jwt-secret"
-ENCRYPTION_KEY="your-encryption-key"
-
-# Cloudflare Tunnel
-TUNNEL_TOKEN="your-tunnel-token"
-```
+**Important**: Both `.env` files must be created and configured before starting the development environment or running Docker services. Refer to the example files for the required variables and their descriptions.
 
 ## Contributing
 
