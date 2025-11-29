@@ -9,7 +9,7 @@ const userServiceLogger = logger.child({
   service: "user-service",
 });
 
-async function getUserById(id: number): Promise<User | null> {
+async function getUserById(id: number): Promise<User> {
   const cachedUser = await usersCacheService.getCachedUser(id);
   if (cachedUser) {
     userServiceLogger.trace({ id }, "User found in cache");
