@@ -1,5 +1,5 @@
                     BACKTRADE PROPRIETARY LICENSE
-                    Version 1.0 - READ-ONLY LICENSE
+                    Version 2.0 - EVALUATION LICENSE
 
 Copyright (C) 2025 REICHHART Damien. All rights reserved.
 
@@ -8,8 +8,8 @@ proprietary and confidential information of REICHHART Damien ("Licensor").
 The Software is protected by copyright laws and international copyright 
 treaties, as well as other intellectual property laws and treaties.
 
-IMPORTANT: THIS IS A READ-ONLY LICENSE. NO EXECUTION, COPYING, OR 
-DISTRIBUTION RIGHTS ARE GRANTED.
+IMPORTANT: THIS LICENSE GRANTS LIMITED EVALUATION RIGHTS ONLY. NO EXECUTION, 
+DISTRIBUTION, OR COMMERCIAL USE RIGHTS ARE GRANTED.
 
 1. DEFINITIONS
 
@@ -28,9 +28,14 @@ DISTRIBUTION RIGHTS ARE GRANTED.
     enhancements, or any other form in which the Software may be recast, 
     transformed, or adapted.
 
+1.5 "Technical Copying" means the minimal, temporary copying of the Software 
+    that is technically necessary to view, read, or access the Software through 
+    standard computing processes (such as loading into memory, browser cache, 
+    or temporary storage during network transmission).
+
 2. GRANT OF LIMITED LICENSE
 
-2.1 READ-ONLY PERMISSION: Subject to the terms and conditions of this 
+2.1 EVALUATION PERMISSION: Subject to the terms and conditions of this 
     License, Licensor hereby grants Licensee a limited, non-exclusive, 
     non-transferable, revocable license to:
     
@@ -41,54 +46,70 @@ DISTRIBUTION RIGHTS ARE GRANTED.
        implementation methodologies for learning purposes;
     
     c) Create written notes, summaries, or analyses of the Software's 
-       functionality for personal use only.
-
-2.2 NO EXECUTION RIGHTS: This License does NOT grant Licensee any right to:
+       functionality for personal, non-commercial use only;
     
-    a) Execute, run, or operate the Software in any form;
+    d) Perform Technical Copying as defined in Section 1.5, solely to the 
+       extent necessary to view or access the Software.
+
+2.2 EXPRESSLY PROHIBITED USES: This License does NOT grant Licensee any right to:
+    
+    a) Execute, run, or operate the Software in any form, including but not 
+       limited to running the Software in development, testing, or production 
+       environments;
     
     b) Compile, build, or create executable versions of the Software;
     
     c) Install, deploy, or host the Software on any system or platform;
     
-    d) Use the Software for any commercial or non-commercial purpose;
+    d) Use the Software for any commercial purpose whatsoever, including but 
+       not limited to providing services, generating revenue, or supporting 
+       commercial activities;
     
     e) Create, develop, or maintain any derivative works based on the Software;
     
     f) Reverse engineer, decompile, disassemble, or otherwise attempt to 
-       derive the source code from any compiled or executable form;
+       derive the source code from any compiled or executable form (except to 
+       the extent such restriction is prohibited by applicable law);
     
-    g) Remove, alter, or obscure any proprietary notices, labels, or 
-       markings on the Software.
+    g) Remove, alter, or obscure any proprietary notices, labels, copyright 
+       statements, or markings on the Software;
+    
+    h) Use the Software to develop competing products or services.
 
 3. STRICT PROHIBITIONS
 
-3.1 COPYING RESTRICTIONS: Licensee is expressly prohibited from:
+3.1 DISTRIBUTION RESTRICTIONS: Licensee is expressly prohibited from:
     
-    a) Making any copies of the Software, in whole or in part;
+    a) Copying the Software beyond what is permitted as Technical Copying 
+       under Section 2.1(d);
     
-    b) Storing the Software on any storage medium, local or remote;
+    b) Storing the Software on any storage medium (local or remote) beyond 
+       temporary storage necessary for viewing;
     
-    c) Downloading, saving, or archiving the Software;
+    c) Downloading, saving, or archiving the Software in a persistent manner;
     
-    d) Creating backups or snapshots of the Software;
+    d) Creating backups, snapshots, or permanent copies of the Software;
     
     e) Distributing, sharing, or transmitting the Software to any third party;
     
     f) Making the Software available through any network, file-sharing, 
-       or distribution system.
+       or distribution system;
+    
+    g) Publishing, posting, or making the Software publicly available in any form.
 
 3.2 COMMERCIAL RESTRICTIONS: Licensee is expressly prohibited from:
     
     a) Using the Software for any commercial purpose whatsoever;
     
-    b) Incorporating any part of the Software into commercial products;
+    b) Incorporating any part of the Software into commercial products or services;
     
     c) Providing services based on or derived from the Software;
     
     d) Charging fees for access to or use of the Software;
     
-    e) Using the Software to compete with Licensor's business interests.
+    e) Using the Software to compete with Licensor's business interests;
+    
+    f) Using the Software in any way that generates revenue or commercial value.
 
 3.3 MODIFICATION RESTRICTIONS: Licensee is expressly prohibited from:
     
@@ -98,103 +119,204 @@ DISTRIBUTION RIGHTS ARE GRANTED.
     
     c) Porting the Software to other platforms or programming languages;
     
-    d) Extracting algorithms, methodologies, or business logic from the Software;
+    d) Extracting algorithms, methodologies, or business logic from the Software 
+       for use in other projects;
     
-    e) Implementing similar functionality based on the Software's design.
+    e) Implementing similar functionality based on the Software's design, 
+       architecture, or implementation details.
+
+3.4 CONFIDENTIALITY: Licensee acknowledges that the Software contains 
+    confidential and proprietary information. Licensee agrees to:
+    
+    a) Maintain the confidentiality of the Software;
+    
+    b) Not disclose the Software or any information derived from it to any 
+       third party without Licensor's prior written consent;
+    
+    c) Use reasonable efforts to protect the confidentiality of the Software.
 
 4. INTELLECTUAL PROPERTY RIGHTS
 
 4.1 OWNERSHIP: The Software and all intellectual property rights therein 
     are and shall remain the exclusive property of Licensor. This License 
-    does not grant Licensee any ownership rights in the Software.
+    does not grant Licensee any ownership rights in the Software. All rights 
+    not expressly granted herein are reserved by Licensor.
 
 4.2 TRADE SECRETS: The Software contains valuable trade secrets and 
     proprietary information of Licensor. Licensee acknowledges that the 
-    Software's algorithms, methodologies, and implementation details 
-    constitute confidential and proprietary information.
+    Software's algorithms, methodologies, implementation details, and 
+    business logic constitute confidential and proprietary information 
+    protected by trade secret laws.
 
 4.3 PATENT RIGHTS: This License does not grant any patent rights. Any 
     patent rights that may be necessary to use the Software remain with 
     Licensor or third parties.
 
+4.4 NO IMPLIED LICENSES: Nothing in this License shall be construed as 
+    granting any rights or licenses to the Software by implication, estoppel, 
+    or otherwise, except as expressly set forth herein.
+
 5. TERMINATION
 
 5.1 AUTOMATIC TERMINATION: This License shall automatically terminate 
-    immediately upon any breach of its terms by Licensee.
+    immediately upon any breach of its terms by Licensee, without notice.
 
 5.2 TERMINATION FOR CONVENIENCE: Licensor may terminate this License at 
     any time, with or without cause, by providing written notice to Licensee.
 
-5.3 EFFECT OF TERMINATION: Upon termination, all rights granted to 
-    Licensee shall immediately cease, and Licensee must immediately 
-    cease all access to and use of the Software.
+5.3 EFFECT OF TERMINATION: Upon termination:
+    
+    a) All rights granted to Licensee shall immediately cease;
+    
+    b) Licensee must immediately cease all access to and use of the Software;
+    
+    c) Licensee must destroy or delete any copies of the Software in their 
+       possession or control (including Technical Copies);
+    
+    d) Sections 3.4 (Confidentiality), 4 (Intellectual Property Rights), 
+       6 (Disclaimer of Warranties), 7 (Limitation of Liability), 8 
+       (Indemnification), and 9 (Governing Law and Jurisdiction) shall 
+       survive termination.
 
 6. DISCLAIMER OF WARRANTIES
 
 THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS 
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL 
-LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER 
-IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR 
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. LICENSOR DOES NOT 
+WARRANT THAT THE SOFTWARE WILL MEET LICENSEE'S REQUIREMENTS, THAT THE 
+OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED OR ERROR-FREE, OR THAT 
+DEFECTS IN THE SOFTWARE WILL BE CORRECTED.
+
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING 
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+DEALINGS IN THE SOFTWARE, EVEN IF LICENSOR HAS BEEN ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGES.
 
 7. LIMITATION OF LIABILITY
 
 IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
 SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO 
 LOSS OF PROFITS, DATA, OR USE, ARISING OUT OF OR IN CONNECTION WITH THIS 
-LICENSE OR THE SOFTWARE, REGARDLESS OF THE THEORY OF LIABILITY AND WHETHER 
-OR NOT LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+LICENSE OR THE SOFTWARE, REGARDLESS OF THE THEORY OF LIABILITY (WHETHER 
+IN CONTRACT, TORT, STRICT LIABILITY, OR OTHERWISE) AND WHETHER OR NOT 
+LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+LICENSOR'S TOTAL LIABILITY UNDER THIS LICENSE SHALL NOT EXCEED ZERO EUROS (€0).
 
 8. INDEMNIFICATION
 
-Licensee agrees to indemnify, defend, and hold harmless Licensor from and 
-against any and all claims, damages, losses, costs, and expenses (including 
-reasonable attorneys' fees) arising out of or relating to Licensee's breach 
-of this License or unauthorized use of the Software.
+Licensee agrees to indemnify, defend, and hold harmless Licensor, its 
+affiliates, officers, directors, employees, and agents from and against 
+any and all claims, damages, losses, costs, and expenses (including 
+reasonable attorneys' fees) arising out of or relating to:
+    
+    a) Licensee's breach of this License;
+    
+    b) Licensee's unauthorized use of the Software;
+    
+    c) Any claims that Licensee's use of the Software infringes the rights 
+       of any third party.
 
 9. GOVERNING LAW AND JURISDICTION
 
 This License shall be governed by and construed in accordance with the laws 
 of France, without regard to its conflict of law principles. Any disputes 
-arising out of or relating to this License shall be subject to the exclusive 
-jurisdiction of the courts of France.
+arising out of or relating to this License or the Software shall be subject 
+to the exclusive jurisdiction of the competent courts of France.
 
 10. SEVERABILITY
 
-If any provision of this License is held to be invalid or unenforceable, 
-the remaining provisions shall remain in full force and effect.
+If any provision of this License is held to be invalid, illegal, or 
+unenforceable by a court of competent jurisdiction, the remaining provisions 
+shall remain in full force and effect. The invalid, illegal, or unenforceable 
+provision shall be replaced with a valid, legal, and enforceable provision 
+that most closely approximates the intent of the original provision.
 
 11. ENTIRE AGREEMENT
 
 This License constitutes the entire agreement between the parties regarding 
 the Software and supersedes all prior or contemporaneous communications, 
-proposals, and agreements relating to the subject matter hereof.
+proposals, representations, warranties, and agreements relating to the 
+subject matter hereof, whether oral or written.
 
 12. NO WAIVER
 
 No failure or delay by Licensor in exercising any right, power, or privilege 
 under this License shall operate as a waiver thereof, nor shall any single 
 or partial exercise of any right, power, or privilege preclude any other or 
-further exercise thereof.
+further exercise thereof or the exercise of any other right, power, or 
+privilege.
 
 13. ASSIGNMENT
 
 This License is personal to Licensee and may not be assigned, transferred, 
-or sublicensed without the prior written consent of Licensor.
+or sublicensed, in whole or in part, without the prior written consent of 
+Licensor. Any attempted assignment, transfer, or sublicense in violation of 
+this provision shall be null and void.
 
 14. NOTICES
 
 All notices and other communications under this License shall be in writing 
-and shall be deemed to have been given when delivered personally, sent by 
-certified mail (return receipt requested), or sent by email to the addresses 
-specified by the parties.
+and shall be deemed to have been given:
+    
+    a) When delivered personally;
+    
+    b) When sent by certified mail (return receipt requested), postage prepaid;
+    
+    c) When sent by email to the addresses specified by the parties, with 
+       confirmation of receipt.
 
 15. ACKNOWLEDGMENT
 
-By accessing, viewing, or otherwise interacting with the Software, Licensee 
-acknowledges that they have read, understood, and agree to be bound by the 
-terms and conditions of this License.
+By accessing, viewing, downloading, or otherwise interacting with the 
+Software, Licensee acknowledges that:
+    
+    a) They have read, understood, and agree to be bound by the terms and 
+       conditions of this License;
+    
+    b) They understand that this License grants only limited evaluation 
+       rights and does not permit execution, commercial use, or distribution;
+    
+    c) They will comply with all applicable laws and regulations in their 
+       use of the Software;
+    
+    d) If they do not agree to these terms, they must immediately cease 
+       all access to and use of the Software.
+
+16. EXPORT COMPLIANCE
+
+Licensee acknowledges that the Software may be subject to export control laws 
+and regulations. Licensee agrees to comply with all applicable export control 
+laws and regulations and not to export, re-export, or transfer the Software 
+in violation of such laws and regulations.
+
+17. THIRD-PARTY SOFTWARE
+
+17.1 THIRD-PARTY COMPONENTS: The Software incorporates third-party software 
+     components, libraries, and dependencies that are subject to their own 
+     respective licenses and terms of use.
+
+17.2 THIRD-PARTY LICENSE NOTICES: A comprehensive list of all third-party 
+     software components, their respective licenses, and copyright notices 
+     is provided in the file THIRD_PARTY_LICENSES.md located in the root 
+     directory of the Software.
+
+17.3 SEPARATE LICENSE TERMS: The terms and conditions of this License apply 
+     solely to the Software as owned by Licensor. Third-party software 
+     components are governed by their respective licenses, which may include 
+     open-source licenses such as MIT, Apache 2.0, ISC, BSD licenses, etc. 
+     Licensee must comply with both this License and the applicable third-party 
+     licenses.
+
+17.4 NO WARRANTY FOR THIRD-PARTY SOFTWARE: Licensor makes no representations 
+     or warranties regarding third-party software components. Any warranties, 
+     if any, are provided solely by the respective third-party licensors.
+
+17.5 ACKNOWLEDGMENT: By using the Software, Licensee acknowledges that they 
+     have reviewed the THIRD_PARTY_LICENSES.md file and understand the 
+     licensing terms applicable to third-party components incorporated in 
+     the Software.
 
 ---
 
