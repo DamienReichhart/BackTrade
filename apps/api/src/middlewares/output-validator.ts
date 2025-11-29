@@ -4,7 +4,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import { ErrorResponseSchema } from "@backtrade/types";
 
 const outputValidatorLogger = logger.child({
-  service: "input-validator",
+  service: "output-validator",
 });
 
 export function responseValidator(schema: z.ZodType<unknown>) {
