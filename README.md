@@ -7,9 +7,9 @@
 **Professional Trading Backtesting Platform**
 
 [![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.1+-61dafb.svg)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-61dafb.svg)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
 
 _A deterministic multi-session historical trading simulator for professional traders and quantitative analysts_
@@ -18,61 +18,47 @@ _A deterministic multi-session historical trading simulator for professional tra
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Configuration](#configuration)
+- [License](#license)
+- [Contact](#contact)
+
+---
+
 ## Overview
 
-BackTrade is a sophisticated trading backtesting platform that enables professional traders and quantitative analysts to conduct comprehensive historical trading simulations. The platform provides a deterministic environment where users can launch trading sessions at any historical timestamp, execute trades as if operating in real-time during past market conditions, and access detailed performance analytics.
+BackTrade is a sophisticated trading backtesting platform designed for professional traders and quantitative analysts. The platform provides a deterministic environment where users can launch trading sessions at any historical timestamp, execute trades as if operating in real-time during past market conditions, and access detailed performance analytics.
 
-### Key Features
+The platform enables comprehensive historical trading simulations with multi-session management, real-time simulation controls, advanced analytics, and professional-grade trading tools.
+
+## Key Features
+
+### Trading Capabilities
 
 - **Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
-- **Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings (0.5x to 10x)
+- **Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings
 - **Advanced Analytics**: Comprehensive trading performance metrics and detailed session analytics
 - **Professional Tools**: Position management, risk controls, and sophisticated order execution
+- **Multiple Instruments**: Support for various trading instruments and timeframes
+
+### Platform Features
+
 - **Role-Based Access**: Tiered subscription system with different session limits and features
-- **Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and timeframes
 - **Modern UI**: Intuitive React-based interface with interactive candlestick charts
+- **Scalable Architecture**: Built as a modern monorepo with microservices-ready design
+- **Enterprise-Grade Security**: Comprehensive security measures and authentication
 
 ## Architecture
 
-BackTrade is built as a modern, scalable monorepo:
-
-### Technology Stack
-
-**Frontend:**
-
-- **React** for interactivity
-- **TypeScript** for type safety
-- **Vite** for fast development and building
-- **React Router** for client-side routing
-- **TanStack Query** for server state management
-- **Zustand** for client state management
-- **Lightweight Charts** for candlestick visualization
-- **Zod** for schema validation
-- **Jest** for testing
-
-**Backend:**
-
-- **Node.js 18+** with Express 5.1
-- **TypeScript** for type safety
-- **Prisma** for database ORM
-- **PostgreSQL** database
-- **Redis (ioredis)** for caching
-- **Zod** for schema validation
-- **Pino** for structured logging
-- **Argon2** for password hashing
-- **Helmet** for security headers
-- **CORS** for cross-origin requests
-- **Rate limiting** for API protection
-
-**Infrastructure:**
-
-- **Docker** containerization
-- **PostgreSQL** database
-- **Redis** for caching
-- **Nginx** proxy
-- **Cloudflare Tunnel** for secure access
-- **pnpm** workspace management
-- **Turbo** for monorepo orchestration
+BackTrade is built as a modern, scalable monorepo using pnpm workspaces and Turbo for efficient build orchestration.
 
 ### Project Structure
 
@@ -91,12 +77,50 @@ BackTrade/
 └── assets/                  # Brand assets and logos
 ```
 
+## Technology Stack
+
+### Frontend
+
+- **React** - Modern UI framework for building interactive interfaces
+- **TypeScript** - Type-safe development
+- **Vite** - Fast development and optimized production builds
+- **React Router** - Client-side routing
+- **TanStack Query** - Server state management and data fetching
+- **Zustand** - Lightweight client state management
+- **Lightweight Charts** - High-performance candlestick visualization
+- **Zod** - Schema validation and type inference
+- **Jest** - Comprehensive testing framework
+
+### Backend
+
+- **Node.js** with **Express** - High-performance API server
+- **TypeScript** - Type-safe backend development
+- **Prisma** - Modern database ORM with type safety
+- **PostgreSQL** - Robust relational database
+- **Redis** (ioredis) - High-performance caching layer
+- **Zod** - Request/response validation
+- **Pino** - Structured logging
+- **Argon2** - Secure password hashing
+- **Helmet** - Security headers
+- **CORS** - Cross-origin resource sharing
+- **Rate Limiting** - API protection and abuse prevention
+
+### Infrastructure
+
+- **Docker** - Containerization for consistent deployments
+- **PostgreSQL** - Production-ready database
+- **Redis** - Distributed caching
+- **Nginx** - Reverse proxy and load balancing
+- **Cloudflare Tunnel** - Secure remote access
+- **pnpm** - Efficient package management
+- **Turbo** - Monorepo build orchestration
+
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18 or higher
-- **pnpm** 10.18.1 or higher
+- **Node.js** (latest LTS recommended)
+- **pnpm** (latest version)
 - **Docker** and **Docker Compose**
 - **Git**
 
@@ -117,11 +141,12 @@ BackTrade/
 
 3. **Configure environment variables**
 
-   Before starting the development environment, you must create two `.env` files:
+   The project requires two environment files to be configured:
+
    - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
    - **Root environment file**:
-     - For Docker development: Create `.env` in the root directory based on `.env.development.example`
-     - For Docker production: Create `.env` in the root directory based on `.env.production.example`
+     - For development: Create `.env` based on `.env.development.example`
+     - For production: Create `.env` based on `.env.production.example`
 
    ```bash
    # Copy API environment file
@@ -131,23 +156,21 @@ BackTrade/
    cp .env.development.example .env
    ```
 
-   **Important**: Edit both `.env` files and fill in the required values before proceeding.
+   **Important**: Edit both `.env` files and configure all required values before proceeding.
 
 4.a Docker Development (recommended)
 
-**Note**: Ensure you have created the `.env` files as described in step 3 of the Installation section before starting Docker services.
+   For a complete development environment with database:
 
-For a complete development environment with database:
+   ```bash
+   docker-compose -f docker-dev.yaml up -d
+   ```
 
-```bash
-docker-compose -f docker-dev.yaml up -d
-```
+   Initialize the database (run Prisma migrations and seed data):
 
-Initialize the database (run Prisma migrations and seed data):
-
-```bash
-docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
-```
+   ```bash
+   docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
+   ```
 
 4.b **Start development environment (not recommended)**
 
@@ -160,18 +183,21 @@ cd apps/web && pnpm fake-api
 ```
 
 5. **Access the application**
+
    - **Frontend**: [http://localhost:5173](http://localhost:5173)
    - **API**: [http://localhost:3000](http://localhost:3000)
    - **API Health Check**: [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)
 
+## Development
+
 ### Code Quality
 
-The project enforces high code quality standards:
+The project enforces high code quality standards through:
 
-- **ESLint** for code linting
-- **TypeScript** for type safety
-- **Jest** for comprehensive testing
-- **Pre-Commit** for git hooks
+- **ESLint** - Code linting and style enforcement
+- **TypeScript** - Static type checking
+- **Jest** - Comprehensive test coverage
+- **Pre-Commit Hooks** - Automated quality checks
 
 ### Testing
 
@@ -182,16 +208,33 @@ pnpm test
 # Run tests in watch mode
 pnpm test:watch
 
-# Run tests with coverage
+# Run tests with coverage report
 pnpm test:coverage
+```
+
+### Available Root Scripts
+
+```bash
+# Development
+pnpm dev              # Start all services in development mode
+
+# Building
+pnpm build            # Build all packages and applications
+
+# Code Quality
+pnpm lint             # Lint all packages
+pnpm typecheck        # Type check all packages
+pnpm format           # Format code with Prettier
+pnpm format:check     # Check code formatting
 ```
 
 ## Deployment
 
-### Production Deployment (Only for testing)
+### Production Deployment
 
 1. **Environment Configuration**
-   - Set up environment variables with .env file
+
+   Configure all required environment variables in the root `.env` file as described in the [Configuration](#configuration) section.
 
 2. **Deploy with Docker**
 
@@ -206,38 +249,8 @@ The production setup includes:
 - **Frontend**: React application served by Nginx
 - **Backend**: Express.js API server
 - **Database**: PostgreSQL with persistent storage
-- **Proxy**: Nginx proxy
+- **Proxy**: Nginx reverse proxy
 - **Tunnel**: Cloudflare Tunnel for secure access
-
-## Core Features
-
-### Trading Sessions
-
-- Create sessions with custom instruments
-- Configure initial balance, leverage, and risk parameters
-- Set spread, slippage, and commission models
-
-### Real-Time Simulation
-
-- Interactive time controls (play/pause/speed: 0.5x to 15x)
-- Live candlestick chart visualization
-- Real-time position tracking and P&L updates
-- Deterministic historical replay
-
-### Position Management
-
-- Market order execution (Buy/Sell)
-- Take Profit and Stop Loss levels
-- Dynamic TP/SL modification
-- Bulk position management (Close All)
-- Position sizing in standard lots
-
-### Analytics
-
-- Comprehensive performance metrics
-- Detailed session analytics
-- Historical trade analysis
-- Risk assessment tools
 
 ## Configuration
 
@@ -247,18 +260,14 @@ The project requires **two** `.env` files to be configured:
 
 1. **API Environment File** (`apps/api/.env`):
    - Copy from `apps/api/.env.example`
-   - Contains API-specific configuration (database URL, Redis, logging, etc.)
+   - Contains API-specific configuration (database URL, Redis, logging, security, etc.)
 
 2. **Root Environment File** (`.env` in the root directory):
    - For development: Copy from `.env.development.example`
    - For production: Copy from `.env.production.example`
    - Contains Docker service configuration (PostgreSQL, Redis, Cloudflare Tunnel, etc.)
 
-**Important**: Both `.env` files must be created and configured before starting the development environment or running Docker services. Refer to the example files for the required variables and their descriptions.
-
-## Contributing
-
-This is a proprietary project. Please contact the author for contribution guidelines and access permissions.
+**Important**: Both `.env` files must be created and configured before starting the development environment or running Docker services. Refer to the example files for detailed variable descriptions and requirements.
 
 ## License
 
@@ -266,12 +275,14 @@ This project is licensed under a **Proprietary License**. See the [LICENSE](LICE
 
 **Important**: This is a read-only license. No execution, copying, or distribution rights are granted.
 
-## 👨‍💻 Author
+## Contact
 
 **REICHHART Damien**
 
-- Email: contact@damien-reichhart.fr
+- Email: <contact@damien-reichhart.fr>
 - Project: BackTrade Trading Platform
+
+---
 
 <div align="center">
 
