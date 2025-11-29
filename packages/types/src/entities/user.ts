@@ -8,6 +8,7 @@ export const UserSchema = z.object({
   role: RoleSchema,
   is_banned: z.boolean().default(false),
   stripe_customer_id: z.string().optional(),
+  password_reset_code: z.string().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -17,15 +18,6 @@ export const PublicUserSchema = UserSchema.omit({
   password_hash: true,
 });
 export type PublicUser = z.infer<typeof PublicUserSchema>;
-
-export const UserPasswordChangeCodeSchema = z.object({
-  code: z.string(),
-  user_id: z.number().int().positive(),
-  created_at: z.string(),
-});
-export type UserPasswordChangeCode = z.infer<
-  typeof UserPasswordChangeCodeSchema
->;
 
 export const UserSessionSchema = z.object({
   id: z.number().int().positive(),

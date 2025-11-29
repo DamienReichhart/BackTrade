@@ -106,13 +106,13 @@ model User {
   role               Role     @default(USER)
   is_banned          Boolean  @default(false)
   stripe_customer_id String?
+  password_reset_code String?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
 
   // Relations
   sessions            Session[]
   user_sessions       UserSession[]
-  password_codes      UserPasswordChangeCode[]
   transactions        Transaction[]
   subscriptions       Subscription[]
   audit_logs          AuditLog[]
@@ -138,18 +138,6 @@ model UserSession {
 
   @@index([user_id])
   @@map("user_sessions")
-}
-
-model UserPasswordChangeCode {
-  code       String   @id
-  user_id    Int
-  created_at DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@map("user_password_change_codes")
 }
 
 // ============================================================================

@@ -9,7 +9,6 @@
 // User-related repositories
 export { default as usersRepo } from "./users.repository";
 export { default as userSessionsRepo } from "./user-sessions.repository";
-export { default as userPasswordChangeCodesRepo } from "./user-password-change-codes.repository";
 
 // Billing repositories
 export { default as plansRepo } from "./plans.repository";
