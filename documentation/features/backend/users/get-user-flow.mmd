@@ -1,0 +1,62 @@
+sequenceDiagram
+    actor Client
+    participant App as Express App
+    participant ReqId as Request-ID MW
+    participant ReqLog as Request-Logger MW
+    participant OutVal as Output Validator MW
+    participant UserCtrl as Users Controller
+    participant UserSvc as Users Service
+    participant Cache as Redis Cache
+    participant Repo as Users Repository
+    participant DB as Prisma/DB
+    participant Err as Error Handler MW
+
+    Client->>App: GET /api/v1/users/:id
+    App->>ReqId: middleware
+    ReqId->>App: attach req.id
+    App->>ReqLog: middleware (start)
+    App->>OutVal: middleware (setup res.json override)
+    OutVal->>App: next()
+    App->>UserCtrl: getUserById
+    UserCtrl->>UserSvc: getUserById(id)
+    UserSvc->>Cache: get(id)
+    alt cache hit
+        Cache-->>UserSvc: user
+        UserSvc-->>UserCtrl: user
+    else cache miss
+        Cache-->>UserSvc: null
+        UserSvc->>Repo: getUserById(id)
+        Repo->>DB: prisma.user.findUnique
+        DB-->>Repo: user|null
+        Repo-->>UserSvc: user|null
+        alt user found
+            UserSvc->>Cache: cache(id, user)
+            Cache-->>UserSvc: OK
+            UserSvc-->>UserCtrl: user
+        else not found
+            UserSvc-->>UserCtrl: throw NotFoundError
+        end
+    end
+    alt user found
+        UserCtrl->>OutVal: res.json(user) (triggers validation)
+        alt validation success
+            OutVal->>OutVal: schema.parse(user)
+            OutVal-->>UserCtrl: OK
+            UserCtrl->>ReqLog: response.finish (duration)
+            ReqLog->>App: log response & duration
+            App-->>Client: HTTP 200 + user
+        else validation fails
+            OutVal->>OutVal: throw OutputValidationError
+            OutVal->>Err: error
+            Err->>Err: format error response
+            Err->>ReqLog: response.finish (duration)
+            ReqLog->>App: log response & duration
+            App-->>Client: HTTP 500 + error
+        end
+    else user not found
+        UserCtrl->>Err: NotFoundError
+        Err->>Err: format error response
+        Err->>ReqLog: response.finish (duration)
+        ReqLog->>App: log response & duration
+        App-->>Client: HTTP 404 + error
+    end
