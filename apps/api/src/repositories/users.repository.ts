@@ -23,6 +23,12 @@ async function getUserById(id: number | string): Promise<User | null> {
   });
 }
 
+async function getUserByEmail(email: string): Promise<User | null> {
+  return prisma.user.findUnique({
+    where: { email },
+  });
+}
+
 /**
  * Create a new user
  */
@@ -55,6 +61,7 @@ async function deleteUser(id: number | string): Promise<User> {
 export default {
   getAllUsers,
   getUserById,
+  getUserByEmail,
   createUser,
   updateUser,
   deleteUser,

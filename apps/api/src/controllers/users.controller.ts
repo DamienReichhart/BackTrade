@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import usersService from "../services/crud/users.service";
 import { logger } from "../libs/pino";
-import WebError from "../errors/web/web-error";
 
 const usersControllerLogger = logger.child({
   service: "users-controller",
