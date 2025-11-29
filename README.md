@@ -71,6 +71,7 @@ BackTrade/
 │   └── web/                 # React frontend application
 ├── packages/
 │   ├── types/               # Shared TypeScript types and Zod schemas
+│   ├── utils/               # Shared utilities
 │   ├── config/              # Environment configuration
 │   └── tsconfig/            # Shared TypeScript configuration
 ├── docker/                  # Docker configuration and images
