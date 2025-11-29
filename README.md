@@ -133,7 +133,7 @@ BackTrade/
 
    **Important**: Edit both `.env` files and fill in the required values before proceeding.
 
-4.a Docker Development (recommanded)
+4.a Docker Development (recommended)
 
 **Note**: Ensure you have created the `.env` files as described in step 3 of the Installation section before starting Docker services.
 
@@ -149,7 +149,7 @@ Initialize the database (run Prisma migrations and seed data):
 docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
 ```
 
-4.b **Start development environment (not recommanded)**
+4.b **Start development environment (not recommended)**
 
 ```bash
 # Using pnpm directly
