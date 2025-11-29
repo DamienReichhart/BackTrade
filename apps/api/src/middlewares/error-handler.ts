@@ -3,16 +3,20 @@ import type { Request, Response, NextFunction } from "express";
 import { ErrorResponseSchema } from "@backtrade/types";
 import WebError from "../errors/web/web-error";
 
+const errorHandlerLogger = logger.child({
+  service: "error-handler",
+});
+
 export function errorHandler(
   err: Error,
   req: Request,
   res: Response,
   _next: NextFunction,
 ) {
-  logger.error({ err, req }, "unhandled error");
+  errorHandlerLogger.error({ err, req }, "New error caught by error handler");
 
-  let errorCode =  500;
-  let errorMessage =  "Internal server error";
+  let errorCode = 500;
+  let errorMessage = "Internal server error";
 
   if (err instanceof WebError) {
     errorCode = err.code;

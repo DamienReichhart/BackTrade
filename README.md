@@ -118,7 +118,6 @@ BackTrade/
 3. **Configure environment variables**
 
    Before starting the development environment, you must create two `.env` files:
-
    - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
    - **Root environment file**:
      - For Docker development: Create `.env` in the root directory based on `.env.development.example`
@@ -152,16 +151,15 @@ docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:i
 
 4.b **Start development environment (not recommanded)**
 
-   ```bash
-   # Using pnpm directly
-   pnpm dev
+```bash
+# Using pnpm directly
+pnpm dev
 
-   # If using json-server (not recommended)
-   cd apps/web && pnpm fake-api
-   ```
+# If using json-server (not recommended)
+cd apps/web && pnpm fake-api
+```
 
 5. **Access the application**
-
    - **Frontend**: http://localhost:5173
    - **API**: http://localhost:3000
    - **API Health Check**: http://localhost:3000/api/v1/health

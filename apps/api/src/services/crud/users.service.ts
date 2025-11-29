@@ -15,7 +15,10 @@ async function getUserById(id: number): Promise<User | null> {
     userServiceLogger.trace({ id }, "User found in cache");
     return cachedUser;
   }
-  userServiceLogger.trace({ id }, "User not found in cache, fetching from database");
+  userServiceLogger.trace(
+    { id },
+    "User not found in cache, fetching from database",
+  );
   const user = await usersRepo.getUserById(id);
   if (!user) {
     userServiceLogger.debug({ id }, "User not found, throwing not found error");
@@ -29,7 +32,10 @@ async function getUserById(id: number): Promise<User | null> {
 async function createUser(data: Prisma.UserCreateInput): Promise<User> {
   const existingUser = await usersRepo.getUserByEmail(data.email);
   if (existingUser) {
-    userServiceLogger.debug({ email: data.email }, "User already exists, throwing already exists error");
+    userServiceLogger.debug(
+      { email: data.email },
+      "User already exists, throwing already exists error",
+    );
     throw new AlreadyExistsError("User already exists");
   }
   const user = await usersRepo.createUser(data);
@@ -49,9 +55,14 @@ async function updateUser(
     throw new NotFoundError("User not found");
   }
   if (existingUser.email !== data.email) {
-    const existingUserByEmail = await usersRepo.getUserByEmail(data.email as string);
+    const existingUserByEmail = await usersRepo.getUserByEmail(
+      data.email as string,
+    );
     if (existingUserByEmail) {
-      userServiceLogger.debug({ email: data.email }, "User already exists, throwing already exists error");
+      userServiceLogger.debug(
+        { email: data.email },
+        "User already exists, throwing already exists error",
+      );
       throw new AlreadyExistsError("User already exists");
     }
   }

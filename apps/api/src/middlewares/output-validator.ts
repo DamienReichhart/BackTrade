@@ -1,8 +1,7 @@
 import type { z } from "zod";
 import { logger } from "../libs/pino";
 import { type Request, type Response, type NextFunction } from "express";
-import { ErrorResponseSchema } from "@backtrade/types";
-import WebError from "../errors/web/web-error";
+import OutputValidationError from "../errors/web/output-validation-error";
 
 const outputValidatorLogger = logger.child({
   service: "output-validator",
@@ -11,12 +10,16 @@ const outputValidatorLogger = logger.child({
 export function responseValidator(schema: z.ZodType<unknown>) {
   return (_req: Request, res: Response, next: NextFunction) => {
     const originalJson = res.json.bind(res);
-    let isValidating = false; // Flag to prevent re-entry during error handling
 
     // Override res.json() to validate before sending
     res.json = (body: unknown) => {
-      // If we're already in validation (error case), bypass validation to prevent recursion
-      if (isValidating) {
+      // Skip validation for error responses (they have their own schema)
+      if (
+        typeof body === "object" &&
+        body !== null &&
+        "code" in body &&
+        "message" in body
+      ) {
         return originalJson(body);
       }
 
@@ -24,30 +27,17 @@ export function responseValidator(schema: z.ZodType<unknown>) {
         // Validate the response body against the schema
         schema.parse(body);
         // If valid, send using the original json method
-        // it won't cause recursion
         return originalJson(body);
       } catch (err) {
-        let errorCode = 500;
-        let errorMessage = "Invalid server response format";
+        // Validation failed - log the error
+        outputValidatorLogger.error(
+          { validationError: err, responseBody: body },
+          "Response schema validation failed",
+        );
 
-        if (err instanceof WebError) {
-          errorCode = err.code;
-          errorMessage = err.message;
-        }
-
-        // Validation failed - log and send error response
-        outputValidatorLogger.error({ errorCode, errorMessage }, "Response schema invalid");
-
-        const errorResponse = ErrorResponseSchema.parse({
-          message: errorMessage,
-          code: errorCode,
-        });
-        // Set flag to prevent recursion when sending error response
-        isValidating = true;
-        res.status(errorCode);
-        const result = originalJson(errorResponse);
-        isValidating = false;
-        return result;
+        throw new OutputValidationError(
+          "Invalid server response format : " + (err as Error).message,
+        );
       }
     };
 
