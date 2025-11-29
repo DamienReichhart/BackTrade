@@ -2,6 +2,7 @@ import type { z } from "zod";
 import { logger } from "../libs/pino";
 import { type Request, type Response, type NextFunction } from "express";
 import { ErrorResponseSchema } from "@backtrade/types";
+import WebError from "../errors/web/web-error";
 
 const outputValidatorLogger = logger.child({
   service: "output-validator",
@@ -26,16 +27,24 @@ export function responseValidator(schema: z.ZodType<unknown>) {
         // it won't cause recursion
         return originalJson(body);
       } catch (err) {
-        // Validation failed - log and send error response
-        outputValidatorLogger.error({ err }, "Response schema invalid");
-        const errorResponse = ErrorResponseSchema.parse({
-          message: "Invalid server response format",
-          code: 500,
-        });
+        let errorCode = 500;
+        let errorMessage = "Invalid server response format";
 
+        if (err instanceof WebError) {
+          errorCode = err.code;
+          errorMessage = err.message;
+        }
+
+        // Validation failed - log and send error response
+        outputValidatorLogger.error({ errorCode, errorMessage }, "Response schema invalid");
+
+        const errorResponse = ErrorResponseSchema.parse({
+          message: errorMessage,
+          code: errorCode,
+        });
         // Set flag to prevent recursion when sending error response
         isValidating = true;
-        res.status(errorResponse.code);
+        res.status(errorCode);
         const result = originalJson(errorResponse);
         isValidating = false;
         return result;

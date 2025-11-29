@@ -1,6 +1,7 @@
 import { logger } from "../libs/pino";
 import type { Request, Response, NextFunction } from "express";
 import { ErrorResponseSchema } from "@backtrade/types";
+import WebError from "../errors/web/web-error";
 
 export function errorHandler(
   err: Error,
