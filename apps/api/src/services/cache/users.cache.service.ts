@@ -3,7 +3,7 @@ import { createCacheService } from "../../core/factories/cache.service.factory";
 
 const userCacheService = createCacheService<User>({
   prefix: "user:",
-  ttl: 60 * 5, // 5 minutes
+  ttl: 60 * 10, // 10 minutes
   entityName: "user",
 });
 
