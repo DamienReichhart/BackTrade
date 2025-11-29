@@ -29,10 +29,7 @@ async function checkRedis(): Promise<"connected" | "error"> {
 }
 
 async function getHealth(): Promise<Health> {
-  return {
-    test: "ok",
-  }
-  
+
   const [database, redisStatus] = await Promise.all([
     checkDatabase(),
     checkRedis(),
