@@ -160,9 +160,9 @@ cd apps/web && pnpm fake-api
 ```
 
 5. **Access the application**
-   - **Frontend**: http://localhost:5173
-   - **API**: http://localhost:3000
-   - **API Health Check**: http://localhost:3000/api/v1/health
+   - **Frontend**: [http://localhost:5173](http://localhost:5173)
+   - **API**: [http://localhost:3000](http://localhost:3000)
+   - **API Health Check**: [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)
 
 ### Code Quality
 
