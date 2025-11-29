@@ -24,13 +24,13 @@ BackTrade is a sophisticated trading backtesting platform that enables professio
 
 ### Key Features
 
-- ** Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
-- ** Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings (0.5x to 10x)
-- ** Advanced Analytics**: Comprehensive trading performance metrics and detailed session analytics
-- ** Professional Tools**: Position management, risk controls, and sophisticated order execution
-- ** Role-Based Access**: Tiered subscription system with different session limits and features
-- ** Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and timeframes
-- ** Modern UI**: Intuitive React-based interface with interactive candlestick charts
+- **Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
+- **Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings (0.5x to 10x)
+- **Advanced Analytics**: Comprehensive trading performance metrics and detailed session analytics
+- **Professional Tools**: Position management, risk controls, and sophisticated order execution
+- **Role-Based Access**: Tiered subscription system with different session limits and features
+- **Multiple Instruments**: Support for various trading instruments (XAUUSD, EURUSD, etc.) and timeframes
+- **Modern UI**: Intuitive React-based interface with interactive candlestick charts
 
 ## Architecture
 
@@ -40,23 +40,35 @@ BackTrade is built as a modern, scalable monorepo:
 
 **Frontend:**
 
-- **React 19.1+** with TypeScript
+- **React** for interactivity
+- **TypeScript** for type safety
 - **Vite** for fast development and building
 - **React Router** for client-side routing
 - **TanStack Query** for server state management
+- **Zustand** for client state management
+- **Lightweight Charts** for candlestick visualization
+- **Zod** for schema validation
 - **Jest** for testing
 
 **Backend:**
 
 - **Node.js 18+** with Express 5.1
 - **TypeScript** for type safety
+- **Prisma** for database ORM
+- **PostgreSQL** database
+- **Redis (ioredis)** for caching
 - **Zod** for schema validation
 - **Pino** for structured logging
+- **Argon2** for password hashing
+- **Helmet** for security headers
+- **CORS** for cross-origin requests
+- **Rate limiting** for API protection
 
 **Infrastructure:**
 
 - **Docker** containerization
 - **PostgreSQL** database
+- **Redis** for caching
 - **Nginx** proxy
 - **Cloudflare Tunnel** for secure access
 - **pnpm** workspace management
@@ -64,7 +76,7 @@ BackTrade is built as a modern, scalable monorepo:
 
 ### Project Structure
 
-```
+```text
 BackTrade/
 ├── apps/
 │   ├── api/                 # Express.js backend API
@@ -72,7 +84,7 @@ BackTrade/
 ├── packages/
 │   ├── types/               # Shared TypeScript types and Zod schemas
 │   ├── utils/               # Shared utilities
-│   ├── config/              # Environment configuration
+│   ├── eslint-config/       # Shared ESLint configuration
 │   └── tsconfig/            # Shared TypeScript configuration
 ├── docker/                  # Docker configuration and images
 ├── documentation/           # Project documentation and mockups
@@ -108,7 +120,7 @@ BackTrade/
    Before starting the development environment, you must create two `.env` files:
 
    - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
-   - **Root environment file**: 
+   - **Root environment file**:
      - For Docker development: Create `.env` in the root directory based on `.env.development.example`
      - For Docker production: Create `.env` in the root directory based on `.env.production.example`
 
@@ -149,15 +161,16 @@ docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:i
    ```
 
 5. **Access the application**
+
    - **Frontend**: http://localhost:5173
    - **API**: http://localhost:3000
+   - **API Health Check**: http://localhost:3000/api/v1/health
 
 ### Code Quality
 
 The project enforces high code quality standards:
 
 - **ESLint** for code linting
-- **Prettier** for code formatting
 - **TypeScript** for type safety
 - **Jest** for comprehensive testing
 - **Pre-Commit** for git hooks
@@ -216,16 +229,18 @@ The production setup includes:
 
 ### Real-Time Simulation
 
-- Interactive time controls (play/pause/speed)
+- Interactive time controls (play/pause/speed: 0.5x to 15x)
 - Live candlestick chart visualization
 - Real-time position tracking and P&L updates
+- Deterministic historical replay
 
 ### Position Management
 
 - Market order execution (Buy/Sell)
 - Take Profit and Stop Loss levels
 - Dynamic TP/SL modification
-- Bulk position management
+- Bulk position management (Close All)
+- Position sizing in standard lots
 
 ### Analytics
 
