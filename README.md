@@ -124,6 +124,12 @@ For a complete development environment with database:
 docker-compose -f docker-dev.yaml up -d
 ```
 
+Initialize the database (run Prisma migrations and seed data):
+
+```bash
+docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
+```
+
 ### Code Quality
 
 The project enforces high code quality standards:
