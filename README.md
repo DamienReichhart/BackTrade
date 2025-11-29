@@ -190,24 +190,16 @@ pnpm test:coverage
 
 ## Deployment
 
-### Production Deployment
+### Production Deployment (Only for testing)
 
-1. **Build the application**
-
-   ```bash
-   pnpm build
-   ```
+1. **Environment Configuration**
+   - Set up environment variables with .env file
 
 2. **Deploy with Docker**
 
    ```bash
-   make docker-prod
+   docker compose -f docker-prod.yaml up -d
    ```
-
-3. **Environment Configuration**
-   - Set up environment variables
-   - Configure database connection
-   - Set up Cloudflare Tunnel token
 
 ### Docker Services
 
