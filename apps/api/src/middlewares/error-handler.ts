@@ -11,9 +11,17 @@ export function errorHandler(
 ) {
   logger.error({ err, req }, "unhandled error");
 
+  let errorCode =  500;
+  let errorMessage =  "Internal server error";
+
+  if (err instanceof WebError) {
+    errorCode = err.code;
+    errorMessage = err.message;
+  }
+
   const error = ErrorResponseSchema.parse({
-    message: "Internal server error",
-    code: 500,
+    message: errorMessage,
+    code: errorCode,
   });
 
   res.status(error.code).json(error);
