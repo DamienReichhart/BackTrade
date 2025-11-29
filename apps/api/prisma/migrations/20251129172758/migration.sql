@@ -36,6 +36,7 @@ CREATE TABLE "users" (
     "role" "Role" NOT NULL DEFAULT 'USER',
     "is_banned" BOOLEAN NOT NULL DEFAULT false,
     "stripe_customer_id" TEXT,
+    "password_reset_code" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -56,15 +57,6 @@ CREATE TABLE "user_sessions" (
     "is_active" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "user_sessions_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "user_password_change_codes" (
-    "code" TEXT NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "user_password_change_codes_pkey" PRIMARY KEY ("code")
 );
 
 -- CreateTable
@@ -249,9 +241,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE INDEX "user_sessions_user_id_idx" ON "user_sessions"("user_id");
 
 -- CreateIndex
-CREATE INDEX "user_password_change_codes_user_id_idx" ON "user_password_change_codes"("user_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "plans_code_key" ON "plans"("code");
 
 -- CreateIndex
@@ -319,9 +308,6 @@ CREATE INDEX "audit_logs_created_at_idx" ON "audit_logs"("created_at");
 
 -- AddForeignKey
 ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "user_password_change_codes" ADD CONSTRAINT "user_password_change_codes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
