@@ -1,6 +1,6 @@
 import { logger } from "../libs/pino";
 import type { Request, Response, NextFunction } from "express";
-import { ErrorResponseSchema } from "@backtrade/types";
+import { ErrorResponseSchema, ErrorSchema } from "@backtrade/types";
 import WebError from "../errors/web/web-error";
 
 const errorHandlerLogger = logger.child({
@@ -24,9 +24,11 @@ export function errorHandler(
   }
 
   const error = ErrorResponseSchema.parse({
-    message: errorMessage,
-    code: errorCode,
+    error: {
+      message: errorMessage,
+      code: errorCode,
+    },
   });
 
-  res.status(error.code).json(error);
+  res.status(error.error.code).json(error);
 }

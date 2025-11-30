@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const ErrorResponseSchema = z.object({
+export const ErrorSchema = z.object({
   message: z.string(),
   code: z.number(),
+});
+
+export const ErrorResponseSchema = z.object({
+  error: ErrorSchema,
 });

@@ -6,6 +6,7 @@ import helmet from "helmet";
 import { router as apiRouter } from "./routes/router";
 import { requestId } from "./middlewares/request-id";
 import { requestLogger } from "./middlewares/request-logger";
+import { notFoundHandler } from "./middlewares/not-found";
 import { errorHandler } from "./middlewares/error-handler";
 
 function createApp(): Express {
@@ -21,6 +22,8 @@ function createApp(): Express {
   app.use(requestLogger);
 
   app.use("/api/v1", apiRouter);
+
+  app.use(notFoundHandler);
 
   app.use(errorHandler);
 
