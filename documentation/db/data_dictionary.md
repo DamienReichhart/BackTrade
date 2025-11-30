@@ -113,8 +113,6 @@
 | created_at | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the candle record was created       | ISO 8601 datetime                         |
 | updated_at | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the candle record was last modified | ISO 8601 datetime                         |
 
-**Note:** The combination of (instrument_id, timeframe, ts) must be unique.
-
 ---
 
 ## SESSION
