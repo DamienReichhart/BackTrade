@@ -27,7 +27,7 @@ Authorization: Bearer {token}
 
 ## CORS
 
-The server must allow requests from the Angular frontend running on https://backtrade.damien-reichhart.fr.
+The server must allow requests from the react frontend running on https://backtrade.damien-reichhart.fr.
 
 Required CORS configuration :
 
