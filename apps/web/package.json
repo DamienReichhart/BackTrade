@@ -24,7 +24,7 @@
     "react-dom": "^19.2.0",
     "react-router-dom": "7.9.6",
     "zod": "4.1.13",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@backtrade/eslint-config": "workspace:*",
