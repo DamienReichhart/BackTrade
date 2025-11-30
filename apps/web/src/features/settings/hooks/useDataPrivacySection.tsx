@@ -30,7 +30,7 @@ export function useDataPrivacySection() {
       await execute();
       // Call logout API endpoint before clearing local state
       try {
-        await logoutApi();
+        await logoutApi({});
       } catch {
         // Do nothing
       }

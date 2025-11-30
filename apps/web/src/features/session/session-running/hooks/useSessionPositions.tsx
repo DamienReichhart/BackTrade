@@ -24,9 +24,8 @@ export function useSessionPositions(): UseSessionPositionsResult {
   const hasValidSession = sessionId !== "";
 
   const { data: positionsData, isLoading } = usePositionsBySession(
-    sessionId || "0",
+    sessionId,
     undefined,
-    { enabled: hasValidSession },
   );
 
   const positions = useMemo<Position[]>(() => {

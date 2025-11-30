@@ -36,7 +36,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const handleLogout = async () => {
     try {
       // Call logout API endpoint
-      await logoutApi();
+      await logoutApi({});
     } catch {
       // Do nothing
     } finally {

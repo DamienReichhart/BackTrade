@@ -137,11 +137,9 @@ export function useForgotPasswordForm() {
         email: formState.email,
       });
 
-      // Success - move to step 2
-      if (response?.status === 200) {
-        setStep(2);
-        setErrors({});
-      }
+      // Success - move to step 2 (no error thrown means success)
+      setStep(2);
+      setErrors({});
     } catch (err) {
       // Handle error - check for 404 (user not found)
       const errorMessage =
@@ -200,10 +198,8 @@ export function useForgotPasswordForm() {
         newPassword: formState.newPassword,
       });
 
-      // Success - redirect to login
-      if (response?.status === 200 || response?.status === 204) {
-        navigate("/signin");
-      }
+      // Success - redirect to login (no error thrown means success)
+      navigate("/signin");
     } catch (err) {
       // Handle error - check for 403 (wrong code)
       const errorMessage =
