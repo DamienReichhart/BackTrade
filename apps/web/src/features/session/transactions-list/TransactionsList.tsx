@@ -104,7 +104,11 @@ export function TransactionsList() {
                     onClick={() => handleRowClick(transaction)}
                   >
                     <td>#{transaction.id}</td>
-                    <td>{formatDateTime(transaction.created_at)}</td>
+                    <td>
+                      {transaction.created_at
+                        ? formatDateTime(transaction.created_at)
+                        : "—"}
+                    </td>
                     <td>{transaction.transaction_type}</td>
                     <td
                       className={

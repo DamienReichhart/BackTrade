@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant User
+    participant SessionControls
+    participant ControlComponent
+    participant useControlHook
+    participant ReactQuery
+    participant API
+    participant Stores
+    participant useSessionData
+    
+    Note over User,useSessionData: Example: Pause/Resume Control
+    
+    User->>SessionControls: Click control button
+    SessionControls->>ControlComponent: Render button
+    ControlComponent->>useControlHook: handleClick()
+    
+    useControlHook->>Stores: Read currentSession
+    useControlHook->>useControlHook: Validate action
+    
+    alt Validation fails
+        useControlHook->>ControlComponent: onError(errorMessage)
+        ControlComponent->>SessionControls: Display error
+    else Validation succeeds
+        useControlHook->>ReactQuery: useUpdateSession(id)
+        ReactQuery->>API: PATCH /sessions/:id
+        Note over API: Request body contains<br/>updated fields (status, speed, current_time, etc.)
+        
+        alt API success
+            API-->>ReactQuery: Updated session
+            ReactQuery->>ReactQuery: setQueryData(["GET", "/sessions/:id"], session)
+            ReactQuery-->>useControlHook: Success
+            
+            useControlHook->>ControlComponent: onSuccess()
+            ControlComponent->>SessionControls: Clear error
+            
+            ReactQuery->>Stores: Update currentSession
+            Stores->>useSessionData: Session state updated
+            useSessionData->>SessionControls: Re-render with new state
+        else API error
+            API-->>ReactQuery: Error response
+            ReactQuery-->>useControlHook: Error
+            useControlHook->>ControlComponent: onError(errorMessage)
+            ControlComponent->>SessionControls: Display error
+        end
+    end
+    
+    Note over User,useSessionData: Other controls follow same pattern:<br/>- SpeedSelector: Updates speed_multiplier<br/>- SkipBarButton: Increments current_time<br/>- CloseAllButton: POST /positions/close-all<br/>- ArchiveButton: Sets status to ARCHIVED
+

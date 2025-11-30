@@ -91,10 +91,10 @@ export function SessionAddForm() {
           <Input
             label="Start Time *"
             type="datetime-local"
-            value={formState.start_ts || ""}
+            value={formState.start_time || ""}
             onChange={(e) => handleStartTsChange(e.target.value)}
-            error={errors.start_ts}
-            hasError={!!errors.start_ts}
+            error={errors.start_time}
+            hasError={!!errors.start_time}
             required
           />
         </div>
@@ -104,10 +104,10 @@ export function SessionAddForm() {
           <Input
             label="End Time (Optional)"
             type="datetime-local"
-            value={formState.end_ts || ""}
+            value={formState.end_time || ""}
             onChange={(e) => handleEndTsChange(e.target.value)}
-            error={errors.end_ts}
-            hasError={!!errors.end_ts}
+            error={errors.end_time}
+            hasError={!!errors.end_time}
           />
         </div>
 

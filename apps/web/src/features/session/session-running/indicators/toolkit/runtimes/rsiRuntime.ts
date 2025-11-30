@@ -97,8 +97,12 @@ export function createRsiRuntime(
       series.setData(data);
     },
     destroy() {
-      resetPriceLines();
-      chart.removeSeries(series);
+      try {
+        resetPriceLines();
+        chart.removeSeries(series);
+      } catch {
+        // Chart may already be disposed during cleanup race conditions
+      }
     },
   };
 }

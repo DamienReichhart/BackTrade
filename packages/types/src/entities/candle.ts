@@ -11,7 +11,7 @@ export const CandleSchema = z.object({
   low: z.number().positive(),
   close: z.number().positive(),
   volume: z.number().nonnegative(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type Candle = z.infer<typeof CandleSchema>;

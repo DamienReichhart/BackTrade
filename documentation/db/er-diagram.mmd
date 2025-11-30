@@ -10,8 +10,6 @@ erDiagram
     %% speed: 0.5x | 1x | 2x | 3x | 5x | 10x | 15x
     %% leverage: 1x | 50x | 100x | 200x | 500x | 1000x
     %% transaction_type: DEPOSIT | WITHDRAWAL | COMMISSION | PNL | SLIPPAGE | SPREAD | ADJUSTMENT
-    %% entity_type: USER | SESSION | TRANSACTION | SUBSCRIPTION | POSITION
-    %% audit_action: CREATE | UPDATE | DELETE | LOGIN | LOGOUT | PASSWORD_CHANGE | ROLE_CHANGE | BAN | UNBAN
 
     USER {
       string id PK
@@ -31,11 +29,9 @@ erDiagram
       string ip_address
       string user_agent
       string device_info
-      string refresh_token_hash
       datetime issued_at
-      datetime last_seen
-      datetime expires_at
-      boolean is_active
+      datetime created_at
+      datetime updated_at
     }
 
     PLAN {
@@ -44,6 +40,9 @@ erDiagram
       string stripe_product_id
       string stripe_price_id
       string currency
+      int price
+      datetime created_at
+      datetime updated_at
     }
 
     SUBSCRIPTION {
@@ -57,6 +56,8 @@ erDiagram
       boolean cancel_at_period_end
       datetime canceled_at
       datetime trial_end
+      datetime created_at
+      datetime updated_at
     }
 
     STRIPE_EVENT {
@@ -66,20 +67,8 @@ erDiagram
       jsonb payload
       datetime received_at
       datetime processed_at
-      boolean success
-      string error
-    }
-
-    AUDIT_LOG {
-      string id PK
-      string user_id FK
-      enum entity_type
-      string entity_id
-      enum audit_action
-      json details
-      string ip_address
-      string user_agent
       datetime created_at
+      datetime updated_at
     }
 
     INSTRUMENT {
@@ -96,22 +85,19 @@ erDiagram
       string id PK
       string instrument_id FK
       enum timeframe
-      string uploaded_by_user_id FK
       datetime uploaded_at
       int records_count
       string file_name
-      boolean is_active
-      datetime start_ts
-      datetime end_ts
+      datetime start_time
+      datetime end_time
       datetime created_at
       datetime updated_at
     }
 
     CANDLE {
-      string id PK
       string instrument_id PK, FK
       enum timeframe PK
-      datetime ts
+      datetime ts PK
       decimal open
       decimal high
       decimal low
@@ -126,12 +112,11 @@ erDiagram
       string user_id FK
       string instrument_id FK
       string name
-      enum timeframe
       enum session_status
       enum speed
-      datetime start_ts
-      datetime current_ts
-      datetime end_ts
+      datetime start_time
+      datetime current_time
+      datetime end_time
       decimal initial_balance
       enum leverage
       int spread_pts
@@ -163,9 +148,7 @@ erDiagram
 
     TRANSACTION {
       string id PK
-      string user_id FK
       string session_id FK
-      string position_id FK
       enum transaction_type
       decimal amount
       decimal balance_after
@@ -177,8 +160,8 @@ erDiagram
       string id PK
       string session_id FK
       string file_name
-      datetime modified_at
       datetime created_at
+      datetime updated_at
     }
 
 
@@ -186,16 +169,12 @@ erDiagram
     USER ||--o{ SESSION : "owns"
     USER ||--o{ SUBSCRIPTION : "owns"
     PLAN ||--o{ SUBSCRIPTION : "used_by"
-    USER ||--o{ DATASET : "upload"
     INSTRUMENT ||--o{ DATASET : "feeds"
     INSTRUMENT ||--o{ SESSION : "used_in"
     SESSION ||--o{ POSITION : "contains"
     DATASET ||--o{ CANDLE : "provides"
-    USER ||--o{ TRANSACTION : "has"
     SESSION ||--o{ TRANSACTION : "records"
-    POSITION ||--o{ TRANSACTION : "linked"
     USER ||--o{ USER_SESSION : "login"
     POSITION ||--o| CANDLE : "entry_candle"
     POSITION ||--o| CANDLE : "exit_candle"
-    USER ||--o{ AUDIT_LOG : "activity"
     SESSION ||--o| SESSION_ANALYTICS : "has"

@@ -27,7 +27,7 @@ export function useSkipBar(
   );
 
   const canSkip = useMemo(
-    () => Boolean(sessionId && currentSession?.current_ts && !isLoading),
+    () => Boolean(sessionId && currentSession?.current_time && !isLoading),
     [sessionId, currentSession, isLoading],
   );
 
@@ -37,22 +37,22 @@ export function useSkipBar(
       return;
     }
 
-    if (!currentSession?.current_ts) {
+    if (!currentSession?.current_time) {
       onError?.("Current session time is not available");
       return;
     }
 
     try {
-      // Calculate new current_ts by adding timeframe duration
-      const currentTime = new Date(currentSession.current_ts);
+      // Calculate new current_time by adding timeframe duration
+      const currentTime = new Date(currentSession.current_time);
       const timeframeMs = timeframeToMilliseconds(timeframe);
       let newTime = new Date(currentTime.getTime() + timeframeMs);
 
-      // Validate against session end_ts boundary
-      if (currentSession.end_ts) {
-        const endTs = new Date(currentSession.end_ts);
+      // Validate against session end_time boundary
+      if (currentSession.end_time) {
+        const endTs = new Date(currentSession.end_time);
         if (newTime.getTime() > endTs.getTime()) {
-          // Clamp to end_ts if new time exceeds session boundary
+          // Clamp to end_time if new time exceeds session boundary
           newTime = endTs;
         }
       }
@@ -61,7 +61,7 @@ export function useSkipBar(
       const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";
 
       const updatedSession = await updateSession({
-        current_ts: newCurrentTs,
+        current_time: newCurrentTs,
       });
 
       // Update the session query cache with the mutation result

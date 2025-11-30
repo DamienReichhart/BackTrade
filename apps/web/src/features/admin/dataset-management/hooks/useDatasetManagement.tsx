@@ -9,10 +9,9 @@ export type SortField =
   | "timeframe"
   | "file_name"
   | "records_count"
-  | "is_active"
   | "uploaded_at"
-  | "start_ts"
-  | "end_ts"
+  | "start_time"
+  | "end_time"
   | "created_at"
   | "updated_at";
 export type SortOrder = "asc" | "desc";
@@ -82,10 +81,6 @@ export function useDatasetManagement() {
           aValue = a.records_count ?? 0;
           bValue = b.records_count ?? 0;
           break;
-        case "is_active":
-          aValue = a.is_active ? 1 : 0;
-          bValue = b.is_active ? 1 : 0;
-          break;
         case "uploaded_at":
           aValue = a.uploaded_at
             ? new Date(a.uploaded_at).getTime()
@@ -94,29 +89,37 @@ export function useDatasetManagement() {
             ? new Date(b.uploaded_at).getTime()
             : Number.NEGATIVE_INFINITY;
           break;
-        case "start_ts":
-          aValue = a.start_ts
-            ? new Date(a.start_ts).getTime()
+        case "start_time":
+          aValue = a.start_time
+            ? new Date(a.start_time).getTime()
             : Number.NEGATIVE_INFINITY;
-          bValue = b.start_ts
-            ? new Date(b.start_ts).getTime()
+          bValue = b.start_time
+            ? new Date(b.start_time).getTime()
             : Number.NEGATIVE_INFINITY;
           break;
-        case "end_ts":
-          aValue = a.end_ts
-            ? new Date(a.end_ts).getTime()
+        case "end_time":
+          aValue = a.end_time
+            ? new Date(a.end_time).getTime()
             : Number.NEGATIVE_INFINITY;
-          bValue = b.end_ts
-            ? new Date(b.end_ts).getTime()
+          bValue = b.end_time
+            ? new Date(b.end_time).getTime()
             : Number.NEGATIVE_INFINITY;
           break;
         case "created_at":
-          aValue = new Date(a.created_at).getTime();
-          bValue = new Date(b.created_at).getTime();
+          aValue = a.created_at
+            ? new Date(a.created_at).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.created_at
+            ? new Date(b.created_at).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         case "updated_at":
-          aValue = new Date(a.updated_at).getTime();
-          bValue = new Date(b.updated_at).getTime();
+          aValue = a.updated_at
+            ? new Date(a.updated_at).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.updated_at
+            ? new Date(b.updated_at).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         default:
           return 0;

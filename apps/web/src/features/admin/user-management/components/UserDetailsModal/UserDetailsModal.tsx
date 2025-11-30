@@ -108,13 +108,13 @@ export function UserDetailsModal({
             <div className={styles.row}>
               <span className={styles.label}>Created At:</span>
               <span className={styles.value}>
-                {formatDate(user.created_at)}
+                {user.created_at ? formatDate(user.created_at) : "—"}
               </span>
             </div>
             <div className={styles.row}>
               <span className={styles.label}>Updated At:</span>
               <span className={styles.value}>
-                {formatDate(user.updated_at)}
+                {user.updated_at ? formatDate(user.updated_at) : "—"}
               </span>
             </div>
           </div>

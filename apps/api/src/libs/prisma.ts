@@ -1,8 +1,9 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
+import { ENV } from "../config/env";
 
-const connectionString = `${process.env.DATABASE_URL}`;
+const connectionString = `${ENV.DATABASE_URL}`;
 
 if (!connectionString || connectionString === "") {
   throw new Error("DATABASE_URL is not set or is empty");

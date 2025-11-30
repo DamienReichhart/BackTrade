@@ -17,7 +17,7 @@ export const PositionSchema = z.object({
   commission_cost: z.number().nonnegative().optional(),
   slippage_cost: z.number().nonnegative().optional(),
   spread_cost: z.number().nonnegative().optional(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type Position = z.infer<typeof PositionSchema>;

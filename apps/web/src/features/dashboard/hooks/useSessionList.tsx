@@ -10,7 +10,7 @@ export type SortField =
   | "updated_at"
   | "initial_balance"
   | "leverage"
-  | "start_ts";
+  | "start_time";
 
 export type SortOrder = "asc" | "desc";
 

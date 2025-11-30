@@ -1,10 +1,5 @@
 FROM postgres:18-alpine
 
-# Set environment variables for PostgreSQL
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=postgres
-ENV POSTGRES_DB=backtrade
-
 # Expose PostgreSQL port
 EXPOSE 5432
 
