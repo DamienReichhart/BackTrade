@@ -81,9 +81,13 @@ export function createBollingerRuntime(
       series.lower.setData(lowerData);
     },
     destroy() {
-      chart.removeSeries(series.basis);
-      chart.removeSeries(series.upper);
-      chart.removeSeries(series.lower);
+      try {
+        chart.removeSeries(series.basis);
+        chart.removeSeries(series.upper);
+        chart.removeSeries(series.lower);
+      } catch {
+        // Chart may already be disposed during cleanup race conditions
+      }
     },
   };
 }
