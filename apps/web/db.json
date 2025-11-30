@@ -186,7 +186,7 @@
       "session_status": "RUNNING",
       "speed": "5x",
       "start_time": "2020-01-16T09:00:00Z",
-      "current_time": "2020-01-16T11:41:00Z",
+      "current_time": "2020-01-16T11:42:00Z",
       "end_time": null,
       "initial_balance": 90000,
       "leverage": 50,
@@ -56425,7 +56425,20 @@
       "quantity_lots": 1,
       "position_status": "OPEN",
       "opened_at": "2020-01-16T11:41:00Z",
-      "id": 4
+      "id": 4,
+      "sl_price": 1.11,
+      "tp_price": 1.13102
+    },
+    {
+      "session_id": 1,
+      "side": "SELL",
+      "entry_price": 1.11572,
+      "quantity_lots": 1,
+      "tp_price": 1.11,
+      "sl_price": 1.2,
+      "position_status": "OPEN",
+      "opened_at": "2020-01-16T11:42:00Z",
+      "id": 5
     }
   ],
   "transactions": [
