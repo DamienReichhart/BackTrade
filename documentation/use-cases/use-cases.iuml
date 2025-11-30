@@ -75,7 +75,6 @@ BackTrade -[hidden]-> EXT
 Anon --> UC_AUTH
 User --> UC_AUTH
 
-Anon --> UC_BILLING
 User --> UC_BILLING
 
 Admin --> UC_DATA
