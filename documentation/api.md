@@ -155,6 +155,7 @@ The token is not automatically renewable or Refresh token
 | **PATCH**  | `/sessions/:id`              | -                             | `UpdateSessionRequest`      | `Session`        | 200, 400, 401, 404           | Update session                       |
 | **DELETE** | `/sessions/:id`              | -                             | -                           | -                | 204, 401, 404                | Delete session                       |
 | **GET**    | `/sessions/:id/candles`      | -                             | -                           | `Candle[]`       | 200, 401, 403, 404           | List last 2000 candles for a session |
+| **GET**    | `/sessions/:id/analyticsFile`| -                             | -                           | `File`            | 200, 401, 403, 404           | Download session analytics file      |
 | **GET**    | `/plans`                     | `SearchQuery`                 | -                           | `Plan[]`         | 200                          | List subscription plans              |
 | **GET**    | `/plans/:id`                 | -                             | -                           | `Plan`           | 200, 404                     | Get plan by ID                       |
 | **POST**   | `/plans`                     | -                             | `CreatePlanRequest`         | `Plan`           | 201, 400, 401, 403           | Create plan (Admin)                  |
