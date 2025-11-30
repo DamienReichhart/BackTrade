@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { type ZodType } from "zod";
 import { validateApiOutput } from "@backtrade/utils";
 import { useAuthStore } from "../../../store";
-import { retryIfUnauthorized } from "../../utils/retryIfUnauthorized";
+import { retryIfUnauthenticated } from "../../utils/retryIfUnauthenticated";
 import { type FetchResponse } from "../../utils";
 import { API_BASE_URL } from "../../index";
 
@@ -46,7 +46,7 @@ export function usePostForm<TOutput = unknown>(
 
         if (!response.ok) {
           if (retryOnUnauthorized) {
-            responseData = await retryIfUnauthorized<TOutput>(
+            responseData = await retryIfUnauthenticated<TOutput>(
               response,
               refreshToken,
               () => execute(formData, false),

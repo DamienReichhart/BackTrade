@@ -64,7 +64,7 @@ export function TransactionsTable() {
                     className={styles.clickableRow}
                     onClick={() => handleRowClick(t)}
                   >
-                    <td>{formatTime(t.created_at)}</td>
+                    <td>{t.created_at ? formatTime(t.created_at) : "—"}</td>
                     <td>#{t.id}</td>
                     <td>{t.transaction_type}</td>
                     <td className={styles[getAmountClassName(t.amount)]}>

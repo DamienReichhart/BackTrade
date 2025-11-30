@@ -69,7 +69,7 @@ Each user can create a session by specifying the trading instrument (e.g., XAUUS
 - **Data Granularity**: OHLCV-based simulation (no tick-level data)
 - **Session Continuity**: Sessions pause when not actively viewed
 - **Cost Structure**: Fixed spread, slippage, and commission models
-- **Instrument and Timeframe Scope**: Single-instrument/timeframe sessions only
+- **Instrument Scope**: Single-instrument sessions only
 - **Data Management**: Admin-controlled data uploads and CSV format requirement for historical data
 
 ---

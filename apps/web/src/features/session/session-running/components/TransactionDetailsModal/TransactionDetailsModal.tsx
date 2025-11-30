@@ -76,26 +76,21 @@ export function TransactionDetailsModal({
             </div>
           </div>
 
-          {transaction.position_id && (
-            <div className={styles.section}>
-              <div className={styles.row}>
-                <span className={styles.label}>Position ID:</span>
-                <span className={styles.value}>{transaction.position_id}</span>
-              </div>
-            </div>
-          )}
-
           <div className={styles.section}>
             <div className={styles.row}>
               <span className={styles.label}>Created At:</span>
               <span className={styles.value}>
-                {formatDateTime(transaction.created_at)}
+                {transaction.created_at
+                  ? formatDateTime(transaction.created_at)
+                  : "—"}
               </span>
             </div>
             <div className={styles.row}>
               <span className={styles.label}>Updated At:</span>
               <span className={styles.value}>
-                {formatDateTime(transaction.updated_at)}
+                {transaction.updated_at
+                  ? formatDateTime(transaction.updated_at)
+                  : "—"}
               </span>
             </div>
           </div>

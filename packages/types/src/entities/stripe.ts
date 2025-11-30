@@ -7,7 +7,7 @@ export const StripeEventSchema = z.object({
   payload: z.record(z.string(), z.unknown()),
   received_at: z.iso.datetime(),
   processed_at: z.iso.datetime().optional(),
-  success: z.boolean().default(false),
-  error: z.string().optional(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type StripeEvent = z.infer<typeof StripeEventSchema>;

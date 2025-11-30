@@ -134,7 +134,7 @@ export function PositionDetailsModal({
             </div>
           )}
 
-          {(position.created_at || position.updated_at) && (
+          {(position.created_at ?? position.updated_at) && (
             <div className={styles.section}>
               {position.created_at && (
                 <div className={styles.row}>

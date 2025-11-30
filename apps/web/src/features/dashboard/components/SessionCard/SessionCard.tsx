@@ -67,7 +67,8 @@ export function SessionCard({ session }: SessionCardProps) {
         <div className={styles.footer}>
           <div className={styles.meta}>
             <span className={styles.date}>
-              Created {formatDate(session.created_at)}
+              Created{" "}
+              {session.created_at ? formatDate(session.created_at) : "—"}
             </span>
           </div>
         </div>

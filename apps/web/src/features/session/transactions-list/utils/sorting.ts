@@ -36,7 +36,9 @@ function getSortValue(
     case "balance_after":
       return transaction.balance_after;
     case "created_at":
-      return new Date(transaction.created_at).getTime();
+      return transaction.created_at
+        ? new Date(transaction.created_at).getTime()
+        : Number.NEGATIVE_INFINITY;
     default:
       return 0;
   }

@@ -22,7 +22,7 @@ export function useClosePosition(
   const { currentSession } = useCurrentSessionStore();
   const { currentPrice } = useCurrentPriceStore();
   const sessionId = currentSession?.id?.toString();
-  const closedAt = currentSession?.current_ts;
+  const closedAt = currentSession?.current_time;
 
   const queryClient = useQueryClient();
   const { execute: closePosition, isLoading: isClosing } =

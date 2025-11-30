@@ -38,7 +38,11 @@ export function createLineSeriesRuntime<TConfig extends IndicatorConfigBase>(
       series.setData(data);
     },
     destroy() {
-      chart.removeSeries(series);
+      try {
+        chart.removeSeries(series);
+      } catch {
+        // Chart may already be disposed during cleanup race conditions
+      }
     },
   };
 }

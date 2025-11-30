@@ -40,8 +40,7 @@ rectangle BackTrade {
     (View Analytics) as UC_ANALYTICS
   }
 
-  package "Audit and Compliance" as G {
-    (Record Audit Event) as UC_AUDIT
+  package "Compliance" as G {
     (Ban or Unban user) as UC_BAN
   }
 
@@ -61,13 +60,6 @@ rectangle BackTrade {
   - Modify TP/SL
   - Close one or all positions
   end note
-
-  note right of UC_AUDIT
-  System Behavior:
-  - Automatically records every critical user or admin action  
-  - Applies to authentication, billing, dataset management, sessions, positions, analytics, and bans  
-  - Entries stored immutably for compliance and traceability
-  end note
 }
 
 ' === External Services ===
@@ -83,7 +75,6 @@ BackTrade -[hidden]-> EXT
 Anon --> UC_AUTH
 User --> UC_AUTH
 
-Anon --> UC_BILLING
 User --> UC_BILLING
 
 Admin --> UC_DATA

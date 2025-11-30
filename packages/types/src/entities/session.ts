@@ -8,15 +8,15 @@ export const SessionSchema = z.object({
   name: z.string().optional(),
   session_status: SessionStatusSchema,
   speed: SpeedSchema,
-  start_ts: z.iso.datetime(),
-  current_ts: z.iso.datetime(),
-  end_ts: z.iso.datetime().nullable().optional(),
+  start_time: z.iso.datetime(),
+  current_time: z.iso.datetime(),
+  end_time: z.iso.datetime().nullable().optional(),
   initial_balance: z.number().positive(),
   leverage: LeverageSchema,
   spread_pts: z.number().nonnegative(),
   slippage_pts: z.number().nonnegative(),
   commission_per_fill: z.number().nonnegative(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type Session = z.infer<typeof SessionSchema>;

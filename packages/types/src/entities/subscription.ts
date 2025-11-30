@@ -12,5 +12,7 @@ export const SubscriptionSchema = z.object({
   cancel_at_period_end: z.boolean().default(false),
   canceled_at: z.iso.datetime().nullable().optional(),
   trial_end: z.iso.datetime().nullable().optional(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type Subscription = z.infer<typeof SubscriptionSchema>;

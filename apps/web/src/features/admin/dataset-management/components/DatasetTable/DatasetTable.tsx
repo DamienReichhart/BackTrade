@@ -2,7 +2,6 @@ import type { Dataset } from "@backtrade/types";
 import type { SortField, SortOrder } from "../../hooks";
 import { formatDate, formatDateTime } from "@backtrade/utils";
 import { getSortIndicator } from "./utils/table";
-import { getStatusBadgeClassName, getStatusLabel } from "./utils/formatting";
 import { FileUploadButton } from "../FileUploadButton";
 import styles from "./DatasetTable.module.css";
 
@@ -100,21 +99,16 @@ export function DatasetTable({
               </th>
               <th
                 className={styles.sortableHeader}
-                onClick={() => onSort("is_active")}
+                onClick={() => onSort("start_time")}
               >
-                Status {getSortIndicator("is_active", sortField, sortOrder)}
+                Start Date{" "}
+                {getSortIndicator("start_time", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
-                onClick={() => onSort("start_ts")}
+                onClick={() => onSort("end_time")}
               >
-                Start Date {getSortIndicator("start_ts", sortField, sortOrder)}
-              </th>
-              <th
-                className={styles.sortableHeader}
-                onClick={() => onSort("end_ts")}
-              >
-                End Date {getSortIndicator("end_ts", sortField, sortOrder)}
+                End Date {getSortIndicator("end_time", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
@@ -128,21 +122,21 @@ export function DatasetTable({
           <tbody>
             {isLoading && (
               <tr>
-                <td className={styles.empty} colSpan={10}>
+                <td className={styles.empty} colSpan={9}>
                   Loading datasets...
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td className={styles.error} colSpan={10}>
+                <td className={styles.error} colSpan={9}>
                   Error loading datasets: {error.message}
                 </td>
               </tr>
             )}
             {!isLoading && !error && datasets.length === 0 && (
               <tr>
-                <td className={styles.empty} colSpan={10}>
+                <td className={styles.empty} colSpan={9}>
                   No datasets found
                 </td>
               </tr>
@@ -164,20 +158,11 @@ export function DatasetTable({
                   <td className={styles.recordsCell}>
                     {(dataset.records_count ?? 0).toLocaleString()}
                   </td>
-                  <td>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[getStatusBadgeClassName(dataset.is_active)]
-                      }`}
-                    >
-                      {getStatusLabel(dataset.is_active)}
-                    </span>
+                  <td className={styles.dateCell}>
+                    {dataset.start_time ? formatDate(dataset.start_time) : "—"}
                   </td>
                   <td className={styles.dateCell}>
-                    {dataset.start_ts ? formatDate(dataset.start_ts) : "—"}
-                  </td>
-                  <td className={styles.dateCell}>
-                    {dataset.end_ts ? formatDate(dataset.end_ts) : "—"}
+                    {dataset.end_time ? formatDate(dataset.end_time) : "—"}
                   </td>
                   <td className={styles.dateCell}>
                     {dataset.uploaded_at
