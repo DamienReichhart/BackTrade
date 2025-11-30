@@ -1,6 +1,6 @@
 import { logger } from "../libs/pino";
 import type { Request, Response, NextFunction } from "express";
-import { ErrorResponseSchema, ErrorSchema } from "@backtrade/types";
+import { ErrorResponseSchema } from "@backtrade/types";
 import WebError from "../errors/web/web-error";
 
 const errorHandlerLogger = logger.child({
