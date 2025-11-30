@@ -10,7 +10,6 @@ services:
       - ./apps:/app/apps
       - ./packages:/app/packages
       - ./assets:/app/assets
-      - ./eslint-config.js:/app/eslint-config.js
       # Exclude node_modules from volume mounts to preserve installed dependencies
       - /app/node_modules
       - /app/apps/api/node_modules
