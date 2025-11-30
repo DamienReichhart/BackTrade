@@ -1,0 +1,16 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 767px) {
+  .topBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

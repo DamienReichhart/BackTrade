@@ -1,21 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
-import { Health, HealthSchema } from "@backtrade/types";
+import { Header } from "../../components/Header";
+import { Footer } from "../../components/Footer";
+import { Hero } from "./components/Hero";
+import { FeatureCards } from "./components/FeatureCards";
+import { ProductSection } from "./components/ProductSection";
+import { InterfaceSection } from "./components/InterfaceSection";
+import { CTASection } from "./components/CTASection";
+import styles from "./Home.module.css";
 
+/**
+ * Home page component
+ *
+ * Main landing page for the BackTrade application
+ * Showcases product features, interface, and call-to-action
+ */
 export default function Home() {
-  const { data } = useQuery<Health>({
-    queryKey: ["health"],
-    queryFn: async (): Promise<Health> => {
-      const baseUrl = import.meta.env.VITE_API_URL ?? "";
-      const response = await fetch(`${baseUrl}/health`);
-      const json = await response.json();
-      return HealthSchema.parse(json);
-    },
-  });
-
   return (
-    <main style={{ padding: 24 }}>
-      <h1>BackTrade</h1>
-      <pre>{JSON.stringify(data ?? {}, null, 2)}</pre>
-    </main>
+    <div className={styles.home}>
+      <Header />
+
+      <main className={styles.main}>
+        <Hero />
+        <FeatureCards />
+        <ProductSection />
+        <InterfaceSection />
+        <CTASection />
+      </main>
+
+      <Footer />
+    </div>
   );
 }

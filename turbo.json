@@ -2,6 +2,7 @@
   "tasks": {
     "dev": { "cache": false },
     "build": { "outputs": ["dist/**"] },
+    "start": { "cache": false },
     "typecheck": {},
     "lint": {},
     "test": {},

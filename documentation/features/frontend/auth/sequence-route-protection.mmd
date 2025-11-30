@@ -1,0 +1,64 @@
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Router
+    participant AuthenticatedLayout
+    participant AuthStore
+    participant CookieUtils
+    participant JWTUtils
+    participant ProtectedComponent
+    
+    Note over User,ProtectedComponent: Accessing Protected Route
+    
+    User->>Browser: Navigate to /dashboard or /dashboard/*
+    Browser->>Router: Route to protected route
+    Router->>AuthenticatedLayout: Render AuthenticatedLayout wrapper
+    
+    AuthenticatedLayout->>AuthStore: Read accessToken from store
+    AuthStore->>CookieUtils: getCookie("access_token")
+    CookieUtils-->>AuthStore: accessToken or undefined
+    
+    alt Token exists
+        AuthStore->>JWTUtils: getUserFromToken(accessToken)
+        JWTUtils-->>AuthStore: PublicUser or null
+        
+        alt User decoded successfully
+            AuthStore-->>AuthenticatedLayout: user: PublicUser
+            AuthenticatedLayout->>AuthenticatedLayout: Filter nav items by role
+            AuthenticatedLayout->>ProtectedComponent: Render protected component
+            ProtectedComponent->>User: Display protected content
+        else Token invalid or expired
+            AuthStore-->>AuthenticatedLayout: user: null
+            Note over AuthenticatedLayout: Token exists but invalid
+            AuthenticatedLayout->>ProtectedComponent: Still render (token refresh will handle)
+            ProtectedComponent->>User: Display content (API calls will trigger refresh)
+        end
+    else No token
+        AuthStore-->>AuthenticatedLayout: user: null
+        Note over AuthenticatedLayout: No authentication token
+        AuthenticatedLayout->>ProtectedComponent: Still render (API calls will fail)
+        ProtectedComponent->>User: Display content (API calls will show errors)
+    end
+    
+    Note over User,ProtectedComponent: API Request from Protected Component
+    
+    ProtectedComponent->>ProtectedComponent: Make API request
+    ProtectedComponent->>AuthStore: Read accessToken for API call
+    
+    alt Token missing or invalid
+        ProtectedComponent->>API: Request with no/invalid token
+        API-->>ProtectedComponent: 401 Unauthorized
+        Note over ProtectedComponent: Token refresh attempted if refreshToken exists
+        alt Refresh successful
+            ProtectedComponent->>User: Request succeeds after refresh
+        else Refresh failed
+            ProtectedComponent->>User: Error displayed (user may need to login)
+        end
+    else Token valid
+        ProtectedComponent->>API: Request with valid token
+        API-->>ProtectedComponent: 200 OK with data
+        ProtectedComponent->>User: Display data
+    end
+    
+    Note over User,ProtectedComponent: Note: AuthenticatedLayout does not block rendering<br/>Route protection is handled at API level<br/>Invalid tokens trigger automatic refresh
+

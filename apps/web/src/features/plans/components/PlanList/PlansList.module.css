@@ -1,0 +1,29 @@
+/**
+ * Plans List Component Styles
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.empty {
+  padding: var(--spacing-xl);
+  text-align: center;
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.emptyText {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,62 @@
+flowchart TD
+    Start([Chart initialized]) --> CheckIndicators{Indicators configured?}
+    
+    CheckIndicators -->|No| Wait[Wait for indicators]
+    CheckIndicators -->|Yes| FilterEnabled[Filter enabled indicators]
+    
+    FilterEnabled --> SortByOrder[Sort by order property]
+    SortByOrder --> LoopStart{For each indicator config}
+    
+    LoopStart --> CheckExists{Instance exists?}
+    CheckExists -->|Yes| UpdateConfig[Update existing runtime config]
+    CheckExists -->|No| GetDefinition[Get indicator definition from registry]
+    
+    GetDefinition --> DefinitionFound{Definition found?}
+    DefinitionFound -->|No| Skip[Skip indicator]
+    DefinitionFound -->|Yes| CreateRuntime[Create runtime instance]
+    
+    CreateRuntime --> InitializeRuntime[Initialize runtime with chart]
+    InitializeRuntime --> ApplyConfig[Apply indicator configuration]
+    ApplyConfig --> SetData[Set initial candle data]
+    SetData --> StoreInstance[Store instance in map]
+    
+    UpdateConfig --> NextIndicator{More indicators?}
+    StoreInstance --> NextIndicator
+    Skip --> NextIndicator
+    
+    NextIndicator -->|Yes| LoopStart
+    NextIndicator -->|No| CheckRemoved{Check for removed indicators}
+    
+    CheckRemoved --> LoopRemoved{For each instance}
+    LoopRemoved --> IsActive{Still in active configs?}
+    IsActive -->|No| DestroyRuntime[Destroy runtime instance]
+    IsActive -->|Yes| Keep[Keep instance]
+    
+    DestroyRuntime --> RemoveSeries[Remove series from chart]
+    RemoveSeries --> DeleteInstance[Delete from instances map]
+    Keep --> NextRemoved{More instances?}
+    DeleteInstance --> NextRemoved
+    
+    NextRemoved -->|Yes| LoopRemoved
+    NextRemoved -->|No| WaitForUpdates[Wait for candle/config updates]
+    
+    WaitForUpdates --> CandleUpdate{Candles updated?}
+    CandleUpdate -->|Yes| UpdateAllData[Update data for all instances]
+    UpdateAllData --> LoopUpdate{For each instance}
+    LoopUpdate --> Calculate[Calculate indicator values]
+    Calculate --> SetChartData[Set data on chart series]
+    SetChartData --> NextUpdate{More instances?}
+    NextUpdate -->|Yes| LoopUpdate
+    NextUpdate -->|No| WaitForUpdates
+    
+    CandleUpdate -->|No| ConfigUpdate{Config updated?}
+    ConfigUpdate -->|Yes| FilterEnabled
+    ConfigUpdate -->|No| WaitForUpdates
+    
+    Wait[Wait for indicators] --> CheckIndicators
+    
+    style Start fill:#e1f5ff
+    style CreateRuntime fill:#fff3e0
+    style DestroyRuntime fill:#ffcdd2
+    style UpdateAllData fill:#c8e6c9
+

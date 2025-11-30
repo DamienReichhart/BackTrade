@@ -1,0 +1,83 @@
+---
+globs: *.tsx, *.ts
+description: Coding standards and best practices
+---
+
+# Coding Standards
+
+## TypeScript
+
+- **Strict mode**: Enabled in all TypeScript projects
+- **Type everything**: No `any` types, use proper interfaces
+- **Interface naming**: PascalCase (e.g., `ComponentProps`)
+
+## File Naming
+
+- **Components**: PascalCase (e.g., `Button.tsx`)
+- **Utilities**: camelCase (e.g., `utils.ts`)
+- **Types**: camelCase with `.ts` extension (e.g., `types.ts`)
+- **Config**: camelCase (e.g., `pricingConfig.tsx`)
+
+## Documentation
+
+Every component, function, and type should have JSDoc comments:
+
+```tsx
+/**
+ * Component description
+ *
+ * Additional context about when and how to use this component
+ * @example
+ * ```tsx
+ * <Component prop1="value" />
+ * ```
+ */
+export function Component({ prop1 }: ComponentProps) {
+  // Implementation
+}
+```
+
+## Error Handling
+
+```tsx
+try {
+  const result = await execute(data);
+  // Handle success
+} catch (error) {
+  console.error("Error:", error);
+  // Show user-friendly error message
+}
+```
+
+## State Management
+
+- **Custom Hooks**: Extract stateful logic to custom hooks in `hooks/` directory
+- **Component State**: Use `useState` only for simple, component-specific UI state
+- **Feature State**: Complex state should live in custom hooks, not components
+- **Global State**: Use Zustand for global state (auth, current session, etc.)
+- **Server State**: Use React Query for server state management
+- **Separation**: Keep business logic in hooks, UI logic in components
+
+## Component Guidelines
+
+1. **Single Responsibility**: Each component should do one thing
+2. **Logic Separation**: Components should focus on rendering; delegate logic to hooks
+3. **Composition over Inheritance**: Build complex UIs from simple components
+4. **Props destructuring**: Always destructure in function signature
+5. **Controlled components**: use only controlled forms
+6. **Key props**: Always provide unique keys for list items
+7. **Hook Usage**: Use custom hooks for all state management and side effects
+8. **Utility Functions**: Extract pure functions to `utils/` directory
+
+## Performance
+
+- Use `useMemo` for expensive calculations
+- Use `useCallback` for stable function references
+
+## Accessibility
+
+- Use semantic HTML elements
+- Provide alt text for images
+- Support keyboard navigation
+- Use ARIA labels when needed
+- Ensure sufficient color contrast

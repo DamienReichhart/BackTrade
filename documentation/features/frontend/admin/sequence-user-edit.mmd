@@ -1,0 +1,53 @@
+sequenceDiagram
+    participant Admin as Admin User
+    participant UM as UserManagement
+    participant Modal as UserEditModal
+    participant Hook as useUserEditModal
+    participant API as useUpdateUser
+    participant Backend as Backend API
+    
+    Note over Admin,Backend: Edit User Flow
+    
+    Admin->>UM: Click Edit button on user
+    UM->>UM: openEditModal(user)
+    UM->>Modal: Render UserEditModal with user
+    Modal->>Hook: useUserEditModal(user, isOpen, onClose, onSuccess)
+    Hook->>Hook: Initialize form state:<br/>email, role, isBanned
+    
+    Note over Admin,Backend: Form Interaction
+    
+    Admin->>Modal: Modify email field
+    Modal->>Hook: setEmail(newEmail)
+    Hook->>Hook: Update email state
+    
+    Admin->>Modal: Change role dropdown
+    Modal->>Hook: setRole(newRole)
+    Hook->>Hook: Update role state
+    
+    Admin->>Modal: Toggle banned checkbox
+    Modal->>Hook: setIsBanned(newValue)
+    Hook->>Hook: Update isBanned state
+    
+    Note over Admin,Backend: Form Submission
+    
+    Admin->>Modal: Click Update User button
+    Modal->>Hook: handleSubmit(event)
+    Hook->>Hook: validate()
+    Hook->>Hook: Check email format
+    Hook->>Hook: Check role validity
+    alt Validation fails
+        Hook-->>Modal: errors object
+        Modal->>Modal: Display validation errors
+    else Validation succeeds
+        Hook->>Hook: Build UpdateUserRequest<br/>(only changed fields)
+        Hook->>API: execute(updateData)
+        API->>Backend: PATCH /users/:id<br/>{email?, role?, is_banned?}
+        Backend-->>API: Updated PublicUser
+        API-->>Hook: Success response
+        Hook->>Hook: onSuccess()
+        Hook->>UM: Close modal & refetch users
+        UM->>UM: refetchUsers()
+        UM->>UM: Close modal
+        UM->>UM: Re-render UserTable with updated data
+    end
+

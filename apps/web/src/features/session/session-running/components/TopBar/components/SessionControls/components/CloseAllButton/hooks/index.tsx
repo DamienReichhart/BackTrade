@@ -1,0 +1,1 @@
+export { useCloseAll } from "./useCloseAll";

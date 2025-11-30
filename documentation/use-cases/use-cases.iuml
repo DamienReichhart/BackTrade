@@ -1,0 +1,93 @@
+@startuml
+left to right direction
+skinparam usecaseBackgroundColor #f9f9f9
+skinparam usecaseBorderColor #666666
+skinparam actorBorderColor #333333
+skinparam noteBackgroundColor #ffffe0
+skinparam noteBorderColor #bfb24d
+
+' === Actors ===
+package "Actors" as ACT {
+  actor "Anonymous" as Anon
+  actor "User" as User
+  actor "Subscribed User" as Subscribed
+  actor "Admin" as Admin
+
+  Subscribed -|> User
+  Admin -|> User
+}
+
+' === System ===
+rectangle BackTrade {
+  package "Auth & Account" as A {
+    (Manage Authentication and Account) as UC_AUTH
+  }
+
+  package "Subscription and Billing" as B {
+    (Manage Subscription and Billing) as UC_BILLING
+  }
+
+  package "Data Management" as C {
+    (Manage Datasets) as UC_DATA
+  }
+
+  package "Backtesting Engine" as D {
+    (Manage Sessions) as UC_SESSIONS
+    (Manage Positions) as UC_POSITIONS
+  }
+
+  package "Analytics" as E {
+    (View Analytics) as UC_ANALYTICS
+  }
+
+  package "Compliance" as G {
+    (Ban or Unban user) as UC_BAN
+  }
+
+  note right of UC_SESSIONS
+  Includes:
+  - Create, start, pause, resume sessions
+  - Adjust speed or skip time
+  - Enforce session concurrency limits
+  - Auto-pause when not viewed
+  end note
+
+  note right of UC_POSITIONS
+  Includes:
+  - Place market orders (buy/sell)
+  - Apply costs (spread, slippage, commission)
+  - Record transactions
+  - Modify TP/SL
+  - Close one or all positions
+  end note
+}
+
+' === External Services ===
+package "External Services" as EXT {
+  actor "Stripe" as Stripe
+  actor "Email or SMS" as Mail
+}
+
+ACT -[hidden]-> BackTrade
+BackTrade -[hidden]-> EXT
+
+' === Actor links ===
+Anon --> UC_AUTH
+User --> UC_AUTH
+
+User --> UC_BILLING
+
+Admin --> UC_DATA
+
+User --> UC_SESSIONS
+User --> UC_POSITIONS
+
+User --> UC_ANALYTICS
+
+Admin --> UC_BAN
+
+' === Integrations ===
+UC_BILLING -right- Stripe
+UC_AUTH -right- Mail
+
+@enduml

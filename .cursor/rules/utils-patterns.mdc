@@ -1,0 +1,226 @@
+---
+globs: *.ts, *.tsx
+description: Utility functions patterns and conventions
+---
+
+# Utility Functions Patterns
+
+## Utility File Organization
+
+Utility functions should be placed in a `utils/` directory within each feature:
+
+```
+feature-name/
+├── utils/
+│   ├── validation.ts      # Validation utilities
+│   ├── formatting.ts      # Formatting utilities
+│   ├── calculations.ts    # Calculation utilities
+│   ├── config.ts         # Configuration objects
+│   └── index.ts          # Export all utilities
+```
+
+## Utility Function Principles
+
+1. **Pure Functions**: Utilities should be pure functions (no side effects)
+2. **Single Responsibility**: Each function should do one thing
+3. **Type Safety**: Always type parameters and return values
+4. **Documentation**: Document all utility functions with JSDoc
+5. **Testability**: Functions should be easy to test in isolation
+
+## Validation Utilities Pattern
+
+```tsx
+/**
+ * Validation utilities for [feature] feature
+ */
+
+/**
+ * Validate [field] format
+ *
+ * @param value - The value to validate
+ * @returns Validation result with isValid flag and optional error message
+ * @example
+ * ```tsx
+ * const result = validateEmail("test@example.com");
+ * if (!result.isValid) {
+ *   console.error(result.error);
+ * }
+ * ```
+ */
+export function validateField(value: string): {
+  isValid: boolean;
+  error?: string;
+} {
+  if (!value.trim()) {
+    return { isValid: false, error: "Field is required" };
+  }
+
+  // Validation logic
+  if (!isValidFormat(value)) {
+    return { isValid: false, error: "Invalid format" };
+  }
+
+  return { isValid: true };
+}
+```
+
+## Calculation Utilities Pattern
+
+```tsx
+/**
+ * Calculation utilities for [feature] feature
+ */
+
+/**
+ * Calculate [metric] from [data]
+ *
+ * @param data - Input data for calculation
+ * @returns Calculated result
+ * @example
+ * ```tsx
+ * const metrics = calculateMetrics(positions, transactions);
+ * ```
+ */
+export function calculateMetric(data: DataType): MetricType {
+  // Pure calculation logic
+  return {
+    // calculated values
+  };
+}
+```
+
+## Configuration Utilities Pattern
+
+```tsx
+/**
+ * Configuration utilities for [feature] feature
+ */
+
+/**
+ * Configuration object type
+ */
+export interface FeatureConfig {
+  option1: string;
+  option2: number;
+}
+
+/**
+ * Default configuration for [feature]
+ */
+export const defaultConfig: FeatureConfig = {
+  option1: "default",
+  option2: 100,
+};
+
+/**
+ * Get configuration for specific [context]
+ *
+ * @param context - Context for configuration
+ * @returns Configuration object
+ */
+export function getConfig(context: string): FeatureConfig {
+  return {
+    ...defaultConfig,
+    // context-specific overrides
+  };
+}
+```
+
+## Formatting Utilities Pattern
+
+```tsx
+/**
+ * Formatting utilities for [feature] feature
+ */
+
+/**
+ * Format [value] for display
+ *
+ * @param value - Value to format
+ * @param options - Formatting options
+ * @returns Formatted string
+ * @example
+ * ```tsx
+ * const formatted = formatPrice(1234.56, { currency: "USD" });
+ * // Returns: "$1,234.56"
+ * ```
+ */
+export function formatValue(
+  value: number,
+  options?: FormatOptions,
+): string {
+  // Formatting logic
+  return formattedValue;
+}
+```
+
+## Sorting Utilities Pattern
+
+```tsx
+/**
+ * Sorting utilities for [feature] feature
+ */
+
+/**
+ * Sort [items] by [field] in specified [order]
+ *
+ * @param items - Array of items to sort
+ * @param field - Field to sort by
+ * @param order - Sort order (asc or desc)
+ * @returns Sorted array
+ * @example
+ * ```tsx
+ * const sorted = sortItems(items, "name", "asc");
+ * ```
+ */
+export function sortItems<T>(
+  items: T[],
+  field: keyof T,
+  order: "asc" | "desc",
+): T[] {
+  return [...items].sort((a, b) => {
+    const aValue = a[field];
+    const bValue = b[field];
+    
+    if (order === "asc") {
+      return aValue > bValue ? 1 : -1;
+    }
+    return aValue < bValue ? 1 : -1;
+  });
+}
+```
+
+## Utility Export Pattern
+
+Always export utilities through an index file:
+
+```tsx
+// utils/index.ts
+export * from "./validation";
+export * from "./formatting";
+export * from "./calculations";
+export * from "./config";
+```
+
+## Usage in Components and Hooks
+
+Utilities should be imported from the feature's utils:
+
+```tsx
+// In hooks
+import { validateEmail, validatePassword } from "@backtrade/validation";
+import { calculateMetrics } from "../utils/calculations";
+
+// In components
+import { formatPrice } from "../utils/formatting";
+```
+
+## Guidelines
+
+1. **No Side Effects**: Utilities should not modify external state
+2. **Immutable**: Don't mutate input parameters
+3. **Error Handling**: Return error information rather than throwing
+4. **Type Safety**: Use TypeScript types and generics where appropriate
+5. **Documentation**: Include JSDoc with examples
+6. **Grouping**: Group related utilities in the same file
+7. **Naming**: Use descriptive, action-oriented names (validate, format, calculate)

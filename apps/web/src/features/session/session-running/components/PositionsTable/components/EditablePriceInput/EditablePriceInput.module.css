@@ -1,0 +1,35 @@
+.editable {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+  display: inline-block;
+  min-width: 40px;
+}
+
+.editable:hover {
+  background-color: var(--color-surface-elevated);
+}
+
+.input {
+  width: 100%;
+  min-width: 80px;
+  padding: 2px 4px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

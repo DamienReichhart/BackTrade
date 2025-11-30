@@ -1,0 +1,18 @@
+import { useFetch } from "./useFetch";
+import type { UseFetchOptions } from "../../../types/api";
+
+/**
+ * PATCH request hook built on React Query
+ *
+ * @param url - API endpoint URL
+ * @param options - Configuration options (excluding method)
+ */
+export function usePatch<TOutput = unknown, TInput = unknown>(
+  url: string,
+  options?: Omit<UseFetchOptions<TInput, TOutput>, "method">,
+) {
+  return useFetch<TOutput, TInput>(url, {
+    method: "PATCH",
+    ...options,
+  });
+}

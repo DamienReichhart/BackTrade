@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-proxy-config
+  namespace: backtrade
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+
+    error_log /var/log/nginx/error.log warn;
+    pid /run/nginx.pid;
+
+    events {
+        worker_connections 4096;
+        multi_accept on;
+        use epoll;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+        access_log /var/log/nginx/access.log main;
+
+        sendfile on;
+        keepalive_timeout 65;
+
+        # Compression
+        gzip on;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+        # Upstreams - Use Kubernetes service names
+        upstream api_backend {
+            server backtrade-api:3000;
+        }
+
+        upstream web_frontend {
+            server backtrade-frontend:80;
+        }
+
+        server {
+            listen 80;
+            server_name _;
+
+            # Proxy settings
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # API routes
+            location /api/ {
+                proxy_pass http://api_backend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_cache_bypass $http_upgrade;
+            }
+
+            # Default (frontend)
+            location / {
+                proxy_pass http://web_frontend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_cache_bypass $http_upgrade;
+            }
+        }
+    }

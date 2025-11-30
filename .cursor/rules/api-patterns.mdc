@@ -1,0 +1,97 @@
+---
+globs: *.tsx
+description: API request patterns using React Query and Zod validation
+---
+
+# API Patterns
+
+## Request Hook Structure
+
+All API requests use the unified `useFetch` hook with Zod validation.
+
+### GET Request Pattern
+
+```tsx
+import { useGet } from "../hooks";
+import { SomeSchema } from "@backtrade/types";
+
+export function useSomeResource(query) {
+  const searchParams = new URLSearchParams();
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, String(value));
+      }
+    });
+  }
+
+  const url = query
+    ? `/resource?${searchParams.toString()}`
+    : "/resource";
+
+  return useGet(url, {
+    outputSchema: SomeSchema,
+  });
+}
+```
+
+### POST/PUT Request Pattern
+
+```tsx
+import { usePost } from "../hooks";
+import { CreateResourceSchema, ResourceSchema } from "@backtrade/types";
+
+export function useCreateResource() {
+  return usePost("/resource", {
+    inputSchema: CreateResourceSchema,
+    outputSchema: ResourceSchema,
+  });
+}
+```
+
+## Hook Conventions
+
+1. **Naming**: `use[ResourceName]()` for collections, `use[ResourceName](id)` for single items
+2. **Validation**: Always specify Zod schemas for input/output
+3. **Auto-fetch**: GET requests auto-fetch by default
+4. **Manual execution**: Mutations require calling `.execute()` with data
+
+## Hook Usage Pattern
+
+```tsx
+import { useCreateResource } from "../../api/requests/resource";
+
+function MyComponent() {
+  const { data, error, isLoading, execute } = useCreateResource();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const result = await execute({ name: "Test" });
+      console.log("Created:", result);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+## File Organization
+
+API request files go in `apps/web/src/api/requests/`:
+- One file per resource (auth.tsx, sessions.tsx, etc.)
+- Export all hooks for that resource
+- Group related endpoints together
+
+## Schema Patterns
+
+Schemas are defined in `packages/types/src/`:
+- Use Zod for validation
+- Export schemas and TypeScript types
+- Share between frontend and backend

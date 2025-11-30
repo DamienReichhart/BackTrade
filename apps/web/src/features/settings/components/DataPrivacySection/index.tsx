@@ -1,0 +1,1 @@
+export { DataPrivacySection } from "./DataPrivacySection";

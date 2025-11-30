@@ -1,0 +1,213 @@
+---
+globs: *.tsx
+description: React component patterns and conventions
+---
+
+# Component Patterns
+
+## Component Structure
+
+Every component follows this pattern:
+
+```tsx
+import styles from "./ComponentName.module.css";
+
+/**
+ * Component description
+ *
+ * Additional context about when and how to use this component
+ */
+export function ComponentName({ prop1, prop2 }: ComponentProps) {
+  return (
+    <div className={styles.container}>
+      {/* Component content */}
+    </div>
+  );
+}
+```
+
+## File Organization
+
+Each component has its own directory:
+
+```
+ComponentName/
+├── ComponentName.tsx           # Component implementation
+├── ComponentName.module.css    # Scoped styles
+└── index.tsx                   # Export: export { ComponentName } from "./ComponentName";
+```
+
+## Component Props Pattern
+
+```tsx
+/**
+ * Component props interface
+ */
+interface ComponentProps {
+  /**
+   * Prop description
+   */
+  prop1: string;
+  
+  /**
+   * Optional prop with default
+   * @default "defaultValue"
+   */
+  prop2?: number;
+}
+```
+
+## Component Guidelines
+
+1. **Named exports**: Use `export function ComponentName()`
+2. **TypeScript**: Always type props with interfaces
+3. **CSS Modules**: Use `styles.` prefix for all class names
+4. **Documentation**: Add JSDoc comments explaining purpose
+5. **Forward refs**: Use `forwardRef` when components need DOM refs
+6. **Composition**: Build complex UIs from smaller components
+7. **Props destructuring**: Always destructure props in function signature
+
+## Page Components Pattern
+
+Page components orchestrate smaller components and use hooks for logic:
+
+```tsx
+import { usePageLogic } from "./hooks";
+import { SubComponent1, SubComponent2 } from "./components";
+import styles from "./PageName.module.css";
+
+export function PageName() {
+  const {
+    data,
+    isLoading,
+    error,
+    handleAction,
+  } = usePageLogic();
+
+  if (isLoading) return <LoadingState />;
+  if (error) return <ErrorState error={error} />;
+
+  return (
+    <div className={styles.page}>
+      <SubComponent1 data={data} />
+      <SubComponent2 onAction={handleAction} />
+    </div>
+  );
+}
+```
+
+## Component Organization
+
+- **Shared components** → `src/components/`
+- **Feature components** → `src/features/[feature]/components/`
+- Each component has: `.tsx`, `.module.css`, `index.tsx`
+- Components are self-contained and reusable
+
+## Key Principles
+
+1. **Feature-based organization**: Group related functionality together
+2. **Modular components**: Each component is in its own directory
+3. **CSS Modules**: Scoped styling with `.module.css`
+4. **Co-location**: Keep related files together (hooks, utils, components in feature)
+5. **Separation of concerns**: 
+   - **Components**: Focus on rendering and UI
+   - **Hooks**: Handle state management and side effects
+   - **Utils**: Contain pure functions (validation, formatting, calculations)
+   - **API**: Handle data fetching and mutations
+6. **Logic Extraction**: Always extract complex logic to hooks or utilities
+7. **Reusability**: Design hooks and utilities to be reusable
+
+
+## Frontend Structure (`apps/web/src/`)
+
+```
+src/
+├── api/           # API hooks and request functions
+│   ├── hooks/     # Custom React Query hooks
+│   └── requests/  # Endpoint-specific hooks (auth, sessions, etc.)
+├── components/    # Shared reusable components
+├── features/      # Feature-based modules ( contains component/hooks, etc.... directory for things only in feature)
+├── routes/        # React Router configuration
+├── types/         # Frontend-specific types
+├── utils/         # Utility functions
+├── App.tsx        # Root component
+├── main.tsx       # Application entry point
+└── main.css       # Global styles and CSS variables
+```
+
+## Feature Module Pattern
+
+Each feature follows this structure:
+
+```
+feature-name/
+├── components/     # Feature-specific components
+│   ├── ComponentName/
+│   │   ├── ComponentName.tsx
+│   │   ├── ComponentName.module.css
+│   │   └── index.tsx
+│   └── index.tsx
+├── hooks/          # Custom React hooks for feature logic
+│   ├── useFeatureName.ts
+│   ├── useSubFeature.ts
+│   └── index.ts    # Export: export { useFeatureName } from "./useFeatureName";
+├── utils/          # Utility functions (validation, formatting, calculations)
+│   ├── validation.ts
+│   ├── formatting.ts
+│   └── index.ts    # Export: export * from "./validation";
+├── config/         # Configuration and constants (if needed)
+├── types/          # Feature-specific types (if needed)
+├── FeatureName.tsx # Main feature component
+├── FeatureName.module.css
+└── index.tsx       # Feature exports
+```
+
+## Component Refactoring Pattern
+
+When refactoring components, follow this pattern:
+
+1. **Extract Logic to Hooks**: Move state management and side effects to custom hooks
+2. **Extract Utilities**: Move pure functions to utility files
+3. **Keep Components Simple**: Components should focus on rendering and delegate logic to hooks
+
+### Before Refactoring
+
+```tsx
+export function FeatureComponent() {
+  const [state, setState] = useState();
+  const [errors, setErrors] = useState({});
+  
+  const handleAction = () => {
+    // Complex logic here
+  };
+  
+  const validate = () => {
+    // Validation logic
+  };
+  
+  return <div>{/* JSX */}</div>;
+}
+```
+
+### After Refactoring
+
+```tsx
+import { useFeatureLogic } from "../hooks";
+import { formatValue } from "../utils/formatting";
+
+export function FeatureComponent() {
+  const {
+    state,
+    errors,
+    handleAction,
+    validate,
+  } = useFeatureLogic();
+
+  return (
+    <div>
+      {formatValue(state.value)}
+      <button onClick={handleAction}>Action</button>
+    </div>
+  );
+}
+```

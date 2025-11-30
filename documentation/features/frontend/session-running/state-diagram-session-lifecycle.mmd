@@ -1,0 +1,56 @@
+stateDiagram-v2
+    [*] --> Initializing: User navigates to session
+    
+    Initializing --> Loading: Extract session ID
+    Loading --> FetchingSession: useSession(id)
+    
+    FetchingSession --> FetchingInstrument: Session loaded
+    FetchingSession --> Error: API error
+    
+    FetchingInstrument --> FetchingCandles: Instrument loaded
+    FetchingInstrument --> Error: API error
+    
+    FetchingCandles --> Ready: Candles loaded
+    FetchingCandles --> Error: API error
+    
+    Ready --> Running: Session status = RUNNING
+    Ready --> Paused: Session status = PAUSED
+    Ready --> Archived: Session status = ARCHIVED
+    
+    Running --> Paused: User clicks Pause
+    Paused --> Running: User clicks Resume
+    
+    Running --> Running: User changes speed
+    Running --> Running: User skips bar
+    Running --> Running: User creates position
+    Running --> Running: User closes position
+    Running --> Running: User closes all positions
+    
+    Paused --> Paused: User changes speed
+    Paused --> Paused: User skips bar
+    Paused --> Paused: User creates position
+    Paused --> Paused: User closes position
+    Paused --> Paused: User closes all positions
+    
+    Running --> Archived: User clicks Archive
+    Paused --> Archived: User clicks Archive
+    
+    Archived --> [*]: Redirect to analytics
+    
+    Error --> [*]: Display error message
+    
+    note right of Running
+        Session is actively processing
+        candles and updating positions
+    end note
+    
+    note right of Paused
+        Session time is frozen
+        User can still create/close positions
+    end note
+    
+    note right of Archived
+        Session is complete
+        No further modifications allowed
+    end note
+

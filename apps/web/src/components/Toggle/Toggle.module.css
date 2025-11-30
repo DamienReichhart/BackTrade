@@ -1,0 +1,70 @@
+/**
+ * Toggle Component Styles
+ */
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.toggle {
+  position: relative;
+  appearance: none;
+  width: 44px;
+  height: 24px;
+  background-color: var(--color-surface-tertiary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  outline: none;
+}
+
+.toggle::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-text-primary);
+  border-radius: var(--radius-full);
+  transition: transform var(--transition-base);
+}
+
+.toggle:checked {
+  background-color: var(--color-accent);
+}
+
+.toggle:checked::before {
+  transform: translateX(20px);
+}
+
+.toggle:hover:not(:disabled) {
+  background-color: var(--color-surface-elevated);
+}
+
+.toggle:checked:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+}
+
+.toggle:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-accent-focus-20);
+}
+
+.toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle:disabled + .label {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

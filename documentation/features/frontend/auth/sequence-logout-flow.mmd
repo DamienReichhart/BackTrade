@@ -1,0 +1,57 @@
+sequenceDiagram
+    participant User
+    participant AuthenticatedLayout
+    participant LogoutButton
+    participant useLogout
+    participant useFetch
+    participant executeFetch
+    participant API
+    participant AuthStore
+    participant CookieUtils
+    participant Router
+    participant Browser
+    
+    User->>AuthenticatedLayout: View authenticated page
+    AuthenticatedLayout->>AuthStore: Read user from store
+    AuthStore-->>AuthenticatedLayout: PublicUser
+    AuthenticatedLayout->>useLogout: Initialize useLogout hook
+    AuthenticatedLayout->>User: Display page with logout button
+    
+    User->>LogoutButton: Click "Logout" button
+    LogoutButton->>AuthenticatedLayout: handleLogout()
+    
+    Note over AuthenticatedLayout,API: Try block: Call logout API
+    
+    AuthenticatedLayout->>useLogout: execute() (logoutApi)
+    useLogout->>useFetch: Execute POST /auth/logout
+    useFetch->>executeFetch: executeFetch(undefined, config)
+    executeFetch->>API: POST /auth/logout<br/>Authorization: Bearer {accessToken}
+    
+    alt Logout API successful
+        API-->>executeFetch: 200 OK or 204 No Content
+        executeFetch-->>useFetch: EmptyResponse
+        useFetch-->>useLogout: Success
+        useLogout-->>AuthenticatedLayout: Success
+    else Logout API failed
+        API-->>executeFetch: Error (401, 500, network error, etc.)
+        executeFetch-->>useFetch: Error
+        useFetch-->>useLogout: Error
+        useLogout-->>AuthenticatedLayout: Error (caught silently)
+    end
+    
+    Note over AuthenticatedLayout,Router: Finally block: Always clear local state
+    
+    AuthenticatedLayout->>AuthStore: logout()
+    AuthStore->>CookieUtils: deleteCookie("access_token")
+    AuthStore->>CookieUtils: deleteCookie("refresh_token")
+    CookieUtils-->>AuthStore: Cookies deleted
+    
+    AuthStore->>AuthStore: set({ accessToken: undefined, refreshToken: undefined, user: null })
+    AuthStore-->>AuthenticatedLayout: State cleared
+    
+    AuthenticatedLayout->>Router: navigate("/")
+    Router->>Browser: Navigate to home page
+    Browser->>User: Display home page (unauthenticated)
+    
+    Note over AuthenticatedLayout,Browser: Local state is always cleared<br/>even if logout API call fails
+

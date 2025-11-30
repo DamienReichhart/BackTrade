@@ -1,0 +1,42 @@
+flowchart LR
+    subgraph "Frontend - Admin Feature"
+        AdminUI[Admin UI Components]
+        Hooks[Custom Hooks]
+        APIHooks[API Hooks]
+    end
+    
+    subgraph "API Layer"
+        ReactQuery[React Query Cache]
+        HTTPClient[HTTP Client]
+    end
+    
+    subgraph "Backend API"
+        AuthMiddleware[Auth Middleware<br/>Role Check]
+        Controllers[Controllers]
+        Services[Business Logic Services]
+        Database[(Database)]
+    end
+    
+    AdminUI -->|User Actions| Hooks
+    Hooks -->|State Management| AdminUI
+    Hooks -->|API Calls| APIHooks
+    APIHooks -->|Query/Mutation| ReactQuery
+    ReactQuery -->|HTTP Request| HTTPClient
+    HTTPClient -->|REST API| AuthMiddleware
+    AuthMiddleware -->|Authorized Request| Controllers
+    Controllers -->|Business Logic| Services
+    Services -->|Data Operations| Database
+    Database -->|Query Results| Services
+    Services -->|Response Data| Controllers
+    Controllers -->|JSON Response| HTTPClient
+    HTTPClient -->|Response| ReactQuery
+    ReactQuery -->|Cached Data| APIHooks
+    APIHooks -->|Data| Hooks
+    Hooks -->|State Updates| AdminUI
+    
+    style AdminUI fill:#e1f5ff
+    style Hooks fill:#f3e5f5
+    style ReactQuery fill:#fff3e0
+    style AuthMiddleware fill:#ffcdd2
+    style Database fill:#c8e6c9
+

@@ -1,0 +1,42 @@
+flowchart TD
+    Start([Component makes API request]) --> PrepareRequest[Prepare request with accessToken]
+    PrepareRequest --> SendRequest[Send API request<br/>Authorization: Bearer accessToken]
+    
+    SendRequest --> CheckResponse{Response Status?}
+    
+    CheckResponse -->|200-299 OK| ReturnData[Return data to component]
+    ReturnData --> End([Request successful])
+    
+    CheckResponse -->|401 Unauthorized| CheckRefreshToken{Refresh token available?}
+    CheckResponse -->|Other Error| ReturnError[Return error to component]
+    ReturnError --> EndError([Request failed])
+    
+    CheckRefreshToken -->|No| LogoutUser[User must login again]
+    LogoutUser --> EndError
+    
+    CheckRefreshToken -->|Yes| CallRefresh[POST /auth/refresh<br/>with refreshToken]
+    
+    CallRefresh --> CheckRefreshResponse{Refresh Response?}
+    
+    CheckRefreshResponse -->|200 OK| ExtractNewTokens[Extract new accessToken and refreshToken]
+    ExtractNewTokens --> StoreNewTokens[Store new tokens in cookies]
+    StoreNewTokens --> UpdateAuthStore[Update AuthStore with new tokens]
+    UpdateAuthStore --> RetryRequest[Retry original request<br/>Authorization: Bearer newAccessToken]
+    
+    RetryRequest --> CheckRetryResponse{Retry Response?}
+    
+    CheckRetryResponse -->|200-299 OK| ReturnData
+    CheckRetryResponse -->|Error| ReturnError
+    
+    CheckRefreshResponse -->|401/400 Refresh failed| LogoutUser
+    
+    CheckRefreshResponse -->|Network Error| ReturnRefreshError[Return refresh error]
+    ReturnRefreshError --> EndError
+    
+    style Start fill:#e1f5ff
+    style End fill:#c8e6c9
+    style EndError fill:#ffcdd2
+    style StoreNewTokens fill:#e8f5e9
+    style UpdateAuthStore fill:#e8f5e9
+    style RetryRequest fill:#fff3e0
+    style LogoutUser fill:#ffcdd2

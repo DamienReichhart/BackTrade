@@ -1,0 +1,49 @@
+flowchart TD
+    Start([User navigates to login page]) --> RenderForm[Render LoginFormPanel]
+    RenderForm --> UserInput[User enters email and password]
+    
+    UserInput --> ValidateEmail{Email valid?}
+    ValidateEmail -->|No| ShowEmailError[Display email validation error]
+    ShowEmailError --> UserInput
+    
+    ValidateEmail -->|Yes| ValidatePassword{Password valid?}
+    ValidatePassword -->|No| ShowPasswordError[Display password validation error]
+    ShowPasswordError --> UserInput
+    
+    ValidatePassword -->|Yes| UserSubmit[User clicks Continue button]
+    UserSubmit --> FinalValidation[Final form validation]
+    
+    FinalValidation --> ValidationCheck{All fields valid?}
+    ValidationCheck -->|No| ShowErrors[Display validation errors]
+    ShowErrors --> UserInput
+    
+    ValidationCheck -->|Yes| CallAPI[POST /auth/login<br/>{ email, password }]
+    
+    CallAPI --> APICheck{API Response?}
+    
+    APICheck -->|200 OK| ExtractTokens[Extract accessToken and refreshToken]
+    ExtractTokens --> StoreTokens[Store tokens in cookies]
+    StoreTokens --> DecodeToken[Decode JWT to get user info]
+    DecodeToken --> UpdateStore[Update AuthStore with tokens and user]
+    UpdateStore --> NavigateDashboard[Navigate to /dashboard]
+    NavigateDashboard --> End([User authenticated])
+    
+    APICheck -->|401 Unauthorized| ShowLoginError[Display login error message]
+    ShowLoginError --> UserInput
+    
+    APICheck -->|403 Forbidden<br/>User banned| NavigateBanned[Navigate to /error/banned]
+    NavigateBanned --> EndBanned([User cannot proceed])
+    
+    APICheck -->|Network Error| ShowNetworkError[Display network error]
+    ShowNetworkError --> UserInput
+    
+    style Start fill:#e1f5ff
+    style End fill:#c8e6c9
+    style EndBanned fill:#ffcdd2
+    style ShowEmailError fill:#fff3e0
+    style ShowPasswordError fill:#fff3e0
+    style ShowLoginError fill:#ffcdd2
+    style ShowNetworkError fill:#ffcdd2
+    style StoreTokens fill:#e8f5e9
+    style UpdateStore fill:#e8f5e9
+

@@ -1,0 +1,175 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+  min-width: 0;
+}
+
+.controlsWrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.card {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  width: 100%;
+  min-width: 0;
+}
+
+.sectionHeader {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--spacing-sm) var(--spacing-md);
+  align-items: center;
+}
+
+.label {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  align-self: center;
+}
+
+.input {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.inlineInfo {
+  display: flex;
+  gap: var(--spacing-md);
+  color: var(--color-text-tertiary);
+  margin: var(--spacing-md) 0;
+  flex-wrap: wrap;
+  font-size: var(--font-size-xs);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.btn {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buy {
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+}
+
+.sell {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border-35);
+}
+
+.estimates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.estimateItem {
+  background: var(--color-surface-elevated);
+  border: 1px dashed var(--color-border-primary);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  font-size: var(--font-size-sm);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.infoLabel {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.infoValue {
+  font-family: var(--font-mono);
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  padding: var(--spacing-xs) 0;
+  margin-top: var(--spacing-sm);
+}
+
+/* Mobile: Stack form fields */
+@media (max-width: 767px) {
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .label {
+    align-self: start;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .inlineInfo {
+    font-size: var(--font-size-xs);
+    gap: var(--spacing-sm);
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Tablet: Adjust form grid */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .formGrid {
+    grid-template-columns: 100px 1fr;
+    gap: var(--spacing-xs) var(--spacing-sm);
+  }
+}

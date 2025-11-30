@@ -1,0 +1,143 @@
+/**
+ * Subscription Card Component Styles
+ */
+
+.card {
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 2px 8px var(--color-shadow-overlay-08);
+}
+
+.card.current {
+  border-color: var(--color-accent);
+  border-width: 2px;
+}
+
+.header {
+  margin-bottom: var(--spacing-md);
+}
+
+.titleSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.currentBadge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusActive {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.statusTrialing {
+  background: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.statusCanceled {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.statusActiveUnpaid {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-normal);
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  .titleSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .infoItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .value {
+    text-align: left;
+  }
+}

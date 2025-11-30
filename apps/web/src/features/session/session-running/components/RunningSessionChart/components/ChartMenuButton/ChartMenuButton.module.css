@@ -1,0 +1,71 @@
+/**
+ * ChartMenuButton Component Styles
+ */
+
+.menuButton {
+  position: relative;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
+  background: var(--color-surface-secondary);
+  color: var(--color-text-primary);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border-accent);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-primary);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs, 4px));
+  left: 0;
+  z-index: 1000;
+  background: var(--color-dropdown-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px var(--color-shadow-overlay);
+  min-width: 240px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuHeader {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.menuTitle {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.menuContent {
+  padding: var(--spacing-md);
+}

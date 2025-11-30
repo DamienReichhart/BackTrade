@@ -9,23 +9,25 @@
   "description": "",
   "scripts": {
     "dev": "turbo run dev --parallel",
-    "build": "turbo run build",
+    "build": "turbo run build --parallel",
+    "start": "turbo run start --parallel",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
-    "eslint": "^9.11.1",
-    "prettier": "^3.3.3",
-    "turbo": "^2.0.0",
-    "typescript": "^5.6.3",
-    "typescript-eslint": "^8.46.0"
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.1",
+    "turbo": "^2.6.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0"
   },
   "keywords": [],
   "author": "REICHHART Damien",
   "license": "PROPRIETARY",
-  "packageManager": "pnpm@10.18.1"
+  "packageManager": "pnpm@10.20.0"
 }

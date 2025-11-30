@@ -1,0 +1,1 @@
+export { ForgotPasswordInfoPanel } from "./ForgotPasswordInfoPanel";

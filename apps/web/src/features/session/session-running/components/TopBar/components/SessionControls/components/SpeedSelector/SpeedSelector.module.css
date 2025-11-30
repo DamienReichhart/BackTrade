@@ -1,0 +1,41 @@
+/**
+ * SpeedSelector Component Styles
+ */
+
+.speedSelector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-width: 0;
+}
+
+.select {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+
+.updating {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Mobile: Reduce min-width and allow full width */
+@media (max-width: 767px) {
+  .speedSelector {
+    width: 100%;
+  }
+
+  .select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .updating {
+    font-size: var(--font-size-xs);
+  }
+}
