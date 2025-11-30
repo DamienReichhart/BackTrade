@@ -20,7 +20,7 @@ export function PositionDetailsModal({
 }: PositionDetailsModalProps) {
   useModalBehavior(isOpen, onClose);
 
-  if (!isOpen ?? !position) return null;
+  if (!isOpen || !position) return null;
 
   return (
     <div className={styles.backdrop} onClick={onClose}>

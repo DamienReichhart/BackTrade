@@ -106,12 +106,20 @@ export function useDatasetManagement() {
             : Number.NEGATIVE_INFINITY;
           break;
         case "created_at":
-          aValue = new Date(a.created_at).getTime();
-          bValue = new Date(b.created_at).getTime();
+          aValue = a.created_at
+            ? new Date(a.created_at).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.created_at
+            ? new Date(b.created_at).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         case "updated_at":
-          aValue = new Date(a.updated_at).getTime();
-          bValue = new Date(b.updated_at).getTime();
+          aValue = a.updated_at
+            ? new Date(a.updated_at).getTime()
+            : Number.NEGATIVE_INFINITY;
+          bValue = b.updated_at
+            ? new Date(b.updated_at).getTime()
+            : Number.NEGATIVE_INFINITY;
           break;
         default:
           return 0;

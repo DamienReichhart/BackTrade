@@ -12,8 +12,5 @@ export function notFoundHandler(
   _next: NextFunction,
 ) {
   // If we reach this middleware, no route matched the request
-  throw new NotFoundError(
-    `Route ${req.method} ${req.originalUrl} not found`,
-  );
+  throw new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`);
 }
-

@@ -142,7 +142,6 @@ BackTrade/
 3. **Configure environment variables**
 
    The project requires two environment files to be configured:
-
    - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
    - **Root environment file**:
      - For development: Create `.env` based on `.env.development.example`
@@ -160,17 +159,17 @@ BackTrade/
 
 4.a Docker Development (recommended)
 
-   For a complete development environment with database:
+For a complete development environment with database:
 
-   ```bash
-   docker-compose -f docker-dev.yaml up -d
-   ```
+```bash
+docker-compose -f docker-dev.yaml up -d
+```
 
-   Initialize the database (run Prisma migrations and seed data):
+Initialize the database (run Prisma migrations and seed data):
 
-   ```bash
-   docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
-   ```
+```bash
+docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
+```
 
 4.b **Start development environment (not recommended)**
 
@@ -184,7 +183,6 @@ cd apps/web && pnpm fake-api
 ```
 
 5. **Access the application**
-
    - **Frontend**: [http://localhost:5173](http://localhost:5173)
    - **API**: [http://localhost:3000](http://localhost:3000)
    - **API Health Check**: [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)

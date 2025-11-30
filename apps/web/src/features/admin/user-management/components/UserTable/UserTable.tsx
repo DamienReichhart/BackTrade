@@ -174,10 +174,10 @@ export function UserTable({
                     </span>
                   </td>
                   <td className={styles.dateCell}>
-                    {formatDate(user.created_at)}
+                    {user.created_at ? formatDate(user.created_at) : "—"}
                   </td>
                   <td className={styles.dateCell}>
-                    {formatDate(user.updated_at)}
+                    {user.updated_at ? formatDate(user.updated_at) : "—"}
                   </td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actions}>

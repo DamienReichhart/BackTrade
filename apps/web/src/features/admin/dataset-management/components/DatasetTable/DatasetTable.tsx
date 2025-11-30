@@ -101,7 +101,8 @@ export function DatasetTable({
                 className={styles.sortableHeader}
                 onClick={() => onSort("start_time")}
               >
-                Start Date {getSortIndicator("start_time", sortField, sortOrder)}
+                Start Date{" "}
+                {getSortIndicator("start_time", sortField, sortOrder)}
               </th>
               <th
                 className={styles.sortableHeader}
@@ -183,5 +184,3 @@ export function DatasetTable({
     </div>
   );
 }
-
-
