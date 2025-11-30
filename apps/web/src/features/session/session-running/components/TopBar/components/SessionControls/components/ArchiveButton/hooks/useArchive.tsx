@@ -40,8 +40,8 @@ export function useArchive(
     try {
       const updatedSession = await archiveSession({
         session_status: "ARCHIVED",
-        end_ts: currentSession?.end_ts
-          ? formatLocalDateTimeToISO(currentSession.end_ts)
+        end_time: currentSession?.end_time
+          ? formatLocalDateTimeToISO(currentSession.end_time)
           : undefined,
       });
 

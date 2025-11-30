@@ -180,6 +180,7 @@ pnpm dev
 
 # If using json-server (not recommended)
 cd apps/web && pnpm fake-api
+# Node : If using json server, do not forget to edit .env.development in apps/web to http://localhost:3001 and restart the server
 ```
 
 5. **Access the application**

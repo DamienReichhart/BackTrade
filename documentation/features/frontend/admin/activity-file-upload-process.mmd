@@ -37,10 +37,10 @@ flowchart TD
     ValidateData -->|No| DataError[Backend returns data error]
     DataError --> ShowAPIError
     
-    ValidateData -->|Yes| CalculateStats[Calculate dataset statistics:<br/>- Count records<br/>- Find start_ts<br/>- Find end_ts<br/>- Validate date range]
+    ValidateData -->|Yes| CalculateStats[Calculate dataset statistics:<br/>- Count records<br/>- Find start_time<br/>- Find end_time<br/>- Validate date range]
     
     CalculateStats --> StoreRecords[Store records in database]
-    StoreRecords --> UpdateDataset[Update dataset record:<br/>- file_name<br/>- records_count<br/>- start_ts<br/>- end_ts<br/>- uploaded_at<br/>- is_active = true]
+    StoreRecords --> UpdateDataset[Update dataset record:<br/>- file_name<br/>- records_count<br/>- start_time<br/>- end_time<br/>- uploaded_at]
     
     UpdateDataset --> Success[Return success response]
     Success --> ShowSuccess[Display success message]

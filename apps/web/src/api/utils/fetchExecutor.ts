@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../index";
 import { validateApiInput, validateApiOutput } from "@backtrade/utils";
-import { retryIfUnauthorized } from "./retryIfUnauthorized";
+import { retryIfUnauthenticated } from "./retryIfUnauthenticated";
 import type { FetchExecutorConfig } from "../../types/api";
 
 /**
@@ -55,7 +55,7 @@ export async function executeFetch<TInput = unknown, TOutput = unknown>(
   // Handle unauthorized responses with token refresh
   if (!response.ok) {
     if (retryOnUnauthorized) {
-      return await retryIfUnauthorized<TOutput>(
+      return await retryIfUnauthenticated<TOutput>(
         response,
         executorConfig.refreshToken,
         () => executeFetch(body, executorConfig, false),

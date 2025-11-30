@@ -75,25 +75,6 @@ enum SubscriptionStatus {
   active_unpaid
 }
 
-enum EntityType {
-  USER
-  SESSION
-  TRANSACTION
-  SUBSCRIPTION
-  POSITION
-}
-
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  PASSWORD_CHANGE
-  ROLE_CHANGE
-  BAN
-  UNBAN
-}
 
 // ============================================================================
 // USER & AUTH MODELS
@@ -113,10 +94,7 @@ model User {
   // Relations
   sessions            Session[]
   user_sessions       UserSession[]
-  transactions        Transaction[]
   subscriptions       Subscription[]
-  audit_logs          AuditLog[]
-  uploaded_datasets   Dataset[]
 
   @@map("users")
 }
@@ -127,11 +105,9 @@ model UserSession {
   ip_address         String
   user_agent         String
   device_info        String
-  refresh_token_hash String
   issued_at          DateTime @default(now())
-  last_seen          DateTime @default(now())
-  expires_at         DateTime
-  is_active          Boolean  @default(true)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -145,12 +121,14 @@ model UserSession {
 // ============================================================================
 
 model Plan {
-  id                Int     @id @default(autoincrement())
-  code              String  @unique
+  id                Int      @id @default(autoincrement())
+  code              String   @unique
   stripe_product_id String
   stripe_price_id   String
-  currency          String  @db.Char(3)
-  price             Decimal @db.Decimal(10, 2)
+  currency          String   @db.Char(3)
+  price             Decimal  @db.Decimal(10, 2)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
   // Relations
   subscriptions Subscription[]
@@ -169,6 +147,8 @@ model Subscription {
   cancel_at_period_end   Boolean            @default(false)
   canceled_at            DateTime?
   trial_end              DateTime?
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -186,8 +166,8 @@ model StripeEvent {
   payload         Json
   received_at     DateTime  @default(now())
   processed_at    DateTime?
-  success         Boolean   @default(false)
-  error           String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
   @@map("stripe_events")
 }
@@ -219,9 +199,9 @@ model Session {
   name                String?
   session_status      SessionStatus @default(PAUSED)
   speed               Speed         @default(SPEED_1X)
-  start_ts            DateTime
-  current_ts          DateTime
-  end_ts              DateTime?
+  start_time            DateTime
+  current_time          DateTime
+  end_time              DateTime?
   initial_balance     Decimal       @db.Decimal(18, 8)
   leverage            Int           @default(1)
   spread_pts          Decimal       @default(0) @db.Decimal(10, 4)
@@ -263,7 +243,6 @@ model Position {
 
   // Relations
   session      Session       @relation(fields: [session_id], references: [id], onDelete: Cascade)
-  transactions Transaction[]
 
   @@index([session_id])
   @@map("positions")
@@ -271,9 +250,7 @@ model Position {
 
 model Transaction {
   id               Int             @id @default(autoincrement())
-  user_id          Int
   session_id       Int?
-  position_id      Int?
   transaction_type TransactionType
   amount           Decimal         @db.Decimal(18, 8)
   balance_after    Decimal         @db.Decimal(18, 8)
@@ -281,13 +258,9 @@ model Transaction {
   updated_at       DateTime        @updatedAt
 
   // Relations
-  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   session  Session?  @relation(fields: [session_id], references: [id], onDelete: SetNull)
-  position Position? @relation(fields: [position_id], references: [id], onDelete: SetNull)
 
-  @@index([user_id])
   @@index([session_id])
-  @@index([position_id])
   @@map("transactions")
 }
 
@@ -299,23 +272,19 @@ model Dataset {
   id                  Int       @id @default(autoincrement())
   instrument_id       Int
   timeframe           Timeframe
-  uploaded_by_user_id Int
   uploaded_at         DateTime?
   records_count       Int?
   file_name           String?
-  is_active           Boolean   @default(false)
-  start_ts            DateTime?
-  end_ts              DateTime?
+  start_time            DateTime?
+  end_time              DateTime?
   created_at          DateTime  @default(now())
   updated_at          DateTime  @updatedAt
 
   // Relations
   instrument       Instrument @relation(fields: [instrument_id], references: [id])
-  uploaded_by_user User       @relation(fields: [uploaded_by_user_id], references: [id])
 
   @@unique([instrument_id, timeframe])
   @@index([instrument_id])
-  @@index([uploaded_by_user_id])
   @@map("datasets")
 }
 
@@ -342,39 +311,19 @@ model Candle {
 }
 
 // ============================================================================
-// ANALYTICS & AUDIT MODELS
+// ANALYTICS MODELS
 // ============================================================================
 
 model SessionAnalytics {
   id          Int      @id @default(autoincrement())
   session_id  Int
   file_name   String
-  modified_at DateTime
   created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   // Relations
   session Session @relation(fields: [session_id], references: [id], onDelete: Cascade)
 
   @@index([session_id])
   @@map("session_analytics")
-}
-
-model AuditLog {
-  id           Int         @id @default(autoincrement())
-  user_id      Int
-  entity_type  EntityType
-  entity_id    String
-  audit_action AuditAction
-  details      Json
-  ip_address   String
-  user_agent   String
-  created_at   DateTime    @default(now())
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([entity_type, entity_id])
-  @@index([created_at])
-  @@map("audit_logs")
 }

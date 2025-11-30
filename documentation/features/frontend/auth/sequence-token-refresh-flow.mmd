@@ -3,7 +3,7 @@ sequenceDiagram
     participant useFetch
     participant executeFetch
     participant API
-    participant retryIfUnauthorized
+    participant retryIfUnauthenticated
     participant refreshAccessToken
     participant useRefreshToken
     participant AuthStore
@@ -19,25 +19,25 @@ sequenceDiagram
         useFetch-->>Component: Data returned
     else Request unauthorized (401)
         API-->>executeFetch: 401 Unauthorized
-        executeFetch->>retryIfUnauthorized: retryIfUnauthorized(response, refreshToken, retryFunction, onTokenRefresh)
+        executeFetch->>retryIfUnauthenticated: retryIfUnauthenticated(response, refreshToken, retryFunction, onTokenRefresh)
         
-        retryIfUnauthorized->>retryIfUnauthorized: Check if refreshToken exists
+        retryIfUnauthenticated->>retryIfUnauthenticated: Check if refreshToken exists
         
         alt No refresh token
-            retryIfUnauthorized-->>executeFetch: Throw error
+            retryIfUnauthenticated-->>executeFetch: Throw error
             executeFetch-->>useFetch: Error
             useFetch-->>Component: Error (authentication required)
         else Refresh token exists
-            retryIfUnauthorized->>refreshAccessToken: refreshAccessToken(refreshToken)
+            retryIfUnauthenticated->>refreshAccessToken: refreshAccessToken(refreshToken)
             refreshAccessToken->>useRefreshToken: POST /auth/refresh<br/>{ refreshToken }
             useRefreshToken->>API: POST /auth/refresh<br/>{ refreshToken }
             
             alt Token refresh successful
                 API-->>useRefreshToken: 200 OK<br/>{ accessToken, refreshToken }
                 useRefreshToken-->>refreshAccessToken: AuthResponse
-                refreshAccessToken-->>retryIfUnauthorized: AuthResponse
+                refreshAccessToken-->>retryIfUnauthenticated: AuthResponse
                 
-                retryIfUnauthorized->>AuthStore: onTokenRefresh(newAccessToken, newRefreshToken)
+                retryIfUnauthenticated->>AuthStore: onTokenRefresh(newAccessToken, newRefreshToken)
                 AuthStore->>CookieUtils: setCookie("access_token", newAccessToken, 7)
                 AuthStore->>CookieUtils: setCookie("refresh_token", newRefreshToken, 7)
                 AuthStore->>AuthStore: Update state: { accessToken, refreshToken, user }

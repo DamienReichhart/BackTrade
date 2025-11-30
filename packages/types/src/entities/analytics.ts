@@ -4,7 +4,7 @@ export const SessionAnalyticsSchema = z.object({
   id: z.number().int().positive(),
   session_id: z.number().int().positive(),
   file_name: z.string(),
-  modified_at: z.iso.datetime(),
-  created_at: z.string(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 export type SessionAnalytics = z.infer<typeof SessionAnalyticsSchema>;

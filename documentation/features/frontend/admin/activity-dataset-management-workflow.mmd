@@ -46,7 +46,7 @@ flowchart TD
     BackendProcess --> UploadSuccess{Success?}
     UploadSuccess -->|No| ShowUploadError[Display upload error]
     ShowUploadError --> OpenFileDialog
-    UploadSuccess -->|Yes| UpdateDataset[Backend updates dataset:<br/>- file_name<br/>- records_count<br/>- start_ts, end_ts<br/>- uploaded_at<br/>- is_active]
+    UploadSuccess -->|Yes| UpdateDataset[Backend updates dataset:<br/>- file_name<br/>- records_count<br/>- start_time, end_time<br/>- uploaded_at]
     UpdateDataset --> RefetchDatasets
     RefetchDatasets --> FetchDatasets
     

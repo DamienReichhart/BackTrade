@@ -45,7 +45,7 @@ export function usePositionCreation(formActions: OrderFormActions) {
       return { isValid: false, error: "Quantity must be greater than 0" };
     }
 
-    if (!currentSession.current_ts) {
+    if (!currentSession.current_time) {
       return { isValid: false, error: "Session timestamp is not available" };
     }
 
@@ -80,7 +80,7 @@ export function usePositionCreation(formActions: OrderFormActions) {
         entry_price: currentPrice,
         quantity_lots: qty,
         position_status: "OPEN",
-        opened_at: currentSession.current_ts,
+        opened_at: currentSession.current_time,
         ...(tp !== undefined && tp > 0 ? { tp_price: tp } : {}),
         ...(sl !== undefined && sl > 0 ? { sl_price: sl } : {}),
       };

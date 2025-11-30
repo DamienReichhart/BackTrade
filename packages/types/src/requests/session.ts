@@ -6,9 +6,9 @@ export const CreateSessionRequestSchema = z.object({
   instrument_id: z.number().int().positive(),
   name: z.string().optional(),
   speed: SpeedSchema,
-  start_ts: z.iso.datetime(),
-  current_ts: z.iso.datetime(),
-  end_ts: z.iso.datetime().optional(),
+  start_time: z.iso.datetime(),
+  current_time: z.iso.datetime(),
+  end_time: z.iso.datetime().optional(),
   initial_balance: z.number().positive(),
   leverage: LeverageSchema,
   spread_pts: z.number().int().nonnegative(),
@@ -25,8 +25,8 @@ export const UpdateSessionRequestSchema = z.object({
   name: z.string().optional(),
   session_status: SessionStatusSchema.optional(),
   speed: SpeedSchema.optional(),
-  current_ts: z.iso.datetime().optional(),
-  end_ts: z.iso.datetime().optional(),
+  current_time: z.iso.datetime().optional(),
+  end_time: z.iso.datetime().optional(),
 });
 export type UpdateSessionRequest = z.infer<typeof UpdateSessionRequestSchema>;
 

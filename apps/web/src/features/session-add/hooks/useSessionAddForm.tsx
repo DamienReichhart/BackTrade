@@ -65,7 +65,7 @@ export function useSessionAddForm() {
   const [name, setName] = useState<string>("");
   const [speed, setSpeed] = useState<string>("");
   const [startTs, setStartTs] = useState<string>("");
-  // current_ts is automatically set to start_ts, not visible to user
+  // current_time is automatically set to start_time, not visible to user
   const [endTs, setEndTs] = useState<string>("");
   const [initialBalance, setInitialBalance] = useState<string>("");
   const [leverage, setLeverage] = useState<number | null>(null);
@@ -183,14 +183,14 @@ export function useSessionAddForm() {
 
   /**
    * Handle start timestamp change
-   * current_ts is automatically set to start_ts
+   * current_time is automatically set to start_time
    */
   const handleStartTsChange = (value: string) => {
     setStartTs(value);
     const error = validateDateTimeField(value, "Start time");
     setStartTsError(error);
 
-    // Validate end_ts against start_ts if end_ts is set
+    // Validate end_time against start_time if end_time is set
     if (endTs && !error) {
       const startDate = new Date(formatLocalDateTimeToISO(value));
       const endDate = new Date(formatLocalDateTimeToISO(endTs));
@@ -204,14 +204,14 @@ export function useSessionAddForm() {
 
   /**
    * Handle end timestamp change
-   * Validates against start_ts (since current_ts = start_ts)
+   * Validates against start_time (since current_time = start_time)
    */
   const handleEndTsChange = (value: string) => {
     setEndTs(value);
     const error = validateDateTimeField(value, "End time", false);
     setEndTsError(error);
 
-    // Validate against start_ts if both are set (since current_ts = start_ts)
+    // Validate against start_time if both are set (since current_time = start_time)
     if (startTs && value && !error) {
       const endDate = new Date(formatLocalDateTimeToISO(value));
       const startDate = new Date(formatLocalDateTimeToISO(startTs));
@@ -271,7 +271,7 @@ export function useSessionAddForm() {
 
   /**
    * Handle form submission
-   * Sets current_ts = start_ts automatically
+   * Sets current_time = start_time automatically
    * Includes user_id from auth context
    * Sets session_status to PAUSED
    */
@@ -325,7 +325,7 @@ export function useSessionAddForm() {
     }
 
     try {
-      // current_ts is automatically set to start_ts
+      // current_time is automatically set to start_time
       const currentTsValue = startTs;
 
       // Get current timestamp in ISO format for created_at and updated_at
@@ -337,9 +337,9 @@ export function useSessionAddForm() {
         instrument_id: instrumentId!,
         name: name || undefined,
         speed: speed as Speed,
-        start_ts: formatLocalDateTimeToISO(startTs),
-        current_ts: formatLocalDateTimeToISO(currentTsValue),
-        end_ts: endTs ? formatLocalDateTimeToISO(endTs) : undefined,
+        start_time: formatLocalDateTimeToISO(startTs),
+        current_time: formatLocalDateTimeToISO(currentTsValue),
+        end_time: endTs ? formatLocalDateTimeToISO(endTs) : undefined,
         initial_balance: parseFloat(initialBalance),
         leverage: leverage! as Leverage,
         spread_pts: parseInt(spreadPts, 10),
@@ -378,13 +378,13 @@ export function useSessionAddForm() {
   };
 
   return {
-    // Form state (current_ts is not exposed, it's auto-set to start_ts)
+    // Form state (current_time is not exposed, it's auto-set to start_time)
     formState: {
       instrument_id: instrumentId,
       name,
       speed,
-      start_ts: startTs,
-      end_ts: endTs,
+      start_time: startTs,
+      end_time: endTs,
       initial_balance: initialBalance,
       leverage,
       spread_pts: spreadPts,
@@ -396,8 +396,8 @@ export function useSessionAddForm() {
       instrument_id: instrumentIdError,
       name: nameError,
       speed: speedError,
-      start_ts: startTsError,
-      end_ts: endTsError,
+      start_time: startTsError,
+      end_time: endTsError,
       initial_balance: initialBalanceError,
       leverage: leverageError,
       spread_pts: spreadPtsError,

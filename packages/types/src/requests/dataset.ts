@@ -11,7 +11,6 @@ export type CreateDatasetRequest = z.infer<typeof CreateDatasetRequestSchema>;
 export const UpdateDatasetRequestSchema = z.object({
   start_date: z.iso.datetime().optional(),
   end_date: z.iso.datetime().optional(),
-  is_active: z.boolean().optional(),
 });
 export type UpdateDatasetRequest = z.infer<typeof UpdateDatasetRequestSchema>;
 

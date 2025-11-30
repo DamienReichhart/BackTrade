@@ -23,7 +23,7 @@ sequenceDiagram
     else Validation succeeds
         useControlHook->>ReactQuery: useUpdateSession(id)
         ReactQuery->>API: PATCH /sessions/:id
-        Note over API: Request body contains<br/>updated fields (status, speed, current_ts, etc.)
+        Note over API: Request body contains<br/>updated fields (status, speed, current_time, etc.)
         
         alt API success
             API-->>ReactQuery: Updated session
@@ -44,5 +44,5 @@ sequenceDiagram
         end
     end
     
-    Note over User,useSessionData: Other controls follow same pattern:<br/>- SpeedSelector: Updates speed_multiplier<br/>- SkipBarButton: Increments current_ts<br/>- CloseAllButton: POST /positions/close-all<br/>- ArchiveButton: Sets status to ARCHIVED
+    Note over User,useSessionData: Other controls follow same pattern:<br/>- SpeedSelector: Updates speed_multiplier<br/>- SkipBarButton: Increments current_time<br/>- CloseAllButton: POST /positions/close-all<br/>- ArchiveButton: Sets status to ARCHIVED
 

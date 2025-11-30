@@ -1,7 +1,7 @@
 import { type FetchResponse } from "./fetchExecutor";
 import { refreshAccessToken } from "./tokenRefresh";
 
-export async function retryIfUnauthorized<TOutput>(
+export async function retryIfUnauthenticated<TOutput>(
   response: Response,
   refreshToken: string | undefined,
   retryFunction: () => Promise<FetchResponse<TOutput>>,

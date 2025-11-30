@@ -76,7 +76,7 @@ sequenceDiagram
         Table->>API: useUploadDataset.execute(formData)
         API->>Backend: POST /datasets/:id/upload<br/>multipart/form-data
         Backend->>Backend: Process CSV file<br/>Parse OHLCV data<br/>Store records
-        Backend-->>API: Updated Dataset with:<br/>file_name, records_count,<br/>start_ts, end_ts, uploaded_at
+        Backend-->>API: Updated Dataset with:<br/>file_name, records_count,<br/>start_time, end_time, uploaded_at
         API-->>Table: Success response
         Table->>Table: onFileUploadSuccess()
         Table->>DM: Trigger refetch

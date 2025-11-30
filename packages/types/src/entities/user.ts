@@ -9,8 +9,8 @@ export const UserSchema = z.object({
   is_banned: z.boolean().default(false),
   stripe_customer_id: z.string().optional(),
   password_reset_code: z.string().optional(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -25,10 +25,8 @@ export const UserSessionSchema = z.object({
   ip_address: z.string(),
   user_agent: z.string(),
   device_info: z.string(),
-  refresh_token_hash: z.string(),
   issued_at: z.iso.datetime(),
-  last_seen: z.iso.datetime(),
-  expires_at: z.iso.datetime(),
-  is_active: z.boolean().default(true),
+  created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+  updated_at: z.string().optional(),
 });
 export type UserSession = z.infer<typeof UserSessionSchema>;

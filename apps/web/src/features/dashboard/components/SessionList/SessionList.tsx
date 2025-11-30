@@ -19,7 +19,7 @@ const SORT_FIELD_OPTIONS: SelectOption[] = [
   { value: "session_status", label: "Status" },
   { value: "initial_balance", label: "Initial Balance" },
   { value: "leverage", label: "Leverage" },
-  { value: "start_ts", label: "Start Time" },
+  { value: "start_time", label: "Start Time" },
 ];
 
 /**

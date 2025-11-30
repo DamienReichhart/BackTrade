@@ -27,4 +27,3 @@ export { default as candlesRepo } from "./candles.repository";
 
 // Analytics repositories
 export { default as sessionsAnalyticsRepo } from "./sessions-analytics.repository";
-export { default as auditLogsRepo } from "./audit-logs.repository";

@@ -29,7 +29,9 @@
       "stripe_product_id": "prod_basic",
       "stripe_price_id": "price_free_monthly",
       "currency": "EUR",
-      "price": 0
+      "price": 0,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
     },
     {
       "id": 2,
@@ -37,7 +39,9 @@
       "stripe_product_id": "prod_pro",
       "stripe_price_id": "price_trader_monthly",
       "currency": "EUR",
-      "price": 19
+      "price": 19,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
     },
     {
       "id": 3,
@@ -45,7 +49,9 @@
       "stripe_product_id": "prod_enterprise",
       "stripe_price_id": "price_expert_monthly",
       "currency": "EUR",
-      "price": 49
+      "price": 49,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
     }
   ],
   "subscriptions": [
@@ -158,6 +164,16 @@
       "status": "active",
       "cancel_at_period_end": true,
       "id": 10
+    },
+    {
+      "user_id": 1,
+      "plan_id": 1,
+      "stripe_subscription_id": "sub_1764509201219_oog2w0i",
+      "current_period_start": "2025-11-30T13:26:41.219Z",
+      "current_period_end": "2025-12-30T13:26:41.219Z",
+      "status": "active",
+      "cancel_at_period_end": false,
+      "id": 11
     }
   ],
   "sessions": [
@@ -169,9 +185,9 @@
       "timeframe": "M1",
       "session_status": "RUNNING",
       "speed": "5x",
-      "start_ts": "2020-01-16T09:00:00Z",
-      "current_ts": "2020-01-16T11:41:00Z",
-      "end_ts": null,
+      "start_time": "2020-01-16T09:00:00Z",
+      "current_time": "2020-01-16T11:41:00Z",
+      "end_time": null,
       "initial_balance": 90000,
       "leverage": 50,
       "spread_pts": 12,
@@ -184,8 +200,8 @@
       "instrument_id": 1,
       "name": "TEST",
       "speed": "1x",
-      "start_ts": "2020-01-16T10:32:00.000Z",
-      "current_ts": "2020-01-16T11:00:52Z",
+      "start_time": "2020-01-16T10:32:00.000Z",
+      "current_time": "2020-01-16T11:00:52Z",
       "initial_balance": 800,
       "leverage": 50,
       "spread_pts": 0,
@@ -56410,15 +56426,6 @@
       "position_status": "OPEN",
       "opened_at": "2020-01-16T11:41:00Z",
       "id": 4
-    },
-    {
-      "session_id": 1,
-      "side": "BUY",
-      "entry_price": 1.11562,
-      "quantity_lots": 1,
-      "position_status": "OPEN",
-      "opened_at": "2020-01-16T11:41:00Z",
-      "id": 5
     }
   ],
   "transactions": [
@@ -56964,13 +56971,11 @@
       "id": 1,
       "instrument_id": 1,
       "timeframe": "M1",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-15T10:30:00Z",
       "records_count": 1440,
       "file_name": "EURUSD_M1_2024-01-15.csv",
-      "is_active": true,
-      "start_ts": "2024-01-15T00:00:00Z",
-      "end_ts": "2024-01-15T23:59:00Z",
+      "start_time": "2024-01-15T00:00:00Z",
+      "end_time": "2024-01-15T23:59:00Z",
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     },
@@ -56978,13 +56983,11 @@
       "id": 2,
       "instrument_id": 1,
       "timeframe": "M5",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-16T09:15:00Z",
       "records_count": 288,
       "file_name": "EURUSD_M5_2024-01-16.csv",
-      "is_active": true,
-      "start_ts": "2024-01-16T00:00:00Z",
-      "end_ts": "2024-01-16T23:55:00Z",
+      "start_time": "2024-01-16T00:00:00Z",
+      "end_time": "2024-01-16T23:55:00Z",
       "created_at": "2024-01-16T09:15:00Z",
       "updated_at": "2024-01-16T09:15:00Z"
     },
@@ -56992,13 +56995,11 @@
       "id": 3,
       "instrument_id": 1,
       "timeframe": "M15",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-17T14:20:00Z",
       "records_count": 96,
       "file_name": "EURUSD_M15_2024-01-17.csv",
-      "is_active": true,
-      "start_ts": "2024-01-17T00:00:00Z",
-      "end_ts": "2024-01-17T23:45:00Z",
+      "start_time": "2024-01-17T00:00:00Z",
+      "end_time": "2024-01-17T23:45:00Z",
       "created_at": "2024-01-17T14:20:00Z",
       "updated_at": "2024-01-17T14:20:00Z"
     },
@@ -57006,13 +57007,11 @@
       "id": 4,
       "instrument_id": 1,
       "timeframe": "H1",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-18T11:45:00Z",
       "records_count": 24,
       "file_name": "EURUSD_H1_2024-01-18.csv",
-      "is_active": true,
-      "start_ts": "2024-01-18T00:00:00Z",
-      "end_ts": "2024-01-18T23:00:00Z",
+      "start_time": "2024-01-18T00:00:00Z",
+      "end_time": "2024-01-18T23:00:00Z",
       "created_at": "2024-01-18T11:45:00Z",
       "updated_at": "2024-01-18T11:45:00Z"
     },
@@ -57020,13 +57019,11 @@
       "id": 5,
       "instrument_id": 1,
       "timeframe": "H4",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-19T08:30:00Z",
       "records_count": 6,
       "file_name": "EURUSD_H4_2024-01-19.csv",
-      "is_active": true,
-      "start_ts": "2024-01-19T00:00:00Z",
-      "end_ts": "2024-01-19T20:00:00Z",
+      "start_time": "2024-01-19T00:00:00Z",
+      "end_time": "2024-01-19T20:00:00Z",
       "created_at": "2024-01-19T08:30:00Z",
       "updated_at": "2024-01-19T08:30:00Z"
     },
@@ -57034,13 +57031,11 @@
       "id": 6,
       "instrument_id": 1,
       "timeframe": "D1",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-20T16:00:00Z",
       "records_count": 30,
       "file_name": "EURUSD_D1_2024-01-20.csv",
-      "is_active": true,
-      "start_ts": "2023-12-22T00:00:00Z",
-      "end_ts": "2024-01-20T00:00:00Z",
+      "start_time": "2023-12-22T00:00:00Z",
+      "end_time": "2024-01-20T00:00:00Z",
       "created_at": "2024-01-20T16:00:00Z",
       "updated_at": "2024-01-20T16:00:00Z"
     },
@@ -57048,13 +57043,11 @@
       "id": 7,
       "instrument_id": 1,
       "timeframe": "M30",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-21T12:10:00Z",
       "records_count": 48,
       "file_name": "EURUSD_M30_2024-01-21.csv",
-      "is_active": true,
-      "start_ts": "2024-01-21T00:00:00Z",
-      "end_ts": "2024-01-21T23:30:00Z",
+      "start_time": "2024-01-21T00:00:00Z",
+      "end_time": "2024-01-21T23:30:00Z",
       "created_at": "2024-01-21T12:10:00Z",
       "updated_at": "2024-01-21T12:10:00Z"
     },
@@ -57062,13 +57055,11 @@
       "id": 8,
       "instrument_id": 1,
       "timeframe": "M10",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-22T13:25:00Z",
       "records_count": 144,
       "file_name": "EURUSD_M10_2024-01-22.csv",
-      "is_active": false,
-      "start_ts": "2024-01-22T00:00:00Z",
-      "end_ts": "2024-01-22T23:50:00Z",
+      "start_time": "2024-01-22T00:00:00Z",
+      "end_time": "2024-01-22T23:50:00Z",
       "created_at": "2024-01-22T13:25:00Z",
       "updated_at": "2024-01-22T13:25:00Z"
     },
@@ -57076,13 +57067,11 @@
       "id": 9,
       "instrument_id": 1,
       "timeframe": "H2",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-23T10:00:00Z",
       "records_count": 12,
       "file_name": "EURUSD_H2_2024-01-23.csv",
-      "is_active": true,
-      "start_ts": "2024-01-23T00:00:00Z",
-      "end_ts": "2024-01-23T22:00:00Z",
+      "start_time": "2024-01-23T00:00:00Z",
+      "end_time": "2024-01-23T22:00:00Z",
       "created_at": "2024-01-23T10:00:00Z",
       "updated_at": "2024-01-23T10:00:00Z"
     },
@@ -57090,13 +57079,11 @@
       "id": 10,
       "instrument_id": 1,
       "timeframe": "W1",
-      "uploaded_by_user_id": 1,
       "uploaded_at": "2024-01-24T09:15:00Z",
       "records_count": 52,
       "file_name": "EURUSD_W1_2024-01-24.csv",
-      "is_active": true,
-      "start_ts": "2023-01-02T00:00:00Z",
-      "end_ts": "2024-01-01T00:00:00Z",
+      "start_time": "2023-01-02T00:00:00Z",
+      "end_time": "2024-01-01T00:00:00Z",
       "created_at": "2024-01-24T09:15:00Z",
       "updated_at": "2024-01-24T09:15:00Z"
     },
@@ -57104,7 +57091,6 @@
       "instrument_id": 1,
       "timeframe": "M30",
       "id": 11,
-      "uploaded_by_user_id": 1,
       "created_at": "2024-01-24T09:15:00Z",
       "updated_at": "2024-01-24T09:15:00Z"
     },
@@ -57112,7 +57098,6 @@
       "instrument_id": 1,
       "timeframe": "M1",
       "id": 12,
-      "uploaded_by_user_id": 1,
       "created_at": "2024-01-24T09:15:00Z",
       "updated_at": "2024-01-24T09:15:00Z"
     },
@@ -57120,9 +57105,18 @@
       "instrument_id": 1,
       "timeframe": "M1",
       "id": 13,
-      "uploaded_by_user_id": 1,
       "created_at": "2024-01-24T09:15:00Z",
       "updated_at": "2024-01-24T09:15:00Z"
+    },
+    {
+      "instrument_id": 1,
+      "timeframe": "M10",
+      "id": 14
+    },
+    {
+      "instrument_id": 1,
+      "timeframe": "M15",
+      "id": 15
     }
   ]
 }
