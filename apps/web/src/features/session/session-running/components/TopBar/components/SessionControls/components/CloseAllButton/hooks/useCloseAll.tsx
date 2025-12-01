@@ -26,7 +26,7 @@ export function useCloseAll(
     }
 
     try {
-      await closeAllPositions();
+      await closeAllPositions({});
       onSuccess?.();
     } catch (err) {
       const errorMessage =

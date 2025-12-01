@@ -1,10 +1,9 @@
-import { useGet, usePost, usePatch, useDelete } from "../core";
+import { useGet, usePost, usePatch, useDelete } from "..";
 import {
   SubscriptionSchema,
   SubscriptionListResponseSchema,
   CreateSubscriptionRequestSchema,
   UpdateSubscriptionRequestSchema,
-  EmptyResponseSchema,
   type DateRangeQuery,
 } from "@backtrade/types";
 
@@ -27,21 +26,14 @@ export function useSubscriptions(query?: DateRangeQuery) {
     ? `/subscriptions?${searchParams.toString()}`
     : "/subscriptions";
 
-  return useGet(url, {
-    outputSchema: SubscriptionListResponseSchema,
-  });
+  return useGet(url, SubscriptionListResponseSchema);
 }
 
 export function useSubscription(id: string) {
-  return useGet(`/subscriptions/${id}`, {
-    outputSchema: SubscriptionSchema,
-  });
+  return useGet(`/subscriptions/${id}`, SubscriptionSchema, { enabled: !!id });
 }
 
-export function useSubscriptionsByUser(
-  userId: string | undefined,
-  query?: DateRangeQuery,
-) {
+export function useSubscriptionsByUser(userId: string | undefined, query?: DateRangeQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -51,35 +43,21 @@ export function useSubscriptionsByUser(
     });
   }
 
-  // Use placeholder URL when userId is undefined (query will be disabled)
   const url = query
     ? `/users/${userId ?? ""}/subscriptions?${searchParams.toString()}`
     : `/users/${userId ?? ""}/subscriptions`;
 
-  return useGet(url, {
-    outputSchema: SubscriptionListResponseSchema,
-    queryOptions: {
-      enabled: !!userId && userId.length > 0,
-    },
-  });
+  return useGet(url, SubscriptionListResponseSchema, { enabled: !!userId });
 }
 
 export function useCreateSubscription() {
-  return usePost("/subscriptions", {
-    inputSchema: CreateSubscriptionRequestSchema,
-    outputSchema: SubscriptionSchema,
-  });
+  return usePost("/subscriptions", CreateSubscriptionRequestSchema, SubscriptionSchema);
 }
 
 export function useUpdateSubscription(id: string) {
-  return usePatch(`/subscriptions/${id}`, {
-    inputSchema: UpdateSubscriptionRequestSchema,
-    outputSchema: SubscriptionSchema,
-  });
+  return usePatch(`/subscriptions/${id}`, UpdateSubscriptionRequestSchema, SubscriptionSchema);
 }
 
 export function useDeleteSubscription(id: string) {
-  return useDelete(`/subscriptions/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
+  return useDelete(`/subscriptions/${id}`);
 }

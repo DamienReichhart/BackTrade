@@ -135,3 +135,12 @@
 .sidebar {
   position: relative;
 }
+
+.notFound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
