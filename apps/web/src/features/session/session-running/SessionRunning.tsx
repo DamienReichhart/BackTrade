@@ -8,6 +8,7 @@ import { useSessionData } from "./hooks";
 import styles from "./SessionRunning.module.css";
 import { redirectToSessionAnalytics } from "../../../utils";
 import { useEffect } from "react";
+import { LoadingState } from "../../dashboard/components";
 
 /**
  * Running Session page
@@ -16,7 +17,7 @@ import { useEffect } from "react";
  * order/estimates panel on the right, and tables below.
  */
 export function SessionRunning() {
-  const { session } = useSessionData();
+  const { session, isLoading } = useSessionData();
 
   useEffect(() => {
     if (session?.session_status == "ARCHIVED") {
@@ -24,8 +25,12 @@ export function SessionRunning() {
     }
   }, [session]);
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   if (!session) {
-    return <div>No session found</div>;
+    return <div className={styles.notFound}>Session not found</div>;
   }
 
   return (

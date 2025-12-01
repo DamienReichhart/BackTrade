@@ -164,16 +164,6 @@
       "status": "active",
       "cancel_at_period_end": true,
       "id": 10
-    },
-    {
-      "user_id": 1,
-      "plan_id": 1,
-      "stripe_subscription_id": "sub_1764509201219_oog2w0i",
-      "current_period_start": "2025-11-30T13:26:41.219Z",
-      "current_period_end": "2025-12-30T13:26:41.219Z",
-      "status": "active",
-      "cancel_at_period_end": false,
-      "id": 11
     }
   ],
   "sessions": [
@@ -57123,6 +57113,11 @@
       "instrument_id": 1,
       "timeframe": "M15",
       "id": 15
+    },
+    {
+      "instrument_id": 1,
+      "timeframe": "M5",
+      "id": 16
     }
   ]
 }

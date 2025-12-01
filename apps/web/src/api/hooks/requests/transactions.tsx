@@ -26,15 +26,11 @@ export function useTransactions(query?: DateRangeQuery) {
     ? `/transactions?${searchParams.toString()}`
     : "/transactions";
 
-  return useGet(url, {
-    outputSchema: TransactionListResponseSchema,
-  });
+  return useGet(url, TransactionListResponseSchema);
 }
 
 export function useTransaction(id: string) {
-  return useGet(`/transactions/${id}`, {
-    outputSchema: TransactionSchema,
-  });
+  return useGet(`/transactions/${id}`, TransactionSchema, { enabled: !!id });
 }
 
 export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
@@ -51,16 +47,10 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
     ? `/users/${userId}/transactions?${searchParams.toString()}`
     : `/users/${userId}/transactions`;
 
-  return useGet(url, {
-    outputSchema: TransactionListResponseSchema,
-  });
+  return useGet(url, TransactionListResponseSchema, { enabled: !!userId });
 }
 
-export function useTransactionsBySession(
-  sessionId: string,
-  query?: PaginationQuery,
-  queryOptions?: { enabled?: boolean },
-) {
+export function useTransactionsBySession(sessionId: string, query?: PaginationQuery) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -74,18 +64,9 @@ export function useTransactionsBySession(
     ? `/sessions/${sessionId}/transactions?${searchParams.toString()}`
     : `/sessions/${sessionId}/transactions`;
 
-  return useGet(url, {
-    outputSchema: TransactionListResponseSchema,
-    queryOptions: {
-      enabled: queryOptions?.enabled ?? (!!sessionId && sessionId !== ""),
-      ...queryOptions,
-    },
-  });
+  return useGet(url, TransactionListResponseSchema, { enabled: !!sessionId });
 }
 
 export function useCreateTransaction() {
-  return usePost("/transactions", {
-    inputSchema: CreateTransactionRequestSchema,
-    outputSchema: TransactionSchema,
-  });
+  return usePost("/transactions", CreateTransactionRequestSchema, TransactionSchema);
 }

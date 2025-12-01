@@ -29,12 +29,10 @@ export function useSessionData() {
   const { setCandles, clearCandles } = useCurrentSessionCandlesStore();
   const timeframe = useChartSettingsStore((state) => state.timeframe);
 
-  const { data: session } = useSession(id);
+  const { data: session, isLoading: isLoadingSession } = useSession(id);
   const hasValidSession = !!session && !!session.instrument_id;
   const instrumentId = hasValidSession ? String(session.instrument_id) : "0";
-  const { data: instrument } = useInstrument(instrumentId, {
-    enabled: hasValidSession,
-  });
+  const { data: instrument } = useInstrument(instrumentId);
 
   // Fetch chart candles (last 1000 candles on the configured timeframe)
   const chartDateRange = useMemo(() => {
@@ -45,8 +43,7 @@ export function useSessionData() {
   const { data: chartCandles } = useCandlesByInstrument( // will be changed to useCandlesBySession when implemented in backend
     instrumentId,
     timeframe,
-    chartDateRange as DateRangeQuery | undefined,
-    hasValidSession && !!session && !!chartDateRange,
+    chartDateRange as DateRangeQuery | undefined
   );
 
   // Derive current price from the last candle of the chart data
@@ -100,5 +97,6 @@ export function useSessionData() {
     chartCandles: chartCandles as Candle[] | undefined,
     currentPrice,
     hasValidSession,
+    isLoading: isLoadingSession,
   };
 }

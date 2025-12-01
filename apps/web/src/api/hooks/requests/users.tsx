@@ -3,7 +3,6 @@ import {
   PublicUserSchema,
   UserListResponseSchema,
   UpdateUserRequestSchema,
-  EmptyResponseSchema,
   type SearchQueryUser,
 } from "@backtrade/types";
 
@@ -24,33 +23,21 @@ export function useUsers(query?: SearchQueryUser) {
 
   const url = query ? `/users?${searchParams.toString()}` : "/users";
 
-  return useGet(url, {
-    outputSchema: UserListResponseSchema,
-  });
+  return useGet(url, UserListResponseSchema);
 }
 
 export function useUser(id: string) {
-  return useGet(`/users/${id}`, {
-    outputSchema: PublicUserSchema,
-  });
+  return useGet(`/users/${id}`, PublicUserSchema, { enabled: !!id });
 }
 
 export function useCreateUser() {
-  return usePost("/users", {
-    inputSchema: UpdateUserRequestSchema,
-    outputSchema: PublicUserSchema,
-  });
+  return usePost("/users", UpdateUserRequestSchema, PublicUserSchema);
 }
 
 export function useUpdateUser(id: string) {
-  return usePatch(`/users/${id}`, {
-    inputSchema: UpdateUserRequestSchema,
-    outputSchema: PublicUserSchema,
-  });
+  return usePatch(`/users/${id}`, UpdateUserRequestSchema, PublicUserSchema);
 }
 
 export function useDeleteUser(id: string) {
-  return useDelete(`/users/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
+  return useDelete(`/users/${id}`);
 }

@@ -357,8 +357,8 @@ export function useSessionAddForm() {
       const result = await execute(request);
 
       // Navigate to the created session
-      if (result?.data) {
-        navigate(`/dashboard/sessions/${result.data.id}`);
+      if (result?.id) {
+        navigate(`/dashboard/sessions/${result.id}`);
       }
     } catch (err) {
       // Handle error

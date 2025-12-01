@@ -4,7 +4,6 @@ import {
   PlanListResponseSchema,
   CreatePlanRequestSchema,
   UpdatePlanRequestSchema,
-  EmptyResponseSchema,
   type SearchQuery,
 } from "@backtrade/types";
 
@@ -25,33 +24,21 @@ export function usePlans(query?: SearchQuery) {
 
   const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
-  return useGet(url, {
-    outputSchema: PlanListResponseSchema,
-  });
+  return useGet(url, PlanListResponseSchema);
 }
 
 export function usePlan(id: string) {
-  return useGet(`/plans/${id}`, {
-    outputSchema: PlanSchema,
-  });
+  return useGet(`/plans/${id}`, PlanSchema, { enabled: !!id });
 }
 
 export function useCreatePlan() {
-  return usePost("/plans", {
-    inputSchema: CreatePlanRequestSchema,
-    outputSchema: PlanSchema,
-  });
+  return usePost("/plans", CreatePlanRequestSchema, PlanSchema);
 }
 
 export function useUpdatePlan(id: string) {
-  return usePatch(`/plans/${id}`, {
-    inputSchema: UpdatePlanRequestSchema,
-    outputSchema: PlanSchema,
-  });
+  return usePatch(`/plans/${id}`, UpdatePlanRequestSchema, PlanSchema);
 }
 
 export function useDeletePlan(id: string) {
-  return useDelete(`/plans/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
+  return useDelete(`/plans/${id}`);
 }
