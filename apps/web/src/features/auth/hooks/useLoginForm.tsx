@@ -110,11 +110,11 @@ export function useLoginForm() {
 
       // Login successful - store tokens and user
       if (
-        response?.data &&
-        "accessToken" in response.data &&
-        "refreshToken" in response.data
+        response &&
+        "accessToken" in response &&
+        "refreshToken" in response
       ) {
-        login(response.data.accessToken, response.data.refreshToken);
+        login(response.accessToken, response.refreshToken);
         navigate("/dashboard");
       }
     } catch (err) {

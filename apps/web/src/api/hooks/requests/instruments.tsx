@@ -3,7 +3,6 @@ import {
   InstrumentSchema,
   InstrumentListResponseSchema,
   type SearchQuery,
-  type Instrument,
 } from "@backtrade/types";
 
 /**
@@ -25,20 +24,9 @@ export function useInstruments(query?: SearchQuery) {
     ? `/instruments?${searchParams.toString()}`
     : "/instruments";
 
-  return useGet(url, {
-    outputSchema: InstrumentListResponseSchema,
-  });
+  return useGet(url, InstrumentListResponseSchema);
 }
 
-export function useInstrument(
-  id: string,
-  queryOptions?: { enabled?: boolean },
-) {
-  return useGet<Instrument>(`/instruments/${id}`, {
-    outputSchema: InstrumentSchema,
-    queryOptions: {
-      enabled: queryOptions?.enabled ?? true,
-      ...queryOptions,
-    },
-  });
+export function useInstrument(id: string) {
+  return useGet(`/instruments/${id}`, InstrumentSchema, { enabled: !!id });
 }

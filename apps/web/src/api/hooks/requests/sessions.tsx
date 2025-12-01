@@ -4,7 +4,6 @@ import {
   SessionListResponseSchema,
   CreateSessionRequestSchema,
   UpdateSessionRequestSchema,
-  EmptyResponseSchema,
   SessionInfoResponseSchema,
   type DateRangeQuery,
   type SearchQuery,
@@ -27,52 +26,29 @@ export function useSessions(query?: DateRangeQuery | SearchQuery) {
 
   const url = query ? `/sessions?${searchParams.toString()}` : "/sessions";
 
-  return useGet(url, {
-    outputSchema: SessionListResponseSchema,
-  });
+  return useGet(url, SessionListResponseSchema);
 }
 
 export function useSession(id: string) {
-  return useGet(`/sessions/${id}`, {
-    outputSchema: SessionSchema,
-    queryOptions: {
-      enabled: !!id && id !== "",
-    },
-  });
+  return useGet(`/sessions/${id}`, SessionSchema, { enabled: !!id });
 }
 
 export function useCreateSession() {
-  return usePost("/sessions", {
-    inputSchema: CreateSessionRequestSchema,
-    outputSchema: SessionSchema,
-  });
+  return usePost("/sessions", CreateSessionRequestSchema, SessionSchema);
 }
 
 export function useUpdateSession(id: string) {
-  return usePatch(`/sessions/${id}`, {
-    inputSchema: UpdateSessionRequestSchema,
-    outputSchema: SessionSchema,
-  });
+  return usePatch(`/sessions/${id}`, UpdateSessionRequestSchema, SessionSchema);
 }
 
 export function useDeleteSession(id: string) {
-  return useDelete(`/sessions/${id}`, {
-    outputSchema: EmptyResponseSchema,
-  });
+  return useDelete(`/sessions/${id}`);
 }
 
 export function useArchiveSession(id: string) {
-  return usePatch(`/sessions/${id}`, {
-    inputSchema: UpdateSessionRequestSchema,
-    outputSchema: SessionSchema,
-  });
+  return usePatch(`/sessions/${id}`, UpdateSessionRequestSchema, SessionSchema);
 }
 
 export function useSessionInfo(id: string) {
-  return useGet(`/sessions/${id}/info`, {
-    outputSchema: SessionInfoResponseSchema,
-    queryOptions: {
-      enabled: !!id && id !== "",
-    },
-  });
+  return useGet(`/sessions/${id}/info`, SessionInfoResponseSchema, { enabled: !!id });
 }

@@ -50,10 +50,10 @@ export function useArchive(
       queryClient.invalidateQueries({ queryKey: ["GET", `/sessions/${id}`] });
 
       // Update the current session in the store
-      if (updatedSession?.data) {
+      if (updatedSession) {
         useCurrentSessionStore
           .getState()
-          .setCurrentSession(updatedSession.data);
+          .setCurrentSession(updatedSession);
       }
 
       onSuccess?.();
