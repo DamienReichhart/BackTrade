@@ -162,13 +162,13 @@ BackTrade/
 For a complete development environment with database:
 
 ```bash
-docker-compose -f docker-dev.yaml up -d
+docker compose -f docker-dev.yaml up -d
 ```
 
 Initialize the database (run Prisma migrations and seed data):
 
 ```bash
-docker-compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
+docker compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:init
 ```
 
 4.b **Start development environment (not recommended)**
