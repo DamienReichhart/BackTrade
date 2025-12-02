@@ -18,6 +18,10 @@ resources:
     - postgres/statefulset.yaml
     - postgres/service.yaml
 
+    # Redis
+    - redis/deployment.yaml
+    - redis/service.yaml
+
     # Backend
     - backend/deployment.yaml
     - backend/service.yaml

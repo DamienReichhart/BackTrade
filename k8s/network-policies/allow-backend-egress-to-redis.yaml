@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: allow-backend-egress-to-redis
+    namespace: backtrade
+spec:
+    podSelector:
+        matchLabels:
+            app: api
+            component: backend
+    policyTypes:
+        - Egress
+    egress:
+        # Allow backend pods to connect to Redis
+        - to:
+              - podSelector:
+                    matchLabels:
+                        app: redis
+                        component: cache
+          ports:
+              - protocol: TCP
+                port: 6379
+

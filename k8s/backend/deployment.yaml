@@ -34,31 +34,82 @@ spec:
                           drop:
                               - ALL
                   env:
+                      # Node Configuration
                       - name: NODE_ENV
                         valueFrom:
                             secretKeyRef:
                                 name: backtrade-secrets
                                 key: NODE_ENV
-                      - name: PORT
+                      - name: API_HOST
                         valueFrom:
                             secretKeyRef:
                                 name: backtrade-secrets
-                                key: PORT
-                      - name: HOST
+                                key: API_HOST
+                      - name: API_PORT
                         valueFrom:
                             secretKeyRef:
                                 name: backtrade-secrets
-                                key: HOST
+                                key: API_PORT
+                      - name: API_LOG_LEVEL
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_LOG_LEVEL
+                      - name: API_LOG_DIR
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_LOG_DIR
+                      # Database Configuration
                       - name: DATABASE_URL
                         valueFrom:
                             secretKeyRef:
                                 name: backtrade-secrets
                                 key: DATABASE_URL
-                      - name: JWT_SECRET
+                      # Redis Configuration
+                      - name: REDIS_HOST
                         valueFrom:
                             secretKeyRef:
                                 name: backtrade-secrets
-                                key: JWT_SECRET
+                                key: REDIS_HOST
+                      - name: REDIS_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REDIS_PORT
+                      - name: REDIS_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REDIS_PASSWORD
+                      # Security Configuration
+                      - name: ACCESS_TOKEN_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: ACCESS_TOKEN_SECRET
+                      - name: REFRESH_TOKEN_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REFRESH_TOKEN_SECRET
+                      - name: ACCESS_TOKEN_EXPIRATION
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: ACCESS_TOKEN_EXPIRATION
+                      - name: REFRESH_TOKEN_EXPIRATION
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REFRESH_TOKEN_EXPIRATION
+                      # Cloudflare Tunnel (optional)
+                      - name: TUNNEL_TOKEN
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: TUNNEL_TOKEN
+                                optional: true
                   resources:
                       requests:
                           memory: "256Mi"
