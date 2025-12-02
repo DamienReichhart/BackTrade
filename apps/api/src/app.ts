@@ -3,7 +3,7 @@ import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { router as apiRouter } from "./routes/router";
+import { apiRouter } from "./routes/router";
 import { requestId } from "./middlewares/request-id";
 import { requestLogger } from "./middlewares/request-logger";
 import { notFoundHandler } from "./middlewares/not-found";
@@ -21,7 +21,7 @@ function createApp(): Express {
   app.use(requestId);
   app.use(requestLogger);
 
-  app.use("/api/v1", apiRouter);
+  app.use("/api", apiRouter);
 
   app.use(notFoundHandler);
 
