@@ -38,5 +38,3 @@ export async function getPlans(): SeedPlan[] {
     },
   ];
 }
-
-

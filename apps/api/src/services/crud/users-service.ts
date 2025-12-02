@@ -91,10 +91,24 @@ async function getAllUsers(where?: Prisma.UserWhereInput): Promise<User[]> {
   return users;
 }
 
+async function getUserByEmail(email: string): Promise<User> {
+  const user = await usersRepo.getUserByEmail(email);
+  if (!user) {
+    userServiceLogger.debug(
+      { email },
+      "User not found, throwing not found error",
+    );
+    throw new NotFoundError("User not found");
+  }
+  userServiceLogger.trace({ email }, "User fetched");
+  return user;
+}
+
 export default {
   getUserById,
   createUser,
   updateUser,
   deleteUser,
   getAllUsers,
+  getUserByEmail,
 };

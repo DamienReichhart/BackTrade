@@ -51,9 +51,7 @@ export function useArchive(
 
       // Update the current session in the store
       if (updatedSession) {
-        useCurrentSessionStore
-          .getState()
-          .setCurrentSession(updatedSession);
+        useCurrentSessionStore.getState().setCurrentSession(updatedSession);
       }
 
       onSuccess?.();

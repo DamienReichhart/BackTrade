@@ -32,7 +32,10 @@ export function useDataset(id: string) {
   return useGet(`/datasets/${id}`, DatasetSchema, { enabled: !!id });
 }
 
-export function useDatasetsByInstrument(instrumentId: string, query?: DateRangeQuery) {
+export function useDatasetsByInstrument(
+  instrumentId: string,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

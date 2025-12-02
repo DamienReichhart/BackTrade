@@ -50,5 +50,7 @@ export function useArchiveSession(id: string) {
 }
 
 export function useSessionInfo(id: string) {
-  return useGet(`/sessions/${id}/info`, SessionInfoResponseSchema, { enabled: !!id });
+  return useGet(`/sessions/${id}/info`, SessionInfoResponseSchema, {
+    enabled: !!id,
+  });
 }

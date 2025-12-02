@@ -177,7 +177,7 @@ docker compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:i
 # Using pnpm directly
 pnpm dev
 
-# If using real api 
+# If using real api
 cd apps/api && pnpm prisma:init # Require database configured and working in .env
 
 # If using json-server (not recommended)

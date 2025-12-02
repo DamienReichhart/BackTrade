@@ -13,7 +13,6 @@ export function useTransactionsTable() {
   const navigate = useNavigate();
   const { currentSession } = useCurrentSessionStore();
   const sessionId = currentSession ? String(currentSession.id) : "";
-  const hasValidSession = !!sessionId && sessionId !== "";
 
   const {
     isOpen,
@@ -23,10 +22,12 @@ export function useTransactionsTable() {
   } = useModal<Transaction>();
 
   const { data: transactionsData, isLoading: loading } =
-    useTransactionsBySession(
-      sessionId,
-      { page: 1, limit: 10, order: "desc", sort: "created_at" },
-    );
+    useTransactionsBySession(sessionId, {
+      page: 1,
+      limit: 10,
+      order: "desc",
+      sort: "created_at",
+    });
 
   const transactions: Transaction[] = Array.isArray(transactionsData)
     ? transactionsData

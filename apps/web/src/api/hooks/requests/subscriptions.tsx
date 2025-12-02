@@ -33,7 +33,10 @@ export function useSubscription(id: string) {
   return useGet(`/subscriptions/${id}`, SubscriptionSchema, { enabled: !!id });
 }
 
-export function useSubscriptionsByUser(userId: string | undefined, query?: DateRangeQuery) {
+export function useSubscriptionsByUser(
+  userId: string | undefined,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -51,11 +54,19 @@ export function useSubscriptionsByUser(userId: string | undefined, query?: DateR
 }
 
 export function useCreateSubscription() {
-  return usePost("/subscriptions", CreateSubscriptionRequestSchema, SubscriptionSchema);
+  return usePost(
+    "/subscriptions",
+    CreateSubscriptionRequestSchema,
+    SubscriptionSchema,
+  );
 }
 
 export function useUpdateSubscription(id: string) {
-  return usePatch(`/subscriptions/${id}`, UpdateSubscriptionRequestSchema, SubscriptionSchema);
+  return usePatch(
+    `/subscriptions/${id}`,
+    UpdateSubscriptionRequestSchema,
+    SubscriptionSchema,
+  );
 }
 
 export function useDeleteSubscription(id: string) {

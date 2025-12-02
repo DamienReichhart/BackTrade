@@ -133,7 +133,7 @@ export function useForgotPasswordForm() {
     }
 
     try {
-      const response = await requestPasswordReset({
+      await requestPasswordReset({
         email: formState.email,
       });
 
@@ -193,7 +193,7 @@ export function useForgotPasswordForm() {
     }
 
     try {
-      const response = await resetPassword({
+      await resetPassword({
         code: formState.code,
         newPassword: formState.newPassword,
       });

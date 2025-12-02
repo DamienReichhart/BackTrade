@@ -3,5 +3,6 @@
 declare namespace Express {
   interface Request {
     id?: string;
+    validatedInput?: unknown;
   }
 }

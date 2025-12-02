@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PublicUserSchema } from "../entities";
 
 export const LoginRequestSchema = z.object({
   email: z.string().email(),
@@ -37,7 +36,6 @@ export const ResetPasswordRequestSchema = z.object({
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({
-  user: PublicUserSchema,
   accessToken: z.string(),
   refreshToken: z.string(),
 });

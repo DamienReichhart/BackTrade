@@ -7,8 +7,15 @@ const inputValidationsLogger = logger.child({
   service: "input-validations",
 });
 
-function inputValidations(schema: z.ZodType<unknown>) {
-  return (req: Request, res: Response, next: NextFunction) => {
+/**
+ * Middleware factory that validates request body against a Zod schema
+ * and attaches the validated data to the request object.
+ *
+ * @template T - The Zod schema type
+ * @param schema - Zod schema to validate against
+ */
+function inputValidations<T extends z.ZodType<unknown>>(schema: T) {
+  return (req: Request, _res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
       inputValidationsLogger.error(
@@ -17,6 +24,7 @@ function inputValidations(schema: z.ZodType<unknown>) {
       );
       throw new BadRequestError(result.error.message);
     }
+    req.validatedInput = result.data as T;
     next();
   };
 }

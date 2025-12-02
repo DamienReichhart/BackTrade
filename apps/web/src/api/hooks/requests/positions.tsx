@@ -35,7 +35,10 @@ export function usePosition(id: string) {
   return useGet(`/positions/${id}`, PositionSchema, { enabled: !!id });
 }
 
-export function usePositionsBySession(sessionId: string, query?: DateRangeQuery) {
+export function usePositionsBySession(
+  sessionId: string,
+  query?: DateRangeQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -53,11 +56,19 @@ export function usePositionsBySession(sessionId: string, query?: DateRangeQuery)
 }
 
 export function useCreatePosition() {
-  return usePost("/positions", CreatePositionRequestSchema, CreatePositionResponseSchema);
+  return usePost(
+    "/positions",
+    CreatePositionRequestSchema,
+    CreatePositionResponseSchema,
+  );
 }
 
 export function useUpdatePosition(id: string) {
-  return usePatch(`/positions/${id}`, UpdatePositionRequestSchema, PositionSchema);
+  return usePatch(
+    `/positions/${id}`,
+    UpdatePositionRequestSchema,
+    PositionSchema,
+  );
 }
 
 export function useDeletePosition(id: string) {
@@ -65,9 +76,17 @@ export function useDeletePosition(id: string) {
 }
 
 export function useClosePosition(id: string) {
-  return usePatch(`/positions/${id}`, ClosePositionRequestSchema, PositionSchema);
+  return usePatch(
+    `/positions/${id}`,
+    ClosePositionRequestSchema,
+    PositionSchema,
+  );
 }
 
 export function useCloseAllPositions(sessionId: string) {
-  return usePatch(`/sessions/${sessionId}/positions?closeAll=true`, z.object({}), EmptyResponseSchema);
+  return usePatch(
+    `/sessions/${sessionId}/positions?closeAll=true`,
+    z.object({}),
+    EmptyResponseSchema,
+  );
 }

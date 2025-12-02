@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { API_BASE_URL } from "../../index";
 import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 import { useAuthStore } from "../../../store";
@@ -9,10 +10,10 @@ import { useAuthStore } from "../../../store";
 export function useDelete(url: string) {
   const queryClient = useQueryClient();
   const { refreshToken, accessToken, login } = useAuthStore();
-  let isRefreshingToken = false;
+  const isRefreshingToken = useRef(false);
 
   const mutationFn = async (): Promise<void> => {
-    let headers: Record<string, string> = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
     if (accessToken) {
@@ -26,13 +27,15 @@ export function useDelete(url: string) {
 
     if (!response.ok) {
       if (response.status === 401) {
-        if (refreshToken && !isRefreshingToken) {
-          isRefreshingToken = true;
+        if (refreshToken && !isRefreshingToken.current) {
+          isRefreshingToken.current = true;
           const authResponse = await refreshTokenUtils(refreshToken);
           if (authResponse) {
             login(authResponse.accessToken, authResponse.refreshToken);
+            isRefreshingToken.current = false;
             return mutationFn();
           }
+          isRefreshingToken.current = false;
         }
       }
     }

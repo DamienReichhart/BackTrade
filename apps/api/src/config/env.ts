@@ -22,6 +22,10 @@ const EnvSchema = z.object({
   REDIS_PASSWORD: z.string(),
   API_LOG_LEVEL: LOG_LEVELS,
   API_LOG_DIR: z.string().default("."),
+  ACCESS_TOKEN_SECRET: z.string(),
+  REFRESH_TOKEN_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRATION: z.string(),
+  REFRESH_TOKEN_EXPIRATION: z.string(),
 });
 
 export const ENV = EnvSchema.parse(process.env);

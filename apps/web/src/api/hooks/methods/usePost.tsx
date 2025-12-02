@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import type { z } from "zod";
 import { API_BASE_URL } from "../../index";
 import { useAuthStore } from "../../../store/auth";
@@ -10,15 +11,15 @@ import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 export function usePost<TInput, TOutput>(
   url: string,
   inputSchema: z.ZodSchema<TInput>,
-  outputSchema: z.ZodSchema<TOutput>
+  outputSchema: z.ZodSchema<TOutput>,
 ) {
   const queryClient = useQueryClient();
   const { accessToken, refreshToken, login } = useAuthStore();
-  let isRefreshingToken = false;
+  const isRefreshingToken = useRef(false);
 
   const mutationFn = async (body: TInput): Promise<TOutput> => {
     const validatedBody = inputSchema.parse(body);
-    let headers: Record<string, string> = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
     if (accessToken) {
@@ -33,20 +34,22 @@ export function usePost<TInput, TOutput>(
 
     if (!response.ok) {
       if (response.status === 401) {
-        if (refreshToken && !isRefreshingToken) {
-          isRefreshingToken = true;
+        if (refreshToken && !isRefreshingToken.current) {
+          isRefreshingToken.current = true;
           const authResponse = await refreshTokenUtils(refreshToken);
           if (authResponse) {
             login(authResponse.accessToken, authResponse.refreshToken);
+            isRefreshingToken.current = false;
             return mutationFn(body);
           }
+          isRefreshingToken.current = false;
         }
       }
     }
 
     const data = await response.json();
     return outputSchema.parse(data);
-  }
+  };
 
   const mutation = useMutation({
     mutationFn: mutationFn,

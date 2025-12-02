@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useRef } from "react";
 import type { z } from "zod";
 import { API_BASE_URL } from "../../index";
 import { useAuthStore } from "../../../store/auth";
@@ -11,14 +12,14 @@ import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 export function useGet<T = unknown>(
   url: string,
   outputSchema: z.ZodSchema<T>,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) {
   const enabled = options?.enabled ?? true;
   const { accessToken, refreshToken, login } = useAuthStore();
-  let isRefreshingToken = false;
+  const isRefreshingToken = useRef(false);
 
   const queryFn = async (): Promise<T> => {
-    let headers: Record<string, string> = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
     if (accessToken) {
@@ -27,18 +28,19 @@ export function useGet<T = unknown>(
     const response = await fetch(API_BASE_URL + url, {
       method: "GET",
       headers: headers,
-      },
-    );
+    });
 
     if (!response.ok) {
       if (response.status === 401) {
-        if (refreshToken && !isRefreshingToken) {
-          isRefreshingToken = true;
+        if (refreshToken && !isRefreshingToken.current) {
+          isRefreshingToken.current = true;
           const authResponse = await refreshTokenUtils(refreshToken);
           if (authResponse) {
             login(authResponse.accessToken, authResponse.refreshToken);
+            isRefreshingToken.current = false;
             return queryFn();
           }
+          isRefreshingToken.current = false;
         }
       }
     }

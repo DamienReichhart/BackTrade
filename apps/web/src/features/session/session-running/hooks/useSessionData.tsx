@@ -40,10 +40,11 @@ export function useSessionData() {
     return calculateCandleDateRange(timeframe, session.current_time, 1000);
   }, [session, timeframe]);
 
-  const { data: chartCandles } = useCandlesByInstrument( // will be changed to useCandlesBySession when implemented in backend
+  const { data: chartCandles } = useCandlesByInstrument(
+    // will be changed to useCandlesBySession when implemented in backend
     instrumentId,
     timeframe,
-    chartDateRange as DateRangeQuery | undefined
+    chartDateRange as DateRangeQuery | undefined,
   );
 
   // Derive current price from the last candle of the chart data

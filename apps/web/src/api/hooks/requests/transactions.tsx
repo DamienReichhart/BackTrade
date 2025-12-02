@@ -50,7 +50,10 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
   return useGet(url, TransactionListResponseSchema, { enabled: !!userId });
 }
 
-export function useTransactionsBySession(sessionId: string, query?: PaginationQuery) {
+export function useTransactionsBySession(
+  sessionId: string,
+  query?: PaginationQuery,
+) {
   const searchParams = new URLSearchParams();
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -68,5 +71,9 @@ export function useTransactionsBySession(sessionId: string, query?: PaginationQu
 }
 
 export function useCreateTransaction() {
-  return usePost("/transactions", CreateTransactionRequestSchema, TransactionSchema);
+  return usePost(
+    "/transactions",
+    CreateTransactionRequestSchema,
+    TransactionSchema,
+  );
 }
