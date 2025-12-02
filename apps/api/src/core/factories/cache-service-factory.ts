@@ -66,8 +66,10 @@ export function createCacheService<T>(
         try {
             await redis.set(`${prefix}${id}`, JSON.stringify(data), "EX", ttl);
         } catch (error) {
-            cacheLogger.error({ error }, `Error caching ${entityName}`);
-            throw error;
+            cacheLogger.warn(
+                { error, id, entityName },
+                `Failed to cache ${entityName} - continuing without cache`
+            );
         }
     }
 
@@ -76,8 +78,11 @@ export function createCacheService<T>(
             const result = await redis.get(`${prefix}${id}`);
             return result ? (JSON.parse(result) as T) : null;
         } catch (error) {
-            cacheLogger.error({ error }, `Error getting cached ${entityName}`);
-            throw error;
+            cacheLogger.warn(
+                { error, id, entityName },
+                `Failed to get cached ${entityName} - will fetch from database`
+            );
+            return null;
         }
     }
 
@@ -85,11 +90,10 @@ export function createCacheService<T>(
         try {
             await redis.del(`${prefix}${id}`);
         } catch (error) {
-            cacheLogger.error(
-                { error },
-                `Error invalidating cached ${entityName}`
+            cacheLogger.warn(
+                { error, id, entityName },
+                `Failed to invalidate cached ${entityName} - continuing without cache invalidation`
             );
-            throw error;
         }
     }
 

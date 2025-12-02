@@ -22,10 +22,14 @@ export const redis = new Redis({
         }
         return false;
     },
+    // Prevent Redis from crashing the application
+    enableOfflineQueue: false,
+    lazyConnect: false,
 });
 
+// Handle errors gracefully - prevent unhandled errors from crashing the app
 redis.on("error", (err) => {
-    redisLogger.error({ err }, "Connection error");
+    redisLogger.error({ err }, "Redis connection error - application will continue without caching");
 });
 
 redis.on("connect", () => {
@@ -36,8 +40,9 @@ redis.on("ready", () => {
     redisLogger.info("Ready to accept commands");
 });
 
+// Prevent unhandled promise rejections from Redis operations
 redis.on("close", () => {
-    redisLogger.info("Connection closed");
+    redisLogger.warn("Redis connection closed - application will continue without caching");
 });
 
 redis.on("reconnecting", (delay: string) => {
