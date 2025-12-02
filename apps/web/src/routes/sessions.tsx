@@ -5,36 +5,36 @@ import { TransactionsList } from "../features/session/transactions-list";
 import { SessionAdd } from "../features/session-add";
 
 export const sessionsRoutes = [
-  {
-    path: "/dashboard/sessions/add",
-    element: (
-      <AuthenticatedLayout>
-        <SessionAdd />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/sessions/:id",
-    element: (
-      <AuthenticatedLayout>
-        <SessionRunning />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/sessions/:id/positions/list",
-    element: (
-      <AuthenticatedLayout>
-        <PositionsList />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/sessions/:id/transactions/list",
-    element: (
-      <AuthenticatedLayout>
-        <TransactionsList />
-      </AuthenticatedLayout>
-    ),
-  },
+    {
+        path: "/dashboard/sessions/add",
+        element: (
+            <AuthenticatedLayout>
+                <SessionAdd />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/sessions/:id",
+        element: (
+            <AuthenticatedLayout>
+                <SessionRunning />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/sessions/:id/positions/list",
+        element: (
+            <AuthenticatedLayout>
+                <PositionsList />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/sessions/:id/transactions/list",
+        element: (
+            <AuthenticatedLayout>
+                <TransactionsList />
+            </AuthenticatedLayout>
+        ),
+    },
 ];

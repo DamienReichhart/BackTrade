@@ -11,48 +11,48 @@ import { findCurrentSubscription } from "../utils/subscriptions";
  * @returns Plans data, subscriptions, loading states, and errors
  */
 export function usePlansData() {
-  const { user } = useAuthStore();
-  const userId = user?.id.toString();
+    const { user } = useAuthStore();
+    const userId = user?.id.toString();
 
-  // Fetch user subscriptions (only when user is authenticated)
-  const {
-    data: subscriptionsData,
-    isLoading: isLoadingSubscriptions,
-    error: subscriptionsError,
-  } = useSubscriptionsByUser(userId);
+    // Fetch user subscriptions (only when user is authenticated)
+    const {
+        data: subscriptionsData,
+        isLoading: isLoadingSubscriptions,
+        error: subscriptionsError,
+    } = useSubscriptionsByUser(userId);
 
-  // Fetch available plans
-  const {
-    data: plansData,
-    isLoading: isLoadingPlans,
-    error: plansError,
-  } = usePlans();
+    // Fetch available plans
+    const {
+        data: plansData,
+        isLoading: isLoadingPlans,
+        error: plansError,
+    } = usePlans();
 
-  // Normalize data
-  const subscriptions: Subscription[] = useMemo(() => {
-    return (subscriptionsData as Subscription[]) ?? [];
-  }, [subscriptionsData]);
+    // Normalize data
+    const subscriptions: Subscription[] = useMemo(() => {
+        return (subscriptionsData as Subscription[]) ?? [];
+    }, [subscriptionsData]);
 
-  const plans: Plan[] = useMemo(() => {
-    return plansData ?? [];
-  }, [plansData]);
+    const plans: Plan[] = useMemo(() => {
+        return plansData ?? [];
+    }, [plansData]);
 
-  // Find current subscription (active or trialing)
-  const currentSubscription = useMemo(() => {
-    return findCurrentSubscription(subscriptions);
-  }, [subscriptions]);
+    // Find current subscription (active or trialing)
+    const currentSubscription = useMemo(() => {
+        return findCurrentSubscription(subscriptions);
+    }, [subscriptions]);
 
-  // Combined loading state
-  const isLoading = isLoadingSubscriptions || isLoadingPlans;
+    // Combined loading state
+    const isLoading = isLoadingSubscriptions || isLoadingPlans;
 
-  // Combined error state
-  const error = subscriptionsError ?? plansError;
+    // Combined error state
+    const error = subscriptionsError ?? plansError;
 
-  return {
-    subscriptions,
-    plans,
-    currentSubscription,
-    isLoading,
-    error: error as Error | null,
-  };
+    return {
+        subscriptions,
+        plans,
+        currentSubscription,
+        isLoading,
+        error: error as Error | null,
+    };
 }

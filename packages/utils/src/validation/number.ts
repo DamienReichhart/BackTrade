@@ -8,20 +8,23 @@ import type { ValidationResult } from "./types";
  * @returns Validation result with isValid flag and optional error message
  */
 export function validatePositiveNumber(
-  value: string | number,
-  fieldName: string = "Value",
+    value: string | number,
+    fieldName: string = "Value"
 ): ValidationResult {
-  const num = typeof value === "string" ? parseFloat(value) : value;
+    const num = typeof value === "string" ? parseFloat(value) : value;
 
-  if (isNaN(num)) {
-    return { isValid: false, error: `${fieldName} must be a valid number` };
-  }
+    if (isNaN(num)) {
+        return { isValid: false, error: `${fieldName} must be a valid number` };
+    }
 
-  if (num <= 0) {
-    return { isValid: false, error: `${fieldName} must be a positive number` };
-  }
+    if (num <= 0) {
+        return {
+            isValid: false,
+            error: `${fieldName} must be a positive number`,
+        };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -32,21 +35,21 @@ export function validatePositiveNumber(
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateNonNegativeNumber(
-  value: string | number,
-  fieldName: string = "Value",
+    value: string | number,
+    fieldName: string = "Value"
 ): ValidationResult {
-  const num = typeof value === "string" ? parseFloat(value) : value;
+    const num = typeof value === "string" ? parseFloat(value) : value;
 
-  if (isNaN(num)) {
-    return { isValid: false, error: `${fieldName} must be a valid number` };
-  }
+    if (isNaN(num)) {
+        return { isValid: false, error: `${fieldName} must be a valid number` };
+    }
 
-  if (num < 0) {
-    return {
-      isValid: false,
-      error: `${fieldName} must be a non-negative number`,
-    };
-  }
+    if (num < 0) {
+        return {
+            isValid: false,
+            error: `${fieldName} must be a non-negative number`,
+        };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }

@@ -3,35 +3,35 @@
  */
 
 .statusIndicator {
-  position: absolute;
-  top: var(--spacing-md);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-md);
-  background-color: var(--color-success);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-inverse);
-  z-index: var(--z-modal);
+    position: absolute;
+    top: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background-color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-inverse);
+    z-index: var(--z-modal);
 }
 
 .statusDot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--color-text-inverse);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-text-inverse);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }

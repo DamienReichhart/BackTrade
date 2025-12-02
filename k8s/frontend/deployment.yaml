@@ -1,66 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backtrade-frontend
-  namespace: backtrade
-  labels:
-    app: frontend
-    component: web
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: frontend
-      component: web
-  template:
-    metadata:
-      labels:
+    name: backtrade-frontend
+    namespace: backtrade
+    labels:
         app: frontend
         component: web
-    spec:
-      containers:
-        - name: frontend
-          image: reichhartdamien/backtrade-frontend:v1.0.0
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
-              name: http
-              protocol: TCP
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 101
-            capabilities:
-              drop:
-                - ALL
-          volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
-      volumes:
-        - name: nginx-config
-          configMap:
-            name: nginx-frontend-config
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: frontend
+            component: web
+    template:
+        metadata:
+            labels:
+                app: frontend
+                component: web
+        spec:
+            containers:
+                - name: frontend
+                  image: reichhartdamien/backtrade-frontend:v1.0.0
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 80
+                        name: http
+                        protocol: TCP
+                  securityContext:
+                      allowPrivilegeEscalation: false
+                      runAsNonRoot: true
+                      runAsUser: 101
+                      capabilities:
+                          drop:
+                              - ALL
+                  volumeMounts:
+                      - name: nginx-config
+                        mountPath: /etc/nginx/nginx.conf
+                        subPath: nginx.conf
+                  resources:
+                      requests:
+                          memory: "128Mi"
+                          cpu: "50m"
+                      limits:
+                          memory: "256Mi"
+                          cpu: "200m"
+                  livenessProbe:
+                      httpGet:
+                          path: /
+                          port: 80
+                      initialDelaySeconds: 10
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+                  readinessProbe:
+                      httpGet:
+                          path: /
+                          port: 80
+                      initialDelaySeconds: 5
+                      periodSeconds: 5
+                      timeoutSeconds: 3
+                      failureThreshold: 3
+            volumes:
+                - name: nginx-config
+                  configMap:
+                      name: nginx-frontend-config

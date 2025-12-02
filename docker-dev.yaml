@@ -1,63 +1,63 @@
 services:
-  dev:
-    build:
-      context: .
-      dockerfile: ./docker/images/dev.dockerfile
-    ports:
-      - "3000:3000"
-      - "5173:5173"
-    volumes:
-      - ./apps:/app/apps
-      - ./packages:/app/packages
-      - ./assets:/app/assets
-      # Exclude node_modules from volume mounts to preserve installed dependencies
-      - /app/node_modules
-      - /app/apps/api/node_modules
-      - /app/apps/web/node_modules
-      - /app/packages/eslint-config/node_modules
-      - /app/packages/tsconfig/node_modules
-      - /app/packages/types/node_modules
-      - /app/packages/utils/node_modules
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.11
+    dev:
+        build:
+            context: .
+            dockerfile: ./docker/images/dev.dockerfile
+        ports:
+            - "3000:3000"
+            - "5173:5173"
+        volumes:
+            - ./apps:/app/apps
+            - ./packages:/app/packages
+            - ./assets:/app/assets
+            # Exclude node_modules from volume mounts to preserve installed dependencies
+            - /app/node_modules
+            - /app/apps/api/node_modules
+            - /app/apps/web/node_modules
+            - /app/packages/eslint-config/node_modules
+            - /app/packages/tsconfig/node_modules
+            - /app/packages/types/node_modules
+            - /app/packages/utils/node_modules
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.11
 
-  postgres:
-    build:
-      context: .
-      dockerfile: ./docker/images/postgres.dockerfile
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.21
+    postgres:
+        build:
+            context: .
+            dockerfile: ./docker/images/postgres.dockerfile
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.21
 
-  redis:
-    build:
-      context: .
-      dockerfile: ./docker/images/redis.dockerfile
-    ports:
-      - "6379:6379"
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.22
+    redis:
+        build:
+            context: .
+            dockerfile: ./docker/images/redis.dockerfile
+        ports:
+            - "6379:6379"
+        environment:
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.22
 
 volumes:
-  postgres_data:
-    driver: local
+    postgres_data:
+        driver: local
 
 networks:
-  backtrade:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.250.0/24
-          gateway: 192.168.250.254
+    backtrade:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.250.0/24
+                  gateway: 192.168.250.254

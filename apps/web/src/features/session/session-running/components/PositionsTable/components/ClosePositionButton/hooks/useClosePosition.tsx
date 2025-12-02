@@ -2,8 +2,8 @@ import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useClosePosition as useClosePositionBusinessApi } from "../../../../../../../../api/hooks/requests/positions";
 import {
-  useCurrentSessionStore,
-  useCurrentPriceStore,
+    useCurrentSessionStore,
+    useCurrentPriceStore,
 } from "../../../../../../../../store/session";
 
 /**
@@ -15,76 +15,78 @@ import {
  * @returns Close position state and handlers
  */
 export function useClosePosition(
-  positionId: number,
-  onError?: (error: string) => void,
-  onSuccess?: () => void,
+    positionId: number,
+    onError?: (error: string) => void,
+    onSuccess?: () => void
 ) {
-  const { currentSession } = useCurrentSessionStore();
-  const { currentPrice } = useCurrentPriceStore();
-  const sessionId = currentSession?.id?.toString();
-  const closedAt = currentSession?.current_time;
+    const { currentSession } = useCurrentSessionStore();
+    const { currentPrice } = useCurrentPriceStore();
+    const sessionId = currentSession?.id?.toString();
+    const closedAt = currentSession?.current_time;
 
-  const queryClient = useQueryClient();
-  const { execute: closePosition, isLoading: isClosing } =
-    useClosePositionBusinessApi(String(positionId));
+    const queryClient = useQueryClient();
+    const { execute: closePosition, isLoading: isClosing } =
+        useClosePositionBusinessApi(String(positionId));
 
-  const handleClose = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
+    const handleClose = useCallback(
+        async (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
 
-      if (!sessionId) {
-        onError?.("Session ID is required");
-        return;
-      }
+            if (!sessionId) {
+                onError?.("Session ID is required");
+                return;
+            }
 
-      try {
-        if (!currentPrice) {
-          onError?.("Current price is required");
-          return;
-        }
+            try {
+                if (!currentPrice) {
+                    onError?.("Current price is required");
+                    return;
+                }
 
-        if (!closedAt) {
-          onError?.("Closed at timestamp is required");
-          return;
-        }
+                if (!closedAt) {
+                    onError?.("Closed at timestamp is required");
+                    return;
+                }
 
-        await closePosition({
-          position_status: "CLOSED",
-          exit_price: currentPrice,
-          closed_at: closedAt,
-        });
+                await closePosition({
+                    position_status: "CLOSED",
+                    exit_price: currentPrice,
+                    closed_at: closedAt,
+                });
 
-        // Invalidate queries to refresh positions and transactions
-        queryClient.invalidateQueries({
-          queryKey: ["GET", `/sessions/${sessionId}/positions`],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["GET", `/sessions/${sessionId}/transactions`],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["GET", `/sessions/${sessionId}`],
-        });
+                // Invalidate queries to refresh positions and transactions
+                queryClient.invalidateQueries({
+                    queryKey: ["GET", `/sessions/${sessionId}/positions`],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["GET", `/sessions/${sessionId}/transactions`],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["GET", `/sessions/${sessionId}`],
+                });
 
-        onSuccess?.();
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to close position";
-        onError?.(errorMessage);
-      }
-    },
-    [
-      sessionId,
-      currentPrice,
-      closedAt,
-      closePosition,
-      queryClient,
-      onError,
-      onSuccess,
-    ],
-  );
+                onSuccess?.();
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to close position";
+                onError?.(errorMessage);
+            }
+        },
+        [
+            sessionId,
+            currentPrice,
+            closedAt,
+            closePosition,
+            queryClient,
+            onError,
+            onSuccess,
+        ]
+    );
 
-  return {
-    isClosing,
-    handleClose,
-  };
+    return {
+        isClosing,
+        handleClose,
+    };
 }

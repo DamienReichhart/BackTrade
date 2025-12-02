@@ -4,17 +4,17 @@ import { serializers } from "../core/logger/serializers";
 import { ENV } from "../config/env";
 
 export const logger = pino(
-  {
-    level: ENV.API_LOG_LEVEL,
-    serializers,
-    base: {
-      pid: false,
-      service: "api-backend",
+    {
+        level: ENV.API_LOG_LEVEL,
+        serializers,
+        base: {
+            pid: false,
+            service: "api-backend",
+        },
     },
-  },
-  transport,
+    transport
 );
 
 export function getModuleLogger(moduleName: string) {
-  return logger.child({ module: moduleName });
+    return logger.child({ module: moduleName });
 }

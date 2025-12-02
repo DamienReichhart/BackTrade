@@ -1,8 +1,8 @@
 import {
-  type InputHTMLAttributes,
-  type ReactNode,
-  forwardRef,
-  useId,
+    type InputHTMLAttributes,
+    type ReactNode,
+    forwardRef,
+    useId,
 } from "react";
 import styles from "./Checkbox.module.css";
 
@@ -10,13 +10,13 @@ import styles from "./Checkbox.module.css";
  * Checkbox component props
  */
 interface CheckboxProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "type"
+    InputHTMLAttributes<HTMLInputElement>,
+    "type"
 > {
-  /**
-   * Label text or content for the checkbox
-   */
-  label?: string | ReactNode;
+    /**
+     * Label text or content for the checkbox
+     */
+    label?: string | ReactNode;
 }
 
 /**
@@ -29,27 +29,27 @@ interface CheckboxProps extends Omit<
  * ```
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, className, id, ...props }, ref) => {
-    const generatedId = useId();
-    const checkboxId = id ?? `checkbox-${generatedId}`;
+    ({ label, className, id, ...props }, ref) => {
+        const generatedId = useId();
+        const checkboxId = id ?? `checkbox-${generatedId}`;
 
-    return (
-      <div className={styles.container}>
-        <input
-          ref={ref}
-          id={checkboxId}
-          type="checkbox"
-          className={`${styles.checkbox} ${className ?? ""}`}
-          {...props}
-        />
-        {label && (
-          <label htmlFor={checkboxId} className={styles.label}>
-            {label}
-          </label>
-        )}
-      </div>
-    );
-  },
+        return (
+            <div className={styles.container}>
+                <input
+                    ref={ref}
+                    id={checkboxId}
+                    type="checkbox"
+                    className={`${styles.checkbox} ${className ?? ""}`}
+                    {...props}
+                />
+                {label && (
+                    <label htmlFor={checkboxId} className={styles.label}>
+                        {label}
+                    </label>
+                )}
+            </div>
+        );
+    }
 );
 
 Checkbox.displayName = "Checkbox";

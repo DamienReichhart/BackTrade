@@ -7,11 +7,11 @@ import type { Subscription } from "@backtrade/types";
  * @returns Current subscription or undefined
  */
 export function findCurrentSubscription(
-  subscriptions: Subscription[],
+    subscriptions: Subscription[]
 ): Subscription | undefined {
-  return subscriptions.find(
-    (sub) => sub.status === "active" || sub.status === "trialing",
-  );
+    return subscriptions.find(
+        (sub) => sub.status === "active" || sub.status === "trialing"
+    );
 }
 
 /**
@@ -21,22 +21,22 @@ export function findCurrentSubscription(
  * @returns CSS class name for status color
  */
 export function getStatusColorClass(status: string): string {
-  switch (status) {
-    case "active":
-      return "statusActive";
-    case "trialing":
-      return "statusTrialing";
-    case "canceled":
-      return "statusCanceled";
-    case "past_due":
-      return "statusPastDue";
-    case "incomplete":
-      return "statusIncomplete";
-    case "incomplete_expired":
-      return "statusIncompleteExpired";
-    default:
-      return "";
-  }
+    switch (status) {
+        case "active":
+            return "statusActive";
+        case "trialing":
+            return "statusTrialing";
+        case "canceled":
+            return "statusCanceled";
+        case "past_due":
+            return "statusPastDue";
+        case "incomplete":
+            return "statusIncomplete";
+        case "incomplete_expired":
+            return "statusIncompleteExpired";
+        default:
+            return "";
+    }
 }
 
 /**
@@ -46,5 +46,7 @@ export function getStatusColorClass(status: string): string {
  * @returns True if subscription is active or trialing
  */
 export function isSubscriptionActive(subscription: Subscription): boolean {
-  return subscription.status === "active" || subscription.status === "trialing";
+    return (
+        subscription.status === "active" || subscription.status === "trialing"
+    );
 }

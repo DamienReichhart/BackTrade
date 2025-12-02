@@ -10,48 +10,48 @@ import { useTransactionsBySession } from "../../../../api/hooks/requests/transac
  * @returns Transactions table state and handlers
  */
 export function useTransactionsTable() {
-  const navigate = useNavigate();
-  const { currentSession } = useCurrentSessionStore();
-  const sessionId = currentSession ? String(currentSession.id) : "";
+    const navigate = useNavigate();
+    const { currentSession } = useCurrentSessionStore();
+    const sessionId = currentSession ? String(currentSession.id) : "";
 
-  const {
-    isOpen,
-    selectedItem: selectedTransaction,
-    openModal,
-    closeModal,
-  } = useModal<Transaction>();
+    const {
+        isOpen,
+        selectedItem: selectedTransaction,
+        openModal,
+        closeModal,
+    } = useModal<Transaction>();
 
-  const { data: transactionsData, isLoading: loading } =
-    useTransactionsBySession(sessionId, {
-      page: 1,
-      limit: 10,
-      order: "desc",
-      sort: "created_at",
-    });
+    const { data: transactionsData, isLoading: loading } =
+        useTransactionsBySession(sessionId, {
+            page: 1,
+            limit: 10,
+            order: "desc",
+            sort: "created_at",
+        });
 
-  const transactions: Transaction[] = Array.isArray(transactionsData)
-    ? transactionsData
-    : [];
+    const transactions: Transaction[] = Array.isArray(transactionsData)
+        ? transactionsData
+        : [];
 
-  const handleRowClick = (transaction: Transaction) => {
-    openModal(transaction);
-  };
+    const handleRowClick = (transaction: Transaction) => {
+        openModal(transaction);
+    };
 
-  const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!currentSession) {
-      return;
-    }
-    navigate(`/dashboard/sessions/${currentSession.id}/transactions/list`);
-  };
+    const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        if (!currentSession) {
+            return;
+        }
+        navigate(`/dashboard/sessions/${currentSession.id}/transactions/list`);
+    };
 
-  return {
-    transactions,
-    loading,
-    isModalOpen: isOpen,
-    selectedTransaction,
-    handleRowClick,
-    handleManageClick,
-    closeModal,
-  };
+    return {
+        transactions,
+        loading,
+        isModalOpen: isOpen,
+        selectedTransaction,
+        handleRowClick,
+        handleManageClick,
+        closeModal,
+    };
 }

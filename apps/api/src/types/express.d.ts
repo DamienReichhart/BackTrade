@@ -1,8 +1,8 @@
 /// <reference types="express" />
 
 declare namespace Express {
-  interface Request {
-    id?: string;
-    validatedInput?: unknown;
-  }
+    interface Request {
+        id?: string;
+        validatedInput?: unknown;
+    }
 }

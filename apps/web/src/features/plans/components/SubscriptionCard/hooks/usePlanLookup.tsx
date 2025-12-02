@@ -9,7 +9,7 @@ import type { Plan } from "@backtrade/types";
  * @returns Found plan or undefined
  */
 export function usePlanLookup(plans: Plan[], planId: number) {
-  return useMemo(() => {
-    return plans.find((p) => p.id === planId);
-  }, [plans, planId]);
+    return useMemo(() => {
+        return plans.find((p) => p.id === planId);
+    }, [plans, planId]);
 }

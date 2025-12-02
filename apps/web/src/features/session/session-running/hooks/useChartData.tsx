@@ -10,18 +10,18 @@ import { convertCandleToChartData } from "../../../../utils/data/candles";
  * @param candles - Array of candle data
  */
 export function useChartData(
-  seriesRef: React.RefObject<ISeriesApi<"Candlestick"> | null>,
-  candles: Candle[],
+    seriesRef: React.RefObject<ISeriesApi<"Candlestick"> | null>,
+    candles: Candle[]
 ) {
-  useEffect(() => {
-    if (!seriesRef.current) return;
+    useEffect(() => {
+        if (!seriesRef.current) return;
 
-    if (candles.length === 0) {
-      seriesRef.current.setData([]);
-      return;
-    }
+        if (candles.length === 0) {
+            seriesRef.current.setData([]);
+            return;
+        }
 
-    const chartData = candles.map(convertCandleToChartData);
-    seriesRef.current.setData(chartData);
-  }, [seriesRef, candles]);
+        const chartData = candles.map(convertCandleToChartData);
+        seriesRef.current.setData(chartData);
+    }, [seriesRef, candles]);
 }

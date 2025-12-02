@@ -3,139 +3,139 @@
  */
 
 .card {
-  background-color: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
 }
 
 .tableContainer {
-  overflow-x: auto;
+    overflow-x: auto;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--font-size-sm);
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
 }
 
 .table thead {
-  background-color: var(--color-surface-tertiary);
+    background-color: var(--color-surface-tertiary);
 }
 
 .table th {
-  padding: var(--spacing-md);
-  text-align: left;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-border-primary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-primary);
 }
 
 .sortableHeader {
-  cursor: pointer;
-  user-select: none;
-  transition: background-color var(--transition-fast);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--transition-fast);
 }
 
 .sortableHeader:hover {
-  background-color: var(--color-surface-elevated);
+    background-color: var(--color-surface-elevated);
 }
 
 .table tbody tr {
-  border-bottom: 1px solid var(--color-border-primary);
-  transition: background-color var(--transition-fast);
+    border-bottom: 1px solid var(--color-border-primary);
+    transition: background-color var(--transition-fast);
 }
 
 .table tbody tr:hover {
-  background-color: var(--color-surface-tertiary);
+    background-color: var(--color-surface-tertiary);
 }
 
 .table td {
-  padding: var(--spacing-md);
-  color: var(--color-text-primary);
+    padding: var(--spacing-md);
+    color: var(--color-text-primary);
 }
 
 .empty,
 .error {
-  text-align: center;
-  padding: var(--spacing-xl) !important;
-  color: var(--color-text-secondary);
+    text-align: center;
+    padding: var(--spacing-xl) !important;
+    color: var(--color-text-secondary);
 }
 
 .error {
-  color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .fileNameCell {
-  font-weight: var(--font-weight-medium);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    font-weight: var(--font-weight-medium);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .recordsCell {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .dateCell {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  white-space: nowrap;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
 }
 
 .timeframeBadge {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  background-color: var(--color-accent-bg-20);
-  color: var(--color-accent);
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    background-color: var(--color-accent-bg-20);
+    color: var(--color-accent);
 }
 
 .statusBadge {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
 }
 
 .activeBadge {
-  background-color: var(--color-success-bg-20);
-  color: var(--color-success);
+    background-color: var(--color-success-bg-20);
+    color: var(--color-success);
 }
 
 .inactiveBadge {
-  background-color: var(--color-danger-bg-20);
-  color: var(--color-danger);
+    background-color: var(--color-danger-bg-20);
+    color: var(--color-danger);
 }
 
 .actionsCell {
-  text-align: center;
-  white-space: nowrap;
+    text-align: center;
+    white-space: nowrap;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .table {
-    font-size: var(--font-size-xs);
-  }
+    .table {
+        font-size: var(--font-size-xs);
+    }
 
-  .table th,
-  .table td {
-    padding: var(--spacing-sm);
-  }
+    .table th,
+    .table td {
+        padding: var(--spacing-sm);
+    }
 }
 
 @media (max-width: 768px) {
-  .tableContainer {
-    overflow-x: scroll;
-  }
+    .tableContainer {
+        overflow-x: scroll;
+    }
 
-  .table {
-    min-width: 1200px;
-  }
+    .table {
+        min-width: 1200px;
+    }
 }

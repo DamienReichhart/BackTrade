@@ -12,7 +12,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
 
-_A deterministic multi-session historical trading simulator for professional traders and quantitative analysts_
+_A deterministic multi-session historical trading simulator for professional traders and
+quantitative analysts_
 
 </div>
 
@@ -35,16 +36,22 @@ _A deterministic multi-session historical trading simulator for professional tra
 
 ## Overview
 
-BackTrade is a sophisticated trading backtesting platform designed for professional traders and quantitative analysts. The platform provides a deterministic environment where users can launch trading sessions at any historical timestamp, execute trades as if operating in real-time during past market conditions, and access detailed performance analytics.
+BackTrade is a sophisticated trading backtesting platform designed for professional traders and
+quantitative analysts. The platform provides a deterministic environment where users can launch
+trading sessions at any historical timestamp, execute trades as if operating in real-time during
+past market conditions, and access detailed performance analytics.
 
-The platform enables comprehensive historical trading simulations with multi-session management, real-time simulation controls, advanced analytics, and professional-grade trading tools.
+The platform enables comprehensive historical trading simulations with multi-session management,
+real-time simulation controls, advanced analytics, and professional-grade trading tools.
 
 ## Key Features
 
 ### Trading Capabilities
 
-- **Multi-Session Management**: Run multiple concurrent trading sessions with different instruments and parameters
-- **Real-Time Simulation**: Interactive time controls with play/pause functionality and variable speed settings
+- **Multi-Session Management**: Run multiple concurrent trading sessions with different instruments
+  and parameters
+- **Real-Time Simulation**: Interactive time controls with play/pause functionality and variable
+  speed settings
 - **Advanced Analytics**: Comprehensive trading performance metrics and detailed session analytics
 - **Professional Tools**: Position management, risk controls, and sophisticated order execution
 - **Multiple Instruments**: Support for various trading instruments and timeframes
@@ -58,7 +65,8 @@ The platform enables comprehensive historical trading simulations with multi-ses
 
 ## Architecture
 
-BackTrade is built as a modern, scalable monorepo using pnpm workspaces and Turbo for efficient build orchestration.
+BackTrade is built as a modern, scalable monorepo using pnpm workspaces and Turbo for efficient
+build orchestration.
 
 ### Project Structure
 
@@ -128,34 +136,34 @@ BackTrade/
 
 1. **Clone the repository**
 
-   ```bash
-   git clone https://github.com/DamienReichhart/BackTrade.git
-   cd BackTrade
-   ```
+    ```bash
+    git clone https://github.com/DamienReichhart/BackTrade.git
+    cd BackTrade
+    ```
 
 2. **Install dependencies**
 
-   ```bash
-   pnpm install
-   ```
+    ```bash
+    pnpm install
+    ```
 
 3. **Configure environment variables**
 
-   The project requires two environment files to be configured:
-   - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
-   - **Root environment file**:
-     - For development: Create `.env` based on `.env.development.example`
-     - For production: Create `.env` based on `.env.production.example`
+    The project requires two environment files to be configured:
+    - **API environment file**: Create `apps/api/.env` based on `apps/api/.env.example`
+    - **Root environment file**:
+        - For development: Create `.env` based on `.env.development.example`
+        - For production: Create `.env` based on `.env.production.example`
 
-   ```bash
-   # Copy API environment file
-   cp apps/api/.env.example apps/api/.env
+    ```bash
+    # Copy API environment file
+    cp apps/api/.env.example apps/api/.env
 
-   # Copy root environment file (for development)
-   cp .env.development.example .env
-   ```
+    # Copy root environment file (for development)
+    cp .env.development.example .env
+    ```
 
-   **Important**: Edit both `.env` files and configure all required values before proceeding.
+    **Important**: Edit both `.env` files and configure all required values before proceeding.
 
 4.a Docker Development (recommended)
 
@@ -186,9 +194,10 @@ cd apps/web && pnpm fake-api
 ```
 
 5. **Access the application**
-   - **Frontend**: [http://localhost:5173](http://localhost:5173)
-   - **API**: [http://localhost:3000](http://localhost:3000)
-   - **API Health Check**: [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)
+    - **Frontend**: [http://localhost:5173](http://localhost:5173)
+    - **API**: [http://localhost:3000](http://localhost:3000)
+    - **API Health Check**:
+      [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)
 
 ## Development
 
@@ -236,13 +245,14 @@ pnpm format:check     # Check code formatting
 
 1. **Environment Configuration**
 
-   Configure all required environment variables in the root `.env` file as described in the [Configuration](#configuration) section.
+    Configure all required environment variables in the root `.env` file as described in the
+    [Configuration](#configuration) section.
 
 2. **Deploy with Docker**
 
-   ```bash
-   docker compose -f docker-prod.yaml up -d
-   ```
+    ```bash
+    docker compose -f docker-prod.yaml up -d
+    ```
 
 ### Docker Services
 
@@ -261,21 +271,25 @@ The production setup includes:
 The project requires **two** `.env` files to be configured:
 
 1. **API Environment File** (`apps/api/.env`):
-   - Copy from `apps/api/.env.example`
-   - Contains API-specific configuration (database URL, Redis, logging, security, etc.)
+    - Copy from `apps/api/.env.example`
+    - Contains API-specific configuration (database URL, Redis, logging, security, etc.)
 
 2. **Root Environment File** (`.env` in the root directory):
-   - For development: Copy from `.env.development.example`
-   - For production: Copy from `.env.production.example`
-   - Contains Docker service configuration (PostgreSQL, Redis, Cloudflare Tunnel, etc.)
+    - For development: Copy from `.env.development.example`
+    - For production: Copy from `.env.production.example`
+    - Contains Docker service configuration (PostgreSQL, Redis, Cloudflare Tunnel, etc.)
 
-**Important**: Both `.env` files must be created and configured before starting the development environment or running Docker services. Refer to the example files for detailed variable descriptions and requirements.
+**Important**: Both `.env` files must be created and configured before starting the development
+environment or running Docker services. Refer to the example files for detailed variable
+descriptions and requirements.
 
 ## License
 
-This project is licensed under a **Proprietary License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under a **Proprietary License**. See the [LICENSE](LICENSE) file for
+details.
 
-**Important**: This is a read-only license. No execution, copying, or distribution rights are granted.
+**Important**: This is a read-only license. No execution, copying, or distribution rights are
+granted.
 
 ## Contact
 
@@ -290,6 +304,7 @@ This project is licensed under a **Proprietary License**. See the [LICENSE](LICE
 
 **Built with ❤️ for the trading community**
 
-[Report Bug](mailto:contact@damien-reichhart.fr) • [Request Feature](mailto:contact@damien-reichhart.fr) • [Documentation](documentation/)
+[Report Bug](mailto:contact@damien-reichhart.fr) •
+[Request Feature](mailto:contact@damien-reichhart.fr) • [Documentation](documentation/)
 
 </div>

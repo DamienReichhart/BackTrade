@@ -8,14 +8,14 @@ import styles from "./Register.module.css";
  * Orchestrates the registration page layout with information panel and form panel
  */
 export function Register() {
-  return (
-    <div className={styles.register}>
-      <StatusIndicator />
+    return (
+        <div className={styles.register}>
+            <StatusIndicator />
 
-      <div className={styles.container}>
-        <RegisterInfoPanel />
-        <RegisterFormPanel />
-      </div>
-    </div>
-  );
+            <div className={styles.container}>
+                <RegisterInfoPanel />
+                <RegisterFormPanel />
+            </div>
+        </div>
+    );
 }

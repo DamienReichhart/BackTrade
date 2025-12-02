@@ -7,16 +7,16 @@ import type { Session } from "@backtrade/types";
  * @returns CSS class name for status color
  */
 export function getSessionStatusColorClass(status: string): string {
-  switch (status) {
-    case "RUNNING":
-      return "statusRunning";
-    case "PAUSED":
-      return "statusPaused";
-    case "ARCHIVED":
-      return "statusArchived";
-    default:
-      return "";
-  }
+    switch (status) {
+        case "RUNNING":
+            return "statusRunning";
+        case "PAUSED":
+            return "statusPaused";
+        case "ARCHIVED":
+            return "statusArchived";
+        default:
+            return "";
+    }
 }
 
 /**
@@ -26,7 +26,7 @@ export function getSessionStatusColorClass(status: string): string {
  * @returns Display name for the session
  */
 export function getSessionDisplayName(session: Session): string {
-  return session.name ?? `Session #${session.id}`;
+    return session.name ?? `Session #${session.id}`;
 }
 
 /**
@@ -36,7 +36,8 @@ export function getSessionDisplayName(session: Session): string {
  * @returns True if session is running or paused
  */
 export function isSessionActive(session: Session): boolean {
-  return (
-    session.session_status === "RUNNING" || session.session_status === "PAUSED"
-  );
+    return (
+        session.session_status === "RUNNING" ||
+        session.session_status === "PAUSED"
+    );
 }

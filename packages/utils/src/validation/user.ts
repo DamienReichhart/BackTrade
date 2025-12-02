@@ -7,16 +7,16 @@ import type { ValidationResult } from "./types";
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateEmail(email: string): ValidationResult {
-  if (!email || email.trim() === "") {
-    return { isValid: false, error: "Email is required" };
-  }
+    if (!email || email.trim() === "") {
+        return { isValid: false, error: "Email is required" };
+    }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return { isValid: false, error: "Invalid email format" };
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return { isValid: false, error: "Invalid email format" };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -28,18 +28,18 @@ export function validateEmail(email: string): ValidationResult {
  * @returns Validation result with isValid flag and optional error message
  */
 export function validatePassword(password: string): ValidationResult {
-  if (!password || password.length === 0) {
-    return { isValid: false, error: "Password is required" };
-  }
+    if (!password || password.length === 0) {
+        return { isValid: false, error: "Password is required" };
+    }
 
-  if (password.length < 8) {
-    return {
-      isValid: false,
-      error: "Password must be at least 8 characters",
-    };
-  }
+    if (password.length < 8) {
+        return {
+            isValid: false,
+            error: "Password must be at least 8 characters",
+        };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -51,14 +51,14 @@ export function validatePassword(password: string): ValidationResult {
  * @returns Validation result with isValid flag and optional error message
  */
 export function validatePasswordConfirmation(
-  password: string,
-  confirmPassword: string,
+    password: string,
+    confirmPassword: string
 ): ValidationResult {
-  if (password !== confirmPassword) {
-    return { isValid: false, error: "Passwords don't match" };
-  }
+    if (password !== confirmPassword) {
+        return { isValid: false, error: "Passwords don't match" };
+    }
 
-  return validatePassword(password);
+    return validatePassword(password);
 }
 
 /**
@@ -68,15 +68,15 @@ export function validatePasswordConfirmation(
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateName(name: string): ValidationResult {
-  if (name.length === 0) {
-    return { isValid: false, error: "Enter your name." };
-  }
+    if (name.length === 0) {
+        return { isValid: false, error: "Enter your name." };
+    }
 
-  if (name.length < 2) {
-    return { isValid: false, error: "Name must be at least 2 characters." };
-  }
+    if (name.length < 2) {
+        return { isValid: false, error: "Name must be at least 2 characters." };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -86,14 +86,14 @@ export function validateName(name: string): ValidationResult {
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateRole(role: string): ValidationResult {
-  if (!role) {
-    return { isValid: false, error: "Role is required" };
-  }
+    if (!role) {
+        return { isValid: false, error: "Role is required" };
+    }
 
-  const validRoles = ["ANONYMOUS", "USER", "ADMIN"];
-  if (!validRoles.includes(role)) {
-    return { isValid: false, error: "Invalid role" };
-  }
+    const validRoles = ["ANONYMOUS", "USER", "ADMIN"];
+    if (!validRoles.includes(role)) {
+        return { isValid: false, error: "Invalid role" };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }

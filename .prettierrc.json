@@ -1,0 +1,19 @@
+{
+    "printWidth": 80,
+    "tabWidth": 4,
+    "$schema": "https://json.schemastore.org/prettierrc",
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": false,
+    "jsxSingleQuote": false,
+    "useTabs": false,
+    "endOfLine": "lf",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "quoteProps": "as-needed",
+    "proseWrap": "preserve",
+    "htmlWhitespaceSensitivity": "css",
+    "embeddedLanguageFormatting": "auto",
+    "plugins": [],
+    "overrides": []
+}

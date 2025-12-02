@@ -6,9 +6,9 @@ import authController from "../../../controllers/auth-controller";
 const authPublicRouter = Router();
 
 authPublicRouter.post(
-  "/login",
-  inputValidations(LoginRequestSchema),
-  authController.login,
+    "/login",
+    inputValidations(LoginRequestSchema),
+    authController.login
 );
 
 export default authPublicRouter;

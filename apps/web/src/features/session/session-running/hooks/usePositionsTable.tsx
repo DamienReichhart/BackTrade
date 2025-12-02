@@ -10,45 +10,45 @@ import { useSessionPositions } from "./useSessionPositions";
  * @returns Positions table state and handlers
  */
 export function usePositionsTable() {
-  const navigate = useNavigate();
-  const {
-    positions,
-    isLoading: loading,
-    hasValidSession,
-    sessionId,
-  } = useSessionPositions();
+    const navigate = useNavigate();
+    const {
+        positions,
+        isLoading: loading,
+        hasValidSession,
+        sessionId,
+    } = useSessionPositions();
 
-  const {
-    isOpen,
-    selectedItem: selectedPosition,
-    openModal,
-    closeModal,
-  } = useModal<Position>();
+    const {
+        isOpen,
+        selectedItem: selectedPosition,
+        openModal,
+        closeModal,
+    } = useModal<Position>();
 
-  const openPositions = useMemo(
-    () => positions.filter((p) => p.position_status === "OPEN"),
-    [positions],
-  );
+    const openPositions = useMemo(
+        () => positions.filter((p) => p.position_status === "OPEN"),
+        [positions]
+    );
 
-  const handleRowClick = (position: Position) => {
-    openModal(position);
-  };
+    const handleRowClick = (position: Position) => {
+        openModal(position);
+    };
 
-  const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!hasValidSession) {
-      return;
-    }
-    navigate(`/dashboard/sessions/${sessionId}/positions/list`);
-  };
+    const handleManageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        if (!hasValidSession) {
+            return;
+        }
+        navigate(`/dashboard/sessions/${sessionId}/positions/list`);
+    };
 
-  return {
-    openPositions,
-    loading,
-    isModalOpen: isOpen,
-    selectedPosition,
-    handleRowClick,
-    handleManageClick,
-    closeModal,
-  };
+    return {
+        openPositions,
+        loading,
+        isModalOpen: isOpen,
+        selectedPosition,
+        handleRowClick,
+        handleManageClick,
+        closeModal,
+    };
 }

@@ -10,5 +10,5 @@ export { formatPrice } from "../../../../../utils/formatting/currency";
  * @returns Button text
  */
 export function getButtonText(isCurrent: boolean): string {
-  return isCurrent ? "Current Plan" : "Select Plan";
+    return isCurrent ? "Current Plan" : "Select Plan";
 }

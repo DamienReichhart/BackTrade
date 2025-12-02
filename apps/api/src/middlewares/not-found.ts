@@ -7,10 +7,10 @@ import NotFoundError from "../errors/web/not-found-error";
  * If no route matches the request, this middleware will throw a NotFoundError.
  */
 export function notFoundHandler(
-  req: Request,
-  _res: Response,
-  _next: NextFunction,
+    req: Request,
+    _res: Response,
+    _next: NextFunction
 ) {
-  // If we reach this middleware, no route matched the request
-  throw new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`);
+    // If we reach this middleware, no route matched the request
+    throw new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`);
 }

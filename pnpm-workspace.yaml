@@ -1,11 +1,11 @@
 packages:
-  - apps/*
-  - packages/*
+    - apps/*
+    - packages/*
 
 onlyBuiltDependencies:
-  - "@prisma/engines"
-  - argon2
-  - bcrypt
-  - esbuild
-  - prisma
-  - unrs-resolver
+    - "@prisma/engines"
+    - argon2
+    - bcrypt
+    - esbuild
+    - prisma
+    - unrs-resolver

@@ -6,8 +6,8 @@
  * @returns Formatted string
  */
 export function formatMetadata(
-  value: string | undefined | null,
-  fallback = "-",
+    value: string | undefined | null,
+    fallback = "-"
 ): string {
-  return value ?? fallback;
+    return value ?? fallback;
 }

@@ -7,12 +7,12 @@ import { redis } from "../../libs/redis";
  * @returns Promise resolving to "connected" or "error"
  */
 async function checkDatabase(): Promise<"connected" | "error"> {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return "connected";
-  } catch {
-    return "error";
-  }
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        return "connected";
+    } catch {
+        return "error";
+    }
 }
 
 /**
@@ -20,28 +20,28 @@ async function checkDatabase(): Promise<"connected" | "error"> {
  * @returns Promise resolving to "connected" or "error"
  */
 async function checkRedis(): Promise<"connected" | "error"> {
-  try {
-    await redis.ping();
-    return "connected";
-  } catch {
-    return "error";
-  }
+    try {
+        await redis.ping();
+        return "connected";
+    } catch {
+        return "error";
+    }
 }
 
 async function getHealth(): Promise<Health> {
-  const [database, redisStatus] = await Promise.all([
-    checkDatabase(),
-    checkRedis(),
-  ]);
+    const [database, redisStatus] = await Promise.all([
+        checkDatabase(),
+        checkRedis(),
+    ]);
 
-  return {
-    status: "ok",
-    time: new Date().toISOString(),
-    database,
-    redis: redisStatus,
-  };
+    return {
+        status: "ok",
+        time: new Date().toISOString(),
+        database,
+        redis: redisStatus,
+    };
 }
 
 export default {
-  getHealth,
+    getHealth,
 };

@@ -1,10 +1,10 @@
 import { useGet, usePost, usePatch, useDelete } from "..";
 import {
-  PlanSchema,
-  PlanListResponseSchema,
-  CreatePlanRequestSchema,
-  UpdatePlanRequestSchema,
-  type SearchQuery,
+    PlanSchema,
+    PlanListResponseSchema,
+    CreatePlanRequestSchema,
+    UpdatePlanRequestSchema,
+    type SearchQuery,
 } from "@backtrade/types";
 
 /**
@@ -13,32 +13,32 @@ import {
  */
 
 export function usePlans(query?: SearchQuery) {
-  const searchParams = new URLSearchParams();
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-  }
+    const searchParams = new URLSearchParams();
+    if (query) {
+        Object.entries(query).forEach(([key, value]) => {
+            if (value !== undefined) {
+                searchParams.append(key, String(value));
+            }
+        });
+    }
 
-  const url = query ? `/plans?${searchParams.toString()}` : "/plans";
+    const url = query ? `/plans?${searchParams.toString()}` : "/plans";
 
-  return useGet(url, PlanListResponseSchema);
+    return useGet(url, PlanListResponseSchema);
 }
 
 export function usePlan(id: string) {
-  return useGet(`/plans/${id}`, PlanSchema, { enabled: !!id });
+    return useGet(`/plans/${id}`, PlanSchema, { enabled: !!id });
 }
 
 export function useCreatePlan() {
-  return usePost("/plans", CreatePlanRequestSchema, PlanSchema);
+    return usePost("/plans", CreatePlanRequestSchema, PlanSchema);
 }
 
 export function useUpdatePlan(id: string) {
-  return usePatch(`/plans/${id}`, UpdatePlanRequestSchema, PlanSchema);
+    return usePatch(`/plans/${id}`, UpdatePlanRequestSchema, PlanSchema);
 }
 
 export function useDeletePlan(id: string) {
-  return useDelete(`/plans/${id}`);
+    return useDelete(`/plans/${id}`);
 }

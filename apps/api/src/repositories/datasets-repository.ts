@@ -11,55 +11,55 @@ import { prisma } from "../libs/prisma";
  * Get all datasets matching optional filter conditions
  */
 async function getAllDatasets(
-  where?: Prisma.DatasetWhereInput,
+    where?: Prisma.DatasetWhereInput
 ): Promise<Dataset[]> {
-  return prisma.dataset.findMany({ where });
+    return prisma.dataset.findMany({ where });
 }
 
 /**
  * Get a dataset by ID
  */
 async function getDatasetById(id: number | string): Promise<Dataset | null> {
-  return prisma.dataset.findUnique({
-    where: { id: Number(id) },
-  });
+    return prisma.dataset.findUnique({
+        where: { id: Number(id) },
+    });
 }
 
 /**
  * Create a new dataset
  */
 async function createDataset(
-  data: Prisma.DatasetCreateInput,
+    data: Prisma.DatasetCreateInput
 ): Promise<Dataset> {
-  return prisma.dataset.create({ data });
+    return prisma.dataset.create({ data });
 }
 
 /**
  * Update an existing dataset
  */
 async function updateDataset(
-  id: number | string,
-  data: Prisma.DatasetUpdateInput,
+    id: number | string,
+    data: Prisma.DatasetUpdateInput
 ): Promise<Dataset> {
-  return prisma.dataset.update({
-    where: { id: Number(id) },
-    data,
-  });
+    return prisma.dataset.update({
+        where: { id: Number(id) },
+        data,
+    });
 }
 
 /**
  * Delete a dataset by ID
  */
 async function deleteDataset(id: number | string): Promise<Dataset> {
-  return prisma.dataset.delete({
-    where: { id: Number(id) },
-  });
+    return prisma.dataset.delete({
+        where: { id: Number(id) },
+    });
 }
 
 export default {
-  getAllDatasets,
-  getDatasetById,
-  createDataset,
-  updateDataset,
-  deleteDataset,
+    getAllDatasets,
+    getDatasetById,
+    createDataset,
+    updateDataset,
+    deleteDataset,
 };

@@ -1,11 +1,13 @@
 {
-  "tasks": {
-    "dev": { "cache": false },
-    "build": { "outputs": ["dist/**"] },
-    "start": { "cache": false },
-    "typecheck": {},
-    "lint": {},
-    "test": {},
-    "test:coverage": { "outputs": ["coverage/**"] }
-  }
+    "tasks": {
+        "dev": { "cache": false },
+        "build": { "outputs": ["dist/**"] },
+        "start": { "cache": false },
+        "typecheck": {},
+        "lint": {},
+        "format": { "cache": false },
+        "format:check": { "cache": false },
+        "test": {},
+        "test:coverage": { "outputs": ["coverage/**"] }
+    }
 }

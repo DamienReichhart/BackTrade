@@ -1,120 +1,120 @@
 name: CI
 
 on:
-  push:
-    branches: [main, dev, feature/*]
-  pull_request:
-    branches: [main, dev]
+    push:
+        branches: [main, dev, feature/*]
+    pull_request:
+        branches: [main, dev]
 
 jobs:
-  setup:
-    name: Setup
-    runs-on: self-hosted
-    outputs:
-      node: ${{ steps.versions.outputs.node }}
-      pnpm: ${{ steps.versions.outputs.pnpm }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    setup:
+        name: Setup
+        runs-on: self-hosted
+        outputs:
+            node: ${{ steps.versions.outputs.node }}
+            pnpm: ${{ steps.versions.outputs.pnpm }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup toolchain
-        uses: ./.github/actions/setup
+            - name: Setup toolchain
+              uses: ./.github/actions/setup
 
-      - id: versions
-        name: Record versions
-        run: |
-          echo "node=$(node -v)" >> $GITHUB_OUTPUT
-          echo "pnpm=$(pnpm -v)" >> $GITHUB_OUTPUT
-        shell: bash
+            - id: versions
+              name: Record versions
+              run: |
+                  echo "node=$(node -v)" >> $GITHUB_OUTPUT
+                  echo "pnpm=$(pnpm -v)" >> $GITHUB_OUTPUT
+              shell: bash
 
-  lint:
-    name: Lint
-    runs-on: self-hosted
-    needs: [setup]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/prisma-generate
-        with:
-          database-url: ${{ secrets.DATABASE_URL }}
-      - uses: ./.github/actions/lint
+    lint:
+        name: Lint
+        runs-on: self-hosted
+        needs: [setup]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+            - uses: ./.github/actions/prisma-generate
+              with:
+                  database-url: ${{ secrets.DATABASE_URL }}
+            - uses: ./.github/actions/lint
 
-  typecheck:
-    name: Typecheck
-    runs-on: self-hosted
-    needs: [setup]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/prisma-generate
-        with:
-          database-url: ${{ secrets.DATABASE_URL }}
-      - uses: ./.github/actions/typecheck
+    typecheck:
+        name: Typecheck
+        runs-on: self-hosted
+        needs: [setup]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+            - uses: ./.github/actions/prisma-generate
+              with:
+                  database-url: ${{ secrets.DATABASE_URL }}
+            - uses: ./.github/actions/typecheck
 
-  test:
-    name: Test
-    runs-on: self-hosted
-    needs: [setup]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/prisma-generate
-        with:
-          database-url: ${{ secrets.DATABASE_URL }}
-      - uses: ./.github/actions/test
+    test:
+        name: Test
+        runs-on: self-hosted
+        needs: [setup]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+            - uses: ./.github/actions/prisma-generate
+              with:
+                  database-url: ${{ secrets.DATABASE_URL }}
+            - uses: ./.github/actions/test
 
-  coverage:
-    name: Coverage
-    runs-on: self-hosted
-    needs: [setup]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup
-      - name: Generate Prisma Client
-        uses: ./.github/actions/prisma-generate
-        with:
-          database-url: ${{ secrets.DATABASE_URL }}
-      - name: Run Coverage
-        uses: ./.github/actions/test-coverage
-      - name: Upload API coverage artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-coverage
-          path: apps/api/coverage
-          if-no-files-found: warn
-      - name: Upload Web coverage artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-coverage
-          path: apps/web/coverage
-          if-no-files-found: warn
+    coverage:
+        name: Coverage
+        runs-on: self-hosted
+        needs: [setup]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup
+              uses: ./.github/actions/setup
+            - name: Generate Prisma Client
+              uses: ./.github/actions/prisma-generate
+              with:
+                  database-url: ${{ secrets.DATABASE_URL }}
+            - name: Run Coverage
+              uses: ./.github/actions/test-coverage
+            - name: Upload API coverage artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: api-coverage
+                  path: apps/api/coverage
+                  if-no-files-found: warn
+            - name: Upload Web coverage artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: web-coverage
+                  path: apps/web/coverage
+                  if-no-files-found: warn
 
-  semgrep:
-    name: Semgrep Security Scan
-    runs-on: self-hosted
-    needs: setup
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/semgrep
-        with:
-          semgrep-app-token: ${{ secrets.SEMGREP_APP_TOKEN }}
+    semgrep:
+        name: Semgrep Security Scan
+        runs-on: self-hosted
+        needs: setup
+        permissions:
+            security-events: write
+            actions: read
+            contents: read
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/semgrep
+              with:
+                  semgrep-app-token: ${{ secrets.SEMGREP_APP_TOKEN }}
 
-  build:
-    name: Build
-    runs-on: self-hosted
-    needs: [lint, typecheck, test, coverage, semgrep]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: ./.github/actions/prisma-generate
-        with:
-          database-url: ${{ secrets.DATABASE_URL }}
-      - uses: ./.github/actions/build
+    build:
+        name: Build
+        runs-on: self-hosted
+        needs: [lint, typecheck, test, coverage, semgrep]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+            - uses: ./.github/actions/prisma-generate
+              with:
+                  database-url: ${{ secrets.DATABASE_URL }}
+            - uses: ./.github/actions/build

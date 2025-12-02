@@ -11,53 +11,53 @@ import { prisma } from "../libs/prisma";
  * Get all candles matching optional filter conditions
  */
 async function getAllCandles(
-  where?: Prisma.CandleWhereInput,
+    where?: Prisma.CandleWhereInput
 ): Promise<Candle[]> {
-  return prisma.candle.findMany({ where });
+    return prisma.candle.findMany({ where });
 }
 
 /**
  * Get a candle by ID
  */
 async function getCandleById(id: number | string): Promise<Candle | null> {
-  return prisma.candle.findUnique({
-    where: { id: Number(id) },
-  });
+    return prisma.candle.findUnique({
+        where: { id: Number(id) },
+    });
 }
 
 /**
  * Create a new candle
  */
 async function createCandle(data: Prisma.CandleCreateInput): Promise<Candle> {
-  return prisma.candle.create({ data });
+    return prisma.candle.create({ data });
 }
 
 /**
  * Update an existing candle
  */
 async function updateCandle(
-  id: number | string,
-  data: Prisma.CandleUpdateInput,
+    id: number | string,
+    data: Prisma.CandleUpdateInput
 ): Promise<Candle> {
-  return prisma.candle.update({
-    where: { id: Number(id) },
-    data,
-  });
+    return prisma.candle.update({
+        where: { id: Number(id) },
+        data,
+    });
 }
 
 /**
  * Delete a candle by ID
  */
 async function deleteCandle(id: number | string): Promise<Candle> {
-  return prisma.candle.delete({
-    where: { id: Number(id) },
-  });
+    return prisma.candle.delete({
+        where: { id: Number(id) },
+    });
 }
 
 export default {
-  getAllCandles,
-  getCandleById,
-  createCandle,
-  updateCandle,
-  deleteCandle,
+    getAllCandles,
+    getCandleById,
+    createCandle,
+    updateCandle,
+    deleteCandle,
 };

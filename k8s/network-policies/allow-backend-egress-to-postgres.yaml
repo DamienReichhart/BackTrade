@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-backend-egress-to-postgres
-  namespace: backtrade
+    name: allow-backend-egress-to-postgres
+    namespace: backtrade
 spec:
-  podSelector:
-    matchLabels:
-      app: api
-      component: backend
-  policyTypes:
-    - Egress
-  egress:
-    # Allow backend pods to connect to Postgres
-    - to:
-        - podSelector:
-            matchLabels:
-              app: postgres
-              component: database
-      ports:
-        - protocol: TCP
-          port: 5432
+    podSelector:
+        matchLabels:
+            app: api
+            component: backend
+    policyTypes:
+        - Egress
+    egress:
+        # Allow backend pods to connect to Postgres
+        - to:
+              - podSelector:
+                    matchLabels:
+                        app: postgres
+                        component: database
+          ports:
+              - protocol: TCP
+                port: 5432
