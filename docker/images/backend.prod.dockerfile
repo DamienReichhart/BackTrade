@@ -11,6 +11,8 @@ COPY apps/ ./apps/
 
 RUN pnpm install --frozen-lockfile
 
+RUN cd apps/api && pnpm prisma:generate
+
 RUN pnpm build
 
 FROM node:25-alpine
