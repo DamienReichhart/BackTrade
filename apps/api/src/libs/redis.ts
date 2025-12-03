@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import { ENV } from "../config/env";
-import { logger } from "./pino";
+import { logger } from "./logger/pino";
 
 const redisLogger = logger.child({
     service: "redis",

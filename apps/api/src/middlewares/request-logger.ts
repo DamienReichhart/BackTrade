@@ -1,4 +1,4 @@
-import { logger } from "../libs/pino";
+import { logger } from "../libs/logger/pino";
 import type { Request, Response, NextFunction } from "express";
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {

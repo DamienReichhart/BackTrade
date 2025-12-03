@@ -1,7 +1,7 @@
 import pino from "pino";
-import { transport } from "../core/logger/transport";
-import { serializers } from "../core/logger/serializers";
-import { ENV } from "../config/env";
+import { transport } from "./transport";
+import { serializers } from "./serializers";
+import { ENV } from "../../config/env";
 
 export const logger = pino({
     level: ENV.API_LOG_LEVEL,

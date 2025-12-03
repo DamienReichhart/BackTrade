@@ -1,6 +1,6 @@
 import { ENV } from "./config/env";
 import { createApp } from "./app";
-import { logger } from "./libs/pino";
+import { logger } from "./libs/logger/pino";
 
 const app = createApp();
 const server = app.listen(ENV.API_PORT, ENV.API_HOST, () => {

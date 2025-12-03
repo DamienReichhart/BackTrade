@@ -1,7 +1,7 @@
 import type { User, Prisma } from "../../generated/prisma/client";
 import usersRepo from "../../repositories/users-repository";
 import usersCacheService from "../cache/users-cache-service";
-import { logger } from "../../libs/pino";
+import { logger } from "../../libs/logger/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
 

@@ -1,4 +1,4 @@
-import { logger } from "../../libs/pino";
+import { logger } from "../../libs/logger/pino";
 import { redis } from "../../libs/redis";
 
 const cacheLogger = logger.child({

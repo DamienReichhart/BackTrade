@@ -6,7 +6,7 @@ import {
 } from "@backtrade/types";
 import userService from "../crud/users-service";
 import hashService from "./hash-service";
-import { logger } from "../../libs/pino";
+import { logger } from "../../libs/logger/pino";
 import UnauthorizedError from "../../errors/web/unauthorized-error";
 import jwt from "jsonwebtoken";
 import { ENV } from "../../config/env";
