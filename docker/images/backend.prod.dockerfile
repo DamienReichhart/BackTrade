@@ -20,6 +20,10 @@ FROM node:25-alpine
 # Install pnpm
 RUN npm install -g pnpm
 
+# Create a non-root user
+RUN addgroup -g 1001 -S nodeuser && \
+    adduser -S -u 1001 nodeuser -G nodeuser
+
 WORKDIR /app
 
 # Copy package files
@@ -34,6 +38,12 @@ COPY --from=builder /app/apps/api/package.json ./apps/api/
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
+
+# Change ownership of the app directory to the non-root user
+RUN chown -R nodeuser:nodeuser /app
+
+# Switch to non-root user
+USER nodeuser
 
 # Set working directory to the API
 WORKDIR /app/apps/api
