@@ -28,9 +28,6 @@ jobs:
 
             - name: Setup Node and pnpm
               uses: ./.github/actions/setup
-              with:
-                  node-version: "22.19"
-                  pnpm-version: "10.18.1"
 
             - name: Run lint
               uses: ./.github/actions/lint
