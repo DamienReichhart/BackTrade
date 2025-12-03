@@ -11,16 +11,16 @@ import type { PublicUser } from "@backtrade/types";
  * @returns CSS class name for the role badge
  */
 export function getRoleBadgeClassName(role: PublicUser["role"]): string {
-  switch (role) {
-    case "ADMIN":
-      return "roleAdmin";
-    case "USER":
-      return "roleUser";
-    case "ANONYMOUS":
-      return "roleAnonymous";
-    default:
-      return "";
-  }
+    switch (role) {
+        case "ADMIN":
+            return "roleAdmin";
+        case "USER":
+            return "roleUser";
+        case "ANONYMOUS":
+            return "roleAnonymous";
+        default:
+            return "";
+    }
 }
 
 /**
@@ -30,7 +30,7 @@ export function getRoleBadgeClassName(role: PublicUser["role"]): string {
  * @returns CSS class name for the status badge
  */
 export function getStatusBadgeClassName(isBanned: boolean): string {
-  return isBanned ? "bannedBadge" : "activeBadge";
+    return isBanned ? "bannedBadge" : "activeBadge";
 }
 
 /**
@@ -40,5 +40,5 @@ export function getStatusBadgeClassName(isBanned: boolean): string {
  * @returns Status label text
  */
 export function getStatusLabel(isBanned: boolean): string {
-  return isBanned ? "Banned" : "Active";
+    return isBanned ? "Banned" : "Active";
 }

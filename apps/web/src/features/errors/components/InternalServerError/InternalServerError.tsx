@@ -7,22 +7,22 @@ import { getErrorConfig } from "../../utils/errorConfig";
  * Displayed when the server encounters an unexpected error
  */
 export function InternalServerError() {
-  const config = getErrorConfig(500);
+    const config = getErrorConfig(500);
 
-  const handleReportIssue = () => {
-    // TODO: Implement issue reporting functionality
-    // Report issue functionality will be implemented here
-  };
+    const handleReportIssue = () => {
+        // TODO: Implement issue reporting functionality
+        // Report issue functionality will be implemented here
+    };
 
-  return (
-    <ErrorPage
-      statusCode={500}
-      title={config.title}
-      description={config.description}
-      details={config.details}
-      primaryActionText={config.primaryActionText}
-      secondaryActionText={config.secondaryActionText}
-      secondaryAction={handleReportIssue}
-    />
-  );
+    return (
+        <ErrorPage
+            statusCode={500}
+            title={config.title}
+            description={config.description}
+            details={config.details}
+            primaryActionText={config.primaryActionText}
+            secondaryActionText={config.secondaryActionText}
+            secondaryAction={handleReportIssue}
+        />
+    );
 }

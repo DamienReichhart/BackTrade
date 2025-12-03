@@ -6,17 +6,17 @@ import { timeframeToMilliseconds } from "@backtrade/utils";
  * Convert Candle type to Lightweight Charts candlestick data format
  */
 export function convertCandleToChartData(
-  candle: Candle,
+    candle: Candle
 ): CandlestickData<Time> {
-  // Convert ISO datetime string to Unix timestamp (seconds) as Time
-  const time = Math.floor(new Date(candle.ts).getTime() / 1000) as Time;
-  return {
-    time,
-    open: candle.open,
-    high: candle.high,
-    low: candle.low,
-    close: candle.close,
-  };
+    // Convert ISO datetime string to Unix timestamp (seconds) as Time
+    const time = Math.floor(new Date(candle.ts).getTime() / 1000) as Time;
+    return {
+        time,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+    };
 }
 
 /**
@@ -29,22 +29,22 @@ export function convertCandleToChartData(
  * @returns DateRangeQuery with ts_gte and ts_lte
  */
 export function calculateCandleDateRange(
-  timeframe: Timeframe,
-  currentTs: string,
-  candleCount: number = 200,
+    timeframe: Timeframe,
+    currentTs: string,
+    candleCount: number = 200
 ): { ts_gte: string; ts_lte: string } {
-  const timeframeMs = timeframeToMilliseconds(timeframe);
-  const totalMs = timeframeMs * candleCount;
-  const currentDate = new Date(currentTs);
-  const startDate = new Date(currentDate.getTime() - totalMs);
+    const timeframeMs = timeframeToMilliseconds(timeframe);
+    const totalMs = timeframeMs * candleCount;
+    const currentDate = new Date(currentTs);
+    const startDate = new Date(currentDate.getTime() - totalMs);
 
-  // Format as ISO datetime strings (YYYY-MM-DDTHH:mm:ssZ)
-  const formatISO = (date: Date): string => {
-    return date.toISOString().slice(0, 19) + "Z";
-  };
+    // Format as ISO datetime strings (YYYY-MM-DDTHH:mm:ssZ)
+    const formatISO = (date: Date): string => {
+        return date.toISOString().slice(0, 19) + "Z";
+    };
 
-  return {
-    ts_gte: formatISO(startDate),
-    ts_lte: formatISO(currentDate),
-  };
+    return {
+        ts_gte: formatISO(startDate),
+        ts_lte: formatISO(currentDate),
+    };
 }

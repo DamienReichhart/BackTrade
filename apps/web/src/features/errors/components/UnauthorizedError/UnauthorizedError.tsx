@@ -8,19 +8,19 @@ import { getErrorConfig } from "../../utils/errorConfig";
  * Displayed when authentication is required but not provided
  */
 export function UnauthorizedError() {
-  const navigate = useNavigate();
-  const config = getErrorConfig(401);
+    const navigate = useNavigate();
+    const config = getErrorConfig(401);
 
-  return (
-    <ErrorPage
-      statusCode={401}
-      title={config.title}
-      description={config.description}
-      details={config.details}
-      primaryActionText={config.primaryActionText}
-      primaryAction={() => {
-        navigate("/signin");
-      }}
-    />
-  );
+    return (
+        <ErrorPage
+            statusCode={401}
+            title={config.title}
+            description={config.description}
+            details={config.details}
+            primaryActionText={config.primaryActionText}
+            primaryAction={() => {
+                navigate("/signin");
+            }}
+        />
+    );
 }

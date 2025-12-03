@@ -7,23 +7,23 @@ import { useNavigate } from "react-router-dom";
  * @returns Plan selection handler
  */
 export function usePlanSelection(isLoggedIn: boolean) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  /**
-   * Handle plan selection
-   *
-   * @param _code - Plan code
-   * @param _planId - plan ID
-   */
-  const handleSelectPlan = (_code: string, _planId?: number) => {
-    if (isLoggedIn) {
-      navigate("/dashboard/plans");
-    } else {
-      navigate("/signup");
-    }
-  };
+    /**
+     * Handle plan selection
+     *
+     * @param _code - Plan code
+     * @param _planId - plan ID
+     */
+    const handleSelectPlan = (_code: string, _planId?: number) => {
+        if (isLoggedIn) {
+            navigate("/dashboard/plans");
+        } else {
+            navigate("/signup");
+        }
+    };
 
-  return {
-    handleSelectPlan,
-  };
+    return {
+        handleSelectPlan,
+    };
 }

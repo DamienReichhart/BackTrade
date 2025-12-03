@@ -4,9 +4,11 @@
 
 # 0) IPs, hostnames
 
-- Nodes: `kube-01 192.168.250.101`, `kube-02 192.168.250.102`, `kube-03 192.168.250.103`, `kube-04 192.168.250.104` .
+- Nodes: `kube-01 192.168.250.101`, `kube-02 192.168.250.102`, `kube-03 192.168.250.103`,
+  `kube-04 192.168.250.104` .
 - OS: Ubuntu 24.04 LTS.
-- Kernel ≥ 5.10 recommended for eBPF socket LB. [Cilium Documentation](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free.html)
+- Kernel ≥ 5.10 recommended for eBPF socket LB.
+  [Cilium Documentation](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free.html)
 
 # 1) Prep all four nodes
 
@@ -108,7 +110,9 @@ Notes: `pkgs.k8s.io` is the community-owned repo per official docs.
 
 # 4) Initialize the control plane on kube-01 (skip kube-proxy)
 
-We must **not** deploy kube-proxy because Cilium will replace it. Use kubeadm to skip that phase. This matches Cilium’s kube-proxy-free guide. [Cilium Documentation](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free.html)
+We must **not** deploy kube-proxy because Cilium will replace it. Use kubeadm to skip that phase.
+This matches Cilium’s kube-proxy-free guide.
+[Cilium Documentation](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free.html)
 
 ```
 # Choose a pod CIDR. Cilium can autodetect, but using 10.244.0.0/16 is fine.
@@ -132,7 +136,8 @@ kubeadm token create --print-join-command
 
 # 5) Install Cilium with kube-proxy replacement
 
-Cilium’s kube-proxy replacement is enabled by setting `kubeProxyReplacement=true` and relying on socket LB.
+Cilium’s kube-proxy replacement is enabled by setting `kubeProxyReplacement=true` and relying on
+socket LB.
 
 ```bash
 # Install cilium CLI (Linux x86_64)
@@ -290,14 +295,14 @@ Once ready put the appropriate value in the volumes claims to use it (example) :
 
 ```yaml
 volumeClaimTemplates:
-  - metadata:
-      name: postgres-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: rook-ceph-block
-      resources:
-        requests:
-          storage: 20Gi
+    - metadata:
+          name: postgres-data
+      spec:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: rook-ceph-block
+          resources:
+              requests:
+                  storage: 20Gi
 ```
 
 If you want to access the dashboard temporarily, you can run :

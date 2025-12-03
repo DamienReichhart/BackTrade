@@ -251,8 +251,8 @@
 - **String**: Variable-length character string
 - **Integer**: Whole number (32-bit signed integer)
 - **Decimal (precision, scale)**: Fixed-precision decimal number
-  - First number: total number of digits
-  - Second number: number of digits after decimal point
+    - First number: total number of digits
+    - Second number: number of digits after decimal point
 - **Boolean**: Logical value (true/false)
 - **DateTime**: Date and time value (ISO 8601 format)
 - **Enum**: Enumerated type with predefined values

@@ -8,7 +8,10 @@ _Date: September 26, 2025_
 
 ## Executive Summary
 
-BackTrade is a deterministic multi-session historical trading simulator designed for professional traders and quantitative analysts. The platform enables users to conduct comprehensive backtesting sessions with real-time simulation controls, position management, and detailed performance analytics across multiple trading instruments and timeframes.
+BackTrade is a deterministic multi-session historical trading simulator designed for professional
+traders and quantitative analysts. The platform enables users to conduct comprehensive backtesting
+sessions with real-time simulation controls, position management, and detailed performance analytics
+across multiple trading instruments and timeframes.
 
 ---
 
@@ -42,7 +45,9 @@ BackTrade provides a deterministic historical trading environment where users ca
 
 ### 3.1 Session Creation
 
-Each user can create a session by specifying the trading instrument (e.g., XAUUSD, EURUSD), start and end timestamps, initial account balance, leverage multiplier, spread configuration (in ticks), slippage settings (in ticks), and commission structure (per trade).
+Each user can create a session by specifying the trading instrument (e.g., XAUUSD, EURUSD), start
+and end timestamps, initial account balance, leverage multiplier, spread configuration (in ticks),
+slippage settings (in ticks), and commission structure (per trade).
 
 ### 3.2 Session Execution
 
@@ -52,13 +57,15 @@ Each user can create a session by specifying the trading instrument (e.g., XAUUS
 
 ### 3.3 Position Management
 
-**Order Types:** Market orders only (Buy/Sell) and position sizing in standard lots with Take Profit (TP) levels and Stop Loss (SL) levels and Dynamic TP/SL modification
+**Order Types:** Market orders only (Buy/Sell) and position sizing in standard lots with Take Profit
+(TP) levels and Stop Loss (SL) levels and Dynamic TP/SL modification
 
 **Position Controls:** Individual position closure, Bulk position management (Close All)
 
 ### 3.4 Data Management
 
-**Admin-Controlled Data Loading:** OHLCV data upload via CSV format and instrument/timeframe activation.
+**Admin-Controlled Data Loading:** OHLCV data upload via CSV format and instrument/timeframe
+activation.
 
 ---
 

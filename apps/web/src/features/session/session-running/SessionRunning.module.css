@@ -1,146 +1,146 @@
 .page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  width: 100%;
-  min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
 }
 
 .content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-lg);
-  min-height: 0;
-  width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    min-height: 0;
+    width: 100%;
 }
 
 /* Chart and SidePanel side-by-side on larger screens */
 .chartPlaceholderWrapper {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
 }
 
 .orderTicketWrapper {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
 }
 
 .tablesRow {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-lg);
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-  grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    grid-column: 1 / -1;
 }
 
 .sessionInfoWrapper {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
 }
 
 .main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .chartPlaceholder {
-  height: 520px;
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
+    height: 520px;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
 }
 
 .sidebar {
-  position: relative;
+    position: relative;
 }
 
 /* Tablet and up: Chart and SidePanel side-by-side */
 @media (min-width: 768px) {
-  .content {
-    grid-template-columns: 1fr 380px;
-  }
+    .content {
+        grid-template-columns: 1fr 380px;
+    }
 
-  .chartPlaceholderWrapper {
-    grid-column: 1;
-  }
+    .chartPlaceholderWrapper {
+        grid-column: 1;
+    }
 
-  .orderTicketWrapper {
-    grid-column: 2;
-  }
+    .orderTicketWrapper {
+        grid-column: 2;
+    }
 }
 
 /* Large screens: Tables side-by-side and optimize spacing */
 @media (min-width: 1024px) {
-  .page {
-    padding: var(--spacing-xl);
-  }
+    .page {
+        padding: var(--spacing-xl);
+    }
 
-  .content {
-    gap: var(--spacing-xl);
-  }
+    .content {
+        gap: var(--spacing-xl);
+    }
 
-  .tablesRow {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-xl);
-  }
+    .tablesRow {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xl);
+    }
 }
 
 /* Extra large screens: Wider side panel */
 @media (min-width: 1280px) {
-  .content {
-    grid-template-columns: 1fr 420px;
-  }
+    .content {
+        grid-template-columns: 1fr 420px;
+    }
 }
 
 /* Mobile: Reduce padding and spacing */
 @media (max-width: 767px) {
-  .page {
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
+    .page {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
 
-  .content {
-    gap: var(--spacing-md);
-  }
+    .content {
+        gap: var(--spacing-md);
+    }
 
-  .tablesRow {
-    gap: var(--spacing-md);
-  }
+    .tablesRow {
+        gap: var(--spacing-md);
+    }
 }
 
 .tablesRow {
-  display: grid;
-  grid-template-columns: minmax(
-    0,
-    1fr
-  ); /* always stacked vertically, respect container width */
-  gap: var(--spacing-lg);
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(
+        0,
+        1fr
+    ); /* always stacked vertically, respect container width */
+    gap: var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .sidebar {
-  position: relative;
+    position: relative;
 }
 
 .notFound {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
 }

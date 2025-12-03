@@ -9,11 +9,11 @@ import type { z } from "zod";
  * @throws Error if validation fails
  */
 export function validateApiInput<T>(schema: z.ZodType<T>, input: unknown): T {
-  const result = schema.safeParse(input);
-  if (!result.success) {
-    throw new Error(`Input validation failed: ${result.error.message}`);
-  }
-  return result.data;
+    const result = schema.safeParse(input);
+    if (!result.success) {
+        throw new Error(`Input validation failed: ${result.error.message}`);
+    }
+    return result.data;
 }
 
 /**
@@ -25,9 +25,9 @@ export function validateApiInput<T>(schema: z.ZodType<T>, input: unknown): T {
  * @throws Error if validation fails
  */
 export function validateApiOutput<T>(schema: z.ZodType<T>, output: unknown): T {
-  const result = schema.safeParse(output);
-  if (!result.success) {
-    throw new Error(`Output validation failed: ${result.error.message}`);
-  }
-  return result.data;
+    const result = schema.safeParse(output);
+    if (!result.success) {
+        throw new Error(`Output validation failed: ${result.error.message}`);
+    }
+    return result.data;
 }

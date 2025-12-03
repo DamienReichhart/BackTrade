@@ -14,80 +14,80 @@ import { timeframeToMilliseconds } from "@backtrade/utils";
  * @returns Skip bar state and handlers
  */
 export function useSkipBar(
-  onError?: (error: string) => void,
-  onSuccess?: () => void,
+    onError?: (error: string) => void,
+    onSuccess?: () => void
 ) {
-  const { currentSession } = useCurrentSessionStore();
-  const timeframe = useChartSettingsStore((state) => state.timeframe);
-  const sessionId = currentSession?.id?.toString();
+    const { currentSession } = useCurrentSessionStore();
+    const timeframe = useChartSettingsStore((state) => state.timeframe);
+    const sessionId = currentSession?.id?.toString();
 
-  const queryClient = useQueryClient();
-  const { execute: updateSession, isLoading } = useUpdateSession(
-    sessionId ?? "",
-  );
+    const queryClient = useQueryClient();
+    const { execute: updateSession, isLoading } = useUpdateSession(
+        sessionId ?? ""
+    );
 
-  const canSkip = useMemo(
-    () => Boolean(sessionId && currentSession?.current_time && !isLoading),
-    [sessionId, currentSession, isLoading],
-  );
+    const canSkip = useMemo(
+        () => Boolean(sessionId && currentSession?.current_time && !isLoading),
+        [sessionId, currentSession, isLoading]
+    );
 
-  const handleClick = useCallback(async () => {
-    if (!sessionId) {
-      onError?.("Session ID is required");
-      return;
-    }
-
-    if (!currentSession?.current_time) {
-      onError?.("Current session time is not available");
-      return;
-    }
-
-    try {
-      // Calculate new current_time by adding timeframe duration
-      const currentTime = new Date(currentSession.current_time);
-      const timeframeMs = timeframeToMilliseconds(timeframe);
-      let newTime = new Date(currentTime.getTime() + timeframeMs);
-
-      // Validate against session end_time boundary
-      if (currentSession.end_time) {
-        const endTs = new Date(currentSession.end_time);
-        if (newTime.getTime() > endTs.getTime()) {
-          // Clamp to end_time if new time exceeds session boundary
-          newTime = endTs;
+    const handleClick = useCallback(async () => {
+        if (!sessionId) {
+            onError?.("Session ID is required");
+            return;
         }
-      }
 
-      // Format as ISO datetime string (YYYY-MM-DDTHH:mm:ssZ)
-      const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";
+        if (!currentSession?.current_time) {
+            onError?.("Current session time is not available");
+            return;
+        }
 
-      const updatedSession = await updateSession({
-        current_time: newCurrentTs,
-      });
+        try {
+            // Calculate new current_time by adding timeframe duration
+            const currentTime = new Date(currentSession.current_time);
+            const timeframeMs = timeframeToMilliseconds(timeframe);
+            let newTime = new Date(currentTime.getTime() + timeframeMs);
 
-      // Update the session query cache with the mutation result
-      queryClient.setQueryData(
-        ["GET", `/sessions/${sessionId}`],
-        updatedSession,
-      );
-      onSuccess?.();
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to skip bar";
-      onError?.(errorMessage);
-    }
-  }, [
-    sessionId,
-    currentSession,
-    timeframe,
-    updateSession,
-    queryClient,
-    onError,
-    onSuccess,
-  ]);
+            // Validate against session end_time boundary
+            if (currentSession.end_time) {
+                const endTs = new Date(currentSession.end_time);
+                if (newTime.getTime() > endTs.getTime()) {
+                    // Clamp to end_time if new time exceeds session boundary
+                    newTime = endTs;
+                }
+            }
 
-  return {
-    canSkip,
-    isLoading,
-    handleClick,
-  };
+            // Format as ISO datetime string (YYYY-MM-DDTHH:mm:ssZ)
+            const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";
+
+            const updatedSession = await updateSession({
+                current_time: newCurrentTs,
+            });
+
+            // Update the session query cache with the mutation result
+            queryClient.setQueryData(
+                ["GET", `/sessions/${sessionId}`],
+                updatedSession
+            );
+            onSuccess?.();
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error ? err.message : "Failed to skip bar";
+            onError?.(errorMessage);
+        }
+    }, [
+        sessionId,
+        currentSession,
+        timeframe,
+        updateSession,
+        queryClient,
+        onError,
+        onSuccess,
+    ]);
+
+    return {
+        canSkip,
+        isLoading,
+        handleClick,
+    };
 }

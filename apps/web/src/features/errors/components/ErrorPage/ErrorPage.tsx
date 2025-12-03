@@ -7,69 +7,69 @@ import styles from "./ErrorPage.module.css";
  * Error page configuration
  */
 export interface ErrorPageConfig {
-  /**
-   * Error status code
-   */
-  statusCode: number;
+    /**
+     * Error status code
+     */
+    statusCode: number;
 
-  /**
-   * Error title/heading
-   */
-  title: string;
+    /**
+     * Error title/heading
+     */
+    title: string;
 
-  /**
-   * Error description/subtitle
-   */
-  description: string;
+    /**
+     * Error description/subtitle
+     */
+    description: string;
 
-  /**
-   * Optional detailed message
-   */
-  details?: string;
+    /**
+     * Optional detailed message
+     */
+    details?: string;
 
-  /**
-   * Primary action button text
-   * @default "Go Home"
-   */
-  primaryActionText?: string;
+    /**
+     * Primary action button text
+     * @default "Go Home"
+     */
+    primaryActionText?: string;
 
-  /**
-   * Primary action handler
-   * @default navigate to home
-   */
-  primaryAction?: () => void;
+    /**
+     * Primary action handler
+     * @default navigate to home
+     */
+    primaryAction?: () => void;
 
-  /**
-   * Secondary action button text
-   * @default undefined (hidden)
-   */
-  secondaryActionText?: string;
+    /**
+     * Secondary action button text
+     * @default undefined (hidden)
+     */
+    secondaryActionText?: string;
 
-  /**
-   * Secondary action handler
-   */
-  secondaryAction?: () => void;
+    /**
+     * Secondary action handler
+     */
+    secondaryAction?: () => void;
 
-  /**
-   * Custom icon component
-   */
-  icon?: ReactNode;
+    /**
+     * Custom icon component
+     */
+    icon?: ReactNode;
 
-  /**
-   * Whether to show the status code
-   * @default true
-   */
-  showStatusCode?: boolean;
+    /**
+     * Whether to show the status code
+     * @default true
+     */
+    showStatusCode?: boolean;
 }
 
 /**
  * Props for ErrorPage component
  */
 interface ErrorPageProps extends ErrorPageConfig {
-  /**
-   * Additional CSS class name
-   */
-  className?: string;
+    /**
+     * Additional CSS class name
+     */
+    className?: string;
 }
 
 /**
@@ -86,68 +86,80 @@ interface ErrorPageProps extends ErrorPageConfig {
  * ```
  */
 export function ErrorPage({
-  statusCode,
-  title,
-  description,
-  details,
-  primaryActionText = "Go Home",
-  primaryAction,
-  secondaryActionText,
-  secondaryAction,
-  icon,
-  showStatusCode = true,
-  className,
-}: ErrorPageProps) {
-  const { handlePrimaryAction, handleGoBack } = useErrorPage({
     statusCode,
     title,
     description,
     details,
-    primaryActionText,
+    primaryActionText = "Go Home",
     primaryAction,
     secondaryActionText,
     secondaryAction,
     icon,
-    showStatusCode,
-  });
+    showStatusCode = true,
+    className,
+}: ErrorPageProps) {
+    const { handlePrimaryAction, handleGoBack } = useErrorPage({
+        statusCode,
+        title,
+        description,
+        details,
+        primaryActionText,
+        primaryAction,
+        secondaryActionText,
+        secondaryAction,
+        icon,
+        showStatusCode,
+    });
 
-  return (
-    <div className={`${styles.errorPage} ${className ?? ""}`}>
-      <div className={styles.container}>
-        {/* Icon Section */}
-        {icon && <div className={styles.icon}>{icon}</div>}
+    return (
+        <div className={`${styles.errorPage} ${className ?? ""}`}>
+            <div className={styles.container}>
+                {/* Icon Section */}
+                {icon && <div className={styles.icon}>{icon}</div>}
 
-        {/* Status Code */}
-        {showStatusCode && (
-          <div className={styles.statusCode}>{statusCode}</div>
-        )}
+                {/* Status Code */}
+                {showStatusCode && (
+                    <div className={styles.statusCode}>{statusCode}</div>
+                )}
 
-        {/* Title */}
-        <h1 className={styles.title}>{title}</h1>
+                {/* Title */}
+                <h1 className={styles.title}>{title}</h1>
 
-        {/* Description */}
-        <p className={styles.description}>{description}</p>
+                {/* Description */}
+                <p className={styles.description}>{description}</p>
 
-        {/* Details */}
-        {details && <p className={styles.details}>{details}</p>}
+                {/* Details */}
+                {details && <p className={styles.details}>{details}</p>}
 
-        {/* Actions */}
-        <div className={styles.actions}>
-          <Button variant="primary" size="large" onClick={handlePrimaryAction}>
-            {primaryActionText}
-          </Button>
-          {secondaryActionText && secondaryAction && (
-            <Button variant="outline" size="large" onClick={secondaryAction}>
-              {secondaryActionText}
-            </Button>
-          )}
-          {!secondaryActionText && (
-            <Button variant="ghost" size="large" onClick={handleGoBack}>
-              Go Back
-            </Button>
-          )}
+                {/* Actions */}
+                <div className={styles.actions}>
+                    <Button
+                        variant="primary"
+                        size="large"
+                        onClick={handlePrimaryAction}
+                    >
+                        {primaryActionText}
+                    </Button>
+                    {secondaryActionText && secondaryAction && (
+                        <Button
+                            variant="outline"
+                            size="large"
+                            onClick={secondaryAction}
+                        >
+                            {secondaryActionText}
+                        </Button>
+                    )}
+                    {!secondaryActionText && (
+                        <Button
+                            variant="ghost"
+                            size="large"
+                            onClick={handleGoBack}
+                        >
+                            Go Back
+                        </Button>
+                    )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

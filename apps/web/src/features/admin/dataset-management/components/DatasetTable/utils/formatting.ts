@@ -9,7 +9,7 @@ import type { Dataset } from "@backtrade/types";
  * Format dataset date range
  */
 export function formatDateRange(dataset: Dataset): string {
-  const startDate = dataset.start_time ? formatDate(dataset.start_time) : "—";
-  const endDate = dataset.end_time ? formatDate(dataset.end_time) : "—";
-  return `${startDate} - ${endDate}`;
+    const startDate = dataset.start_time ? formatDate(dataset.start_time) : "—";
+    const endDate = dataset.end_time ? formatDate(dataset.end_time) : "—";
+    return `${startDate} - ${endDate}`;
 }

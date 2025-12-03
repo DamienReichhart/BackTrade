@@ -1,50 +1,50 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: backtrade-ingress
-  namespace: backtrade
-  annotations:
-    # SSL/TLS Configuration
-    cert-manager.io/cluster-issuer: "letsencrypt-prod" # Adjust based on your cert-manager setup
+    name: backtrade-ingress
+    namespace: backtrade
+    annotations:
+        # SSL/TLS Configuration
+        cert-manager.io/cluster-issuer: "letsencrypt-prod" # Adjust based on your cert-manager setup
 
-    # Nginx Ingress Controller (adjust if using different controller)
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+        # Nginx Ingress Controller (adjust if using different controller)
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+        nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
 
-    # Rate limiting
-    nginx.ingress.kubernetes.io/limit-rps: "100"
-    nginx.ingress.kubernetes.io/limit-connections: "50"
+        # Rate limiting
+        nginx.ingress.kubernetes.io/limit-rps: "100"
+        nginx.ingress.kubernetes.io/limit-connections: "50"
 
-    # CORS (if needed)
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+        # CORS (if needed)
+        nginx.ingress.kubernetes.io/enable-cors: "true"
+        nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+        nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+        nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
 spec:
-  ingressClassName: nginx # Adjust based on your Ingress controller
-  tls:
-    - hosts:
-        - backtrade.damien-reichhart.fr # Replace with your domain
-      secretName: backtrade-tls
-  rules:
-    - host: backtrade.damien-reichhart.fr # Replace with your domain
-      http:
-        paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: backtrade-api
-                port:
-                  number: 3000
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: backtrade-proxy
-                port:
-                  number: 80
+    ingressClassName: nginx # Adjust based on your Ingress controller
+    tls:
+        - hosts:
+              - backtrade.damien-reichhart.fr # Replace with your domain
+          secretName: backtrade-tls
+    rules:
+        - host: backtrade.damien-reichhart.fr # Replace with your domain
+          http:
+              paths:
+                  - path: /api
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: backtrade-api
+                            port:
+                                number: 3000
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: backtrade-proxy
+                            port:
+                                number: 80

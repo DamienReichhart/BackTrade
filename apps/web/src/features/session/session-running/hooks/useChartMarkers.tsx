@@ -1,8 +1,8 @@
 import { useEffect, type RefObject } from "react";
 import type {
-  ISeriesMarkersPluginApi,
-  SeriesMarker,
-  Time,
+    ISeriesMarkersPluginApi,
+    SeriesMarker,
+    Time,
 } from "lightweight-charts";
 
 /**
@@ -13,15 +13,15 @@ import type {
  * @param isReady - Whether the series and plugin have been initialized
  */
 export function useChartMarkers(
-  markersPluginRef: RefObject<ISeriesMarkersPluginApi<Time> | null>,
-  markers: SeriesMarker<Time>[],
-  isReady: boolean,
+    markersPluginRef: RefObject<ISeriesMarkersPluginApi<Time> | null>,
+    markers: SeriesMarker<Time>[],
+    isReady: boolean
 ) {
-  useEffect(() => {
-    if (!isReady || !markersPluginRef.current) {
-      return;
-    }
+    useEffect(() => {
+        if (!isReady || !markersPluginRef.current) {
+            return;
+        }
 
-    markersPluginRef.current.setMarkers(markers);
-  }, [markersPluginRef, markers, isReady]);
+        markersPluginRef.current.setMarkers(markers);
+    }, [markersPluginRef, markers, isReady]);
 }

@@ -8,10 +8,10 @@
  * @returns Whether form should be disabled
  */
 export function isOrderFormDisabled(
-  hasSession: boolean,
-  hasPrice: boolean,
-  isCreating: boolean,
-  qty: number,
+    hasSession: boolean,
+    hasPrice: boolean,
+    isCreating: boolean,
+    qty: number
 ): boolean {
-  return !hasSession || !hasPrice || isCreating || qty <= 0;
+    return !hasSession || !hasPrice || isCreating || qty <= 0;
 }

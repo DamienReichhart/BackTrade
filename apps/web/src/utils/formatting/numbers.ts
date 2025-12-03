@@ -10,8 +10,8 @@
  * @returns Formatted number string
  */
 export function formatNumber(
-  value: number,
-  options?: Intl.NumberFormatOptions,
+    value: number,
+    options?: Intl.NumberFormatOptions
 ): string {
-  return new Intl.NumberFormat(undefined, options).format(value);
+    return new Intl.NumberFormat(undefined, options).format(value);
 }

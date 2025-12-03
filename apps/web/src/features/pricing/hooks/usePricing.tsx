@@ -10,19 +10,19 @@ import { mergePlanData } from "../utils/plans";
  * @returns Pricing data, loading state, and merged tiers
  */
 export function usePricing() {
-  const { data: apiPlans, isLoading } = usePlans();
-  const { user } = useAuthStore();
-  const isLoggedIn = !!user;
+    const { data: apiPlans, isLoading } = usePlans();
+    const { user } = useAuthStore();
+    const isLoggedIn = !!user;
 
-  // Merge API data with local configuration
-  const mergedTiers = useMemo(() => {
-    return mergePlanData(pricingTiers, apiPlans);
-  }, [apiPlans]);
+    // Merge API data with local configuration
+    const mergedTiers = useMemo(() => {
+        return mergePlanData(pricingTiers, apiPlans);
+    }, [apiPlans]);
 
-  return {
-    mergedTiers,
-    comparisonData,
-    isLoading,
-    isLoggedIn,
-  };
+    return {
+        mergedTiers,
+        comparisonData,
+        isLoading,
+        isLoggedIn,
+    };
 }

@@ -7,14 +7,14 @@ import styles from "./Login.module.css";
  * Orchestrates the login page layout with information panel and form panel
  */
 export default function Login() {
-  return (
-    <div className={styles.login}>
-      <StatusIndicator />
+    return (
+        <div className={styles.login}>
+            <StatusIndicator />
 
-      <div className={styles.container}>
-        <LoginInfoPanel />
-        <LoginFormPanel />
-      </div>
-    </div>
-  );
+            <div className={styles.container}>
+                <LoginInfoPanel />
+                <LoginFormPanel />
+            </div>
+        </div>
+    );
 }

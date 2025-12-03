@@ -1,5 +1,8 @@
 import { API_BASE_URL } from "../index";
-import { RefreshTokenRequestSchema, AuthResponseSchema } from "@backtrade/types";
+import {
+    RefreshTokenRequestSchema,
+    AuthResponseSchema,
+} from "@backtrade/types";
 
 export const refreshToken = async (refreshToken: string) => {
     const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
@@ -17,4 +20,4 @@ export const refreshToken = async (refreshToken: string) => {
     const data = await response.json();
     const authResponse = AuthResponseSchema.parse(data);
     return authResponse;
-}
+};

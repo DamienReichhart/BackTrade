@@ -6,12 +6,12 @@ import { useNavigate } from "react-router-dom";
  * @returns Dashboard header handlers
  */
 export function useDashboardHeader() {
-  const navigate = useNavigate();
-  const handleNewSession = () => {
-    navigate("/dashboard/sessions/add");
-  };
+    const navigate = useNavigate();
+    const handleNewSession = () => {
+        navigate("/dashboard/sessions/add");
+    };
 
-  return {
-    handleNewSession,
-  };
+    return {
+        handleNewSession,
+    };
 }

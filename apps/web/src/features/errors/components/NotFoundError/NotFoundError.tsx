@@ -7,15 +7,15 @@ import { getErrorConfig } from "../../utils/errorConfig";
  * Displayed when a user navigates to a page that doesn't exist
  */
 export function NotFoundError() {
-  const config = getErrorConfig(404);
+    const config = getErrorConfig(404);
 
-  return (
-    <ErrorPage
-      statusCode={404}
-      title={config.title}
-      description={config.description}
-      details={config.details}
-      primaryActionText={config.primaryActionText}
-    />
-  );
+    return (
+        <ErrorPage
+            statusCode={404}
+            title={config.title}
+            description={config.description}
+            details={config.details}
+            primaryActionText={config.primaryActionText}
+        />
+    );
 }

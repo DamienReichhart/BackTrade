@@ -4,47 +4,51 @@ kind: Kustomization
 namespace: backtrade
 
 resources:
-  # Core infrastructure
-  - namespace.yaml
+    # Core infrastructure
+    - namespace.yaml
 
-  # ConfigMaps
-  - configmaps/nginx-proxy-config.yaml
-  - configmaps/nginx-frontend-config.yaml
+    # ConfigMaps
+    - configmaps/nginx-proxy-config.yaml
+    - configmaps/nginx-frontend-config.yaml
 
-  # Secrets
-  - secrets/secrets.yaml
+    # Secrets
+    - secrets/secrets.yaml
 
-  # Database
-  - postgres/statefulset.yaml
-  - postgres/service.yaml
+    # Database
+    - postgres/statefulset.yaml
+    - postgres/service.yaml
 
-  # Backend
-  - backend/deployment.yaml
-  - backend/service.yaml
+    # Redis
+    - redis/deployment.yaml
+    - redis/service.yaml
 
-  # Frontend
-  - frontend/deployment.yaml
-  - frontend/service.yaml
+    # Backend
+    - backend/deployment.yaml
+    - backend/service.yaml
 
-  # Proxy
-  - proxy/deployment.yaml
-  - proxy/service.yaml
+    # Frontend
+    - frontend/deployment.yaml
+    - frontend/service.yaml
 
-  # Cloudflared
-  - cloudflared/deployment.yaml
+    # Proxy
+    - proxy/deployment.yaml
+    - proxy/service.yaml
 
-  # Ingress
-  - ingress/ingress.yaml
+    # Cloudflared
+    - cloudflared/deployment.yaml
 
-  # Autoscaling
-  - hpa/backend-hpa.yaml
-  - hpa/frontend-hpa.yaml
+    # Ingress
+    - ingress/ingress.yaml
+
+    # Autoscaling
+    - hpa/backend-hpa.yaml
+    - hpa/frontend-hpa.yaml
 
 # Image configuration - set your image registry here
 images:
-  - name: backtrade-api
-    newName: reichhartdamien/backtrade-api
-    newTag: v1.0.0
-  - name: backtrade-frontend
-    newName: reichhartdamien/backtrade-frontend
-    newTag: v1.0.0
+    - name: backtrade-api
+      newName: reichhartdamien/backtrade-api
+      newTag: v1.0.0
+    - name: backtrade-frontend
+      newName: reichhartdamien/backtrade-frontend
+      newTag: v1.0.0

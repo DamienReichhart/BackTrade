@@ -5,7 +5,7 @@
  * @returns Formatted amount string with 2 decimal places
  */
 export function formatAmount(amount: number): string {
-  return amount.toFixed(2);
+    return amount.toFixed(2);
 }
 
 /**
@@ -15,5 +15,5 @@ export function formatAmount(amount: number): string {
  * @returns CSS class name for positive or negative amount
  */
 export function getAmountClassName(amount: number): string {
-  return amount >= 0 ? "amountPos" : "amountNeg";
+    return amount >= 0 ? "amountPos" : "amountNeg";
 }

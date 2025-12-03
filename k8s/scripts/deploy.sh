@@ -120,6 +120,12 @@ echo "Deploying PostgreSQL..."
 apply_resource "postgres/service.yaml"
 apply_resource "postgres/statefulset.yaml"
 
+# Deploy Redis
+echo ""
+echo "Deploying Redis..."
+apply_resource "redis/service.yaml"
+apply_resource "redis/deployment.yaml"
+
 # Deploy Backend
 echo ""
 echo "Deploying Backend API..."

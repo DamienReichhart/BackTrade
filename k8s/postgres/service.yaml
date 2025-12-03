@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backtrade-postgres
-  namespace: backtrade
-  labels:
-    app: postgres
-    component: database
+    name: backtrade-postgres
+    namespace: backtrade
+    labels:
+        app: postgres
+        component: database
 spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
-  selector:
-    app: postgres
-    component: database
+    type: ClusterIP
+    ports:
+        - port: 5432
+          targetPort: 5432
+          protocol: TCP
+          name: postgres
+    selector:
+        app: postgres
+        component: database

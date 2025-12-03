@@ -27,7 +27,8 @@ Authorization: Bearer {token}
 
 ## CORS
 
-The server must allow requests from the react frontend running on https://backtrade.damien-reichhart.fr.
+The server must allow requests from the react frontend running on
+https://backtrade.damien-reichhart.fr.
 
 Required CORS configuration :
 
@@ -45,17 +46,17 @@ The token contains the following information :
 
 ```json
 {
-  "sub": {
-    "id": 1,
-    "email": "admin@backtrade.com",
-    "role": "ADMIN",
-    "is_banned": false,
-    "stripe_customer_id": "cus_admin123",
-    "created_at": "2024-01-01T00:00:00.000Z",
-    "updated_at": "2024-01-15T10:30:00.000Z"
-  },
-  "iat": 123456,
-  "exp": 123456
+    "sub": {
+        "id": 1,
+        "email": "admin@backtrade.com",
+        "role": "ADMIN",
+        "is_banned": false,
+        "stripe_customer_id": "cus_admin123",
+        "created_at": "2024-01-01T00:00:00.000Z",
+        "updated_at": "2024-01-15T10:30:00.000Z"
+    },
+    "iat": 123456,
+    "exp": 123456
 }
 ```
 
@@ -90,10 +91,10 @@ The token is not automatically renewable or Refresh token
 
 ```json
 {
-  "error": {
-    "message": "Error description",
-    "code": "error code"
-  }
+    "error": {
+        "message": "Error description",
+        "code": "error code"
+    }
 }
 ```
 
@@ -201,28 +202,30 @@ The token is not automatically renewable or Refresh token
 
 ### Authentication and authorization
 
-All routes related to resources must be protected by authorization.
-The authentication token is transmitted by the front-end in the HTTP header :
+All routes related to resources must be protected by authorization. The authentication token is
+transmitted by the front-end in the HTTP header :
 
 ```markdown
 Authorization: Bearer <token>
 ```
 
-Before any modification or deletion of a resource, the server must verify that the identifier of the currently authenticated user matches the identifier of the resource owner.
-If the identifiers do not match, the request must be rejected with a response :
+Before any modification or deletion of a resource, the server must verify that the identifier of the
+currently authenticated user matches the identifier of the resource owner. If the identifiers do not
+match, the request must be rejected with a response :
 
 ```json
 {
-  "error": {
-    "message": "You are not authorized to modify this resource",
-    "message": "403"
-  }
+    "error": {
+        "message": "You are not authorized to modify this resource",
+        "message": "403"
+    }
 }
 ```
 
 **HTTP Code :** 403 Forbidden
 
-This verification ensures that only the legitimate owner of a resource is authorized to modify or delete it.
+This verification ensures that only the legitimate owner of a resource is authorized to modify or
+delete it.
 
 ### Public Routes
 
@@ -240,7 +243,8 @@ All other routes require a valid JWT token.
 
 ### Routes with ownership verification
 
-The following routes require that the user be the creator of the resource in question or to be an admin :
+The following routes require that the user be the creator of the resource in question or to be an
+admin :
 
 - All /sessions routes
 - All /positions routes

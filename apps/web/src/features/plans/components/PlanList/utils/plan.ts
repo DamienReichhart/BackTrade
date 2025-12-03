@@ -6,8 +6,8 @@
  * @returns True if plan is the current plan
  */
 export function isCurrentPlan(
-  currentSubscription: { plan_id: number } | undefined,
-  planId: number,
+    currentSubscription: { plan_id: number } | undefined,
+    planId: number
 ): boolean {
-  return currentSubscription?.plan_id === planId;
+    return currentSubscription?.plan_id === planId;
 }

@@ -1,5 +1,5 @@
 export {
-  formatPnL,
-  getPnLClassName,
-  formatPriceOrFallback,
+    formatPnL,
+    getPnLClassName,
+    formatPriceOrFallback,
 } from "./formatting";

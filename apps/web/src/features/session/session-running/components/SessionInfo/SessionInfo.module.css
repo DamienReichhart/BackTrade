@@ -1,58 +1,58 @@
 .card {
-  background: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  width: 100%;
-  min-width: 0;
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
 }
 
 .sectionHeader {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
 }
 
 .infoGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
 }
 
 .infoLabel {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
-  margin-bottom: var(--spacing-xs);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-xs);
 }
 
 .infoValue {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
 }
 
 /* Mobile: Stack grid items */
 @media (max-width: 767px) {
-  .card {
-    padding: var(--spacing-md);
-  }
+    .card {
+        padding: var(--spacing-md);
+    }
 
-  .infoGrid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-  }
+    .infoGrid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
 }
 
 /* Tablet: 2 columns but with adjusted spacing */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .infoGrid {
-    gap: var(--spacing-sm);
-  }
+    .infoGrid {
+        gap: var(--spacing-sm);
+    }
 }
 
 /* Large screens: 3 columns for better use of space */
 @media (min-width: 1280px) {
-  .infoGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+    .infoGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }

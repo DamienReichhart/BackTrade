@@ -6,16 +6,16 @@ export type AdminSection = "user-management" | "dataset-management";
  * Hook for managing admin choices navigation
  */
 export function useAdminChoices() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  /**
-   * Handle menu item click and navigate to the selected section
-   */
-  const handleMenuClick = (section: AdminSection) => {
-    navigate(`/dashboard/admin/${section}`);
-  };
+    /**
+     * Handle menu item click and navigate to the selected section
+     */
+    const handleMenuClick = (section: AdminSection) => {
+        navigate(`/dashboard/admin/${section}`);
+    };
 
-  return {
-    handleMenuClick,
-  };
+    return {
+        handleMenuClick,
+    };
 }

@@ -13,119 +13,123 @@ import styles from "./RegisterFormPanel.module.css";
  * and terms acceptance fields
  */
 export function RegisterFormPanel() {
-  const {
-    formState,
-    errors,
-    isLoading,
-    isFormValid,
-    handleNameChange,
-    handleEmailChange,
-    handlePasswordChange,
-    handleConfirmPasswordChange,
-    handleAcceptTermsChange,
-    handleSubmit,
-  } = useRegisterForm();
+    const {
+        formState,
+        errors,
+        isLoading,
+        isFormValid,
+        handleNameChange,
+        handleEmailChange,
+        handlePasswordChange,
+        handleConfirmPasswordChange,
+        handleAcceptTermsChange,
+        handleSubmit,
+    } = useRegisterForm();
 
-  return (
-    <div className={styles.panel}>
-      <div className={styles.formContainer}>
-        {/* Header */}
-        <FormHeader label="CREATE ACCOUNT" />
+    return (
+        <div className={styles.panel}>
+            <div className={styles.formContainer}>
+                {/* Header */}
+                <FormHeader label="CREATE ACCOUNT" />
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Name Input */}
-          <Input
-            label="Name"
-            type="text"
-            placeholder="Your name"
-            value={formState.name}
-            onChange={(e) => handleNameChange(e.target.value)}
-            error={errors.name}
-            hasError={!!errors.name}
-          />
+                {/* Form */}
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    {/* Name Input */}
+                    <Input
+                        label="Name"
+                        type="text"
+                        placeholder="Your name"
+                        value={formState.name}
+                        onChange={(e) => handleNameChange(e.target.value)}
+                        error={errors.name}
+                        hasError={!!errors.name}
+                    />
 
-          {/* Email Input */}
-          <Input
-            label="Email"
-            type="email"
-            placeholder="you@domain.com"
-            value={formState.email}
-            onChange={(e) => handleEmailChange(e.target.value)}
-            error={errors.email}
-            hasError={!!errors.email}
-          />
+                    {/* Email Input */}
+                    <Input
+                        label="Email"
+                        type="email"
+                        placeholder="you@domain.com"
+                        value={formState.email}
+                        onChange={(e) => handleEmailChange(e.target.value)}
+                        error={errors.email}
+                        hasError={!!errors.email}
+                    />
 
-          {/* Password Input */}
-          <Input
-            label="Password"
-            type="password"
-            value={formState.password}
-            onChange={(e) => handlePasswordChange(e.target.value)}
-            error={errors.password}
-            hasError={!!errors.password}
-          />
+                    {/* Password Input */}
+                    <Input
+                        label="Password"
+                        type="password"
+                        value={formState.password}
+                        onChange={(e) => handlePasswordChange(e.target.value)}
+                        error={errors.password}
+                        hasError={!!errors.password}
+                    />
 
-          {/* Confirm Password Input */}
-          <Input
-            label="Confirm Password"
-            type="password"
-            value={formState.confirmPassword}
-            onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-            error={errors.confirmPassword}
-            hasError={!!errors.confirmPassword}
-          />
+                    {/* Confirm Password Input */}
+                    <Input
+                        label="Confirm Password"
+                        type="password"
+                        value={formState.confirmPassword}
+                        onChange={(e) =>
+                            handleConfirmPasswordChange(e.target.value)
+                        }
+                        error={errors.confirmPassword}
+                        hasError={!!errors.confirmPassword}
+                    />
 
-          {/* Terms Acceptance */}
-          <div className={styles.formOptions}>
-            <Checkbox
-              label={
-                <>
-                  I accept the{" "}
-                  <Link
-                    to="/terms"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    to="/privacy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Privacy Policy
-                  </Link>
-                </>
-              }
-              checked={formState.acceptTerms}
-              onChange={(e) => handleAcceptTermsChange(e.target.checked)}
-            />
-          </div>
+                    {/* Terms Acceptance */}
+                    <div className={styles.formOptions}>
+                        <Checkbox
+                            label={
+                                <>
+                                    I accept the{" "}
+                                    <Link
+                                        to="/terms"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        Terms of Service
+                                    </Link>{" "}
+                                    and{" "}
+                                    <Link
+                                        to="/privacy"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        Privacy Policy
+                                    </Link>
+                                </>
+                            }
+                            checked={formState.acceptTerms}
+                            onChange={(e) =>
+                                handleAcceptTermsChange(e.target.checked)
+                            }
+                        />
+                    </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            variant="primary"
-            size="large"
-            fullWidth
-            className={styles.submitButton}
-            disabled={!isFormValid || isLoading}
-          >
-            {isLoading ? "Creating account..." : "Create account"}
-          </Button>
+                    {/* Submit Button */}
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="large"
+                        fullWidth
+                        className={styles.submitButton}
+                        disabled={!isFormValid || isLoading}
+                    >
+                        {isLoading ? "Creating account..." : "Create account"}
+                    </Button>
 
-          {/* Footer Links */}
-          <FormFooter
-            mainLinkText="Already have an account? Sign in"
-            mainLinkUrl="/signin"
-            verticalLayout
-          />
-        </form>
-      </div>
-    </div>
-  );
+                    {/* Footer Links */}
+                    <FormFooter
+                        mainLinkText="Already have an account? Sign in"
+                        mainLinkUrl="/signin"
+                        verticalLayout
+                    />
+                </form>
+            </div>
+        </div>
+    );
 }

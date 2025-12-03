@@ -1,74 +1,74 @@
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
 }
 
 .type {
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-secondary);
-  margin: 0;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    margin: 0;
 }
 
 .title {
-  font-size: var(--font-size-2xl);
-  margin: 0;
-  color: var(--color-text-primary);
+    font-size: var(--font-size-2xl);
+    margin: 0;
+    color: var(--color-text-primary);
 }
 
 .description {
-  font-size: var(--font-size-base);
-  margin: 0;
-  color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    margin: 0;
+    color: var(--color-text-secondary);
 }
 
 .nameField {
-  max-width: 320px;
+    max-width: 320px;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--spacing-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--spacing-md);
 }
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
 }
 
 .helper {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin: 0;
 }
 
 .label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
 }
 
 .colorInput {
-  width: 100%;
-  height: 42px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-secondary);
-  background: var(--color-surface-tertiary);
-  cursor: pointer;
+    width: 100%;
+    height: 42px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-secondary);
+    background: var(--color-surface-tertiary);
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
-  .form {
-    padding: var(--spacing-md);
-  }
+    .form {
+        padding: var(--spacing-md);
+    }
 }

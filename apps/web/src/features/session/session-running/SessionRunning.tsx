@@ -17,48 +17,48 @@ import { LoadingState } from "../../dashboard/components";
  * order/estimates panel on the right, and tables below.
  */
 export function SessionRunning() {
-  const { session, isLoading } = useSessionData();
+    const { session, isLoading } = useSessionData();
 
-  useEffect(() => {
-    if (session?.session_status == "ARCHIVED") {
-      redirectToSessionAnalytics(String(session.id));
+    useEffect(() => {
+        if (session?.session_status == "ARCHIVED") {
+            redirectToSessionAnalytics(String(session.id));
+        }
+    }, [session]);
+
+    if (isLoading) {
+        return <LoadingState />;
     }
-  }, [session]);
 
-  if (isLoading) {
-    return <LoadingState />;
-  }
+    if (!session) {
+        return <div className={styles.notFound}>Session not found</div>;
+    }
 
-  if (!session) {
-    return <div className={styles.notFound}>Session not found</div>;
-  }
+    return (
+        <div className={styles.page}>
+            <TopBar />
 
-  return (
-    <div className={styles.page}>
-      <TopBar />
+            <div className={styles.content}>
+                {/* Chart */}
+                <div className={styles.chartPlaceholderWrapper}>
+                    <RunningSessionChart />
+                </div>
 
-      <div className={styles.content}>
-        {/* Chart */}
-        <div className={styles.chartPlaceholderWrapper}>
-          <RunningSessionChart />
+                {/* Order ticket */}
+                <div className={styles.orderTicketWrapper}>
+                    <SidePanel />
+                </div>
+
+                {/* Tables */}
+                <div className={styles.tablesRow}>
+                    <PositionsTable />
+                    <TransactionsTable />
+                </div>
+
+                {/* Session Info */}
+                <div className={styles.sessionInfoWrapper}>
+                    <SessionInfo />
+                </div>
+            </div>
         </div>
-
-        {/* Order ticket */}
-        <div className={styles.orderTicketWrapper}>
-          <SidePanel />
-        </div>
-
-        {/* Tables */}
-        <div className={styles.tablesRow}>
-          <PositionsTable />
-          <TransactionsTable />
-        </div>
-
-        {/* Session Info */}
-        <div className={styles.sessionInfoWrapper}>
-          <SessionInfo />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
