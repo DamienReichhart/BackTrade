@@ -29,7 +29,10 @@ export const redis = new Redis({
 
 // Handle errors gracefully - prevent unhandled errors from crashing the app
 redis.on("error", (err) => {
-    redisLogger.error({ err }, "Redis connection error - application will continue without caching");
+    redisLogger.error(
+        { err },
+        "Redis connection error - application will continue without caching"
+    );
 });
 
 redis.on("connect", () => {
@@ -42,7 +45,9 @@ redis.on("ready", () => {
 
 // Prevent unhandled promise rejections from Redis operations
 redis.on("close", () => {
-    redisLogger.warn("Redis connection closed - application will continue without caching");
+    redisLogger.warn(
+        "Redis connection closed - application will continue without caching"
+    );
 });
 
 redis.on("reconnecting", (delay: string) => {

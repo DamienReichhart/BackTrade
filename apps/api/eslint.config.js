@@ -1,12 +1,12 @@
-const js = require("@eslint/js");
-const globals = require("globals");
-const tseslint = require("typescript-eslint");
+import js from "@eslint/js";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
 /**
  * Base ESLint configuration for BackTrade API
  * Provides TypeScript and JavaScript linting rules
  */
-module.exports = [
+export default [
     {
         ignores: [
             "dist",
@@ -28,7 +28,7 @@ module.exports = [
             sourceType: "module",
             parser: tseslint.parser,
             parserOptions: {
-                tsconfigRootDir: __dirname,
+                tsconfigRootDir: import.meta.dirname,
                 project: "./tsconfig.json",
             },
             globals: {

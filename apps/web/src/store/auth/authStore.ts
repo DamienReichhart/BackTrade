@@ -81,7 +81,11 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
                 throw new Error("Invalid token expiration");
             }
 
-            setCookie(ACCESS_TOKEN_COOKIE, newAccessToken, accessTokenExpiresAt);
+            setCookie(
+                ACCESS_TOKEN_COOKIE,
+                newAccessToken,
+                accessTokenExpiresAt
+            );
             setCookie(
                 REFRESH_TOKEN_COOKIE,
                 newRefreshToken,
@@ -97,8 +101,11 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
         logout: () => {
             deleteCookie(ACCESS_TOKEN_COOKIE);
             deleteCookie(REFRESH_TOKEN_COOKIE);
-            set({ accessToken: undefined, refreshToken: undefined, user: null });
+            set({
+                accessToken: undefined,
+                refreshToken: undefined,
+                user: null,
+            });
         },
     };
 });
-
