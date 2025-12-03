@@ -20,6 +20,16 @@ async function sendEmail(
     mailerServiceLogger.info({ info }, "Email sent successfully");
 }
 
+async function checkConnection(): Promise<"connected" | "error"> {
+    try {
+        await mailer.verify();
+        return "connected";
+    } catch {
+        return "error";
+    }
+}
+
 export default {
     sendEmail,
+    checkConnection,
 };

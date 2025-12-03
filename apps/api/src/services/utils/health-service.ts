@@ -1,6 +1,7 @@
 import { type Health } from "@backtrade/types";
 import { prisma } from "../../libs/prisma";
 import { redis } from "../../libs/redis";
+import mailerService from "./mailer-service";
 
 /**
  * Checks database connectivity by executing a simple query
@@ -29,9 +30,10 @@ async function checkRedis(): Promise<"connected" | "error"> {
 }
 
 async function getHealth(): Promise<Health> {
-    const [database, redisStatus] = await Promise.all([
+    const [database, redisStatus, smtpStatus] = await Promise.all([
         checkDatabase(),
         checkRedis(),
+        mailerService.checkConnection(),
     ]);
 
     return {
@@ -39,6 +41,7 @@ async function getHealth(): Promise<Health> {
         time: new Date().toISOString(),
         database,
         redis: redisStatus,
+        smtp: smtpStatus,
     };
 }
 
