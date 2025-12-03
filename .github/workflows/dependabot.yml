@@ -12,7 +12,7 @@ permissions:
 jobs:
     dependabot:
         name: Dependabot Auto-Approve
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         if: github.actor == 'dependabot[bot]'
         steps:
             - name: Checkout
