@@ -1,5 +1,5 @@
 import type { User } from "../../generated/prisma/client";
-import { createCacheService } from "../../core/factories/cache-service-factory";
+import { createCacheService } from "./cache-service-factory";
 
 const userCacheService = createCacheService<User>({
     prefix: "user:",
