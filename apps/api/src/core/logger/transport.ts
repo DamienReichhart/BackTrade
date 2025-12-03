@@ -1,4 +1,3 @@
-import pino from "pino";
 import path from "node:path";
 import { ENV } from "../../config/env";
 
@@ -6,7 +5,7 @@ function getLogFilePath(filename: string): string {
     return path.resolve(ENV.API_LOG_DIR, filename);
 }
 
-export const transport = pino.transport({
+export const transport = {
     targets: [
         // stdout - pretty in development, plain JSON in production
         ENV.NODE_ENV === "production"
@@ -42,4 +41,4 @@ export const transport = pino.transport({
             level: "error",
         },
     ],
-});
+};

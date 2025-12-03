@@ -2,10 +2,10 @@
     "name": "@backtrade/api",
     "version": "1.0.0",
     "private": true,
-    "type": "commonjs",
+    "type": "module",
     "scripts": {
         "dev": "nodemon --legacy-watch --watch src --ext ts,js,json --exec tsx src/server.ts",
-        "build": "esbuild src/server.ts --bundle --platform=node --outfile=dist/server.js --format=cjs --target=node24",
+        "build": "tsx scripts/build.ts",
         "start": "node dist/server.js",
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",

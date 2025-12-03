@@ -8,10 +8,15 @@ import { requestId } from "./middlewares/request-id";
 import { requestLogger } from "./middlewares/request-logger";
 import { notFoundHandler } from "./middlewares/not-found";
 import { errorHandler } from "./middlewares/error-handler";
+import { ENV } from "./config/env";
 
 function createApp(): Express {
     const app: Express = express();
     app.disable("x-powered-by");
+
+    if (ENV.NODE_ENV === "production") {
+        app.set("trust proxy", true);
+    }
 
     app.use(helmet());
     app.use(cors({ origin: true, credentials: true }));
