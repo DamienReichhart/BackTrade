@@ -1,5 +1,4 @@
 import {
-    AuthResponseSchema,
     type AuthResponse,
     type LoginRequest,
     PublicUserSchema,
@@ -8,8 +7,7 @@ import userService from "../crud/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/logger/pino";
 import UnauthorizedError from "../../errors/web/unauthorized-error";
-import jwt from "jsonwebtoken";
-import { ENV } from "../../config/env";
+import jwtService from "./jwt-service";
 
 const authServiceLogger = logger.child({
     service: "auth-service",
@@ -26,28 +24,18 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
         authServiceLogger.info({ email: loginRequest.email }, "User logged in");
         const publicUser = PublicUserSchema.parse(user);
 
-        const accessToken = jwt.sign(
-            { sub: publicUser },
-            ENV.ACCESS_TOKEN_SECRET,
-            {
-                algorithm: "HS256",
-                expiresIn: ENV.ACCESS_TOKEN_EXPIRATION,
-            } as jwt.SignOptions
+        const accessToken = await jwtService.generateAccessToken(
+            { sub: publicUser }
         );
 
-        const refreshToken = jwt.sign(
-            { sub: publicUser },
-            ENV.REFRESH_TOKEN_SECRET,
-            {
-                algorithm: "HS256",
-                expiresIn: ENV.REFRESH_TOKEN_EXPIRATION,
-            } as jwt.SignOptions
+        const refreshToken = await jwtService.generateRefreshToken(
+            { sub: publicUser }
         );
 
-        return AuthResponseSchema.parse({
+        return {
             accessToken,
             refreshToken,
-        });
+        } as AuthResponse;
     }
     authServiceLogger.info(
         { email: loginRequest.email },
@@ -55,6 +43,8 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     );
     throw new UnauthorizedError("Invalid credentials");
 }
+
+
 
 export default {
     login,
