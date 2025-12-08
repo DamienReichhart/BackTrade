@@ -1,4 +1,17 @@
 import { z } from "zod";
+import { PublicUserSchema } from "../entities/user";
+
+const JwtPayloadGenerationSchema = z.object({
+    sub: PublicUserSchema,
+});
+export type JwtPayloadGeneration = z.infer<typeof JwtPayloadGenerationSchema>;
+
+export const JwtPayloadSchema = z.object({
+    sub: PublicUserSchema,
+    iat: z.number(),
+    exp: z.number(),
+});
+export type JwtPayload = z.infer<typeof JwtPayloadSchema>;
 
 export const LoginRequestSchema = z.object({
     email: z.string().email(),
@@ -36,8 +49,8 @@ export const ResetPasswordRequestSchema = z.object({
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({
-    accessToken: z.string(),
-    refreshToken: z.string(),
+    accessToken: JwtPayloadSchema,
+    refreshToken: JwtPayloadSchema,
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 

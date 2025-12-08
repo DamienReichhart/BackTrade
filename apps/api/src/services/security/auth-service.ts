@@ -6,7 +6,6 @@ import {
 import userService from "../crud/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/logger/pino";
-import UnauthorizedError from "../../errors/web/unauthorized-error";
 import jwtService from "./jwt-service";
 
 const authServiceLogger = logger.child({
@@ -15,13 +14,12 @@ const authServiceLogger = logger.child({
 
 async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     const user = await userService.getUserByEmail(loginRequest.email);
-    if (
+        authServiceLogger.trace({ email: loginRequest.email }, "User found, trying to verify password");
         await hashService.verifyPassword(
             loginRequest.password,
             user.password_hash
         )
-    ) {
-        authServiceLogger.info({ email: loginRequest.email }, "User logged in");
+        authServiceLogger.trace({ email: loginRequest.email }, "Password verified, generating tokens");
         const publicUser = PublicUserSchema.parse(user);
 
         const accessToken = await jwtService.generateAccessToken(
@@ -32,16 +30,12 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
             { sub: publicUser }
         );
 
+        authServiceLogger.trace({ email: loginRequest.email }, "Tokens generated, returning response");
+
         return {
             accessToken,
             refreshToken,
         } as AuthResponse;
-    }
-    authServiceLogger.info(
-        { email: loginRequest.email },
-        "Invalid credentials"
-    );
-    throw new UnauthorizedError("Invalid credentials");
 }
 
 

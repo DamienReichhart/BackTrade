@@ -5,6 +5,12 @@
  */
 
 import { verify, hash, argon2id } from "argon2";
+import { logger } from "../../libs/logger/pino";
+import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
+
+const hashServiceLogger = logger.child({
+    service: "hash-service",
+});
 
 /**
  * Hashes a plain text password using bcrypt
@@ -32,7 +38,12 @@ async function verifyPassword(
     password: string,
     hashedPassword: string
 ): Promise<boolean> {
-    return await verify(hashedPassword, password);
+    const result = await verify(hashedPassword, password);
+    if (!result) {
+        hashServiceLogger.warn("Password verification failed");
+        throw new UnAuthenticatedError("Invalid password");
+    }
+    return result;
 }
 
 export default {
