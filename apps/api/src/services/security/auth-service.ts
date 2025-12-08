@@ -3,7 +3,7 @@ import {
     type LoginRequest,
     PublicUserSchema,
 } from "@backtrade/types";
-import userService from "../crud/users-service";
+import userService from "../base/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/logger/pino";
 import jwtService from "./jwt-service";

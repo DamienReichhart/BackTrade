@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import usersService from "../services/crud/users-service";
+import usersService from "../services/base/users-service";
 import UnAuthenticatedError from "../errors/web/unauthenticated-error";
 import jwtService from "../services/security/jwt-service";
 

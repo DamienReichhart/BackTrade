@@ -10,24 +10,24 @@ const jwtServiceLogger = logger.child({
 
 async function generateAccessToken(
     payload: JwtPayloadGeneration
-): Promise<JwtPayload> {
+): Promise<string> {
     const token = jwt.sign(payload, ENV.ACCESS_TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: ENV.ACCESS_TOKEN_EXPIRATION,
     } as jwt.SignOptions);
     jwtServiceLogger.debug({ payload }, "Access token generated");
-    return token as unknown as JwtPayload;
+    return token;
 }
 
 async function generateRefreshToken(
     payload: JwtPayloadGeneration
-): Promise<JwtPayload> {
+): Promise<string> {
     const token = jwt.sign(payload, ENV.REFRESH_TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: ENV.REFRESH_TOKEN_EXPIRATION,
     } as jwt.SignOptions);
     jwtServiceLogger.debug({ payload }, "Refresh token generated");
-    return token as unknown as JwtPayload;
+    return token;
 }
 
 async function verifyAccessToken(token: string): Promise<JwtPayload> {
