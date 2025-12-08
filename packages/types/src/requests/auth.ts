@@ -49,8 +49,8 @@ export const ResetPasswordRequestSchema = z.object({
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({
-    accessToken: JwtPayloadSchema,
-    refreshToken: JwtPayloadSchema,
+    accessToken: z.string(),
+    refreshToken: z.string(),
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 

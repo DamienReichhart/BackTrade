@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: ./docker/images/dev.dockerfile
         ports:
-            - "3000:3000"
+            - "21799:21799"
             - "5173:5173"
         volumes:
             - ./apps:/app/apps
