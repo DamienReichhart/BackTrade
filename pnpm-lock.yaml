@@ -40,7 +40,7 @@ importers:
         version: 7.0.1
       '@prisma/client':
         specifier: ^7.0.1
-        version: 7.0.1(prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+        version: 7.0.1(prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -137,7 +137,7 @@ importers:
         version: 13.1.2
       prisma:
         specifier: ^7.0.1
-        version: 7.0.1(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+        version: 7.0.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       ts-jest:
         specifier: ^29.4.5
         version: 29.4.5(@babel/core@7.28.5)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.5))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@24.10.1))(typescript@5.9.3)
@@ -172,11 +172,11 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.0(react@19.2.0)
+        specifier: ^19.2.1
+        version: 19.2.1(react@19.2.0)
       react-router-dom:
         specifier: 7.9.6
-        version: 7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 7.9.6(react-dom@19.2.1(react@19.2.0))(react@19.2.0)
       zod:
         specifier: 4.1.13
         version: 4.1.13
@@ -198,7 +198,7 @@ importers:
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
-        version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)
       '@types/jest':
         specifier: 30.0.0
         version: 30.0.0
@@ -3781,10 +3781,10 @@ packages:
   rc9@2.1.2:
     resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
 
-  react-dom@19.2.0:
-    resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
+  react-dom@19.2.1:
+    resolution: {integrity: sha512-ibrK8llX2a4eOskq1mXKu/TGZj9qzomO+sNfO98M6d9zIPOEhlBkMkBUBLd1vgS0gQsLDBzA+8jJBVXDnfHmJg==}
     peerDependencies:
-      react: ^19.2.0
+      react: ^19.2.1
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
@@ -5684,11 +5684,11 @@ snapshots:
 
   '@prisma/client-runtime-utils@7.0.1': {}
 
-  '@prisma/client@7.0.1(prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)':
+  '@prisma/client@7.0.1(prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       '@prisma/client-runtime-utils': 7.0.1
     optionalDependencies:
-      prisma: 7.0.1(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+      prisma: 7.0.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       typescript: 5.9.3
 
   '@prisma/config@7.0.1':
@@ -5755,11 +5755,11 @@ snapshots:
 
   '@prisma/query-plan-executor@6.18.0': {}
 
-  '@prisma/studio-core@0.8.2(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@prisma/studio-core@0.8.2(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@types/react': 19.2.7
       react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
+      react-dom: 19.2.1(react@19.2.0)
 
   '@rolldown/pluginutils@1.0.0-beta.47': {}
 
@@ -6142,12 +6142,12 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@testing-library/react@16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@testing-library/dom': 10.4.1
       react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
+      react-dom: 19.2.1(react@19.2.0)
     optionalDependencies:
       '@types/react': 19.2.7
       '@types/react-dom': 19.2.3(@types/react@19.2.7)
@@ -8634,12 +8634,12 @@ snapshots:
       ansi-styles: 5.2.0
       react-is: 18.3.1
 
-  prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3):
+  prisma@7.0.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)(typescript@5.9.3):
     dependencies:
       '@prisma/config': 7.0.1
       '@prisma/dev': 0.13.0(typescript@5.9.3)
       '@prisma/engines': 7.0.1
-      '@prisma/studio-core': 0.8.2(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@prisma/studio-core': 0.8.2(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.0))(react@19.2.0)
       mysql2: 3.15.3
       postgres: 3.4.7
     optionalDependencies:
@@ -8709,7 +8709,7 @@ snapshots:
       defu: 6.1.4
       destr: 2.0.5
 
-  react-dom@19.2.0(react@19.2.0):
+  react-dom@19.2.1(react@19.2.0):
     dependencies:
       react: 19.2.0
       scheduler: 0.27.0
@@ -8720,19 +8720,19 @@ snapshots:
 
   react-refresh@0.18.0: {}
 
-  react-router-dom@7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  react-router-dom@7.9.6(react-dom@19.2.1(react@19.2.0))(react@19.2.0):
     dependencies:
       react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
-      react-router: 7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react-dom: 19.2.1(react@19.2.0)
+      react-router: 7.9.6(react-dom@19.2.1(react@19.2.0))(react@19.2.0)
 
-  react-router@7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  react-router@7.9.6(react-dom@19.2.1(react@19.2.0))(react@19.2.0):
     dependencies:
       cookie: 1.1.1
       react: 19.2.0
       set-cookie-parser: 2.7.2
     optionalDependencies:
-      react-dom: 19.2.0(react@19.2.0)
+      react-dom: 19.2.1(react@19.2.0)
 
   react@19.2.0: {}
 
