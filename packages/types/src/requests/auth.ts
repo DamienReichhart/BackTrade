@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PublicUserSchema } from "../entities/user";
 
-const JwtPayloadGenerationSchema = z.object({
+export const JwtPayloadGenerationSchema = z.object({
     sub: PublicUserSchema,
 });
 export type JwtPayloadGeneration = z.infer<typeof JwtPayloadGenerationSchema>;

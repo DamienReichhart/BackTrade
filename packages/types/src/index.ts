@@ -6,7 +6,9 @@ export * from "./entities";
 export * from "./requests";
 
 export const SingleServiceHealthStatusSchema = z.enum(["ok", "error"]);
-export type SingleServiceHealthStatus = z.infer<typeof SingleServiceHealthStatusSchema>;
+export type SingleServiceHealthStatus = z.infer<
+    typeof SingleServiceHealthStatusSchema
+>;
 
 // Legacy schemas (keeping for backward compatibility)
 export const HealthSchema = z.object({

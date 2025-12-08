@@ -8,7 +8,9 @@ const jwtServiceLogger = logger.child({
     service: "jwt-service",
 });
 
-async function generateAccessToken(payload: JwtPayloadGeneration): Promise<JwtPayload> {
+async function generateAccessToken(
+    payload: JwtPayloadGeneration
+): Promise<JwtPayload> {
     const token = jwt.sign(payload, ENV.ACCESS_TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: ENV.ACCESS_TOKEN_EXPIRATION,
@@ -17,7 +19,9 @@ async function generateAccessToken(payload: JwtPayloadGeneration): Promise<JwtPa
     return token as unknown as JwtPayload;
 }
 
-async function generateRefreshToken(payload: JwtPayloadGeneration): Promise<JwtPayload> {
+async function generateRefreshToken(
+    payload: JwtPayloadGeneration
+): Promise<JwtPayload> {
     const token = jwt.sign(payload, ENV.REFRESH_TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: ENV.REFRESH_TOKEN_EXPIRATION,
