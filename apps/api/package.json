@@ -25,7 +25,7 @@
     "dependencies": {
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
-        "@prisma/adapter-pg": "^7.0.1",
+        "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.0.1",
         "argon2": "^0.44.0",
         "compression": "^1.8.1",
