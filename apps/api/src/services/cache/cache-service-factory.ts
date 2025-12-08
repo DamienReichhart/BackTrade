@@ -1,5 +1,6 @@
 import { logger } from "../../libs/logger/pino";
 import { redis } from "../../libs/redis";
+import type { z } from "zod";
 
 const cacheLogger = logger.child({
     service: "cache",
@@ -15,6 +16,8 @@ export interface CacheServiceConfig {
     ttl: number;
     /** Entity name for error logging (e.g., "user", "session") */
     entityName: string;
+    /** Schema for the entity */
+    entitySchema: z.ZodType<unknown>;
 }
 
 /**
@@ -76,7 +79,9 @@ export function createCacheService<T>(
     async function get(id: number): Promise<T | null> {
         try {
             const result = await redis.get(`${prefix}${id}`);
-            return result ? (JSON.parse(result) as T) : null;
+            return result
+                ? (config.entitySchema.parse(JSON.parse(result)) as T)
+                : null;
         } catch (error) {
             cacheLogger.warn(
                 { error, id, entityName },

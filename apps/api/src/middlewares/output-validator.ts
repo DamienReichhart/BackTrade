@@ -17,8 +17,7 @@ export function responseValidator(schema: z.ZodType<unknown>) {
             if (
                 typeof body === "object" &&
                 body !== null &&
-                "code" in body &&
-                "message" in body
+                ("error" in body || ("code" in body && "message" in body))
             ) {
                 return originalJson(body);
             }

@@ -44,6 +44,28 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     } as AuthResponse;
 }
 
+async function refreshToken(refreshToken: string): Promise<AuthResponse> {
+    const payload = await jwtService.verifyRefreshToken(refreshToken);
+    authServiceLogger.trace(
+        { refreshToken },
+        "Refresh token verified, trying to get user"
+    );
+    const user = await userService.getUserById(payload.sub.id);
+    authServiceLogger.trace({ user }, "User found, generating new tokens");
+    const publicUser = PublicUserSchema.parse(user);
+    const accessToken = await jwtService.generateAccessToken({
+        sub: publicUser,
+    });
+    const newRefreshToken = await jwtService.generateRefreshToken({
+        sub: publicUser,
+    });
+    return {
+        accessToken,
+        refreshToken: newRefreshToken,
+    } as AuthResponse;
+}
+
 export default {
     login,
+    refreshToken,
 };

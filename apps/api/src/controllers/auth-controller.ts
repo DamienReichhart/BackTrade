@@ -9,6 +9,13 @@ async function login(req: Request, res: Response) {
     res.status(200).json(authResponse);
 }
 
+async function refreshToken(req: Request, res: Response) {
+    const refreshToken = req.body.refreshToken;
+    const authResponse = await authService.refreshToken(refreshToken);
+    res.status(200).json(authResponse);
+}
+
 export default {
     login,
+    refreshToken,
 };
