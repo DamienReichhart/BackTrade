@@ -37,3 +37,9 @@ export {
 
 // API validations
 export { validateApiInput, validateApiOutput } from "./api";
+
+// Zod error formatting
+export { formatZodError } from "./format-zod-error";
+
+// String sanitization
+export { sanitizeForJson } from "./sanitize-string";

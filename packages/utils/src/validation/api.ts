@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { formatZodError } from "./format-zod-error";
 
 /**
  * Validate API input using Zod schema
@@ -11,7 +12,8 @@ import type { z } from "zod";
 export function validateApiInput<T>(schema: z.ZodType<T>, input: unknown): T {
     const result = schema.safeParse(input);
     if (!result.success) {
-        throw new Error(`Input validation failed: ${result.error.message}`);
+        const formattedMessage = formatZodError(result.error);
+        throw new Error(`Input validation failed: ${formattedMessage}`);
     }
     return result.data;
 }
@@ -27,7 +29,8 @@ export function validateApiInput<T>(schema: z.ZodType<T>, input: unknown): T {
 export function validateApiOutput<T>(schema: z.ZodType<T>, output: unknown): T {
     const result = schema.safeParse(output);
     if (!result.success) {
-        throw new Error(`Output validation failed: ${result.error.message}`);
+        const formattedMessage = formatZodError(result.error);
+        throw new Error(`Output validation failed: ${formattedMessage}`);
     }
     return result.data;
 }

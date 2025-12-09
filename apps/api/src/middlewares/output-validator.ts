@@ -1,7 +1,8 @@
-import type { z } from "zod";
+import { z } from "zod";
 import { logger } from "../libs/logger/pino";
 import { type Request, type Response, type NextFunction } from "express";
 import OutputValidationError from "../errors/web/output-validation-error";
+import { formatZodError } from "@backtrade/utils";
 
 const outputValidatorLogger = logger.child({
     service: "output-validator",
@@ -34,8 +35,14 @@ export function responseValidator(schema: z.ZodType<unknown>) {
                     "Response schema validation failed"
                 );
 
+                // Format Zod errors properly, fallback to generic error message
+                const errorMessage =
+                    err instanceof z.ZodError
+                        ? formatZodError(err)
+                        : (err as Error).message.replace(/\n/g, " ").trim();
+
                 throw new OutputValidationError(
-                    "Invalid server response format : " + (err as Error).message
+                    `Invalid server response format: ${errorMessage}`
                 );
             }
         };
