@@ -61,7 +61,7 @@ function parseBrowser(userAgent: string): string {
         { pattern: /Edg\/(\d+)/, name: "Edge" },
         { pattern: /OPR\/(\d+)/, name: "Opera" },
         { pattern: /Chrome\/(\d+)/, name: "Chrome" },
-        { pattern: /Safari\/(\d+).*Version\/(\d+)/, name: "Safari" },
+        { pattern: /Version\/(\d+).*Safari\/(\d+)/, name: "Safari" },
         { pattern: /Firefox\/(\d+)/, name: "Firefox" },
         { pattern: /MSIE (\d+)/, name: "Internet Explorer" },
         { pattern: /Trident.*rv:(\d+)/, name: "Internet Explorer" },
@@ -70,8 +70,7 @@ function parseBrowser(userAgent: string): string {
     for (const { pattern, name } of browsers) {
         const match = ua.match(pattern);
         if (match) {
-            // Safari has version in a different capture group
-            const version = name === "Safari" ? match[2] : match[1];
+            const version = match[1];
             return `${name} ${version}`;
         }
     }
