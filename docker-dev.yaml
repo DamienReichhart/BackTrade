@@ -33,7 +33,7 @@ services:
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
         volumes:
-            - postgres_data:/var/lib/postgresql/data
+            - backtrade_db:/var/lib/postgresql/data
         networks:
             backtrade:
                 ipv4_address: 192.168.250.21
@@ -51,7 +51,7 @@ services:
                 ipv4_address: 192.168.250.22
 
 volumes:
-    postgres_data:
+    backtrade_db:
         driver: local
 
 networks:

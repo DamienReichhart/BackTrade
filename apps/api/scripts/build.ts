@@ -42,7 +42,15 @@ async function main() {
                 __dirname: "import.meta.url",
                 __filename: "import.meta.url",
             },
-            external: ["argon2"],
+            external: [
+                "argon2",
+                "mjml",
+                "mjml-core",
+                "html-minifier",
+                "uglify-js",
+                "@prisma/client",
+                "@prisma/adapter-pg",
+            ],
         });
 
         // Copy email templates to dist folder
