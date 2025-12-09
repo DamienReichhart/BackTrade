@@ -22,12 +22,12 @@ const authServiceLogger = logger.child({
 async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     const user = await userService.getUserByEmail(loginRequest.email);
     authServiceLogger.trace(
-        { email: loginRequest.email },
+        { userId: user.id },
         "User found, trying to verify password"
     );
     await hashService.verifyPassword(loginRequest.password, user.password_hash);
     authServiceLogger.trace(
-        { email: loginRequest.email },
+        { userId: user.id },
         "Password verified, generating tokens"
     );
 
@@ -40,7 +40,7 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     });
 
     authServiceLogger.trace(
-        { email: loginRequest.email },
+        { userId: user.id },
         "Tokens generated, returning response"
     );
 
