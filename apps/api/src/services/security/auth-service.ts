@@ -1,7 +1,6 @@
 import {
     type AuthResponse,
     type LoginRequest,
-    PublicUserSchema,
     type RegisterRequest,
 } from "@backtrade/types";
 import { Role } from "../../generated/prisma/client";
@@ -14,6 +13,12 @@ const authServiceLogger = logger.child({
     service: "auth-service",
 });
 
+/**
+ * Authenticate user with email and password
+ *
+ * @param loginRequest - Login credentials
+ * @returns Access and refresh tokens
+ */
 async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     const user = await userService.getUserByEmail(loginRequest.email);
     authServiceLogger.trace(
@@ -25,14 +30,13 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
         { email: loginRequest.email },
         "Password verified, generating tokens"
     );
-    const publicUser = PublicUserSchema.parse(user);
 
     const accessToken = await jwtService.generateAccessToken({
-        sub: publicUser,
+        sub: user.id,
     });
 
     const refreshToken = await jwtService.generateRefreshToken({
-        sub: publicUser,
+        sub: user.id,
     });
 
     authServiceLogger.trace(
@@ -46,20 +50,25 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
     } as AuthResponse;
 }
 
+/**
+ * Refresh access token using refresh token
+ *
+ * @param refreshToken - Valid refresh token
+ * @returns New access and refresh tokens
+ */
 async function refreshToken(refreshToken: string): Promise<AuthResponse> {
     const payload = await jwtService.verifyRefreshToken(refreshToken);
     authServiceLogger.trace(
         { payload },
         "Refresh token verified, trying to get user"
     );
-    const user = await userService.getUserById(payload.sub.id);
-    authServiceLogger.trace({ user }, "User found, generating new tokens");
-    const publicUser = PublicUserSchema.parse(user);
+    const user = await userService.getUserById(payload.sub);
+    authServiceLogger.trace({ userId: user.id }, "User found, generating new tokens");
     const accessToken = await jwtService.generateAccessToken({
-        sub: publicUser,
+        sub: user.id,
     });
     const newRefreshToken = await jwtService.generateRefreshToken({
-        sub: publicUser,
+        sub: user.id,
     });
     return {
         accessToken,
@@ -67,6 +76,12 @@ async function refreshToken(refreshToken: string): Promise<AuthResponse> {
     } as AuthResponse;
 }
 
+/**
+ * Register new user account
+ *
+ * @param registerRequest - Registration details
+ * @returns Access and refresh tokens for new user
+ */
 async function register(
     registerRequest: RegisterRequest
 ): Promise<AuthResponse> {
@@ -75,13 +90,12 @@ async function register(
         password_hash: await hashService.hashPassword(registerRequest.password),
         role: Role.USER,
     });
-    authServiceLogger.trace({ user }, "User created, generating tokens");
-    const publicUser = PublicUserSchema.parse(user);
+    authServiceLogger.trace({ userId: user.id }, "User created, generating tokens");
     const accessToken = await jwtService.generateAccessToken({
-        sub: publicUser,
+        sub: user.id,
     });
     const refreshToken = await jwtService.generateRefreshToken({
-        sub: publicUser,
+        sub: user.id,
     });
     return {
         accessToken,

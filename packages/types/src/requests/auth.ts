@@ -1,13 +1,26 @@
 import { z } from "zod";
-import { PublicUserSchema } from "../entities/user";
 
+/**
+ * JWT payload for token generation
+ *
+ * Contains only essential claims to minimize token size:
+ * - sub: User ID (subject claim per JWT spec)
+ */
 export const JwtPayloadGenerationSchema = z.object({
-    sub: PublicUserSchema,
+    sub: z.number().int().positive(),
 });
 export type JwtPayloadGeneration = z.infer<typeof JwtPayloadGenerationSchema>;
 
+/**
+ * JWT payload after token verification
+ *
+ * Contains:
+ * - sub: User ID
+ * - iat: Issued at timestamp
+ * - exp: Expiration timestamp
+ */
 export const JwtPayloadSchema = z.object({
-    sub: PublicUserSchema,
+    sub: z.number().int().positive(),
     iat: z.number(),
     exp: z.number(),
 });

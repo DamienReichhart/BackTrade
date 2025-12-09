@@ -4,23 +4,25 @@ import {
     setCookie,
     getCookie,
 } from "../../utils/browser/cookies";
-import { PublicUserSchema, type PublicUser } from "@backtrade/types";
+import { type PublicUser } from "@backtrade/types";
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
     exp?: number;
-    sub?: unknown;
+    sub?: number;
 }
 
 interface AuthState {
     accessToken: string | undefined;
     refreshToken: string | undefined;
     user: PublicUser | null;
+    isInitialized: boolean;
 }
 
 interface AuthActions {
     login: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
+    setUser: (user: PublicUser | null) => void;
 }
 
 const ACCESS_TOKEN_COOKIE = "access_token";
@@ -40,25 +42,10 @@ function safeDecodeToken(token: string | undefined): DecodedToken | null {
     }
 
     try {
-        // Narrow the return type so we don't rely on `any`
         return jwtDecode<DecodedToken>(token);
     } catch {
         return null;
     }
-}
-
-/**
- * Extract user from access token
- */
-function getUserFromAccessToken(
-    accessToken: string | undefined
-): PublicUser | null {
-    const decoded = safeDecodeToken(accessToken);
-    if (!decoded?.sub) {
-        return null;
-    }
-
-    return PublicUserSchema.parse(decoded.sub);
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => {
@@ -68,7 +55,14 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
     return {
         accessToken,
         refreshToken,
-        user: getUserFromAccessToken(accessToken),
+        user: null,
+        isInitialized: false,
+
+        /**
+         * Store tokens after successful login/registration
+         *
+         * User data should be fetched separately via /auth/me endpoint
+         */
         login: (newAccessToken, newRefreshToken) => {
             const accessTokenDecoded = safeDecodeToken(newAccessToken);
             const refreshTokenDecoded = safeDecodeToken(newRefreshToken);
@@ -77,7 +71,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
             const refreshTokenExpiresAt = refreshTokenDecoded?.exp;
 
             if (!accessTokenExpiresAt || !refreshTokenExpiresAt) {
-                // If we get here something is wrong with the backend-issued tokens
                 throw new Error("Invalid token expiration");
             }
 
@@ -95,9 +88,12 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
             set({
                 accessToken: newAccessToken,
                 refreshToken: newRefreshToken,
-                user: getUserFromAccessToken(newAccessToken),
             });
         },
+
+        /**
+         * Clear all auth state and cookies
+         */
         logout: () => {
             deleteCookie(ACCESS_TOKEN_COOKIE);
             deleteCookie(REFRESH_TOKEN_COOKIE);
@@ -105,6 +101,19 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
                 accessToken: undefined,
                 refreshToken: undefined,
                 user: null,
+                isInitialized: true,
+            });
+        },
+
+        /**
+         * Set the current user data
+         *
+         * Called after fetching user from /auth/me endpoint
+         */
+        setUser: (user) => {
+            set({
+                user,
+                isInitialized: true,
             });
         },
     };

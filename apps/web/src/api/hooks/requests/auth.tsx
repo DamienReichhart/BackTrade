@@ -1,4 +1,4 @@
-import { usePost, usePatch } from "..";
+import { usePost, usePatch, useGet } from "..";
 import { z } from "zod";
 import {
     LoginRequestSchema,
@@ -9,6 +9,7 @@ import {
     RefreshTokenRequestSchema,
     AuthResponseSchema,
     EmptyResponseSchema,
+    PublicUserSchema,
 } from "@backtrade/types";
 
 /**
@@ -34,6 +35,10 @@ export function useRefreshToken() {
         RefreshTokenRequestSchema,
         AuthResponseSchema
     );
+}
+
+export function useCurrentUser(options?: { enabled?: boolean }) {
+    return useGet("/auth/me", PublicUserSchema, options);
 }
 
 export function useChangePassword(id: string) {
