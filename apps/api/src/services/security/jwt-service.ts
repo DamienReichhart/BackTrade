@@ -3,6 +3,7 @@ import { ENV } from "../../config/env";
 import { logger } from "../../libs/logger/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import type { JwtPayload, JwtPayloadGeneration } from "@backtrade/types";
+import { JwtPayloadSchema } from "@backtrade/types";
 
 const jwtServiceLogger = logger.child({
     service: "jwt-service",
@@ -36,7 +37,7 @@ async function verifyAccessToken(token: string): Promise<JwtPayload> {
             algorithms: ["HS256"],
         } as jwt.VerifyOptions);
         jwtServiceLogger.debug({ payload }, "Access token verified");
-        return payload as unknown as JwtPayload;
+        return JwtPayloadSchema.parse(payload);
     } catch (error) {
         jwtServiceLogger.warn({ error }, "Access token verification failed");
         throw new UnAuthenticatedError("Invalid access token");
