@@ -1,4 +1,30 @@
 import { build } from "esbuild";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/**
+ * Recursively copy a directory from source to destination
+ */
+async function copyDirectory(src: string, dest: string): Promise<void> {
+    await fs.promises.mkdir(dest, { recursive: true });
+
+    const entries = await fs.promises.readdir(src, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+
+        if (entry.isDirectory()) {
+            await copyDirectory(srcPath, destPath);
+        } else {
+            await fs.promises.copyFile(srcPath, destPath);
+        }
+    }
+}
 
 async function main() {
     try {
@@ -18,6 +44,12 @@ async function main() {
             },
             external: ["argon2"],
         });
+
+        // Copy email templates to dist folder
+        const templatesSrc = path.join(__dirname, "..", "src", "email", "templates");
+        const templatesDest = path.join(__dirname, "..", "dist", "templates");
+
+        await copyDirectory(templatesSrc, templatesDest);
 
         // eslint-disable-next-line no-console
         console.log("Build completed successfully.");
