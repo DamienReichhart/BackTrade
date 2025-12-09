@@ -4,20 +4,34 @@ import {
     AuthResponseSchema,
 } from "@backtrade/types";
 
+/**
+ * Refresh the access token using a refresh token
+ *
+ * @param refreshToken - The refresh token to use for getting a new access token
+ * @returns AuthResponse with new access and refresh tokens, or null if refresh fails
+ */
 export const refreshToken = async (refreshToken: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: RefreshTokenRequestSchema.parse({
+    try {
+        const validatedRequest = RefreshTokenRequestSchema.parse({
             refreshToken: refreshToken,
-        }).toString(),
-    });
-    if (!response.ok) {
+        });
+
+        const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(validatedRequest),
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        const authResponse = AuthResponseSchema.parse(data);
+        return authResponse;
+    } catch {
         return null;
     }
-    const data = await response.json();
-    const authResponse = AuthResponseSchema.parse(data);
-    return authResponse;
 };

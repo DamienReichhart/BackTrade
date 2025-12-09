@@ -30,7 +30,7 @@ export function useLogout() {
 
 export function useRefreshToken() {
     return usePost(
-        "/auth/refresh",
+        "/auth/refresh-token",
         RefreshTokenRequestSchema,
         AuthResponseSchema
     );

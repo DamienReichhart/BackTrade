@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useRegister } from "../../../api/hooks/requests/auth";
 import { useAuthStore } from "../../../store/auth";
 import {
-    validateName,
     validateEmail,
     validatePassword,
     validatePasswordConfirmation,
@@ -13,7 +12,6 @@ import {
  * Register form state
  */
 export interface RegisterFormState {
-    name: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -24,7 +22,6 @@ export interface RegisterFormState {
  * Register form errors
  */
 export interface RegisterFormErrors {
-    name?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
@@ -41,7 +38,6 @@ export function useRegisterForm() {
     const { execute, isLoading } = useRegister();
 
     const [formState, setFormState] = useState<RegisterFormState>({
-        name: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -49,24 +45,10 @@ export function useRegisterForm() {
     });
 
     const [errors, setErrors] = useState<RegisterFormErrors>({
-        name: "Enter your name.",
         email: "Enter a valid email.",
         password: "Minimum 8 characters.",
         confirmPassword: "Passwords must match.",
     });
-
-    /**
-     * Handle name input change
-     */
-    const handleNameChange = (value: string) => {
-        setFormState((prev) => ({ ...prev, name: value }));
-
-        const validation = validateName(value);
-        setErrors((prev) => ({
-            ...prev,
-            name: validation.isValid ? undefined : validation.error,
-        }));
-    };
 
     /**
      * Handle email input change
@@ -137,11 +119,9 @@ export function useRegisterForm() {
      * Check if form is valid
      */
     const isFormValid =
-        !errors.name &&
         !errors.email &&
         !errors.password &&
         !errors.confirmPassword &&
-        formState.name &&
         formState.email &&
         formState.password &&
         formState.confirmPassword &&
@@ -154,7 +134,6 @@ export function useRegisterForm() {
         e.preventDefault();
 
         // Validate all fields
-        const nameValidation = validateName(formState.name);
         const emailValidation = validateEmail(formState.email);
         const passwordValidation = validatePassword(formState.password);
         const confirmationValidation = validatePasswordConfirmation(
@@ -163,13 +142,11 @@ export function useRegisterForm() {
         );
 
         if (
-            !nameValidation.isValid ||
             !emailValidation.isValid ||
             !passwordValidation.isValid ||
             !confirmationValidation.isValid
         ) {
             setErrors({
-                name: nameValidation.error,
                 email: emailValidation.error,
                 password: passwordValidation.error,
                 confirmPassword: confirmationValidation.error,
@@ -199,13 +176,20 @@ export function useRegisterForm() {
             }
         } catch (err) {
             // Handle registration error
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : "Registration failed. Please try again.";
+            let errorMessage = "Registration failed. Please try again.";
+
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === "object" && err !== null) {
+                // Try to extract error message from API response
+                const apiError = err as { error?: { message?: string } };
+                errorMessage =
+                    apiError.error?.message ??
+                    "Registration failed. Please try again.";
+            }
+
             setErrors({
                 email: errorMessage,
-                name: undefined,
                 password: undefined,
                 confirmPassword: undefined,
             });
@@ -217,7 +201,6 @@ export function useRegisterForm() {
         errors,
         isLoading,
         isFormValid,
-        handleNameChange,
         handleEmailChange,
         handlePasswordChange,
         handleConfirmPasswordChange,
