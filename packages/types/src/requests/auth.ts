@@ -21,7 +21,7 @@ export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const RegisterRequestSchema = z
     .object({
-        email: z.string().email(),
+        email: z.email().transform((email) => email.toLowerCase()),
         password: z.string().min(8),
         confirmPassword: z.string().min(8),
     })

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import authService from "../services/security/auth-service";
-import type { LoginRequest } from "@backtrade/types";
+import type { LoginRequest, RegisterRequest } from "@backtrade/types";
 
 async function login(req: Request, res: Response) {
     const authResponse = await authService.login(
@@ -15,7 +15,14 @@ async function refreshToken(req: Request, res: Response) {
     res.status(200).json(authResponse);
 }
 
+async function register(req: Request, res: Response) {
+    const registerRequest = req.validatedInput as RegisterRequest;
+    const authResponse = await authService.register(registerRequest);
+    res.status(200).json(authResponse);
+}
+
 export default {
     login,
     refreshToken,
+    register,
 };

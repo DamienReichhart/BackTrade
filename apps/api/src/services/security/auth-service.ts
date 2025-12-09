@@ -2,7 +2,9 @@ import {
     type AuthResponse,
     type LoginRequest,
     PublicUserSchema,
+    type RegisterRequest,
 } from "@backtrade/types";
+import { Role } from "../../generated/prisma/client";
 import userService from "../base/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/logger/pino";
@@ -65,7 +67,30 @@ async function refreshToken(refreshToken: string): Promise<AuthResponse> {
     } as AuthResponse;
 }
 
+async function register(
+    registerRequest: RegisterRequest
+): Promise<AuthResponse> {
+    const user = await userService.createUser({
+        email: registerRequest.email,
+        password_hash: await hashService.hashPassword(registerRequest.password),
+        role: Role.USER,
+    });
+    authServiceLogger.trace({ user }, "User created, generating tokens");
+    const publicUser = PublicUserSchema.parse(user);
+    const accessToken = await jwtService.generateAccessToken({
+        sub: publicUser,
+    });
+    const refreshToken = await jwtService.generateRefreshToken({
+        sub: publicUser,
+    });
+    return {
+        accessToken,
+        refreshToken,
+    } as AuthResponse;
+}
+
 export default {
     login,
     refreshToken,
+    register,
 };
