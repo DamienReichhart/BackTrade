@@ -31,9 +31,10 @@ async function checkRedis(): Promise<SingleServiceHealthStatus> {
 }
 
 async function checkSMTP(): Promise<SingleServiceHealthStatus> {
-    if (await mailerService.checkConnection()) {
-        return "ok";
-    } else {
+    try {
+        const isConnected = await mailerService.checkConnection();
+        return isConnected ? "ok" : "error";
+    } catch {
         return "error";
     }
 }
