@@ -49,7 +49,7 @@ async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
 async function refreshToken(refreshToken: string): Promise<AuthResponse> {
     const payload = await jwtService.verifyRefreshToken(refreshToken);
     authServiceLogger.trace(
-        { refreshToken },
+        { payload },
         "Refresh token verified, trying to get user"
     );
     const user = await userService.getUserById(payload.sub.id);
