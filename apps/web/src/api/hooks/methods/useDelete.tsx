@@ -9,15 +9,18 @@ import { useAuthStore } from "../../../store";
  */
 export function useDelete(url: string) {
     const queryClient = useQueryClient();
-    const { refreshToken, accessToken, login, logout } = useAuthStore();
+    const { login, logout } = useAuthStore();
     const isRefreshingToken = useRef(false);
 
-    const mutationFn = async (): Promise<void> => {
+    /**
+     * Performs the actual fetch request with the provided access token
+     */
+    const performFetch = async (token: string | undefined): Promise<void> => {
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
         };
-        if (accessToken) {
-            headers["Authorization"] = `Bearer ${accessToken}`;
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
         }
 
         const response = await fetch(API_BASE_URL + url, {
@@ -27,28 +30,35 @@ export function useDelete(url: string) {
 
         if (!response.ok) {
             if (response.status === 401) {
-                // Try to refresh token if available
-                if (refreshToken && !isRefreshingToken.current) {
+                const currentRefreshToken = useAuthStore.getState().refreshToken;
+
+                // Try to refresh token if available and not already refreshing
+                if (currentRefreshToken && !isRefreshingToken.current) {
                     isRefreshingToken.current = true;
-                    const authResponse = await refreshTokenUtils(refreshToken);
-                    if (authResponse) {
-                        login(
-                            authResponse.accessToken,
-                            authResponse.refreshToken
-                        );
+                    try {
+                        const authResponse =
+                            await refreshTokenUtils(currentRefreshToken);
+                        if (authResponse) {
+                            login(
+                                authResponse.accessToken,
+                                authResponse.refreshToken
+                            );
+                            // Retry with the NEW token from the refresh response
+                            return performFetch(authResponse.accessToken);
+                        }
+                        // Token refresh failed - logout user
+                        logout();
+                        throw new Error("Session expired. Please log in again.");
+                    } finally {
                         isRefreshingToken.current = false;
-                        // Retry the original request with new token
-                        return mutationFn();
                     }
-                    // Token refresh failed - logout user
-                    isRefreshingToken.current = false;
-                    logout();
-                    throw new Error("Session expired. Please log in again.");
-                } else if (!refreshToken) {
+                } else if (!currentRefreshToken) {
                     // No refresh token available - logout user
                     logout();
                     throw new Error("Authentication required. Please log in.");
                 }
+                // If already refreshing, throw error to let React Query handle retry
+                throw new Error("Token refresh in progress");
             }
 
             // Handle other error statuses
@@ -64,6 +74,12 @@ export function useDelete(url: string) {
             }
             throw new Error(errorMessage);
         }
+    };
+
+    const mutationFn = async (): Promise<void> => {
+        // Get fresh token from store at mutation execution time
+        const currentAccessToken = useAuthStore.getState().accessToken;
+        return performFetch(currentAccessToken);
     };
 
     const mutation = useMutation({
