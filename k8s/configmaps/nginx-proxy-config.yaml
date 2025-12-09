@@ -35,7 +35,7 @@ data:
 
             # Upstreams - Use Kubernetes service names
             upstream api_backend {
-                server backtrade-api:3000;
+                server backtrade-api:21799;
             }
 
             upstream web_frontend {

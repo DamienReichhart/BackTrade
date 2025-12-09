@@ -1,8 +1,15 @@
 /// <reference types="express" />
 
-declare namespace Express {
-    interface Request {
-        id?: string;
-        validatedInput?: unknown;
+import type { User } from "@backtrade/types";
+
+declare global {
+    namespace Express {
+        interface Request {
+            id?: string;
+            validatedInput?: unknown;
+            user?: User;
+        }
     }
 }
+
+export {};

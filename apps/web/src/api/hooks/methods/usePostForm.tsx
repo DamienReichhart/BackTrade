@@ -13,7 +13,7 @@ export function usePostForm<TOutput>(
     outputSchema: z.ZodSchema<TOutput>
 ) {
     const queryClient = useQueryClient();
-    const { accessToken, refreshToken, login } = useAuthStore();
+    const { accessToken, refreshToken, login, logout } = useAuthStore();
     const isRefreshingToken = useRef(false);
 
     const mutationFn = async (formData: FormData): Promise<TOutput> => {
@@ -30,6 +30,7 @@ export function usePostForm<TOutput>(
 
         if (!response.ok) {
             if (response.status === 401) {
+                // Try to refresh token if available
                 if (refreshToken && !isRefreshingToken.current) {
                     isRefreshingToken.current = true;
                     const authResponse = await refreshTokenUtils(refreshToken);
@@ -39,11 +40,32 @@ export function usePostForm<TOutput>(
                             authResponse.refreshToken
                         );
                         isRefreshingToken.current = false;
+                        // Retry the original request with new token
                         return mutationFn(formData);
                     }
+                    // Token refresh failed - logout user
                     isRefreshingToken.current = false;
+                    logout();
+                    throw new Error("Session expired. Please log in again.");
+                } else if (!refreshToken) {
+                    // No refresh token available - logout user
+                    logout();
+                    throw new Error("Authentication required. Please log in.");
                 }
             }
+
+            // Handle other error statuses
+            let errorMessage = `Request failed with status ${response.status}`;
+            try {
+                const errorData = await response.json();
+                if (errorData?.error?.message) {
+                    errorMessage = errorData.error.message;
+                }
+            } catch {
+                // If response is not JSON, use status text
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();

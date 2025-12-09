@@ -90,9 +90,6 @@ export function useLoginForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Temporary for froentend tests only
-        navigate("/dashboard");
-
         // Validate all fields
         const emailValidation = validateEmail(formState.email);
         const passwordValidation = validatePassword(formState.password);
@@ -119,13 +116,26 @@ export function useLoginForm() {
             ) {
                 login(response.accessToken, response.refreshToken);
                 navigate("/dashboard");
+            } else {
+                // Unexpected response format
+                setErrors({
+                    email: "Invalid response from server. Please try again.",
+                    password: undefined,
+                });
             }
         } catch (err) {
             // Handle login error
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : "Login failed. Please try again.";
+            let errorMessage = "Login failed. Please try again.";
+
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === "object" && err !== null) {
+                // Try to extract error message from API response
+                const apiError = err as { error?: { message?: string } };
+                errorMessage =
+                    apiError.error?.message ??
+                    "Login failed. Please try again.";
+            }
 
             // Check if the error is with "banned" in the response
             const lowerErrorMessage = errorMessage.toLowerCase();

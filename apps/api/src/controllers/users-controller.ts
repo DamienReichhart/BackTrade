@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import usersService from "../services/crud/users-service";
+import usersService from "../services/base/users-service";
 import { logger } from "../libs/logger/pino";
 
 const usersControllerLogger = logger.child({

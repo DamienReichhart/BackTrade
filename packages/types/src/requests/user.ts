@@ -3,7 +3,11 @@ import { PublicUserSchema } from "../entities";
 import { RoleSchema } from "../enums";
 
 export const UpdateUserRequestSchema = z.object({
-    email: z.string().email().optional(),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase())
+        .optional(),
     role: RoleSchema.optional(),
     is_banned: z.boolean().optional(),
 });

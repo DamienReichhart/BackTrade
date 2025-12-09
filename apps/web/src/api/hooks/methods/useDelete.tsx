@@ -9,7 +9,7 @@ import { useAuthStore } from "../../../store";
  */
 export function useDelete(url: string) {
     const queryClient = useQueryClient();
-    const { refreshToken, accessToken, login } = useAuthStore();
+    const { refreshToken, accessToken, login, logout } = useAuthStore();
     const isRefreshingToken = useRef(false);
 
     const mutationFn = async (): Promise<void> => {
@@ -27,6 +27,7 @@ export function useDelete(url: string) {
 
         if (!response.ok) {
             if (response.status === 401) {
+                // Try to refresh token if available
                 if (refreshToken && !isRefreshingToken.current) {
                     isRefreshingToken.current = true;
                     const authResponse = await refreshTokenUtils(refreshToken);
@@ -36,11 +37,32 @@ export function useDelete(url: string) {
                             authResponse.refreshToken
                         );
                         isRefreshingToken.current = false;
+                        // Retry the original request with new token
                         return mutationFn();
                     }
+                    // Token refresh failed - logout user
                     isRefreshingToken.current = false;
+                    logout();
+                    throw new Error("Session expired. Please log in again.");
+                } else if (!refreshToken) {
+                    // No refresh token available - logout user
+                    logout();
+                    throw new Error("Authentication required. Please log in.");
                 }
             }
+
+            // Handle other error statuses
+            let errorMessage = `Request failed with status ${response.status}`;
+            try {
+                const errorData = await response.json();
+                if (errorData?.error?.message) {
+                    errorMessage = errorData.error.message;
+                }
+            } catch {
+                // If response is not JSON, use status text
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
         }
     };
 

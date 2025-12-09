@@ -9,6 +9,11 @@ const userServiceLogger = logger.child({
     service: "user-service",
 });
 
+async function isUserEmailAvailable(email: string): Promise<boolean> {
+    const user = await usersRepo.getUserByEmail(email);
+    return user ? false : true;
+}
+
 async function getUserById(id: number): Promise<User> {
     const cachedUser = await usersCacheService.getCachedUser(id);
     if (cachedUser) {
@@ -33,13 +38,13 @@ async function getUserById(id: number): Promise<User> {
 }
 
 async function createUser(data: Prisma.UserCreateInput): Promise<User> {
-    const existingUser = await usersRepo.getUserByEmail(data.email);
-    if (existingUser) {
+    const isEmailAvailable = await isUserEmailAvailable(data.email);
+    if (!isEmailAvailable) {
         userServiceLogger.debug(
             { email: data.email },
-            "User already exists, throwing already exists error"
+            "Email already in use, throwing already exists error"
         );
-        throw new AlreadyExistsError("User already exists");
+        throw new AlreadyExistsError("Email already in use");
     }
     const user = await usersRepo.createUser(data);
     userServiceLogger.debug({ id: user.id }, "User created");
@@ -120,4 +125,5 @@ export default {
     deleteUser,
     getAllUsers,
     getUserByEmail,
+    isUserEmailAvailable,
 };

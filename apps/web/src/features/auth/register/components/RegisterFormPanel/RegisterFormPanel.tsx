@@ -18,7 +18,6 @@ export function RegisterFormPanel() {
         errors,
         isLoading,
         isFormValid,
-        handleNameChange,
         handleEmailChange,
         handlePasswordChange,
         handleConfirmPasswordChange,
@@ -34,17 +33,6 @@ export function RegisterFormPanel() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    {/* Name Input */}
-                    <Input
-                        label="Name"
-                        type="text"
-                        placeholder="Your name"
-                        value={formState.name}
-                        onChange={(e) => handleNameChange(e.target.value)}
-                        error={errors.name}
-                        hasError={!!errors.name}
-                    />
-
                     {/* Email Input */}
                     <Input
                         label="Email"

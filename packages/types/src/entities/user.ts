@@ -3,14 +3,17 @@ import { RoleSchema } from "../enums";
 
 export const UserSchema = z.object({
     id: z.number().int().positive(),
-    email: z.string().email(),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
     password_hash: z.string(),
     role: RoleSchema,
     is_banned: z.boolean().default(false),
     stripe_customer_id: z.string().optional().nullable(),
     password_reset_code: z.string().optional().nullable(),
-    created_at: z.date(),
-    updated_at: z.date(),
+    created_at: z.coerce.date(),
+    updated_at: z.coerce.date(),
 });
 export type User = z.infer<typeof UserSchema>;
 

@@ -1,4 +1,4 @@
-import type { PublicUser } from "@backtrade/types";
+import { type JwtPayload } from "@backtrade/types";
 
 /**
  * Decode JWT token without verification
@@ -9,7 +9,7 @@ import type { PublicUser } from "@backtrade/types";
  * @param token - JWT token string
  * @returns Decoded token payload or null if invalid
  */
-export function decodeJWT(token: string): Record<string, unknown> | null {
+export function decodeJWT(token: string): JwtPayload | null {
     try {
         const parts = token.split(".");
         if (parts.length !== 3) {
@@ -18,35 +18,39 @@ export function decodeJWT(token: string): Record<string, unknown> | null {
 
         const payload = parts[1];
         const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
-        return JSON.parse(decoded);
+        return JSON.parse(decoded) as JwtPayload;
     } catch {
         return null;
     }
 }
 
 /**
- * Extract public user from JWT token
+ * Extract user ID from JWT token
  *
- * Assumes the token's `sub` claim contains the PublicUser object
+ * The token's `sub` claim contains the user ID (number).
+ * To get full user data, call the /auth/me endpoint.
  *
  * @param token - JWT token string
- * @returns PublicUser object or null if not found
+ * @returns User ID or null if not found
  */
-export function getUserFromToken(token: string): PublicUser | null {
+export function getUserIdFromToken(token: string): number | null {
     const decoded = decodeJWT(token);
-    if (!decoded?.sub) {
+    if (!decoded?.sub || typeof decoded.sub !== "number") {
         return null;
     }
+    return decoded.sub;
+}
 
-    // The sub claim contains the PublicUser object as a string
-    try {
-        const userJson =
-            typeof decoded.sub === "string"
-                ? decoded.sub
-                : JSON.stringify(decoded.sub);
-        const user = JSON.parse(userJson) as PublicUser;
-        return user;
-    } catch {
-        return null;
+/**
+ * Check if a JWT token is expired
+ *
+ * @param token - JWT token string
+ * @returns true if token is expired, false otherwise
+ */
+export function isTokenExpired(token: string): boolean {
+    const decoded = decodeJWT(token);
+    if (!decoded?.exp) {
+        return true;
     }
+    return decoded.exp * 1000 < Date.now();
 }

@@ -20,12 +20,12 @@ async function sendEmail(
     mailerServiceLogger.info({ info }, "Email sent successfully");
 }
 
-async function checkConnection(): Promise<"connected" | "error"> {
+async function checkConnection(): Promise<boolean> {
     try {
         await mailer.verify();
-        return "connected";
+        return true;
     } catch {
-        return "error";
+        return false;
     }
 }
 

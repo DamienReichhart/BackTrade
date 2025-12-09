@@ -1,14 +1,46 @@
 import { z } from "zod";
 
+/**
+ * JWT payload for token generation
+ *
+ * Contains only essential claims to minimize token size:
+ * - sub: User ID (subject claim per JWT spec)
+ */
+export const JwtPayloadGenerationSchema = z.object({
+    sub: z.number().int().positive(),
+});
+export type JwtPayloadGeneration = z.infer<typeof JwtPayloadGenerationSchema>;
+
+/**
+ * JWT payload after token verification
+ *
+ * Contains:
+ * - sub: User ID
+ * - iat: Issued at timestamp
+ * - exp: Expiration timestamp
+ */
+export const JwtPayloadSchema = z.object({
+    sub: z.number().int().positive(),
+    iat: z.number(),
+    exp: z.number(),
+});
+export type JwtPayload = z.infer<typeof JwtPayloadSchema>;
+
 export const LoginRequestSchema = z.object({
-    email: z.string().email(),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
     password: z.string().min(8),
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const RegisterRequestSchema = z
     .object({
-        email: z.string().email(),
+        email: z
+            .string()
+            .email()
+            .transform((email) => email.toLowerCase()),
         password: z.string().min(8),
         confirmPassword: z.string().min(8),
     })
@@ -25,7 +57,10 @@ export const ChangePasswordRequestSchema = z.object({
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
 export const ForgotPasswordRequestSchema = z.object({
-    email: z.string().email(),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
