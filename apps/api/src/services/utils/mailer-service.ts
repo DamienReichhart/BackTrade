@@ -1,6 +1,7 @@
 import mailer from "../../libs/mailer";
 import { ENV } from "../../config/env";
 import { logger } from "../../libs/logger/pino";
+import { maskEmailForLogging } from "../../utils";
 
 const mailerServiceLogger = logger.child({
     service: "mailer-service",
@@ -14,19 +15,22 @@ async function sendEmail(
     // Skip sending email if NEUTRALIZE_EMAIL is enabled
     if (ENV.NEUTRALIZE_EMAIL) {
         mailerServiceLogger.info(
-            { to, subject },
+            { to: maskEmailForLogging(to), subject },
             "Email sending neutralized (NEUTRALIZE_EMAIL=true)"
         );
         return;
     }
 
-    const info = await mailer.sendMail({
+    await mailer.sendMail({
         from: ENV.SMTP_FROM,
         to,
         subject,
         html,
     });
-    mailerServiceLogger.info({ info }, "Email sent successfully");
+    mailerServiceLogger.info(
+        { to: maskEmailForLogging(to) },
+        "Email sent successfully"
+    );
 }
 
 async function checkConnection(): Promise<boolean> {

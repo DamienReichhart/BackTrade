@@ -10,3 +10,5 @@ export {
     formatLoginDate,
     type DeviceInfo,
 } from "./request-context";
+
+export { maskEmail, maskEmailForLogging } from "./pii-masking";

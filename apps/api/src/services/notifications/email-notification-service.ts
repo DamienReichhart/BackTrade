@@ -13,7 +13,11 @@ import {
 import mailerService from "../utils/mailer-service";
 import { ENV } from "../../config/env";
 import { logger } from "../../libs/logger/pino";
-import { formatLoginDate, type DeviceInfo } from "../../utils/request-context";
+import {
+    formatLoginDate,
+    type DeviceInfo,
+    maskEmailForLogging,
+} from "../../utils";
 
 const emailNotificationLogger = logger.child({
     service: "email-notification-service",
@@ -36,7 +40,7 @@ function sendEmailFireAndForget(
 ): void {
     sendFn().catch((error) => {
         emailNotificationLogger.error(
-            { error, email, emailType },
+            { error, email: maskEmailForLogging(email), emailType },
             `Failed to send ${emailType} email`
         );
     });
@@ -59,7 +63,7 @@ function sendEmailFireAndForget(
 function sendWelcomeEmail(email: string, username: string): void {
     sendEmailFireAndForget("welcome", email, async () => {
         emailNotificationLogger.debug(
-            { email, username },
+            { email: maskEmailForLogging(email), username },
             "Rendering welcome email template"
         );
 
@@ -70,12 +74,15 @@ function sendWelcomeEmail(email: string, username: string): void {
 
         const html = await templates.register(templateData);
 
-        emailNotificationLogger.debug({ email }, "Sending welcome email");
+        emailNotificationLogger.debug(
+            { email: maskEmailForLogging(email) },
+            "Sending welcome email"
+        );
 
         await mailerService.sendEmail(email, "Welcome to BackTrade!", html);
 
         emailNotificationLogger.info(
-            { email, username },
+            { email: maskEmailForLogging(email), username },
             "Welcome email sent successfully"
         );
     });
@@ -110,7 +117,11 @@ function sendLoginNotification(
 ): void {
     sendEmailFireAndForget("login notification", email, async () => {
         emailNotificationLogger.debug(
-            { email, username, device: deviceInfo.device },
+            {
+                email: maskEmailForLogging(email),
+                username,
+                device: deviceInfo.device,
+            },
             "Rendering login notification template"
         );
 
@@ -127,7 +138,7 @@ function sendLoginNotification(
         const html = await templates.login(templateData);
 
         emailNotificationLogger.debug(
-            { email },
+            { email: maskEmailForLogging(email) },
             "Sending login notification email"
         );
 
@@ -138,7 +149,11 @@ function sendLoginNotification(
         );
 
         emailNotificationLogger.info(
-            { email, username, device: deviceInfo.device },
+            {
+                email: maskEmailForLogging(email),
+                username,
+                device: deviceInfo.device,
+            },
             "Login notification email sent successfully"
         );
     });
