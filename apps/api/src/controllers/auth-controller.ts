@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import authService from "../services/security/auth-service";
-import type { LoginRequest, RegisterRequest } from "@backtrade/types";
-import { PublicUserSchema } from "@backtrade/types";
+import  { type LoginRequest, type RegisterRequest, PublicUserSchema } from "@backtrade/types";
 
 /**
  * Handle user login

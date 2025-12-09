@@ -3,7 +3,10 @@ import { RoleSchema } from "../enums";
 
 export const UserSchema = z.object({
     id: z.number().int().positive(),
-    email: z.string().email().transform((email) => email.toLowerCase()),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
     password_hash: z.string(),
     role: RoleSchema,
     is_banned: z.boolean().default(false),

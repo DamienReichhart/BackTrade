@@ -2,8 +2,11 @@ import jwt from "jsonwebtoken";
 import { ENV } from "../../config/env";
 import { logger } from "../../libs/logger/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
-import type { JwtPayload, JwtPayloadGeneration } from "@backtrade/types";
-import { JwtPayloadSchema } from "@backtrade/types";
+import {
+    type JwtPayload,
+    type JwtPayloadGeneration,
+    JwtPayloadSchema,
+} from "@backtrade/types";
 
 const jwtServiceLogger = logger.child({
     service: "jwt-service",

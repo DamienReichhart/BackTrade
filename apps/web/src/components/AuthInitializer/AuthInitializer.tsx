@@ -20,7 +20,11 @@ export function AuthInitializer({ children }: AuthInitializerProps) {
     const { accessToken, setUser, isInitialized } = useAuthStore();
     const hasToken = !!accessToken;
 
-    const { data: user, isLoading, error } = useCurrentUser({
+    const {
+        data: user,
+        isLoading,
+        error,
+    } = useCurrentUser({
         enabled: hasToken && !isInitialized,
     });
 
@@ -48,4 +52,3 @@ export function AuthInitializer({ children }: AuthInitializerProps) {
 
     return <>{children}</>;
 }
-

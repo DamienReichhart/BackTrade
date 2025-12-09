@@ -1,4 +1,4 @@
-import { JwtPayload } from "@backtrade/types";
+import { type JwtPayload } from "@backtrade/types";
 
 /**
  * Decode JWT token without verification

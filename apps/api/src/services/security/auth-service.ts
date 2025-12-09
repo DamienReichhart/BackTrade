@@ -63,7 +63,10 @@ async function refreshToken(refreshToken: string): Promise<AuthResponse> {
         "Refresh token verified, trying to get user"
     );
     const user = await userService.getUserById(payload.sub);
-    authServiceLogger.trace({ userId: user.id }, "User found, generating new tokens");
+    authServiceLogger.trace(
+        { userId: user.id },
+        "User found, generating new tokens"
+    );
     const accessToken = await jwtService.generateAccessToken({
         sub: user.id,
     });
@@ -90,7 +93,10 @@ async function register(
         password_hash: await hashService.hashPassword(registerRequest.password),
         role: Role.USER,
     });
-    authServiceLogger.trace({ userId: user.id }, "User created, generating tokens");
+    authServiceLogger.trace(
+        { userId: user.id },
+        "User created, generating tokens"
+    );
     const accessToken = await jwtService.generateAccessToken({
         sub: user.id,
     });

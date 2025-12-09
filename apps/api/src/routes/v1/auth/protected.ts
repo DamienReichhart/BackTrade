@@ -20,4 +20,3 @@ authProtectedRouter.get(
 );
 
 export default authProtectedRouter;
-

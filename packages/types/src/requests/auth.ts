@@ -27,14 +27,20 @@ export const JwtPayloadSchema = z.object({
 export type JwtPayload = z.infer<typeof JwtPayloadSchema>;
 
 export const LoginRequestSchema = z.object({
-    email: z.string().email().transform((email) => email.toLowerCase()),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
     password: z.string().min(8),
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const RegisterRequestSchema = z
     .object({
-        email: z.string().email().transform((email) => email.toLowerCase()),
+        email: z
+            .string()
+            .email()
+            .transform((email) => email.toLowerCase()),
         password: z.string().min(8),
         confirmPassword: z.string().min(8),
     })
@@ -51,7 +57,10 @@ export const ChangePasswordRequestSchema = z.object({
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
 export const ForgotPasswordRequestSchema = z.object({
-    email: z.string().email().transform((email) => email.toLowerCase()),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
