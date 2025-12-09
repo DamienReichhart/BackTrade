@@ -40,12 +40,13 @@ services:
             REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
             ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
             REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
-            FRONTEND_URL: ${FRONTEND_URL}
             SMTP_HOST: ${SMTP_HOST}
             SMTP_PORT: ${SMTP_PORT}
             SMTP_USER: ${SMTP_USER}
             SMTP_PASSWORD: ${SMTP_PASSWORD}
             SMTP_FROM: ${SMTP_FROM}
+            FRONTEND_URL: ${FRONTEND_URL}
+            NEUTRALIZE_EMAIL: ${NEUTRALIZE_EMAIL}
         networks:
             backtrade:
                 ipv4_address: 192.168.250.11
