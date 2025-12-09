@@ -1,6 +1,6 @@
 {
     "name": "@backtrade/api",
-    "version": "0.1",
+    "version": "1.0.0",
     "private": true,
     "type": "module",
     "scripts": {
@@ -23,8 +23,8 @@
         "prisma:seed": "prisma db seed"
     },
     "dependencies": {
-        "@backtrade/types": "workspace:*",
-        "@backtrade/utils": "workspace:*",
+        "@backtrade/types": "workspace:1.0.0",
+        "@backtrade/utils": "workspace:1.0.0",
         "@prisma/adapter-pg": "^7.0.1",
         "@prisma/client": "^7.0.1",
         "argon2": "^0.44.0",
@@ -43,8 +43,8 @@
         "zod": "4.1.13"
     },
     "devDependencies": {
-        "@backtrade/eslint-config": "workspace:*",
-        "@backtrade/tsconfig": "workspace:*",
+        "@backtrade/eslint-config": "workspace:1.0.0",
+        "@backtrade/tsconfig": "workspace:1.0.0",
         "@eslint/js": "^9.39.1",
         "@types/compression": "^1.8.1",
         "@types/cors": "^2.8.19",

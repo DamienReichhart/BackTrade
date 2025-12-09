@@ -1,7 +1,7 @@
 {
     "name": "@backtrade/web",
     "private": true,
-    "version": "0.1",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite --host",
@@ -18,8 +18,8 @@
         "fake-api": "json-server --watch db.json --port 3001 --routes routes.json"
     },
     "dependencies": {
-        "@backtrade/types": "workspace:*",
-        "@backtrade/utils": "workspace:*",
+        "@backtrade/types": "workspace:1.0.0",
+        "@backtrade/utils": "workspace:1.0.0",
         "@tanstack/react-query": "^5.90.11",
         "jwt-decode": "^4.0.0",
         "lightweight-charts": "^5.0.9",
@@ -30,8 +30,8 @@
         "zustand": "^5.0.8"
     },
     "devDependencies": {
-        "@backtrade/eslint-config": "workspace:*",
-        "@backtrade/tsconfig": "workspace:*",
+        "@backtrade/eslint-config": "workspace:1.0.0",
+        "@backtrade/tsconfig": "workspace:1.0.0",
         "@eslint/js": "^9.39.1",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.0",
