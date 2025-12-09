@@ -12,17 +12,18 @@
  * @returns Sanitized string safe for JSON serialization
  */
 export function sanitizeForJson(str: string): string {
-    return str
-        // Replace newlines with spaces
-        .replace(/\n/g, " ")
-        // Replace carriage returns with spaces
-        .replace(/\r/g, " ")
-        // Replace tabs with spaces
-        .replace(/\t/g, " ")
-        // Replace multiple consecutive spaces with a single space
-        .replace(/\s+/g, " ")
-        // Remove control characters (except space)
-        .replace(/[\x00-\x1F\x7F]/g, "")
-        .trim();
+    return (
+        str
+            // Replace newlines with spaces
+            .replace(/\n/g, " ")
+            // Replace carriage returns with spaces
+            .replace(/\r/g, " ")
+            // Replace tabs with spaces
+            .replace(/\t/g, " ")
+            // Replace multiple consecutive spaces with a single space
+            .replace(/\s+/g, " ")
+            // Remove control characters (except space)
+            .replace(/[\x00-\x1F\x7F]/g, "")
+            .trim()
+    );
 }
-

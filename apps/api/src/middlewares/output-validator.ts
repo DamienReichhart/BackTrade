@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import { z } from "zod";
 import { logger } from "../libs/logger/pino";
 import { type Request, type Response, type NextFunction } from "express";
 import OutputValidationError from "../errors/web/output-validation-error";

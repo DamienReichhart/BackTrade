@@ -22,6 +22,9 @@ export function formatZodError(error: z.ZodError): string {
     // If there's only one error, return a simple formatted message
     if (issues.length === 1) {
         const issue = issues[0];
+        if (!issue) {
+            return "Validation error";
+        }
         const path = issue.path.length > 0 ? issue.path.join(".") : "input";
         const message = sanitizeForJson(issue.message);
         return `${path}: ${message}`;
@@ -36,4 +39,3 @@ export function formatZodError(error: z.ZodError): string {
 
     return formattedErrors.join("; ");
 }
-
