@@ -1,5 +1,14 @@
+/**
+ * Auth Controller
+ *
+ * Handles authentication-related HTTP requests.
+ * Orchestrates auth service and email notifications.
+ */
+
 import type { Request, Response } from "express";
 import authService from "../services/security/auth-service";
+import emailNotificationService from "../services/notifications/email-notification-service";
+import { getDeviceInfo } from "../utils/request-context";
 import {
     type LoginRequest,
     type RegisterRequest,
@@ -9,11 +18,23 @@ import {
 
 /**
  * Handle user login
+ *
+ * Authenticates user and sends login notification email.
  */
 async function login(req: Request, res: Response) {
-    const authResponse = await authService.login(
-        req.validatedInput as LoginRequest
+    const loginRequest = req.validatedInput as LoginRequest;
+
+    const authResponse = await authService.login(loginRequest);
+
+    // Send login notification email (fire-and-forget)
+    const deviceInfo = getDeviceInfo(req);
+    emailNotificationService.sendLoginNotification(
+        loginRequest.email,
+        loginRequest.email.split("@")[0] ?? loginRequest.email,
+        new Date(),
+        deviceInfo
     );
+
     res.status(200).json(authResponse);
 }
 
@@ -30,11 +51,21 @@ async function refreshToken(req: Request, res: Response) {
 
 /**
  * Handle user registration
+ *
+ * Creates user account and sends welcome email.
  */
 async function register(req: Request, res: Response) {
     const registerRequest = req.validatedInput as RegisterRequest;
+
     const authResponse = await authService.register(registerRequest);
-    res.status(200).json(authResponse);
+
+    // Send welcome email (fire-and-forget)
+    emailNotificationService.sendWelcomeEmail(
+        registerRequest.email,
+        registerRequest.email.split("@")[0] ?? registerRequest.email
+    );
+
+    res.status(201).json(authResponse);
 }
 
 /**

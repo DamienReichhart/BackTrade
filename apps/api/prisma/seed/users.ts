@@ -13,7 +13,7 @@ export interface SeedUser {
 export async function getUsers(): Promise<SeedUser[]> {
     return [
         {
-            email: "admin@backtrade.damien-reichhart.fr",
+            email: "contact@damien-reichhart.fr",
             password_hash: await hashService.hashPassword(
                 "TheMostSecuredPasswordInTheWorld"
             ),

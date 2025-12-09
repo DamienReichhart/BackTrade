@@ -36,7 +36,8 @@ export function usePostForm<TOutput>(
 
         if (!response.ok) {
             if (response.status === 401) {
-                const currentRefreshToken = useAuthStore.getState().refreshToken;
+                const currentRefreshToken =
+                    useAuthStore.getState().refreshToken;
 
                 // Try to refresh token if available and not already refreshing
                 if (currentRefreshToken && !isRefreshingToken.current) {
@@ -50,11 +51,16 @@ export function usePostForm<TOutput>(
                                 authResponse.refreshToken
                             );
                             // Retry with the NEW token from the refresh response
-                            return performFetch(formData, authResponse.accessToken);
+                            return performFetch(
+                                formData,
+                                authResponse.accessToken
+                            );
                         }
                         // Token refresh failed - logout user
                         logout();
-                        throw new Error("Session expired. Please log in again.");
+                        throw new Error(
+                            "Session expired. Please log in again."
+                        );
                     } finally {
                         isRefreshingToken.current = false;
                     }

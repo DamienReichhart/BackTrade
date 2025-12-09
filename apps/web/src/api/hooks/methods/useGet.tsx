@@ -36,7 +36,8 @@ export function useGet<T = unknown>(
 
         if (!response.ok) {
             if (response.status === 401) {
-                const currentRefreshToken = useAuthStore.getState().refreshToken;
+                const currentRefreshToken =
+                    useAuthStore.getState().refreshToken;
 
                 // Try to refresh token if available and not already refreshing
                 if (currentRefreshToken && !isRefreshingToken.current) {
@@ -54,7 +55,9 @@ export function useGet<T = unknown>(
                         }
                         // Token refresh failed - logout user
                         logout();
-                        throw new Error("Session expired. Please log in again.");
+                        throw new Error(
+                            "Session expired. Please log in again."
+                        );
                     } finally {
                         isRefreshingToken.current = false;
                     }

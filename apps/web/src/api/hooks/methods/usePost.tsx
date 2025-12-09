@@ -40,7 +40,8 @@ export function usePost<TInput, TOutput>(
 
         if (!response.ok) {
             if (response.status === 401) {
-                const currentRefreshToken = useAuthStore.getState().refreshToken;
+                const currentRefreshToken =
+                    useAuthStore.getState().refreshToken;
 
                 // Try to refresh token if available and not already refreshing
                 if (currentRefreshToken && !isRefreshingToken.current) {
@@ -58,7 +59,9 @@ export function usePost<TInput, TOutput>(
                         }
                         // Token refresh failed - logout user
                         logout();
-                        throw new Error("Session expired. Please log in again.");
+                        throw new Error(
+                            "Session expired. Please log in again."
+                        );
                     } finally {
                         isRefreshingToken.current = false;
                     }
