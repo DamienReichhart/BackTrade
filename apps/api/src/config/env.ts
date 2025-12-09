@@ -31,6 +31,11 @@ const EnvSchema = z.object({
     SMTP_USER: z.string(),
     SMTP_PASSWORD: z.string(),
     SMTP_FROM: z.string(),
+    FRONTEND_URL: z.string().url(),
+    NEUTRALIZE_EMAIL: z
+        .string()
+        .default("false")
+        .transform((val) => val === "true"),
 });
 
 export const ENV = EnvSchema.parse(process.env);

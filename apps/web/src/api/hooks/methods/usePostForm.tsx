@@ -13,13 +13,19 @@ export function usePostForm<TOutput>(
     outputSchema: z.ZodSchema<TOutput>
 ) {
     const queryClient = useQueryClient();
-    const { accessToken, refreshToken, login, logout } = useAuthStore();
+    const { login, logout } = useAuthStore();
     const isRefreshingToken = useRef(false);
 
-    const mutationFn = async (formData: FormData): Promise<TOutput> => {
+    /**
+     * Performs the actual fetch request with the provided access token
+     */
+    const performFetch = async (
+        formData: FormData,
+        token: string | undefined
+    ): Promise<TOutput> => {
         const headers: Record<string, string> = {};
-        if (accessToken) {
-            headers["Authorization"] = `Bearer ${accessToken}`;
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
         }
 
         const response = await fetch(API_BASE_URL + url, {
@@ -30,28 +36,41 @@ export function usePostForm<TOutput>(
 
         if (!response.ok) {
             if (response.status === 401) {
-                // Try to refresh token if available
-                if (refreshToken && !isRefreshingToken.current) {
+                const currentRefreshToken =
+                    useAuthStore.getState().refreshToken;
+
+                // Try to refresh token if available and not already refreshing
+                if (currentRefreshToken && !isRefreshingToken.current) {
                     isRefreshingToken.current = true;
-                    const authResponse = await refreshTokenUtils(refreshToken);
-                    if (authResponse) {
-                        login(
-                            authResponse.accessToken,
-                            authResponse.refreshToken
+                    try {
+                        const authResponse =
+                            await refreshTokenUtils(currentRefreshToken);
+                        if (authResponse) {
+                            login(
+                                authResponse.accessToken,
+                                authResponse.refreshToken
+                            );
+                            // Retry with the NEW token from the refresh response
+                            return performFetch(
+                                formData,
+                                authResponse.accessToken
+                            );
+                        }
+                        // Token refresh failed - logout user
+                        logout();
+                        throw new Error(
+                            "Session expired. Please log in again."
                         );
+                    } finally {
                         isRefreshingToken.current = false;
-                        // Retry the original request with new token
-                        return mutationFn(formData);
                     }
-                    // Token refresh failed - logout user
-                    isRefreshingToken.current = false;
-                    logout();
-                    throw new Error("Session expired. Please log in again.");
-                } else if (!refreshToken) {
+                } else if (!currentRefreshToken) {
                     // No refresh token available - logout user
                     logout();
                     throw new Error("Authentication required. Please log in.");
                 }
+                // If already refreshing, throw error to let React Query handle retry
+                throw new Error("Token refresh in progress");
             }
 
             // Handle other error statuses
@@ -70,6 +89,12 @@ export function usePostForm<TOutput>(
 
         const data = await response.json();
         return outputSchema.parse(data);
+    };
+
+    const mutationFn = async (formData: FormData): Promise<TOutput> => {
+        // Get fresh token from store at mutation execution time
+        const currentAccessToken = useAuthStore.getState().accessToken;
+        return performFetch(formData, currentAccessToken);
     };
 
     const mutation = useMutation({

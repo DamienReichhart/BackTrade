@@ -1,6 +1,6 @@
 {
     "name": "@backtrade/eslint-config",
-    "version": "0.1",
+    "version": "1.0.0",
     "private": true,
     "type": "module",
     "main": "eslint.config.js",
