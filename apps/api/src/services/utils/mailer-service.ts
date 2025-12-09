@@ -11,6 +11,15 @@ async function sendEmail(
     subject: string,
     html: string
 ): Promise<void> {
+    // Skip sending email if NEUTRALIZE_EMAIL is enabled
+    if (ENV.NEUTRALIZE_EMAIL) {
+        mailerServiceLogger.info(
+            { to, subject },
+            "Email sending neutralized (NEUTRALIZE_EMAIL=true)"
+        );
+        return;
+    }
+
     const info = await mailer.sendMail({
         from: ENV.SMTP_FROM,
         to,
