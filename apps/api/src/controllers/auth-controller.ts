@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import authService from "../services/security/auth-service";
-import  { type LoginRequest, type RegisterRequest, PublicUserSchema } from "@backtrade/types";
+import  { type LoginRequest, type RegisterRequest, PublicUserSchema, type RefreshTokenRequest } from "@backtrade/types";
 
 /**
  * Handle user login
@@ -16,8 +16,8 @@ async function login(req: Request, res: Response) {
  * Handle token refresh
  */
 async function refreshToken(req: Request, res: Response) {
-    const refreshToken = req.body.refreshToken;
-    const authResponse = await authService.refreshToken(refreshToken);
+    const refreshToken = req.validatedInput as RefreshTokenRequest;
+    const authResponse = await authService.refreshToken(refreshToken.refreshToken);
     res.status(200).json(authResponse);
 }
 
