@@ -2,6 +2,10 @@ import { SearchQuerySchema } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instrument-service";
 import BadRequestError from "../errors/web/bad-request-error";
+import type {
+    InstrumentCreateInput,
+    InstrumentUpdateInput,
+} from "../generated/prisma/models";
 
 const getInstrumentById = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -19,7 +23,9 @@ const getAllInstruments = async (req: Request, res: Response) => {
 };
 
 const createInstrument = async (req: Request, res: Response) => {
-    const instrument = await instrumentService.createInstrument(req.body);
+    const instrument = await instrumentService.createInstrument(
+        req.body as InstrumentCreateInput
+    );
     return res.status(201).json(instrument);
 };
 
@@ -28,7 +34,10 @@ const updateInstrument = async (req: Request, res: Response) => {
     if (!id) {
         throw new BadRequestError("Instrument ID is required");
     }
-    const instrument = await instrumentService.updateInstrument(id, req.body);
+    const instrument = await instrumentService.updateInstrument(
+        id,
+        req.body as InstrumentUpdateInput
+    );
     return res.status(200).json(instrument);
 };
 
