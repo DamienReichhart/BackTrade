@@ -1,4 +1,4 @@
-import instrumentController from "../../../controllers/instrument-controller";
+import instrumentController from "../../../controllers/instruments-controller";
 import inputValidations from "../../../middlewares/input-validations";
 import { InstrumentSchema } from "@backtrade/types";
 import { Router } from "express";

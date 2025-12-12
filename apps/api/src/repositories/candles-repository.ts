@@ -7,13 +7,23 @@
 import type { Candle, Prisma } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
 
+export interface FindAllOptions {
+    where?: Prisma.CandleWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: Prisma.CandleOrderByWithRelationInput;
+}
+
 /**
- * Get all candles matching optional filter conditions
+ * Get all candles matching optional filter, pagination, and sorting
  */
-async function getAllCandles(
-    where?: Prisma.CandleWhereInput
-): Promise<Candle[]> {
-    return prisma.candle.findMany({ where });
+async function getAllCandles(options?: FindAllOptions): Promise<Candle[]> {
+    return prisma.candle.findMany({
+        where: options?.where,
+        skip: options?.skip,
+        take: options?.take,
+        orderBy: options?.orderBy,
+    });
 }
 
 /**

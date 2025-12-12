@@ -20,4 +20,10 @@ export const HealthSchema = z.object({
 });
 export type Health = z.infer<typeof HealthSchema>;
 
+export const DateRangeSchema = z.object({
+    startDate: z.iso.datetime(),
+    endDate: z.iso.datetime(),
+});
+export type DateRange = z.infer<typeof DateRangeSchema>;
+
 export const HealthResponseSchema = HealthSchema;

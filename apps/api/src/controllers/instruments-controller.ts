@@ -1,6 +1,6 @@
 import { SearchQuerySchema } from "@backtrade/types";
 import type { Request, Response } from "express";
-import instrumentService from "../services/base/instrument-service";
+import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import type {
     InstrumentCreateInput,
