@@ -2,6 +2,7 @@ import type { Dataset } from "@backtrade/types";
 import { formatDate, formatDateTime } from "@backtrade/utils";
 import { Button } from "../../../../../components/Button";
 import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
+import { DetailItem } from "../DetailItem";
 import styles from "./DatasetDetailsModal.module.css";
 
 /**
@@ -32,30 +33,6 @@ interface DatasetDetailsModalProps {
      * Callback when upload is requested
      */
     onUpload?: () => void;
-}
-
-/**
- * Detail item component for displaying a label-value pair
- */
-function DetailItem({
-    label,
-    value,
-    variant,
-}: {
-    label: string;
-    value: React.ReactNode;
-    variant?: "default" | "code" | "badge";
-}) {
-    return (
-        <div className={styles.detailItem}>
-            <span className={styles.detailLabel}>{label}</span>
-            <span
-                className={`${styles.detailValue} ${variant ? styles[variant] : ""}`}
-            >
-                {value}
-            </span>
-        </div>
-    );
 }
 
 /**
