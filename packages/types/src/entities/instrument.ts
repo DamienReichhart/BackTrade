@@ -4,7 +4,7 @@ export const InstrumentSchema = z.object({
     id: z.number().int().positive(),
     symbol: z.string(),
     display_name: z.string(),
-    pip_size: z.number().positive(),
+    pip_size: z.coerce.number().positive(), // coerce to handle string from API (e.g., "0.0001")
     created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
     updated_at: z.string().optional(),
 });
