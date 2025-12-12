@@ -7,13 +7,23 @@
 import type { Dataset, Prisma } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
 
+export interface FindAllOptions {
+    where?: Prisma.DatasetWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: Prisma.DatasetOrderByWithRelationInput;
+}
+
 /**
- * Get all datasets matching optional filter conditions
+ * Get all datasets matching optional filter, pagination, and sorting
  */
-async function getAllDatasets(
-    where?: Prisma.DatasetWhereInput
-): Promise<Dataset[]> {
-    return prisma.dataset.findMany({ where });
+async function getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
+    return prisma.dataset.findMany({
+        where: options?.where,
+        skip: options?.skip,
+        take: options?.take,
+        orderBy: options?.orderBy,
+    });
 }
 
 /**
