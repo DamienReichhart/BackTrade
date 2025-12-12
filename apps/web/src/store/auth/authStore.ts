@@ -88,6 +88,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => {
             set({
                 accessToken: newAccessToken,
                 refreshToken: newRefreshToken,
+                user: null,
+                isInitialized: false,
             });
         },
 

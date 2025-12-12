@@ -54,7 +54,13 @@ async function main() {
         });
 
         // Copy email templates to dist folder
-        const templatesSrc = path.join(__dirname, "..", "src", "email", "templates");
+        const templatesSrc = path.join(
+            __dirname,
+            "..",
+            "src",
+            "email",
+            "templates"
+        );
         const templatesDest = path.join(__dirname, "..", "dist", "templates");
 
         await copyDirectory(templatesSrc, templatesDest);
