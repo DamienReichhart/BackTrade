@@ -1,0 +1,96 @@
+/**
+ * SearchFilter Styles
+ */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.searchWrapper {
+    flex: 1;
+}
+
+.searchInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-md);
+    font-size: var(--font-size-base);
+    color: var(--color-text-tertiary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.searchInput {
+    padding-left: calc(var(--spacing-md) * 2 + 1em) !important;
+    width: 100%;
+}
+
+.clearSearchButton {
+    position: absolute;
+    right: var(--spacing-sm);
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    line-height: 1;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+}
+
+.clearSearchButton:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-tertiary);
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.filterItem {
+    min-width: 160px;
+}
+
+.clearButton {
+    color: var(--color-accent);
+}
+
+.clearButton:hover {
+    color: var(--color-text-primary);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .searchWrapper {
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 640px) {
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filterItem {
+        width: 100%;
+    }
+}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDatasets } from "../../../../api/hooks/requests/datasets";
 import type { Dataset } from "@backtrade/types";
@@ -21,9 +21,17 @@ export type SortOrder = "asc" | "desc";
  */
 export function useDatasetManagement() {
     const navigate = useNavigate();
+
+    // Sort state
     const [sortField, setSortField] = useState<SortField>("created_at");
     const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
+    // Filter state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [timeframeFilter, setTimeframeFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+
+    // Fetch datasets
     const {
         data: datasetsData,
         isLoading,
@@ -33,29 +41,112 @@ export function useDatasetManagement() {
     const datasets: Dataset[] = Array.isArray(datasetsData) ? datasetsData : [];
 
     /**
+     * Check if any filters are active
+     */
+    const hasActiveFilters = useMemo(() => {
+        return (
+            searchQuery.length > 0 ||
+            timeframeFilter.length > 0 ||
+            statusFilter.length > 0
+        );
+    }, [searchQuery, timeframeFilter, statusFilter]);
+
+    /**
      * Handle sort field change
      */
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-        } else {
-            setSortField(field);
-            setSortOrder("desc");
-        }
-    };
+    const handleSort = useCallback(
+        (field: SortField) => {
+            if (sortField === field) {
+                setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+            } else {
+                setSortField(field);
+                setSortOrder("desc");
+            }
+        },
+        [sortField, sortOrder]
+    );
+
+    /**
+     * Handle search query change
+     */
+    const handleSearchChange = useCallback((query: string) => {
+        setSearchQuery(query);
+    }, []);
+
+    /**
+     * Handle timeframe filter change
+     */
+    const handleTimeframeChange = useCallback((timeframe: string) => {
+        setTimeframeFilter(timeframe);
+    }, []);
+
+    /**
+     * Handle status filter change
+     */
+    const handleStatusChange = useCallback((status: string) => {
+        setStatusFilter(status);
+    }, []);
+
+    /**
+     * Clear all filters
+     */
+    const handleClearFilters = useCallback(() => {
+        setSearchQuery("");
+        setTimeframeFilter("");
+        setStatusFilter("");
+    }, []);
 
     /**
      * Navigate back to admin choices
      */
-    const handleBackToAdmin = () => {
+    const handleBackToAdmin = useCallback(() => {
         navigate("/dashboard/admin");
-    };
+    }, [navigate]);
+
+    /**
+     * Filter datasets based on search and filters
+     */
+    const filteredDatasets = useMemo(() => {
+        return datasets.filter((dataset) => {
+            // Search filter - match file name or instrument ID
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const matchesFileName =
+                    dataset.file_name?.toLowerCase().includes(query) ?? false;
+                const matchesInstrumentId = String(dataset.instrument_id)
+                    .toLowerCase()
+                    .includes(query);
+
+                if (!matchesFileName && !matchesInstrumentId) {
+                    return false;
+                }
+            }
+
+            // Timeframe filter
+            if (timeframeFilter && dataset.timeframe !== timeframeFilter) {
+                return false;
+            }
+
+            // Status filter
+            if (statusFilter) {
+                const hasFile = !!dataset.file_name;
+                if (statusFilter === "uploaded" && !hasFile) {
+                    return false;
+                }
+                if (statusFilter === "pending" && hasFile) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }, [datasets, searchQuery, timeframeFilter, statusFilter]);
 
     /**
      * Sort datasets based on current sort field and order
      */
     const sortedDatasets = useMemo(() => {
-        const sorted = [...datasets];
+        const sorted = [...filteredDatasets];
         sorted.sort((a, b) => {
             let aValue: string | number | boolean;
             let bValue: string | number | boolean;
@@ -130,18 +221,29 @@ export function useDatasetManagement() {
             return 0;
         });
         return sorted;
-    }, [datasets, sortField, sortOrder]);
+    }, [filteredDatasets, sortField, sortOrder]);
 
     return {
         // State
         sortField,
         sortOrder,
         datasets: sortedDatasets,
+        allDatasets: datasets,
         isLoading,
         error,
 
+        // Filter state
+        searchQuery,
+        timeframeFilter,
+        statusFilter,
+        hasActiveFilters,
+
         // Handlers
         handleSort,
+        handleSearchChange,
+        handleTimeframeChange,
+        handleStatusChange,
+        handleClearFilters,
         handleBackToAdmin,
         refetchDatasets,
     };

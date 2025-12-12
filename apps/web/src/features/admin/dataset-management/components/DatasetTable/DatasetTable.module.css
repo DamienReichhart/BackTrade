@@ -41,48 +41,68 @@
     background-color: var(--color-surface-elevated);
 }
 
-.table tbody tr {
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.sortIcon {
+    font-size: var(--font-size-xs);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+}
+
+.sortableHeader:hover .sortIcon {
+    opacity: 1;
+}
+
+.actionsHeader {
+    text-align: center;
+    width: 140px;
+}
+
+/* Row Styles */
+.row {
     border-bottom: 1px solid var(--color-border-primary);
     transition: background-color var(--transition-fast);
 }
 
-.table tbody tr:hover {
+.row:hover {
     background-color: var(--color-surface-tertiary);
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+.clickableRow:hover {
+    background-color: var(--color-surface-elevated);
 }
 
 .table td {
     padding: var(--spacing-md);
     color: var(--color-text-primary);
+    vertical-align: middle;
 }
 
-.empty,
-.error {
-    text-align: center;
-    padding: var(--spacing-xl) !important;
-    color: var(--color-text-secondary);
-}
-
-.error {
-    color: var(--color-danger);
-}
-
-.fileNameCell {
-    font-weight: var(--font-weight-medium);
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Cell Styles */
+.idCell {
     white-space: nowrap;
 }
 
-.recordsCell {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-}
-
-.dateCell {
-    color: var(--color-text-secondary);
+.idBadge {
+    display: inline-block;
+    font-family: var(--font-mono);
     font-size: var(--font-size-xs);
-    white-space: nowrap;
+    color: var(--color-text-secondary);
+    background-color: var(--color-surface-tertiary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+}
+
+.instrumentCell {
+    font-weight: var(--font-weight-medium);
 }
 
 .timeframeBadge {
@@ -95,27 +115,147 @@
     color: var(--color-accent);
 }
 
-.statusBadge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
+.fileNameCell {
+    max-width: 180px;
+}
+
+.fileName {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: var(--font-weight-medium);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.noFile,
+.noData {
+    color: var(--color-text-tertiary);
+}
+
+.recordsCell {
+    text-align: right;
+}
+
+.recordsValue {
+    font-variant-numeric: tabular-nums;
     font-weight: var(--font-weight-medium);
 }
 
-.activeBadge {
+.dateCell {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.statusCell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    width: fit-content;
+}
+
+.uploadedBadge {
     background-color: var(--color-success-bg-20);
     color: var(--color-success);
 }
 
-.inactiveBadge {
-    background-color: var(--color-danger-bg-20);
-    color: var(--color-danger);
+.pendingBadge {
+    background-color: var(--color-warning-bg-20);
+    color: var(--color-warning);
+}
+
+.uploadedAt {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
 }
 
 .actionsCell {
     text-align: center;
     white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.deleteButton {
+    color: var(--color-text-tertiary);
+    transition: color var(--transition-fast);
+}
+
+.deleteButton:hover {
+    color: var(--color-danger);
+    background-color: var(--color-danger-bg-20);
+}
+
+/* Error State */
+.errorCell {
+    text-align: center;
+    padding: var(--spacing-xl) !important;
+}
+
+.errorContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.errorIcon {
+    font-size: var(--font-size-3xl);
+}
+
+.errorText {
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+}
+
+/* Skeleton Loading */
+.skeletonRow td {
+    padding: var(--spacing-md);
+}
+
+.skeleton {
+    height: 16px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonBadge {
+    height: 24px;
+    border-radius: var(--radius-full);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 /* Responsive */
@@ -128,6 +268,10 @@
     .table td {
         padding: var(--spacing-sm);
     }
+
+    .actionsHeader {
+        width: 100px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -136,6 +280,10 @@
     }
 
     .table {
-        min-width: 1200px;
+        min-width: 1000px;
+    }
+
+    .statusCell {
+        min-width: 100px;
     }
 }
