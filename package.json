@@ -2,6 +2,7 @@
     "name": "backtrade",
     "private": true,
     "version": "1.0.0",
+    "type": "module",
     "workspaces": [
         "apps/*",
         "packages/*"
@@ -19,6 +20,8 @@
         "format:check": "prettier --check ."
     },
     "devDependencies": {
+        "@commitlint/cli": "^20.2.0",
+        "@commitlint/config-conventional": "^20.2.0",
         "@eslint/js": "^9.39.1",
         "eslint": "^9.39.1",
         "prettier": "^3.7.4",
