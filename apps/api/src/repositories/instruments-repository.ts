@@ -7,13 +7,25 @@
 import type { Instrument, Prisma } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
 
+export interface FindAllOptions {
+    where?: Prisma.InstrumentWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: Prisma.InstrumentOrderByWithRelationInput;
+}
+
 /**
- * Get all instruments matching optional filter conditions
+ * Get all instruments matching optional filter, pagination, and sorting
  */
 async function getAllInstruments(
-    where?: Prisma.InstrumentWhereInput
+    options?: FindAllOptions
 ): Promise<Instrument[]> {
-    return prisma.instrument.findMany({ where });
+    return prisma.instrument.findMany({
+        where: options?.where,
+        skip: options?.skip,
+        take: options?.take,
+        orderBy: options?.orderBy,
+    });
 }
 
 /**
