@@ -56,7 +56,7 @@
         "@types/mjml": "^4.7.4",
         "@types/node": "24.10.1",
         "@types/nodemailer": "^7.0.4",
-        "@types/pg": "^8.15.6",
+        "@types/pg": "^8.16.0",
         "esbuild": "0.27.0",
         "eslint": "^9.39.1",
         "globals": "^16.5.0",
