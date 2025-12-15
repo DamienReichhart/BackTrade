@@ -47,7 +47,7 @@
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:1.0.0",
         "@backtrade/tsconfig": "workspace:1.0.0",
-        "@eslint/js": "^9.39.1",
+        "@eslint/js": "^9.39.2",
         "@types/compression": "^1.8.1",
         "@types/cors": "^2.8.19",
         "@types/express": "5.0.5",
