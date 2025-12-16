@@ -76,6 +76,21 @@ services:
                 ipv4_address: 192.168.250.23
         restart: always
 
+    rabbitmq:
+        build:
+            context: .
+            dockerfile: ./docker/images/rabbitmq.dockerfile
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.31
+        restart: always
+
 volumes:
     backtrade_db:
         driver: local
