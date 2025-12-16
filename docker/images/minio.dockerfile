@@ -1,0 +1,3 @@
+FROM quay.io/minio/minio:latest
+
+
