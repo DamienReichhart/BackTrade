@@ -6,6 +6,7 @@ DOCKER_COMPOSE_DEV := docker compose -f docker-dev.yaml
 DOCKER_COMPOSE_PROD := docker compose -f docker-prod.yaml
 DEV_SERVICE := dev
 API_FILTER := --filter @backtrade/api
+DATABASE_FILTER := --filter @backtrade/datas
 PNPM := pnpm
 
 .PHONY: help
@@ -92,37 +93,37 @@ prod-restart: ## Restart production environment
 .PHONY: db-init
 db-init: ## Initialize database (generate, deploy migrations, and seed)
 	@echo "Initializing database..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:init
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:init
 
 .PHONY: db-generate
 db-generate: ## Generate Prisma client
 	@echo "Generating Prisma client..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:generate
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:generate
 
 .PHONY: db-migrate
 db-migrate: ## Run Prisma migrations in development mode
 	@echo "Running Prisma migrations..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:migrate
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:migrate
 
 .PHONY: db-deploy
 db-deploy: ## Deploy Prisma migrations (production mode)
 	@echo "Deploying Prisma migrations..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:deploy
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:deploy
 
 .PHONY: db-seed
 db-seed: ## Seed database with initial data
 	@echo "Seeding database..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:seed
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:seed
 
 .PHONY: db-studio
 db-studio: ## Open Prisma Studio (database GUI)
 	@echo "Opening Prisma Studio..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:studio
+	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:studio
 
 .PHONY: db-reset
 db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "⚠️  WARNING: This will delete all database data!"
-	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(API_FILTER) prisma:reset"
+	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset"
 
 # =============================================================================
 # Dependencies
@@ -185,7 +186,7 @@ build: ## Build all packages and applications
 	$(PNPM) build
 
 .PHONY: start
-start: ## Start all services (non-docker)
+start: ## Start all build services (non-docker)
 	@echo "Starting all services..."
 	$(PNPM) start
 
