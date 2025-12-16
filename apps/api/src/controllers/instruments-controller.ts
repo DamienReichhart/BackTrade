@@ -1,4 +1,4 @@
-import { SearchQuerySchema } from "@backtrade/types";
+import { SearchQuerySchema, type SearchQuery } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
@@ -17,7 +17,12 @@ const getInstrumentById = async (req: Request, res: Response) => {
 };
 
 const getAllInstruments = async (req: Request, res: Response) => {
-    const query = SearchQuerySchema.parse(req.query);
+    let query: SearchQuery | undefined;
+    try {
+        query = SearchQuerySchema.parse(req.query);
+    } catch {
+        throw new BadRequestError("Invalid query parameters");
+    }
     const instruments = await instrumentService.getAllInstruments(query);
     return res.status(200).json(instruments);
 };
