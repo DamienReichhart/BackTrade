@@ -1,6 +1,6 @@
 import { type Health, type SingleServiceHealthStatus } from "@backtrade/types";
 import healthCacheService from "../cache/health-cache-service";
-import { prisma } from "../../libs/prisma";
+import { prisma } from "@backtrade/datas";
 import { redis } from "../../libs/redis";
 import mailerService from "./mailer-service";
 

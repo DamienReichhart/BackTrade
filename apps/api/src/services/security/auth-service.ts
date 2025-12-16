@@ -3,7 +3,7 @@ import {
     type LoginRequest,
     type RegisterRequest,
 } from "@backtrade/types";
-import { Role } from "../../generated/prisma/client";
+import { Role } from "@backtrade/datas";
 import userService from "../base/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/logger/pino";

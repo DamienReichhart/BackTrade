@@ -1,16 +1,169 @@
+/**
+ * FileUploadButton Styles
+ */
+
 .container {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
+    gap: var(--spacing-xs);
     align-items: flex-start;
+}
+
+.containerFull {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
 }
 
 .hiddenInput {
     display: none;
 }
 
+.buttonWrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.buttonContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.buttonWithProgress {
+    min-width: 80px;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Drop Zone (Full variant) */
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl);
+    background-color: var(--color-surface-secondary);
+    border: 2px dashed var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-height: 150px;
+}
+
+.dropZone:hover:not(.dropZoneDisabled) {
+    border-color: var(--color-accent);
+    background-color: var(--color-surface-tertiary);
+}
+
+.dropZoneDisabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.dropZoneIcon {
+    font-size: var(--font-size-4xl);
+}
+
+.dropZoneText {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.dropZoneHint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+}
+
+/* Progress Container */
+.progressContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.progressCircle {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.progressSvg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progressBg {
+    fill: none;
+    stroke: var(--color-surface-tertiary);
+    stroke-width: 3;
+}
+
+.progressBar {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.progressText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.uploadingText {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Error */
 .error {
     font-size: var(--font-size-xs);
-    color: var(--color-error);
+    color: var(--color-danger);
     white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .dropZone {
+        padding: var(--spacing-lg);
+        min-height: 120px;
+    }
+
+    .dropZoneIcon {
+        font-size: var(--font-size-3xl);
+    }
+
+    .dropZoneText {
+        font-size: var(--font-size-sm);
+    }
 }

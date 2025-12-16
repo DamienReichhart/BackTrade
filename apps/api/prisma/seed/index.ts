@@ -1,11 +1,16 @@
-import { prisma } from "../../src/libs/prisma";
+import { prisma } from "@backtrade/datas";
 import { getPlans } from "./plans";
 import { getUsers } from "./users";
+import { getInstruments } from "./instruments";
 
 async function seed() {
     console.log("🌱 Starting database seed...");
 
-    const [users, plans] = await Promise.all([getUsers(), getPlans()]);
+    const [users, plans, instruments] = await Promise.all([
+        getUsers(),
+        getPlans(),
+        getInstruments(),
+    ]);
 
     for (const user of users) {
         await prisma.user.upsert({
@@ -42,6 +47,22 @@ async function seed() {
             },
         });
         console.log(`  ✓ Upserted plan: ${plan.code}`);
+    }
+
+    for (const instrument of instruments) {
+        await prisma.instrument.upsert({
+            where: { symbol: instrument.symbol },
+            update: {
+                display_name: instrument.display_name,
+                pip_size: instrument.pip_size,
+            },
+            create: {
+                symbol: instrument.symbol,
+                display_name: instrument.display_name,
+                pip_size: instrument.pip_size,
+            },
+        });
+        console.log(`  ✓ Upserted instrument: ${instrument.symbol}`);
     }
 
     console.log("Seed completed successfully");

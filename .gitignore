@@ -6,3 +6,7 @@ dist
 .turbo
 **/coverage
 .VSCodeCounter
+# MinIO SSL certificates (should not be committed)
+docker/config/minio/certs/*.crt
+docker/config/minio/certs/*.key
+!docker/config/minio/certs/.gitkeep

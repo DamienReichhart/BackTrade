@@ -36,6 +36,11 @@ const EnvSchema = z.object({
         .string()
         .default("false")
         .transform((val) => val === "true"),
+    MINIO_HOST: z.string(),
+    MINIO_PORT: z.coerce.number().int().positive(),
+    MINIO_USER: z.string(),
+    MINIO_PASSWORD: z.string(),
+    MINIO_CA_CERT_PATH: z.string(),
 });
 
 export const ENV = EnvSchema.parse(process.env);

@@ -26,7 +26,6 @@ function inputValidations<T extends z.ZodType<unknown>>(schema: T) {
             const formattedMessage = formatZodError(result.error);
             throw new BadRequestError(formattedMessage);
         }
-        req.validatedInput = result.data as T;
         next();
     };
 }

@@ -3,6 +3,8 @@ services:
         build:
             context: .
             dockerfile: ./docker/images/dev.dockerfile
+        env_file:
+            - .env
         ports:
             - "21799:21799"
             - "5173:5173"
@@ -10,10 +12,12 @@ services:
             - ./apps:/app/apps
             - ./packages:/app/packages
             - ./assets:/app/assets
+            - ./docker/config/minio/certs:/app/docker/config/minio/certs:ro
             # Exclude node_modules from volume mounts to preserve installed dependencies
             - /app/node_modules
             - /app/apps/api/node_modules
             - /app/apps/web/node_modules
+            - /app/packages/datas/node_modules
             - /app/packages/eslint-config/node_modules
             - /app/packages/tsconfig/node_modules
             - /app/packages/types/node_modules
@@ -21,6 +25,7 @@ services:
         networks:
             backtrade:
                 ipv4_address: 192.168.250.11
+        restart: always
 
     postgres:
         build:
@@ -37,6 +42,7 @@ services:
         networks:
             backtrade:
                 ipv4_address: 192.168.250.21
+        restart: always
 
     redis:
         build:
@@ -49,9 +55,31 @@ services:
         networks:
             backtrade:
                 ipv4_address: 192.168.250.22
+        restart: always
+
+    minio:
+        build:
+            context: .
+            dockerfile: ./docker/images/minio.dockerfile
+        command: server /data --console-address ":9001"
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        environment:
+            MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+        volumes:
+            - backtrade_minio_data:/data
+            - ./docker/config/minio/certs:/root/.minio/certs:ro
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.23
+        restart: always
 
 volumes:
     backtrade_db:
+        driver: local
+    backtrade_minio_data:
         driver: local
 
 networks:

@@ -22,7 +22,7 @@ import {
  * Authenticates user and sends login notification email.
  */
 async function login(req: Request, res: Response) {
-    const loginRequest = req.validatedInput as LoginRequest;
+    const loginRequest = req.body as LoginRequest;
 
     const authResponse = await authService.login(loginRequest);
 
@@ -42,7 +42,7 @@ async function login(req: Request, res: Response) {
  * Handle token refresh
  */
 async function refreshToken(req: Request, res: Response) {
-    const refreshToken = req.validatedInput as RefreshTokenRequest;
+    const refreshToken = req.body as RefreshTokenRequest;
     const authResponse = await authService.refreshToken(
         refreshToken.refreshToken
     );
@@ -55,7 +55,7 @@ async function refreshToken(req: Request, res: Response) {
  * Creates user account and sends welcome email.
  */
 async function register(req: Request, res: Response) {
-    const registerRequest = req.validatedInput as RegisterRequest;
+    const registerRequest = req.body as RegisterRequest;
 
     const authResponse = await authService.register(registerRequest);
 

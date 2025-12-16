@@ -1,0 +1,185 @@
+/**
+ * StatsCards Styles
+ */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+}
+
+.icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+}
+
+.value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Variant Styles */
+.primary .icon {
+    background-color: var(--color-accent-bg-20);
+    color: var(--color-accent);
+}
+
+.success .icon {
+    background-color: var(--color-success-bg-20);
+    color: var(--color-success);
+}
+
+.warning .icon {
+    background-color: var(--color-warning-bg-20);
+    color: var(--color-warning);
+}
+
+.info .icon {
+    background-color: var(--color-info-bg-20);
+    color: var(--color-info);
+}
+
+/* Skeleton Loading */
+.cardSkeleton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+}
+
+.skeletonIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.skeletonValue {
+    height: 28px;
+    width: 60px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonLabel {
+    height: 16px;
+    width: 100px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.1s;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+        padding: var(--spacing-md);
+    }
+
+    .icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .value {
+        font-size: var(--font-size-xl);
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

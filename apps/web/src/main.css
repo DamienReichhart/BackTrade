@@ -169,6 +169,7 @@
     --color-error: var(--color-danger);
     --color-error-light: rgba(239, 68, 68, 0.1);
     --color-warning-bg: rgba(245, 158, 11, 0.1);
+    --color-warning-bg-20: rgba(245, 158, 11, 0.2);
     --color-warning-light: rgba(245, 158, 11, 0.1);
     --color-warning-border: rgba(245, 158, 11, 0.4);
     --color-info-bg: rgba(59, 130, 246, 0.1);

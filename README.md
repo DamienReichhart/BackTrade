@@ -186,7 +186,7 @@ docker compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/api prisma:i
 pnpm dev
 
 # If using real api
-cd apps/api && pnpm prisma:init # Require database configured and working in .env
+cd packages/datas && pnpm prisma:init # Require database configured and working in .env
 
 # If using json-server (not recommended)
 cd apps/web && pnpm fake-api
@@ -195,9 +195,9 @@ cd apps/web && pnpm fake-api
 
 5. **Access the application**
     - **Frontend**: [http://localhost:5173](http://localhost:5173)
-    - **API**: [http://localhost:3000](http://localhost:3000)
+    - **API**: [http://localhost:21799](http://localhost:21799)
     - **API Health Check**:
-      [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health)
+      [http://localhost:21799/api/v1/health](http://localhost:21799/api/v1/health)
 
 ## Development
 

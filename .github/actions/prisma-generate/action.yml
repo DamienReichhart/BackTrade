@@ -1,5 +1,5 @@
 name: Prisma Generate
-description: Generate Prisma Client for the API
+description: Generate Prisma Client for the datas package
 inputs:
     database-url:
         description: Database URL for Prisma configuration
@@ -9,7 +9,7 @@ runs:
     steps:
         - name: Generate Prisma Client
           shell: bash
-          working-directory: apps/api
+          working-directory: packages/datas
           env:
               DATABASE_URL: ${{ inputs.database-url }}
           run: pnpm prisma:generate
