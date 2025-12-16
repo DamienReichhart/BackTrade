@@ -29,21 +29,21 @@
         "prisma:init": "pnpm prisma:generate && pnpm prisma:migrate && pnpm prisma:seed"
     },
     "dependencies": {
-        "@prisma/adapter-pg": "^7.0.1",
-        "@prisma/client": "^7.0.1",
+        "@prisma/adapter-pg": "^7.1.0",
+        "@prisma/client": "^7.1.0",
         "pg": "^8.16.3",
-        "zod": "4.1.13"
+        "zod": "4.2.1"
     },
     "devDependencies": {
-        "@backtrade/eslint-config": "workspace:1.0.0",
-        "@backtrade/tsconfig": "workspace:1.0.0",
+        "@backtrade/eslint-config": "workspace:*",
+        "@backtrade/tsconfig": "workspace:*",
         "@types/node": "25.0.2",
-        "@types/pg": "^8.15.6",
+        "@types/pg": "^8.16.0",
         "globals": "^16.5.0",
-        "prisma": "^7.0.1",
-        "tsx": "^4.20.6",
+        "prisma": "^7.1.0",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "8.47.0"
+        "typescript-eslint": "8.50.0"
     },
     "prisma": {
         "seed": "tsx prisma/seed/index.ts"

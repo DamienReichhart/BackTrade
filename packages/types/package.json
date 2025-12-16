@@ -22,15 +22,15 @@
         "typecheck": "npx tsc --noEmit"
     },
     "dependencies": {
-        "zod": "4.1.13"
+        "zod": "4.2.1"
     },
     "license": "PROPRIETARY",
     "author": "REICHHART Damien",
     "devDependencies": {
-        "@backtrade/eslint-config": "workspace:1.0.0",
-        "@backtrade/tsconfig": "workspace:1.0.0",
+        "@backtrade/eslint-config": "workspace:*",
+        "@backtrade/tsconfig": "workspace:*",
         "globals": "^16.5.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "8.47.0"
+        "typescript-eslint": "8.50.0"
     }
 }
