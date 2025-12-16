@@ -12,7 +12,3 @@ export const logger = pino({
     },
     ...transport,
 });
-
-export function getModuleLogger(moduleName: string) {
-    return logger.child({ module: moduleName });
-}
