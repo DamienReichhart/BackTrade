@@ -31,7 +31,8 @@
     "dependencies": {
         "@prisma/adapter-pg": "^7.0.1",
         "@prisma/client": "^7.0.1",
-        "pg": "^8.16.3"
+        "pg": "^8.16.3",
+        "zod": "4.1.13"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:1.0.0",

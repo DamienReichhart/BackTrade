@@ -7,14 +7,12 @@
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
+import { ENV } from "../config/ENV";
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString || connectionString === "") {
+if (!ENV.DATABASE_URL || ENV.DATABASE_URL === "") {
     throw new Error("DATABASE_URL environment variable is not set or is empty");
 }
-
-const adapter = new PrismaPg({ connectionString });
+const adapter = new PrismaPg({ connectionString: ENV.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 export { prisma };
