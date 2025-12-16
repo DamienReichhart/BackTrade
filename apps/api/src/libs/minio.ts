@@ -14,6 +14,13 @@ const minioClient = new Minio.Client({
     secretKey: ENV.MINIO_PASSWORD,
 });
 
+minioClient.setRequestOptions({
+    rejectUnauthorized: false,
+});
+minioLogger.warn(
+    "Configured MinIO client to accept self-signed certificates for development"
+);
+
 minioLogger.info(
     {
         host: ENV.MINIO_HOST,
@@ -65,4 +72,4 @@ const downloadFile = async (bucketName: string, fileName: string) => {
     }
 };
 
-export { minioClient, doesBucketExist, makeBucket, uploadFile, downloadFile };
+export { doesBucketExist, makeBucket, uploadFile, downloadFile };

@@ -12,6 +12,7 @@ services:
             - ./apps:/app/apps
             - ./packages:/app/packages
             - ./assets:/app/assets
+            - ./docker/config/minio/certs:/app/docker/config/minio/certs:ro
             # Exclude node_modules from volume mounts to preserve installed dependencies
             - /app/node_modules
             - /app/apps/api/node_modules
@@ -69,6 +70,7 @@ services:
             MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
         volumes:
             - backtrade_minio_data:/data
+            - ./docker/config/minio/certs:/root/.minio/certs:ro
         networks:
             backtrade:
                 ipv4_address: 192.168.250.23
