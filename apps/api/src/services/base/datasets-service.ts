@@ -1,5 +1,8 @@
-import type { Dataset, Prisma } from "../../generated/prisma/client";
-import datasetsRepository from "../../repositories/datasets-repository";
+import {
+    type Dataset,
+    type Prisma,
+    datasetsRepo as datasetsRepository,
+} from "@backtrade/datas";
 import datasetsCacheService from "../cache/datasets-cache-service";
 import { logger } from "../../libs/logger/pino";
 import NotFoundError from "../../errors/web/not-found-error";

@@ -327,3 +327,4 @@ model SessionAnalytics {
   @@index([session_id])
   @@map("session_analytics")
 }
+

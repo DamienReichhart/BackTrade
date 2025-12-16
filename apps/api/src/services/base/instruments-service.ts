@@ -1,5 +1,8 @@
-import type { Instrument, Prisma } from "../../generated/prisma/client";
-import instrumentsRepository from "../../repositories/instruments-repository";
+import {
+    type Instrument,
+    type Prisma,
+    instrumentsRepo as instrumentsRepository,
+} from "@backtrade/datas";
 import instrumentsCacheService from "../cache/instruments-cache-service";
 import { logger } from "../../libs/logger/pino";
 import NotFoundError from "../../errors/web/not-found-error";

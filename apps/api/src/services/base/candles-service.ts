@@ -1,5 +1,9 @@
-import type { Candle, Prisma, Timeframe } from "../../generated/prisma/client";
-import candlesRepository from "../../repositories/candles-repository";
+import {
+    type Candle,
+    type Prisma,
+    type Timeframe,
+    candlesRepo as candlesRepository,
+} from "@backtrade/datas";
 import candlesCacheService from "../cache/candles-cache-service";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { DateRange, SearchQuery } from "@backtrade/types";

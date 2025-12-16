@@ -1,5 +1,5 @@
 import { createCacheService } from "./cache-service-factory";
-import type { Instrument } from "../../generated/prisma/client";
+import type { Instrument } from "@backtrade/datas";
 import { InstrumentSchema } from "@backtrade/types";
 
 const instrumentCacheService = createCacheService<Instrument>({

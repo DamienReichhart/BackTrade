@@ -1,0 +1,52 @@
+{
+    "name": "@backtrade/datas",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "import": "./src/index.ts",
+            "require": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "dev": "npx tsc --watch --project tsconfig.json",
+        "build": "npx tsc --project tsconfig.json",
+        "lint": "eslint . --ext .ts,.tsx",
+        "lint:fix": "eslint . --ext .ts,.tsx --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "typecheck": "npx tsc --noEmit",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:studio": "prisma studio",
+        "prisma:reset": "prisma migrate reset",
+        "prisma:deploy": "prisma migrate deploy",
+        "prisma:seed": "pnpm --filter @backtrade/api db:seed",
+        "prisma:init": "pnpm prisma:generate && pnpm prisma:migrate && pnpm prisma:seed"
+    },
+    "dependencies": {
+        "@prisma/adapter-pg": "^7.0.1",
+        "@prisma/client": "^7.0.1",
+        "pg": "^8.16.3"
+    },
+    "devDependencies": {
+        "@backtrade/eslint-config": "workspace:1.0.0",
+        "@backtrade/tsconfig": "workspace:1.0.0",
+        "@types/node": "25.0.2",
+        "@types/pg": "^8.15.6",
+        "globals": "^16.5.0",
+        "prisma": "^7.0.1",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "8.47.0"
+    },
+    "prisma": {
+        "seed": "tsx prisma/seed/index.ts"
+    },
+    "license": "PROPRIETARY",
+    "author": "REICHHART Damien"
+}

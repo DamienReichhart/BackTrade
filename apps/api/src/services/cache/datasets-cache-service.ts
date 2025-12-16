@@ -1,5 +1,5 @@
 import { createCacheService } from "./cache-service-factory";
-import type { Dataset } from "../../generated/prisma/client";
+import type { Dataset } from "@backtrade/datas";
 import { DatasetSchema } from "@backtrade/types";
 
 const datasetCacheService = createCacheService<Dataset>({

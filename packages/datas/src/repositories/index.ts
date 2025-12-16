@@ -2,8 +2,6 @@
  * Repositories Module
  *
  * Central export point for all repository functions.
- * Note: Repositories use default exports. Import directly from individual files:
- * import usersRepo from "./repositories/users-repository";
  */
 
 // User-related repositories

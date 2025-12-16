@@ -1,5 +1,5 @@
 import { createCacheService } from "./cache-service-factory";
-import type { User } from "../../generated/prisma/client";
+import type { User } from "@backtrade/datas";
 import { UserSchema } from "@backtrade/types";
 
 const userCacheService = createCacheService<User>({

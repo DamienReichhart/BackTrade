@@ -1,5 +1,5 @@
 import { createCacheService } from "./cache-service-factory";
-import type { Candle } from "../../generated/prisma/client";
+import type { Candle } from "@backtrade/datas";
 import { CandleSchema } from "@backtrade/types";
 
 const candleCacheService = createCacheService<Candle>({

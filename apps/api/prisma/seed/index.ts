@@ -1,4 +1,4 @@
-import { prisma } from "../../src/libs/prisma";
+import { prisma } from "@backtrade/datas";
 import { getPlans } from "./plans";
 import { getUsers } from "./users";
 import { getInstruments } from "./instruments";

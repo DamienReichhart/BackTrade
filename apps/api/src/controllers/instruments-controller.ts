@@ -2,10 +2,10 @@ import { SearchQuerySchema } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
-import type {
-    InstrumentCreateInput,
-    InstrumentUpdateInput,
-} from "../generated/prisma/models";
+import type { Prisma } from "@backtrade/datas";
+
+type InstrumentCreateInput = Prisma.InstrumentCreateInput;
+type InstrumentUpdateInput = Prisma.InstrumentUpdateInput;
 
 const getInstrumentById = async (req: Request, res: Response) => {
     const { id } = req.params;
