@@ -210,6 +210,10 @@ The project enforces high code quality standards through:
 - **Jest** - Comprehensive test coverage
 - **Pre-Commit Hooks** - Automated quality checks
 
+### Git Commit Standards
+
+All commits must follow the [Git Commit Standards](documentation/git-commit-standards.md) to ensure a clean, maintainable git history. The project uses the Conventional Commits specification with required type and scope.
+
 ### Testing
 
 ```bash
