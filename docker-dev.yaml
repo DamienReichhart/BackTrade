@@ -16,6 +16,7 @@ services:
             # Exclude node_modules from volume mounts to preserve installed dependencies
             - /app/node_modules
             - /app/apps/api/node_modules
+            - /app/apps/worker/node_modules
             - /app/apps/web/node_modules
             - /app/packages/datas/node_modules
             - /app/packages/eslint-config/node_modules
