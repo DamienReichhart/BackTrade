@@ -1,4 +1,5 @@
 import * as Minio from "minio";
+import type { Readable } from "stream";
 import { ENV } from "../config/env";
 import { logger } from "./logger/pino";
 
@@ -62,14 +63,35 @@ const uploadFile = async (
     }
 };
 
-const downloadFile = async (bucketName: string, fileName: string) => {
+const downloadFile = async (
+    bucketName: string,
+    fileName: string
+): Promise<Buffer> => {
     try {
-        const file = await minioClient.getObject(bucketName, fileName);
-        return file;
+        const stream = await minioClient.getObject(bucketName, fileName);
+        return await streamToBuffer(await stream);
     } catch (error) {
         minioLogger.error(error, "Error downloading file");
         throw error;
     }
+};
+
+const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+    const chunks: Buffer[] = [];
+
+    return new Promise<Buffer>((resolve, reject) => {
+        stream.on("data", (chunk: Buffer) => {
+            chunks.push(chunk);
+        });
+
+        stream.on("end", () => {
+            resolve(Buffer.concat(chunks));
+        });
+
+        stream.on("error", (error: Error) => {
+            reject(error);
+        });
+    });
 };
 
 export { doesBucketExist, makeBucket, uploadFile, downloadFile };
