@@ -18,9 +18,9 @@
     },
     "dependencies": {
         "@backtrade/datas": "workspace:*",
+        "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
-        "amqplib": "^0.10.9",
         "argon2": "^0.44.0",
         "compression": "^1.8.1",
         "cors": "^2.8.5",
@@ -39,7 +39,6 @@
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@eslint/js": "^9.39.2",
-        "@types/amqplib": "^0.10.8",
         "@types/compression": "^1.8.1",
         "@types/cors": "^2.8.19",
         "@types/express": "5.0.6",

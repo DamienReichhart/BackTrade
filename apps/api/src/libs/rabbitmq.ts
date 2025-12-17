@@ -1,4 +1,4 @@
-import amqp from "amqplib";
+import { createPublisher, type Publisher } from "@backtrade/queue";
 import { ENV } from "../config/env";
 import { logger } from "./logger/pino";
 
@@ -6,227 +6,79 @@ const rabbitmqLogger = logger.child({
     service: "rabbitmq",
 });
 
-// Using ReturnType to get the correct types from amqplib
-type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
-type AmqpChannel = Awaited<ReturnType<AmqpConnection["createChannel"]>>;
-
-let connection: AmqpConnection | null = null;
-let channel: AmqpChannel | null = null;
-
-let isClosingIntentionally = false;
-
-const QUEUE_NAME = ENV.RABBITMQ_QUEUE_NAME;
-const RECONNECT_INITIAL_DELAY_MS = 1_000;
-const RECONNECT_MAX_DELAY_MS = 30_000;
-
-let connectPromise: Promise<void> | null = null;
-
-function getConnectionUrl(): string {
-    return `amqp://${ENV.RABBITMQ_USER}:${ENV.RABBITMQ_PASSWORD}@${ENV.RABBITMQ_HOST}:${ENV.RABBITMQ_PORT}`;
-}
+/**
+ * RabbitMQ publisher instance
+ * Created as a singleton to share connection across the application
+ */
+let publisherInstance: Publisher | null = null;
 
 /**
- * Establishes a new RabbitMQ connection + channel once (no retries)
+ * Gets or creates the RabbitMQ publisher instance
  */
-async function connectOnce(): Promise<void> {
-    const connectionUrl = getConnectionUrl();
-    const newConnection = await amqp.connect(connectionUrl);
-    rabbitmqLogger.info("Connected to RabbitMQ");
-
-    newConnection.on("error", (err: Error) => {
-        rabbitmqLogger.error(err, "RabbitMQ connection error");
+function getPublisher(): Publisher {
+    publisherInstance ??= createPublisher({
+        connection: {
+            host: ENV.RABBITMQ_HOST,
+            port: ENV.RABBITMQ_PORT,
+            username: ENV.RABBITMQ_USER,
+            password: ENV.RABBITMQ_PASSWORD,
+        },
+        queue: {
+            name: ENV.RABBITMQ_QUEUE_NAME,
+            durable: true,
+        },
+        publisher: {
+            persistent: true,
+        },
+        logger: {
+            info: (message: string, meta?: Record<string, unknown>) =>
+                rabbitmqLogger.info(meta, message),
+            error: (
+                error: unknown,
+                message: string,
+                meta?: Record<string, unknown>
+            ) => rabbitmqLogger.error(error, message, meta),
+            warn: (message: string, meta?: Record<string, unknown>) =>
+                rabbitmqLogger.warn(meta, message),
+            debug: (message: string, meta?: Record<string, unknown>) =>
+                rabbitmqLogger.debug(meta, message),
+            trace: (message: string, meta?: Record<string, unknown>) =>
+                rabbitmqLogger.trace(meta, message),
+        },
     });
-
-    newConnection.on("close", () => {
-        if (isClosingIntentionally) {
-            rabbitmqLogger.info("RabbitMQ connection closed intentionally");
-        } else {
-            rabbitmqLogger.warn(
-                "RabbitMQ connection closed, will attempt to reconnect"
-            );
-
-            // Background reconnection loop
-            void connect().catch((err) => {
-                rabbitmqLogger.error(
-                    err,
-                    "Error while attempting to reconnect to RabbitMQ"
-                );
-            });
-        }
-
-        // In all cases, clear connection and channel references once closed
-        connection = null;
-        channel = null;
-    });
-
-    const newChannel = await newConnection.createChannel();
-
-    // Assert queue exists (creates if it doesn't)
-    await newChannel.assertQueue(QUEUE_NAME, {
-        durable: true, // Queue survives broker restart
-    });
-
-    connection = newConnection;
-    channel = newChannel;
-
-    rabbitmqLogger.info("RabbitMQ channel created");
-    rabbitmqLogger.info({ queue: QUEUE_NAME }, "Queue asserted");
-}
-
-/**
- * Connects to RabbitMQ and creates a channel.
- *
- * This function will keep retrying with exponential backoff until
- * a connection + channel are successfully established.
- */
-async function connect(): Promise<void> {
-    if (connection && channel) {
-        rabbitmqLogger.trace("RabbitMQ already connected");
-        return;
-    }
-
-    if (connectPromise) {
-        // If a connection attempt is already in progress, wait for it
-        return connectPromise;
-    }
-
-    connectPromise = (async () => {
-        let attempt = 0;
-
-        while (!connection || !channel) {
-            attempt += 1;
-
-            try {
-                rabbitmqLogger.info(
-                    { attempt },
-                    "Attempting to connect to RabbitMQ"
-                );
-                await connectOnce();
-                rabbitmqLogger.info(
-                    { attempt },
-                    "Successfully connected to RabbitMQ"
-                );
-                break;
-            } catch (err) {
-                rabbitmqLogger.error(
-                    { err, attempt },
-                    "Failed to connect to RabbitMQ"
-                );
-
-                const backoff =
-                    Math.min(
-                        RECONNECT_INITIAL_DELAY_MS * Math.pow(2, attempt - 1),
-                        RECONNECT_MAX_DELAY_MS
-                    ) +
-                    // Add a little jitter to avoid thundering herd if we scale out
-                    Math.floor(Math.random() * 500);
-
-                rabbitmqLogger.warn(
-                    { backoff },
-                    "Will retry RabbitMQ connection after delay (ms)"
-                );
-
-                await new Promise((resolve) => setTimeout(resolve, backoff));
-            }
-        }
-    })()
-        .catch((err) => {
-            // This should be very rare since we loop indefinitely,
-            // but we still log any unexpected errors.
-            rabbitmqLogger.error(
-                err,
-                "Unexpected error in RabbitMQ connection loop"
-            );
-            throw err;
-        })
-        .finally(() => {
-            connectPromise = null;
-        });
-
-    return connectPromise;
+    return publisherInstance;
 }
 
 /**
  * Publishes a message to the queue
+ *
+ * @param message - The message to publish
  */
-async function publishMessage(message: unknown): Promise<void> {
-    if (!channel) {
-        await connect();
-    }
+export async function publishMessage(message: unknown): Promise<void> {
+    const publisher = getPublisher();
+    await publisher.publish(message);
+}
 
-    if (!channel) {
-        throw new Error("Failed to create RabbitMQ channel");
-    }
-
+/**
+ * Checks if RabbitMQ connection is healthy
+ *
+ * @returns Promise resolving to true if connection is available, false otherwise
+ */
+export async function checkConnection(): Promise<boolean> {
     try {
-        const messageBuffer = Buffer.from(JSON.stringify(message));
-        const published = channel.sendToQueue(QUEUE_NAME, messageBuffer, {
-            persistent: true, // Message survives broker restart
-        });
-
-        if (!published) {
-            throw new Error("Failed to publish message to queue");
-        }
-
-        rabbitmqLogger.debug(
-            { queue: QUEUE_NAME, message },
-            "Message published to queue"
-        );
-    } catch (err) {
-        rabbitmqLogger.error(err, "Failed to publish message");
-        throw err;
+        const publisher = getPublisher();
+        return publisher.isHealthy();
+    } catch {
+        return false;
     }
 }
 
 /**
  * Closes the RabbitMQ connection
  */
-async function close(): Promise<void> {
-    isClosingIntentionally = true;
-
-    try {
-        if (channel) {
-            await channel.close();
-            channel = null;
-            rabbitmqLogger.info("RabbitMQ channel closed");
-        }
-
-        if (connection) {
-            await connection.close();
-            connection = null;
-            rabbitmqLogger.info("RabbitMQ connection closed");
-        }
-    } finally {
-        isClosingIntentionally = false;
+export async function close(): Promise<void> {
+    if (publisherInstance) {
+        await publisherInstance.close();
+        publisherInstance = null;
     }
 }
-
-// Initialize connection on module load
-connect().catch((err) => {
-    rabbitmqLogger.error(err, "Failed to initialize RabbitMQ connection");
-});
-
-/**
- * Checks if RabbitMQ connection is healthy
- *
- * @returns Promise resolving to true if connection and channel are available and open, false otherwise
- */
-async function checkConnection(): Promise<boolean> {
-    try {
-        if (!connection || !channel) {
-            return false;
-        }
-
-        // Check if connection is closed (amqplib connections have a 'closed' property)
-        const conn = connection as unknown as { closed?: boolean };
-        if (conn.closed === true) {
-            return false;
-        }
-
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-export { connect, publishMessage, close, checkConnection, QUEUE_NAME };

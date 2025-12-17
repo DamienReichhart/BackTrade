@@ -32,15 +32,15 @@ importers:
       '@backtrade/datas':
         specifier: workspace:*
         version: link:../../packages/datas
+      '@backtrade/queue':
+        specifier: workspace:*
+        version: link:../../packages/queue
       '@backtrade/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@backtrade/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      amqplib:
-        specifier: ^0.10.9
-        version: 0.10.9
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -90,9 +90,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.2
-      '@types/amqplib':
-        specifier: ^0.10.8
-        version: 0.10.8
       '@types/compression':
         specifier: ^1.8.1
         version: 1.8.1
@@ -253,15 +250,15 @@ importers:
 
   apps/worker:
     dependencies:
+      '@backtrade/queue':
+        specifier: workspace:*
+        version: link:../../packages/queue
       '@backtrade/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@backtrade/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      amqplib:
-        specifier: ^0.10.9
-        version: 0.10.9
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -290,9 +287,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.2
-      '@types/amqplib':
-        specifier: ^0.10.8
-        version: 0.10.8
       '@types/mjml':
         specifier: ^4.7.4
         version: 4.7.4
@@ -383,6 +377,31 @@ importers:
         version: 16.5.0
       typescript-eslint:
         specifier: ^8.50.0
+        version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/queue:
+    dependencies:
+      amqplib:
+        specifier: ^0.10.9
+        version: 0.10.9
+    devDependencies:
+      '@backtrade/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@backtrade/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/amqplib':
+        specifier: ^0.10.8
+        version: 0.10.8
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 8.50.0
         version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
 
   packages/tsconfig: {}

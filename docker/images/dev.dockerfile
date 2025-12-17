@@ -13,10 +13,15 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/ ./packages/
 COPY apps/ ./apps/
 
-# Install dependencies
+# Copy entrypoint script
+COPY docker/scripts/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+
+# Install dependencies (will be relinked by entrypoint after volumes mount)
 RUN pnpm install --frozen-lockfile
 
 # Ensure turbo and other binaries are available in PATH
 ENV PATH="/app/node_modules/.bin:$PATH"
 
+ENTRYPOINT ["/usr/local/bin/dev-entrypoint.sh"]
 CMD ["pnpm", "dev"]
