@@ -37,3 +37,4 @@ echo Private key: %PRIVATE_KEY%
 echo.
 echo Note: These are self-signed certificates for development only.
 echo For production, use certificates from a trusted CA.
+

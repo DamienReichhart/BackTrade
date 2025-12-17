@@ -23,3 +23,6 @@ export { default as emailNotificationService } from "./notifications/email-notif
 export { default as usersCacheService } from "./cache/users-cache-service";
 export { default as instrumentsCacheService } from "./cache/instruments-cache-service";
 export { default as healthCacheService } from "./cache/health-cache-service";
+
+// Queue services
+export { default as queueService } from "./queue/queue-service";

@@ -4,11 +4,11 @@ import { serializers } from "./serializers";
 import { ENV } from "../../config/env";
 
 export const logger = pino({
-    level: ENV.API_LOG_LEVEL,
+    level: ENV.WORKER_LOG_LEVEL,
     serializers,
     base: {
         pid: false,
-        service: "api-backend",
+        service: "data-worker",
     },
     ...transport,
 });

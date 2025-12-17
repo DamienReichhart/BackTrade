@@ -41,6 +41,11 @@ const EnvSchema = z.object({
     MINIO_USER: z.string(),
     MINIO_PASSWORD: z.string(),
     MINIO_CA_CERT_PATH: z.string(),
+    RABBITMQ_HOST: z.string(),
+    RABBITMQ_PORT: z.coerce.number().int().positive(),
+    RABBITMQ_USER: z.string(),
+    RABBITMQ_PASSWORD: z.string(),
+    RABBITMQ_QUEUE_NAME: z.string(),
 });
 
 export const ENV = EnvSchema.parse(process.env);
