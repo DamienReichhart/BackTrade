@@ -13,7 +13,6 @@ export { default as jwtService } from "./security/jwt-service";
 export { default as userService } from "./base/users-service";
 
 // Utility services
-export { default as mailerService } from "./utils/mailer-service";
 export { default as healthService } from "./utils/health-service";
 
 // Notification services

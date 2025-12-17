@@ -1,3 +1,9 @@
+/**
+ * Mailer Library
+ *
+ * Creates and exports the nodemailer transporter for sending emails.
+ */
+
 import nodemailer from "nodemailer";
 import { ENV } from "../config/env";
 import { logger } from "./logger/pino";

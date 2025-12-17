@@ -5,8 +5,6 @@
  * to comply with GDPR, CCPA, and other privacy regulations.
  */
 
-import { ENV } from "../config/env";
-
 /**
  * Masks an email address for logging purposes
  *
@@ -42,29 +40,20 @@ export function maskEmail(email: string): string {
 }
 
 /**
- * Conditionally masks an email address based on environment
+ * Masks an email address for logging purposes
  *
- * In production, always masks the email.
- * In development/test, returns the original email for easier debugging.
+ * Always masks the email address to comply with GDPR, CCPA, and other privacy regulations.
+ * This function should be used whenever logging email addresses.
  *
- * @param email - Email address to conditionally mask
- * @returns Masked email in production, original email in development/test
+ * @param email - Email address to mask
+ * @returns Masked email address (e.g., "j***@example.com")
  *
  * @example
  * ```ts
- * // In production
  * maskEmailForLogging("john@example.com") // "j***@example.com"
- *
- * // In development
- * maskEmailForLogging("john@example.com") // "john@example.com"
+ * maskEmailForLogging("user@example.com") // "u***@example.com"
  * ```
  */
 export function maskEmailForLogging(email: string): string {
-    // Always mask in production for PII compliance
-    if (ENV.NODE_ENV === "production") {
-        return maskEmail(email);
-    }
-
-    // In development/test, show full email for debugging
-    return email;
+    return maskEmail(email);
 }

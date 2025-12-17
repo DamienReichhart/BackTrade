@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import mjml2html from "mjml";
 import handlebars, { type TemplateDelegate } from "handlebars";
 import { logger } from "../libs/logger/pino";
-import type { BaseEmailData } from "./types";
+import type { BaseEmailData } from "@backtrade/types";
 
 const compilerLogger = logger.child({ service: "email-compiler" });
 

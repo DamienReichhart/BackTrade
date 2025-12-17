@@ -11,4 +11,5 @@ export {
     type DeviceInfo,
 } from "./request-context";
 
-export { maskEmail, maskEmailForLogging } from "./pii-masking";
+// Re-export PII masking utilities
+export { maskEmail, maskEmailForLogging } from "@backtrade/utils";

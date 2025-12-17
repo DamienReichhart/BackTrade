@@ -38,9 +38,6 @@ precompileTemplates().catch((error) => {
     emailLogger.error({ error }, "Failed to precompile email templates");
 });
 
-// Re-export types
-export type { BaseEmailData, RegisterEmailData, LoginEmailData } from "./types";
-
 // Re-export compiler utilities
 export {
     compileTemplate,

@@ -1,7 +1,13 @@
-import mailer from "../../libs/mailer";
-import { ENV } from "../../config/env";
-import { logger } from "../../libs/logger/pino";
-import { maskEmailForLogging } from "../../utils";
+/**
+ * Mailer Service
+ *
+ * Handles email sending operations with SMTP connection management.
+ */
+
+import mailer from "../libs/mailer";
+import { ENV } from "../config/env";
+import { logger } from "../libs/logger/pino";
+import { maskEmailForLogging } from "@backtrade/utils";
 
 /**
  * Mailer Service

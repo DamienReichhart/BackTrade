@@ -22,6 +22,16 @@ const EnvSchema = z.object({
     RABBITMQ_USER: z.string(),
     RABBITMQ_PASSWORD: z.string(),
     RABBITMQ_QUEUE_NAME: z.string(),
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.coerce.number().int().positive(),
+    SMTP_USER: z.string(),
+    SMTP_PASSWORD: z.string(),
+    SMTP_FROM: z.string(),
+    FRONTEND_URL: z.string().url(),
+    NEUTRALIZE_EMAIL: z
+        .string()
+        .default("false")
+        .transform((val) => val === "true"),
 });
 
 export const ENV = EnvSchema.parse(process.env);

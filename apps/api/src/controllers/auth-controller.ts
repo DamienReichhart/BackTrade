@@ -45,9 +45,10 @@ class AuthController {
 
         const authResponse = await authService.login(loginRequest);
 
-        // Send login notification email (fire-and-forget)
+        // Send login notification email
+
         const deviceInfo = getDeviceInfo(req);
-        emailNotificationService.sendLoginNotification(
+        await emailNotificationService.sendLoginNotification(
             loginRequest.email,
             loginRequest.email.split("@")[0] ?? loginRequest.email,
             new Date(),
@@ -84,8 +85,7 @@ class AuthController {
 
         const authResponse = await authService.register(registerRequest);
 
-        // Send welcome email (fire-and-forget)
-        emailNotificationService.sendWelcomeEmail(
+        await emailNotificationService.sendWelcomeEmail(
             registerRequest.email,
             registerRequest.email.split("@")[0] ?? registerRequest.email
         );

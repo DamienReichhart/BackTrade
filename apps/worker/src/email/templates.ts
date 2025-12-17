@@ -5,7 +5,7 @@
  */
 
 import { renderTemplate } from "./compiler";
-import type { RegisterEmailData, LoginEmailData } from "./types";
+import type { RegisterEmailData, LoginEmailData } from "@backtrade/types";
 
 /**
  * Render the registration welcome email

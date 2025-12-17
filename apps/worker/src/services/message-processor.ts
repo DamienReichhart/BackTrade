@@ -1,5 +1,6 @@
 import { logger } from "../libs/logger/pino";
 import type { QueueMessage } from "@backtrade/types";
+import emailService from "./email-service";
 
 const messageProcessorLogger = logger.child({
     service: "message-processor",
@@ -19,6 +20,9 @@ async function processMessage(message: QueueMessage): Promise<void> {
         switch (message.type) {
             case "data-processing":
                 await processDataProcessing(message.data);
+                break;
+            case "mail":
+                await processMailMessage(message.data);
                 break;
             default:
                 messageProcessorLogger.warn(
@@ -51,6 +55,19 @@ async function processDataProcessing(data: unknown): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate processing
 
     messageProcessorLogger.info("Data processing completed");
+}
+
+/**
+ * Processes mail messages
+ *
+ * @param data - Mail message data
+ */
+async function processMailMessage(data: unknown): Promise<void> {
+    messageProcessorLogger.debug({ data }, "Processing mail message");
+
+    await emailService.processMailMessage(data);
+
+    messageProcessorLogger.info("Mail message processed successfully");
 }
 
 export default {
