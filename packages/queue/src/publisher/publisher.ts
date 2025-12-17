@@ -1,5 +1,6 @@
 import type { ChannelManager } from "../channel/channel-manager";
 import type { PublisherConfig } from "../config/types";
+import type { AmqpChannel } from "../types";
 
 /**
  * Publisher
@@ -38,11 +39,29 @@ export class Publisher {
     }
 
     /**
+     * Waits for the channel to emit a 'drain' event, indicating it's ready for more writes
+     *
+     * @param channel - The AMQP channel to wait on
+     * @returns Promise that resolves when the channel is ready
+     */
+    private waitForDrain(channel: AmqpChannel): Promise<void> {
+        return new Promise<void>((resolve) => {
+            // Channel buffer is full - wait for drain event
+            // The message has already been queued internally and will be sent when buffer drains
+            const onDrain = () => {
+                channel.removeListener("drain", onDrain);
+                resolve();
+            };
+            channel.once("drain", onDrain);
+        });
+    }
+
+    /**
      * Publishes a message to the queue
      *
      * @param message - The message to publish (will be JSON stringified)
      * @param queueName - Optional queue name override
-     * @throws Error if publishing fails
+     * @throws Error if publishing fails (not due to backpressure)
      */
     async publish<T = unknown>(message: T, queueName?: string): Promise<void> {
         try {
@@ -63,12 +82,20 @@ export class Publisher {
             );
 
             if (!published) {
-                throw new Error("Failed to publish message to queue");
+                // Channel buffer is full - wait for drain event
+                // This is not an error; the message will be sent when the buffer drains
+                this.logger?.warn("Channel buffer full, waiting for drain", {
+                    queue: actualQueueName,
+                });
+                await this.waitForDrain(channel);
+                this.logger?.debug("Channel drained, message queued", {
+                    queue: actualQueueName,
+                });
+            } else {
+                this.logger?.debug("Message published to queue", {
+                    queue: actualQueueName,
+                });
             }
-
-            this.logger?.debug("Message published to queue", {
-                queue: actualQueueName,
-            });
         } catch (err) {
             this.logger?.error(err, "Failed to publish message");
             throw err;
