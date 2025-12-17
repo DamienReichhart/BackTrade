@@ -74,9 +74,9 @@ class EmailService {
                 break;
             }
             default: {
-                this.logger.error(
-                    `Unknown email template type: ${(validatedData as MailMessageData).template}`
-                );
+                const errorMessage = `Unknown email template type: ${(validatedData as MailMessageData).template}`;
+                this.logger.error(errorMessage);
+                throw new Error(errorMessage);
             }
         }
 
