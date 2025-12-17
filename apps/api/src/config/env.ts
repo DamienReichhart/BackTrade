@@ -40,7 +40,7 @@ const EnvSchema = z.object({
     MINIO_PORT: z.coerce.number().int().positive(),
     MINIO_USER: z.string(),
     MINIO_PASSWORD: z.string(),
-    MINIO_CA_CERT_PATH: z.string(),
+    MINIO_CA_CERT_PATH: z.string().optional(),
     RABBITMQ_HOST: z.string(),
     RABBITMQ_PORT: z.coerce.number().int().positive(),
     RABBITMQ_USER: z.string(),

@@ -44,6 +44,9 @@ importers:
       '@backtrade/queue':
         specifier: workspace:*
         version: link:../../packages/queue
+      '@backtrade/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@backtrade/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -74,9 +77,6 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
-      minio:
-        specifier: ^8.0.6
-        version: 8.0.6
       pino-http:
         specifier: 11.0.0
         version: 11.0.0
@@ -496,6 +496,37 @@ importers:
       '@types/amqplib':
         specifier: ^0.10.8
         version: 0.10.8
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 8.50.0
+        version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/storage:
+    dependencies:
+      '@backtrade/logger':
+        specifier: workspace:*
+        version: link:../logger
+      minio:
+        specifier: ^8.0.6
+        version: 8.0.6
+      zod:
+        specifier: 4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@backtrade/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@backtrade/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: 25.0.2
+        version: 25.0.2
       globals:
         specifier: ^16.5.0
         version: 16.5.0

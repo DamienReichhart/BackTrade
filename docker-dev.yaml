@@ -22,6 +22,7 @@ services:
             - /app/packages/logger/node_modules
             - /app/packages/cache/node_modules
             - /app/packages/queue/node_modules
+            - /app/packages/storage/node_modules
             - /app/packages/mailer/node_modules
             - /app/packages/eslint-config/node_modules
             - /app/packages/tsconfig/node_modules
