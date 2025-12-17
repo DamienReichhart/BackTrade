@@ -9,3 +9,5 @@ export * from "./session";
 export * from "./position";
 export * from "./transaction";
 export * from "./analytics";
+export * from "./queue";
+export * from "./mail";

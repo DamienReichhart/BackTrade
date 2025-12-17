@@ -16,7 +16,9 @@ export const HealthSchema = z.object({
     time: z.iso.datetime(),
     database: SingleServiceHealthStatusSchema,
     redis: SingleServiceHealthStatusSchema,
-    smtp: SingleServiceHealthStatusSchema,
+    queuing: SingleServiceHealthStatusSchema,
+    mailer: SingleServiceHealthStatusSchema,
+    storage: SingleServiceHealthStatusSchema,
 });
 export type Health = z.infer<typeof HealthSchema>;
 

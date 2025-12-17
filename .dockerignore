@@ -23,6 +23,5 @@ build
 .pnp.*
 docker/datas
 documentation
-
-
 covergae
+**/node_modules

@@ -19,6 +19,11 @@ services:
             - /app/apps/worker/node_modules
             - /app/apps/web/node_modules
             - /app/packages/datas/node_modules
+            - /app/packages/logger/node_modules
+            - /app/packages/cache/node_modules
+            - /app/packages/queue/node_modules
+            - /app/packages/storage/node_modules
+            - /app/packages/mailer/node_modules
             - /app/packages/eslint-config/node_modules
             - /app/packages/tsconfig/node_modules
             - /app/packages/types/node_modules

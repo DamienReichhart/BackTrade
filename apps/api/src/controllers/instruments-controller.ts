@@ -1,64 +1,116 @@
+/**
+ * Instruments Controller
+ *
+ * Handles instrument-related HTTP requests.
+ * Orchestrates instrument service operations.
+ */
+
 import { SearchQuerySchema, type SearchQuery } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import type { Prisma } from "@backtrade/datas";
+import { logger } from "../libs/pino";
 
 type InstrumentCreateInput = Prisma.InstrumentCreateInput;
 type InstrumentUpdateInput = Prisma.InstrumentUpdateInput;
 
-const getInstrumentById = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    if (!id) {
-        throw new BadRequestError("Instrument ID is required");
+/**
+ * Instruments Controller
+ *
+ * Handles instrument-related HTTP requests.
+ * Orchestrates instrument service operations.
+ */
+class InstrumentsController {
+    private readonly logger: ReturnType<typeof logger.child>;
+
+    constructor() {
+        this.logger = logger.child({
+            service: "instruments-controller",
+        });
     }
-    const instrument = await instrumentService.getInstrumentById(id);
-    return res.status(200).json(instrument);
-};
 
-const getAllInstruments = async (req: Request, res: Response) => {
-    let query: SearchQuery | undefined;
-    try {
-        query = SearchQuerySchema.parse(req.query);
-    } catch {
-        throw new BadRequestError("Invalid query parameters");
+    /**
+     * Get instrument by ID
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     * @throws BadRequestError if instrument ID is missing
+     */
+    async getInstrumentById(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Instrument ID is required");
+        }
+        const instrument = await instrumentService.getInstrumentById(id);
+        res.status(200).json(instrument);
     }
-    const instruments = await instrumentService.getAllInstruments(query);
-    return res.status(200).json(instruments);
-};
 
-const createInstrument = async (req: Request, res: Response) => {
-    const instrument = await instrumentService.createInstrument(
-        req.body as InstrumentCreateInput
-    );
-    return res.status(201).json(instrument);
-};
-
-const updateInstrument = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    if (!id) {
-        throw new BadRequestError("Instrument ID is required");
+    /**
+     * Get all instruments with optional search query
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     * @throws BadRequestError if query parameters are invalid
+     */
+    async getAllInstruments(req: Request, res: Response): Promise<void> {
+        let query: SearchQuery | undefined;
+        try {
+            query = SearchQuerySchema.parse(req.query);
+        } catch {
+            throw new BadRequestError("Invalid query parameters");
+        }
+        const instruments = await instrumentService.getAllInstruments(query);
+        res.status(200).json(instruments);
     }
-    const instrument = await instrumentService.updateInstrument(
-        id,
-        req.body as InstrumentUpdateInput
-    );
-    return res.status(200).json(instrument);
-};
 
-const deleteInstrument = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    if (!id) {
-        throw new BadRequestError("Instrument ID is required");
+    /**
+     * Create a new instrument
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     */
+    async createInstrument(req: Request, res: Response): Promise<void> {
+        const instrument = await instrumentService.createInstrument(
+            req.body as InstrumentCreateInput
+        );
+        res.status(201).json(instrument);
     }
-    await instrumentService.deleteInstrument(id);
-    return res.status(204).send();
-};
 
-export default {
-    getInstrumentById,
-    getAllInstruments,
-    createInstrument,
-    updateInstrument,
-    deleteInstrument,
-};
+    /**
+     * Update an existing instrument
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     * @throws BadRequestError if instrument ID is missing
+     */
+    async updateInstrument(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Instrument ID is required");
+        }
+        const instrument = await instrumentService.updateInstrument(
+            id,
+            req.body as InstrumentUpdateInput
+        );
+        res.status(200).json(instrument);
+    }
+
+    /**
+     * Delete an instrument
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     * @throws BadRequestError if instrument ID is missing
+     */
+    async deleteInstrument(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Instrument ID is required");
+        }
+        await instrumentService.deleteInstrument(id);
+        res.status(204).send();
+    }
+}
+
+export default new InstrumentsController();

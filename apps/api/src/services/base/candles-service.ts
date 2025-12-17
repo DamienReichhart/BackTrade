@@ -4,110 +4,147 @@ import {
     type Timeframe,
     candlesRepo as candlesRepository,
 } from "@backtrade/datas";
-import candlesCacheService from "../cache/candles-cache-service";
+import { candlesCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { DateRange, SearchQuery } from "@backtrade/types";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 
-const candleServiceLogger = logger.child({
-    service: "candle-service",
-});
+/**
+ * Candles Service
+ *
+ * Handles business logic for candle operations including CRUD and caching.
+ */
+class CandlesService {
+    private readonly logger: ReturnType<typeof logger.child>;
 
-const getCandleById = async (id: string): Promise<Candle> => {
-    const numericId = Number(id);
-    const cachedCandle = await candlesCacheService.getCachedCandle(numericId);
-    if (cachedCandle) {
-        candleServiceLogger.trace({ id }, "Candle found in cache");
-        return cachedCandle;
+    constructor() {
+        this.logger = logger.child({
+            service: "candle-service",
+        });
     }
-    candleServiceLogger.trace(
-        { id },
-        "Candle not found in cache, fetching from database"
-    );
-    const candle = await candlesRepository.getCandleById(id);
-    if (!candle) {
-        candleServiceLogger.debug(
+
+    /**
+     * Get a candle by ID with caching
+     *
+     * @param id - Candle ID
+     * @returns Candle entity
+     * @throws NotFoundError if candle doesn't exist
+     */
+    async getCandleById(id: string): Promise<Candle> {
+        const numericId = Number(id);
+        const cachedCandle = await candlesCacheRepo.getCachedCandle(numericId);
+        if (cachedCandle) {
+            this.logger.trace({ id }, "Candle found in cache");
+            return cachedCandle;
+        }
+        this.logger.trace(
             { id },
-            "Candle not found, throwing not found error"
+            "Candle not found in cache, fetching from database"
         );
-        throw new NotFoundError("Candle not found");
+        const candle = await candlesRepository.getCandleById(id);
+        if (!candle) {
+            this.logger.debug(
+                { id },
+                "Candle not found, throwing not found error"
+            );
+            throw new NotFoundError("Candle not found");
+        }
+        await candlesCacheRepo.cacheCandle(numericId, candle);
+        this.logger.trace({ id }, "Candle cached");
+        return candle;
     }
-    await candlesCacheService.cacheCandle(numericId, candle);
-    candleServiceLogger.trace({ id }, "Candle cached");
-    return candle;
-};
 
-const getCandlesByInstrumentTimeframeDateRange = async (
-    instrumentId: string,
-    timeframe: Timeframe,
-    dateRange: DateRange
-): Promise<Candle[]> => {
-    const { startDate, endDate } = dateRange;
-    const candles = await candlesRepository.getAllCandles({
-        where: {
-            instrument_id: Number(instrumentId),
-            timeframe,
-            ts: {
-                gte: startDate,
-                lte: endDate,
+    /**
+     * Get candles by instrument, timeframe, and date range
+     *
+     * @param instrumentId - Instrument ID
+     * @param timeframe - Timeframe for candles
+     * @param dateRange - Date range for filtering
+     * @returns Array of candle entities
+     */
+    async getCandlesByInstrumentTimeframeDateRange(
+        instrumentId: string,
+        timeframe: Timeframe,
+        dateRange: DateRange
+    ): Promise<Candle[]> {
+        const { startDate, endDate } = dateRange;
+        const candles = await candlesRepository.getAllCandles({
+            where: {
+                instrument_id: Number(instrumentId),
+                timeframe,
+                ts: {
+                    gte: startDate,
+                    lte: endDate,
+                },
             },
-        },
-    });
-    return candles;
-};
-
-const getAllCandles = async (query?: SearchQuery): Promise<Candle[]> => {
-    const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
-
-    const where: Prisma.CandleWhereInput | undefined = q
-        ? {
-              OR: [{ instrument_id: { equals: Number(q) || undefined } }],
-          }
-        : undefined;
-
-    const orderBy: Prisma.CandleOrderByWithRelationInput | undefined = sort
-        ? { [sort]: order }
-        : undefined;
-
-    return candlesRepository.getAllCandles({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy,
-    });
-};
-
-const createCandle = async (
-    candle: Prisma.CandleCreateInput
-): Promise<Candle> => {
-    const created = await candlesRepository.createCandle(candle);
-    candleServiceLogger.debug({ id: created.id }, "Candle created");
-    await candlesCacheService.cacheCandle(created.id, created);
-    candleServiceLogger.trace({ id: created.id }, "Candle cached");
-    return created;
-};
-
-const deleteCandle = async (id: string): Promise<Candle> => {
-    const existing = await candlesRepository.getCandleById(id);
-    if (!existing) {
-        candleServiceLogger.debug(
-            { id },
-            "Candle not found, throwing not found error"
-        );
-        throw new NotFoundError("Candle not found");
+        });
+        return candles;
     }
-    const deleted = await candlesRepository.deleteCandle(id);
-    candleServiceLogger.debug({ id }, "Candle deleted");
-    const numericId = Number(id);
-    await candlesCacheService.invalidateCachedCandle(numericId);
-    candleServiceLogger.trace({ id }, "Candle invalidated from cache");
-    return deleted;
-};
 
-export default {
-    getCandleById,
-    getAllCandles,
-    createCandle,
-    deleteCandle,
-    getCandlesByInstrumentTimeframeDateRange,
-};
+    /**
+     * Get all candles with optional search and pagination
+     *
+     * @param query - Optional search query with pagination and sorting
+     * @returns Array of candle entities
+     */
+    async getAllCandles(query?: SearchQuery): Promise<Candle[]> {
+        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+
+        const where: Prisma.CandleWhereInput | undefined = q
+            ? {
+                  OR: [{ instrument_id: { equals: Number(q) || undefined } }],
+              }
+            : undefined;
+
+        const orderBy: Prisma.CandleOrderByWithRelationInput | undefined = sort
+            ? { [sort]: order }
+            : undefined;
+
+        return candlesRepository.getAllCandles({
+            where,
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy,
+        });
+    }
+
+    /**
+     * Create a new candle
+     *
+     * @param candle - Candle creation data
+     * @returns Created candle entity
+     */
+    async createCandle(candle: Prisma.CandleCreateInput): Promise<Candle> {
+        const created = await candlesRepository.createCandle(candle);
+        this.logger.debug({ id: created.id }, "Candle created");
+        await candlesCacheRepo.cacheCandle(created.id, created);
+        this.logger.trace({ id: created.id }, "Candle cached");
+        return created;
+    }
+
+    /**
+     * Delete a candle
+     *
+     * @param id - Candle ID
+     * @returns Deleted candle entity
+     * @throws NotFoundError if candle doesn't exist
+     */
+    async deleteCandle(id: string): Promise<Candle> {
+        const existing = await candlesRepository.getCandleById(id);
+        if (!existing) {
+            this.logger.debug(
+                { id },
+                "Candle not found, throwing not found error"
+            );
+            throw new NotFoundError("Candle not found");
+        }
+        const deleted = await candlesRepository.deleteCandle(id);
+        this.logger.debug({ id }, "Candle deleted");
+        const numericId = Number(id);
+        await candlesCacheRepo.invalidateCachedCandle(numericId);
+        this.logger.trace({ id }, "Candle invalidated from cache");
+        return deleted;
+    }
+}
+
+export default new CandlesService();
