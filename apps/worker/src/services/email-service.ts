@@ -7,7 +7,10 @@
 
 import { logger } from "../libs/pino";
 import mailerService from "./mailer-service";
-import { templates } from "../email";
+import {
+    createTemplateCompiler,
+    createTemplateRenderer,
+} from "@backtrade/mailer";
 import {
     MailMessageDataSchema,
     type MailMessageData,
@@ -15,6 +18,10 @@ import {
     type LoginNotificationEmailData,
 } from "@backtrade/types";
 import { maskEmailForLogging } from "@backtrade/utils";
+
+// Create template compiler and renderer instances
+const templateCompiler = createTemplateCompiler({ logger });
+const templateRenderer = createTemplateRenderer(templateCompiler);
 
 /**
  * Email Service
@@ -96,7 +103,7 @@ class EmailService {
             "Rendering welcome email template"
         );
 
-        const html = await templates.register({
+        const html = await templateRenderer.renderRegister({
             username: data.username,
             dashboardUrl: data.dashboardUrl,
         });
@@ -106,7 +113,11 @@ class EmailService {
             "Sending welcome email"
         );
 
-        await mailerService.sendEmail(data.to, data.subject, html);
+        await mailerService.sendEmail({
+            to: data.to,
+            subject: data.subject,
+            html,
+        });
     }
 
     /**
@@ -126,7 +137,7 @@ class EmailService {
             "Rendering login notification email template"
         );
 
-        const html = await templates.login({
+        const html = await templateRenderer.renderLogin({
             username: data.username,
             loginDate: data.loginDate,
             device: data.device,
@@ -139,7 +150,11 @@ class EmailService {
             "Sending login notification email"
         );
 
-        await mailerService.sendEmail(data.to, data.subject, html);
+        await mailerService.sendEmail({
+            to: data.to,
+            subject: data.subject,
+            html,
+        });
     }
 }
 

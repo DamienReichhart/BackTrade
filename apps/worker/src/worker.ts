@@ -1,6 +1,7 @@
 import { logger } from "./libs/pino";
 import { connect, consumeMessages, close } from "./libs/rabbitmq";
 import messageProcessor from "./processor/message-processor";
+import { createTemplateCompiler } from "@backtrade/mailer";
 
 const workerLogger = logger.child({
     module: "worker",
@@ -12,6 +13,11 @@ const workerLogger = logger.child({
 async function startWorker(): Promise<void> {
     try {
         workerLogger.info("Starting data worker...");
+
+        // Precompile email templates for optimal performance
+        const templateCompiler = createTemplateCompiler({ logger });
+        await templateCompiler.precompileTemplates();
+        workerLogger.info("Email templates precompiled");
 
         // Connect to RabbitMQ
         await connect();

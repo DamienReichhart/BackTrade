@@ -3,6 +3,7 @@ import { healthCacheRepo } from "../../libs/cache";
 import { prisma } from "@backtrade/datas";
 import { redis } from "../../libs/redis";
 import { checkConnection as checkRabbitMQConnection } from "../../libs/rabbitmq";
+import { mailerService } from "../../libs/mailer";
 
 /**
  * Health Service
@@ -53,6 +54,20 @@ class HealthService {
     }
 
     /**
+     * Checks mailer (SMTP) connectivity
+     *
+     * @returns Promise resolving to "ok" or "error"
+     */
+    private async checkMailer(): Promise<SingleServiceHealthStatus> {
+        try {
+            const isConnected = await mailerService.checkConnection();
+            return isConnected ? "ok" : "error";
+        } catch {
+            return "error";
+        }
+    }
+
+    /**
      * Get overall system health status
      *
      * Checks database, Redis, SMTP, and RabbitMQ connectivity with caching.
@@ -63,11 +78,13 @@ class HealthService {
         if (cachedHealth) {
             return cachedHealth;
         }
-        const [database, redisStatus, rabbitmqStatus] = await Promise.all([
-            this.checkDatabase(),
-            this.checkRedis(),
-            this.checkRabbitMQ(),
-        ]);
+        const [database, redisStatus, rabbitmqStatus, mailerStatus] =
+            await Promise.all([
+                this.checkDatabase(),
+                this.checkRedis(),
+                this.checkRabbitMQ(),
+                this.checkMailer(),
+            ]);
 
         const healthResult: Health = {
             status: "ok",
@@ -75,6 +92,7 @@ class HealthService {
             database,
             redis: redisStatus,
             rabbitmq: rabbitmqStatus,
+            mailer: mailerStatus,
         };
 
         await healthCacheRepo.cacheHealth(1, healthResult);

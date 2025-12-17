@@ -20,6 +20,7 @@
         "@backtrade/cache": "workspace:*",
         "@backtrade/datas": "workspace:*",
         "@backtrade/logger": "workspace:*",
+        "@backtrade/mailer": "workspace:*",
         "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",

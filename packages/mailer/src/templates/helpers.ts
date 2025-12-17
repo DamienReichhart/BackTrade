@@ -1,7 +1,8 @@
 /**
  * Handlebars Helpers
  *
- * Custom helpers for email template rendering
+ * Custom helpers for email template rendering.
+ * These helpers are registered globally when the module is imported.
  */
 
 import handlebars from "handlebars";

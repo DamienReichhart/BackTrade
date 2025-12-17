@@ -38,6 +38,9 @@ importers:
       '@backtrade/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@backtrade/mailer':
+        specifier: workspace:*
+        version: link:../../packages/mailer
       '@backtrade/queue':
         specifier: workspace:*
         version: link:../../packages/queue
@@ -68,9 +71,6 @@ importers:
       helmet:
         specifier: 8.1.0
         version: 8.1.0
-      ioredis:
-        specifier: ^5.8.2
-        version: 5.8.2
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
@@ -253,6 +253,9 @@ importers:
       '@backtrade/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@backtrade/mailer':
+        specifier: workspace:*
+        version: link:../../packages/mailer
       '@backtrade/queue':
         specifier: workspace:*
         version: link:../../packages/queue
@@ -265,15 +268,6 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.8
-      mjml:
-        specifier: ^4.18.0
-        version: 4.18.0
-      nodemailer:
-        specifier: ^7.0.11
-        version: 7.0.11
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -287,15 +281,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.2
-      '@types/mjml':
-        specifier: ^4.7.4
-        version: 4.7.4
       '@types/node':
         specifier: 25.0.2
         version: 25.0.2
-      '@types/nodemailer':
-        specifier: ^7.0.4
-        version: 7.0.4
       esbuild:
         specifier: 0.27.1
         version: 0.27.1
@@ -434,6 +422,55 @@ importers:
       '@types/node':
         specifier: ^22.10.5
         version: 22.19.3
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 8.50.0
+        version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/mailer:
+    dependencies:
+      '@backtrade/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@backtrade/types':
+        specifier: workspace:*
+        version: link:../types
+      '@backtrade/utils':
+        specifier: workspace:*
+        version: link:../utils
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      mjml:
+        specifier: ^4.18.0
+        version: 4.18.0
+      nodemailer:
+        specifier: ^7.0.11
+        version: 7.0.11
+      zod:
+        specifier: 4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@backtrade/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@backtrade/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/mjml':
+        specifier: ^4.7.4
+        version: 4.7.4
+      '@types/node':
+        specifier: 25.0.2
+        version: 25.0.2
+      '@types/nodemailer':
+        specifier: ^7.0.4
+        version: 7.0.4
       globals:
         specifier: ^16.5.0
         version: 16.5.0
