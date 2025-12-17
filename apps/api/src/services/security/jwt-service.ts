@@ -84,8 +84,12 @@ class JwtService {
             const payload = jwt.verify(token, ENV.REFRESH_TOKEN_SECRET, {
                 algorithms: ["HS256"],
             } as jwt.VerifyOptions);
-            this.logger.debug({ payload }, "Refresh token verified");
-            return payload as unknown as JwtPayload;
+            const validatedPayload = JwtPayloadSchema.parse(payload);
+            this.logger.debug(
+                { payload: validatedPayload },
+                "Refresh token verified"
+            );
+            return validatedPayload;
         } catch (error) {
             this.logger.warn({ error }, "Refresh token verification failed");
             throw new UnAuthenticatedError("Invalid refresh token");
