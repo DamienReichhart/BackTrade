@@ -1,15 +1,9 @@
 import { logger } from "../libs/logger/pino";
+import type { QueueMessage } from "@backtrade/types";
 
 const messageProcessorLogger = logger.child({
     service: "message-processor",
 });
-
-export interface QueueMessage {
-    id: string;
-    type: string;
-    data: unknown;
-    timestamp: string;
-}
 
 /**
  * Processes a message from the queue

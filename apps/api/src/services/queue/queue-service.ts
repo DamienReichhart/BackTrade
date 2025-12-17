@@ -1,15 +1,6 @@
 import { publishMessage } from "../../libs/rabbitmq";
 import { logger } from "../../libs/logger/pino";
-
-/**
- * Queue message structure
- */
-export interface QueueMessage {
-    id: string;
-    type: string;
-    data: unknown;
-    timestamp: string;
-}
+import type { QueueMessage } from "@backtrade/types";
 
 /**
  * Queue Service
