@@ -32,7 +32,6 @@ class UsersController {
      */
     async getUserById(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
-        this.logger.debug({ id }, "Getting user by ID");
         const user = await usersService.getUserById(Number(id));
         res.status(200).json(user);
     }
