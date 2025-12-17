@@ -3,6 +3,7 @@ import { usersCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
+import hashService from "../security/hash-service";
 
 /**
  * Users Service
@@ -75,6 +76,9 @@ class UsersService {
             );
             throw new AlreadyExistsError("Email already in use");
         }
+        data.password_hash = await hashService.hashPassword(
+            data.password_hash as string
+        );
         const user = await usersRepo.createUser(data);
         this.logger.debug({ id: user.id }, "User created");
         await usersCacheRepo.cacheUser(user.id, user);
@@ -107,10 +111,17 @@ class UsersService {
             if (existingUserByEmail) {
                 this.logger.debug(
                     { email: data.email },
-                    "User already exists, throwing already exists error"
+                    "User already exists with same email, throwing already exists error"
                 );
-                throw new AlreadyExistsError("User already exists");
+                throw new AlreadyExistsError(
+                    "User with this email already exists"
+                );
             }
+        }
+        if (data.password_hash) {
+            data.password_hash = await hashService.hashPassword(
+                data.password_hash as string
+            );
         }
         const user = await usersRepo.updateUser(id, data);
         this.logger.debug({ id: user.id }, "User updated");

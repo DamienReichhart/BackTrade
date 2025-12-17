@@ -101,9 +101,7 @@ class AuthService {
     async register(registerRequest: RegisterRequest): Promise<AuthResponse> {
         const user = await userService.createUser({
             email: registerRequest.email,
-            password_hash: await hashService.hashPassword(
-                registerRequest.password
-            ),
+            password_hash: registerRequest.password,
             role: Role.USER,
         });
         this.logger.trace(
