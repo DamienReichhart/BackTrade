@@ -1,4 +1,13 @@
 import type { SerializerFn } from "pino";
+import type { Request, Response } from "express";
+
+/**
+ * Extended Express Request type that includes custom properties
+ * (e.g., id added by request-id middleware)
+ */
+type ExtendedRequest = Request & {
+    id?: string;
+};
 
 /**
  * Express request serializer
@@ -6,20 +15,12 @@ import type { SerializerFn } from "pino";
  *
  * @param req - Express Request object
  */
-export const requestSerializer: SerializerFn = (req: any) => {
-    // Type-safe access with fallbacks for Express Request properties
-    const expressReq = req as {
-        id?: string;
-        method?: string;
-        url?: string;
-        ip?: string;
-    };
-
+export const requestSerializer: SerializerFn = (req: ExtendedRequest) => {
     return {
-        id: expressReq.id ?? "unknown",
-        method: expressReq.method ?? "unknown",
-        url: expressReq.url ?? "unknown",
-        remoteAddress: expressReq.ip ?? "unknown",
+        id: req.id ?? "unknown",
+        method: req.method ?? "unknown",
+        url: req.url ?? "unknown",
+        remoteAddress: req.ip ?? "unknown",
     };
 };
 
@@ -29,14 +30,9 @@ export const requestSerializer: SerializerFn = (req: any) => {
  *
  * @param res - Express Response object
  */
-export const responseSerializer: SerializerFn = (res: any) => {
-    // Type-safe access with fallback for Express Response properties
-    const expressRes = res as {
-        statusCode?: number;
-    };
-
+export const responseSerializer: SerializerFn = (res: Response) => {
     return {
-        statusCode: expressRes.statusCode ?? 0,
+        statusCode: res.statusCode ?? 0,
     };
 };
 

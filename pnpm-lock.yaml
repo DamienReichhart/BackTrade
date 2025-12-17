@@ -388,6 +388,9 @@ importers:
       '@backtrade/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/express':
+        specifier: 5.0.6
+        version: 5.0.6
       '@types/node':
         specifier: ^22.10.5
         version: 22.19.3
