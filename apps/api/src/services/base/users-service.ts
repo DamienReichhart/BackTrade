@@ -1,5 +1,5 @@
 import { type User, type Prisma, usersRepo } from "@backtrade/datas";
-import usersCacheService from "../cache/users-cache-service";
+import { usersCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
@@ -37,7 +37,7 @@ class UsersService {
      * @throws NotFoundError if user doesn't exist
      */
     async getUserById(id: number): Promise<User> {
-        const cachedUser = await usersCacheService.getCachedUser(id);
+        const cachedUser = await usersCacheRepo.getCachedUser(id);
         if (cachedUser) {
             this.logger.trace({ id }, "User found in cache");
             return cachedUser;
@@ -54,7 +54,7 @@ class UsersService {
             );
             throw new NotFoundError("User not found");
         }
-        await usersCacheService.cacheUser(id, user);
+        await usersCacheRepo.cacheUser(id, user);
         this.logger.trace({ id }, "User cached");
         return user;
     }
@@ -77,7 +77,7 @@ class UsersService {
         }
         const user = await usersRepo.createUser(data);
         this.logger.debug({ id: user.id }, "User created");
-        await usersCacheService.cacheUser(user.id, user);
+        await usersCacheRepo.cacheUser(user.id, user);
         this.logger.trace({ id: user.id }, "User cached");
         return user;
     }
@@ -114,7 +114,7 @@ class UsersService {
         }
         const user = await usersRepo.updateUser(id, data);
         this.logger.debug({ id: user.id }, "User updated");
-        await usersCacheService.cacheUser(id, user);
+        await usersCacheRepo.cacheUser(id, user);
         this.logger.trace({ id: user.id }, "User cached");
         return user;
     }
@@ -136,7 +136,7 @@ class UsersService {
         }
         await usersRepo.deleteUser(id);
         this.logger.debug({ id }, "User deleted");
-        await usersCacheService.invalidateCachedUser(id);
+        await usersCacheRepo.invalidateCachedUser(id);
         this.logger.trace({ id }, "User invalidated from cache");
     }
 

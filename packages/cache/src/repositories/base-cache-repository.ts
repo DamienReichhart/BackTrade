@@ -1,18 +1,18 @@
 /**
- * Base Cache Service
+ * Base Cache Repository
  *
- * Abstract base class for all cache services providing common Redis operations.
+ * Abstract base class for all cache repositories providing common Redis operations.
  * Implements the standard cache interface with error handling and logging.
  */
 
-import { logger } from "../../libs/pino";
-import { redis } from "../../libs/redis";
+import type { Logger } from "@backtrade/logger";
+import type { Redis } from "ioredis";
 import type { z } from "zod";
 
 /**
- * Configuration options for cache services
+ * Configuration options for cache repositories
  */
-export interface CacheServiceConfig {
+export interface CacheRepositoryConfig {
     /** Redis key prefix (e.g., "user:", "session:") */
     prefix: string;
     /** Time to live in seconds */
@@ -24,30 +24,34 @@ export interface CacheServiceConfig {
 }
 
 /**
- * Base class for cache services
+ * Base class for cache repositories
  *
  * Provides common Redis operations with error handling and logging.
- * Can be extended by specific cache services or used directly.
+ * Can be extended by specific cache repositories or used directly.
  *
  * @template T - The entity type being cached
  */
-export class BaseCacheService<T> {
+export class BaseCacheRepository<T> {
     protected readonly prefix: string;
     protected readonly ttl: number;
     protected readonly entityName: string;
     protected readonly entitySchema: z.ZodType<unknown>;
-    protected readonly logger: ReturnType<typeof logger.child>;
+    protected readonly logger: ReturnType<Logger["child"]>;
+    protected readonly redis: Redis;
 
     /**
-     * Creates a new cache service instance
+     * Creates a new cache repository instance
      *
      * @param config - Configuration object with prefix, TTL, entity name, and schema
+     * @param redis - Redis client instance
+     * @param logger - Logger instance from the consuming application
      */
-    constructor(config: CacheServiceConfig) {
+    constructor(config: CacheRepositoryConfig, redis: Redis, logger: Logger) {
         this.prefix = config.prefix;
         this.ttl = config.ttl;
         this.entityName = config.entityName;
         this.entitySchema = config.entitySchema;
+        this.redis = redis;
         this.logger = logger.child({
             service: "cache",
             entity: this.entityName,
@@ -62,7 +66,7 @@ export class BaseCacheService<T> {
      */
     async cache(id: number, data: T): Promise<void> {
         try {
-            await redis.set(
+            await this.redis.set(
                 `${this.prefix}${id}`,
                 JSON.stringify(data),
                 "EX",
@@ -84,7 +88,7 @@ export class BaseCacheService<T> {
      */
     async get(id: number): Promise<T | null> {
         try {
-            const result = await redis.get(`${this.prefix}${id}`);
+            const result = await this.redis.get(`${this.prefix}${id}`);
             return result
                 ? (this.entitySchema.parse(JSON.parse(result)) as T)
                 : null;
@@ -104,7 +108,7 @@ export class BaseCacheService<T> {
      */
     async invalidate(id: number): Promise<void> {
         try {
-            await redis.del(`${this.prefix}${id}`);
+            await this.redis.del(`${this.prefix}${id}`);
         } catch (error) {
             this.logger.warn(
                 { error, id, entityName: this.entityName },

@@ -3,7 +3,7 @@ import {
     type Prisma,
     instrumentsRepo as instrumentsRepository,
 } from "@backtrade/datas";
-import instrumentsCacheService from "../cache/instruments-cache-service";
+import { instrumentsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { SearchQuery } from "@backtrade/types";
@@ -32,7 +32,7 @@ class InstrumentsService {
     async getInstrumentById(id: string): Promise<Instrument> {
         const numericId = Number(id);
         const cachedInstrument =
-            await instrumentsCacheService.getCachedInstrument(numericId);
+            await instrumentsCacheRepo.getCachedInstrument(numericId);
         if (cachedInstrument) {
             this.logger.trace({ id }, "Instrument found in cache");
             return cachedInstrument;
@@ -49,7 +49,7 @@ class InstrumentsService {
             );
             throw new NotFoundError("Instrument not found");
         }
-        await instrumentsCacheService.cacheInstrument(numericId, instrument);
+        await instrumentsCacheRepo.cacheInstrument(numericId, instrument);
         this.logger.trace({ id }, "Instrument cached");
         return instrument;
     }
@@ -95,7 +95,7 @@ class InstrumentsService {
         const created =
             await instrumentsRepository.createInstrument(instrument);
         this.logger.debug({ id: created.id }, "Instrument created");
-        await instrumentsCacheService.cacheInstrument(created.id, created);
+        await instrumentsCacheRepo.cacheInstrument(created.id, created);
         this.logger.trace({ id: created.id }, "Instrument cached");
         return created;
     }
@@ -125,7 +125,7 @@ class InstrumentsService {
             instrument
         );
         this.logger.debug({ id: updated.id }, "Instrument updated");
-        await instrumentsCacheService.cacheInstrument(updated.id, updated);
+        await instrumentsCacheRepo.cacheInstrument(updated.id, updated);
         this.logger.trace({ id: updated.id }, "Instrument cached");
         return updated;
     }
@@ -148,7 +148,7 @@ class InstrumentsService {
         await instrumentsRepository.deleteInstrument(id);
         this.logger.debug({ id }, "Instrument deleted");
         const numericId = Number(id);
-        await instrumentsCacheService.invalidateCachedInstrument(numericId);
+        await instrumentsCacheRepo.invalidateCachedInstrument(numericId);
         this.logger.trace({ id }, "Instrument invalidated from cache");
     }
 }

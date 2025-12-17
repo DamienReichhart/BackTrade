@@ -3,7 +3,7 @@ import {
     type Prisma,
     datasetsRepo as datasetsRepository,
 } from "@backtrade/datas";
-import datasetsCacheService from "../cache/datasets-cache-service";
+import { datasetsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { SearchQuery } from "@backtrade/types";
@@ -32,7 +32,7 @@ class DatasetsService {
     async getDatasetById(id: string): Promise<Dataset> {
         const numericId = Number(id);
         const cachedDataset =
-            await datasetsCacheService.getCachedDataset(numericId);
+            await datasetsCacheRepo.getCachedDataset(numericId);
         if (cachedDataset) {
             this.logger.trace({ id }, "Dataset found in cache");
             return cachedDataset;
@@ -49,7 +49,7 @@ class DatasetsService {
             );
             throw new NotFoundError("Dataset not found");
         }
-        await datasetsCacheService.cacheDataset(numericId, dataset);
+        await datasetsCacheRepo.cacheDataset(numericId, dataset);
         this.logger.trace({ id }, "Dataset cached");
         return dataset;
     }
@@ -90,7 +90,7 @@ class DatasetsService {
     async createDataset(dataset: Prisma.DatasetCreateInput): Promise<Dataset> {
         const created = await datasetsRepository.createDataset(dataset);
         this.logger.debug({ id: created.id }, "Dataset created");
-        await datasetsCacheService.cacheDataset(created.id, created);
+        await datasetsCacheRepo.cacheDataset(created.id, created);
         this.logger.trace({ id: created.id }, "Dataset cached");
         return created;
     }
@@ -117,7 +117,7 @@ class DatasetsService {
         }
         const updated = await datasetsRepository.updateDataset(id, dataset);
         this.logger.debug({ id: updated.id }, "Dataset updated");
-        await datasetsCacheService.cacheDataset(updated.id, updated);
+        await datasetsCacheRepo.cacheDataset(updated.id, updated);
         this.logger.trace({ id: updated.id }, "Dataset cached");
         return updated;
     }
@@ -140,7 +140,7 @@ class DatasetsService {
         await datasetsRepository.deleteDataset(id);
         this.logger.debug({ id }, "Dataset deleted");
         const numericId = Number(id);
-        await datasetsCacheService.invalidateCachedDataset(numericId);
+        await datasetsCacheRepo.invalidateCachedDataset(numericId);
         this.logger.trace({ id }, "Dataset invalidated from cache");
     }
 }

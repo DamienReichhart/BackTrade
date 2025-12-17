@@ -1,5 +1,5 @@
 import { type Health, type SingleServiceHealthStatus } from "@backtrade/types";
-import healthCacheService from "../cache/health-cache-service";
+import { healthCacheRepo } from "../../libs/cache";
 import { prisma } from "@backtrade/datas";
 import { redis } from "../../libs/redis";
 import { checkConnection as checkRabbitMQConnection } from "../../libs/rabbitmq";
@@ -59,7 +59,7 @@ class HealthService {
      * @returns Health status object
      */
     async getHealth(): Promise<Health> {
-        const cachedHealth = await healthCacheService.getCachedHealth(1);
+        const cachedHealth = await healthCacheRepo.getCachedHealth(1);
         if (cachedHealth) {
             return cachedHealth;
         }
@@ -77,7 +77,7 @@ class HealthService {
             rabbitmq: rabbitmqStatus,
         };
 
-        await healthCacheService.cacheHealth(1, healthResult);
+        await healthCacheRepo.cacheHealth(1, healthResult);
 
         return healthResult;
     }

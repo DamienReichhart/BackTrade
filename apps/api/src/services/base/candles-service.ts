@@ -4,7 +4,7 @@ import {
     type Timeframe,
     candlesRepo as candlesRepository,
 } from "@backtrade/datas";
-import candlesCacheService from "../cache/candles-cache-service";
+import { candlesCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { DateRange, SearchQuery } from "@backtrade/types";
 import { logger } from "../../libs/pino";
@@ -32,8 +32,7 @@ class CandlesService {
      */
     async getCandleById(id: string): Promise<Candle> {
         const numericId = Number(id);
-        const cachedCandle =
-            await candlesCacheService.getCachedCandle(numericId);
+        const cachedCandle = await candlesCacheRepo.getCachedCandle(numericId);
         if (cachedCandle) {
             this.logger.trace({ id }, "Candle found in cache");
             return cachedCandle;
@@ -50,7 +49,7 @@ class CandlesService {
             );
             throw new NotFoundError("Candle not found");
         }
-        await candlesCacheService.cacheCandle(numericId, candle);
+        await candlesCacheRepo.cacheCandle(numericId, candle);
         this.logger.trace({ id }, "Candle cached");
         return candle;
     }
@@ -118,7 +117,7 @@ class CandlesService {
     async createCandle(candle: Prisma.CandleCreateInput): Promise<Candle> {
         const created = await candlesRepository.createCandle(candle);
         this.logger.debug({ id: created.id }, "Candle created");
-        await candlesCacheService.cacheCandle(created.id, created);
+        await candlesCacheRepo.cacheCandle(created.id, created);
         this.logger.trace({ id: created.id }, "Candle cached");
         return created;
     }
@@ -142,7 +141,7 @@ class CandlesService {
         const deleted = await candlesRepository.deleteCandle(id);
         this.logger.debug({ id }, "Candle deleted");
         const numericId = Number(id);
-        await candlesCacheService.invalidateCachedCandle(numericId);
+        await candlesCacheRepo.invalidateCachedCandle(numericId);
         this.logger.trace({ id }, "Candle invalidated from cache");
         return deleted;
     }

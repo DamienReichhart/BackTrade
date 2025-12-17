@@ -17,6 +17,7 @@
         "db:seed": "tsx prisma/seed/index.ts"
     },
     "dependencies": {
+        "@backtrade/cache": "workspace:*",
         "@backtrade/datas": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/queue": "workspace:*",
@@ -29,7 +30,6 @@
         "express": "5.2.1",
         "express-rate-limit": "8.2.1",
         "helmet": "8.1.0",
-        "ioredis": "^5.8.2",
         "jsonwebtoken": "^9.0.3",
         "minio": "^8.0.6",
         "pino-http": "11.0.0",
