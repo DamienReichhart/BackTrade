@@ -1,14 +1,14 @@
-import pino from "pino";
-import { transport } from "./transport";
-import { serializers } from "./serializers";
+import { createLogger, expressSerializers } from "@backtrade/logger";
 import { ENV } from "../../config/env";
 
-export const logger = pino({
+/**
+ * Main logger instance for the API application
+ * Uses @backtrade/logger package with Express serializers
+ */
+export const logger = createLogger({
+    service: "api-backend",
     level: ENV.API_LOG_LEVEL,
-    serializers,
-    base: {
-        pid: false,
-        service: "api-backend",
-    },
-    ...transport,
+    logDir: ENV.API_LOG_DIR,
+    nodeEnv: ENV.NODE_ENV,
+    serializers: expressSerializers,
 });

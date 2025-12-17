@@ -32,6 +32,9 @@ importers:
       '@backtrade/datas':
         specifier: workspace:*
         version: link:../../packages/datas
+      '@backtrade/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
       '@backtrade/queue':
         specifier: workspace:*
         version: link:../../packages/queue
@@ -71,9 +74,6 @@ importers:
       minio:
         specifier: ^8.0.6
         version: 8.0.6
-      pino:
-        specifier: 10.1.0
-        version: 10.1.0
       pino-http:
         specifier: 11.0.0
         version: 11.0.0
@@ -129,9 +129,6 @@ importers:
       nodemon:
         specifier: ^3.1.11
         version: 3.1.11
-      pino-pretty:
-        specifier: ^13.1.3
-        version: 13.1.3
       ts-jest:
         specifier: ^29.4.6
         version: 29.4.6(@babel/core@7.28.5)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.5))(esbuild@0.27.1)(jest-util@30.2.0)(jest@30.2.0(@types/node@25.0.2))(typescript@5.9.3)
@@ -250,6 +247,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@backtrade/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
       '@backtrade/queue':
         specifier: workspace:*
         version: link:../../packages/queue
@@ -271,9 +271,6 @@ importers:
       nodemailer:
         specifier: ^7.0.11
         version: 7.0.11
-      pino:
-        specifier: 10.1.0
-        version: 10.1.0
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -308,9 +305,6 @@ importers:
       nodemon:
         specifier: ^3.1.11
         version: 3.1.11
-      pino-pretty:
-        specifier: ^13.1.3
-        version: 13.1.3
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -377,6 +371,34 @@ importers:
         version: 16.5.0
       typescript-eslint:
         specifier: ^8.50.0
+        version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/logger:
+    dependencies:
+      pino:
+        specifier: ^9.5.0
+        version: 9.14.0
+      pino-pretty:
+        specifier: ^13.0.0
+        version: 13.1.3
+    devDependencies:
+      '@backtrade/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@backtrade/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: ^22.10.5
+        version: 22.19.3
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 8.50.0
         version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
 
   packages/queue:
@@ -1758,6 +1780,9 @@ packages:
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
+
+  '@types/node@22.19.3':
+    resolution: {integrity: sha512-1N9SBnWYOJTrNZCdh/yJE+t910Y128BoyY+zBLWhL3r0TYzlTmFdXrPwHL9DyFZmlEXNQQolTZh3KHV31QDhyA==}
 
   '@types/node@25.0.2':
     resolution: {integrity: sha512-gWEkeiyYE4vqjON/+Obqcoeffmk0NF15WSBwSs7zwVA2bAbTaE0SJ7P0WNGoJn8uE7fiaV5a7dKYIJriEqOrmA==}
@@ -3898,6 +3923,10 @@ packages:
     resolution: {integrity: sha512-0zZC2ygfdqvqK8zJIr1e+wT1T/L+LF6qvqvbzEQ6tiMAoTqEVK9a1K3YRu8HEUvGEvNqZyPJTtb2sNIoTkB83w==}
     hasBin: true
 
+  pino@9.14.0:
+    resolution: {integrity: sha512-8OEwKp5juEvb/MjpIc4hjqfgCNysrS94RIOMXYvpYCdm/jglrKEiAYmiumbmGhCvs+IcInsphYDFwqrjr7398w==}
+    hasBin: true
+
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
@@ -4561,6 +4590,9 @@ packages:
 
   undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
@@ -6560,6 +6592,10 @@ snapshots:
       '@types/mjml-core': 4.15.2
 
   '@types/ms@2.1.0': {}
+
+  '@types/node@22.19.3':
+    dependencies:
+      undici-types: 6.21.0
 
   '@types/node@25.0.2':
     dependencies:
@@ -9195,6 +9231,20 @@ snapshots:
       sonic-boom: 4.2.0
       thread-stream: 3.1.0
 
+  pino@9.14.0:
+    dependencies:
+      '@pinojs/redact': 0.4.0
+      atomic-sleep: 1.0.0
+      on-exit-leak-free: 2.1.2
+      pino-abstract-transport: 2.0.0
+      pino-std-serializers: 7.0.0
+      process-warning: 5.0.0
+      quick-format-unescaped: 4.0.4
+      real-require: 0.2.0
+      safe-stable-stringify: 2.5.0
+      sonic-boom: 4.2.0
+      thread-stream: 3.1.0
+
   pirates@4.0.7: {}
 
   pkg-dir@4.2.0:
@@ -9820,6 +9870,8 @@ snapshots:
   uglify-js@3.19.3: {}
 
   undefsafe@2.0.5: {}
+
+  undici-types@6.21.0: {}
 
   undici-types@7.16.0: {}
 

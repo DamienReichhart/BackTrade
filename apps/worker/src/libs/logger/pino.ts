@@ -1,14 +1,13 @@
-import pino from "pino";
-import { transport } from "./transport";
-import { serializers } from "./serializers";
+import { createLogger } from "@backtrade/logger";
 import { ENV } from "../../config/env";
 
-export const logger = pino({
+/**
+ * Main logger instance for the Worker application
+ * Uses @backtrade/logger package
+ */
+export const logger = createLogger({
+    service: "data-worker",
     level: ENV.WORKER_LOG_LEVEL,
-    serializers,
-    base: {
-        pid: false,
-        service: "data-worker",
-    },
-    ...transport,
+    logDir: ENV.WORKER_LOG_DIR,
+    nodeEnv: ENV.NODE_ENV,
 });
