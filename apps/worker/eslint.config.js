@@ -54,7 +54,6 @@ export default [
                 "error",
                 { prefer: "type-imports", fixStyle: "inline-type-imports" },
             ],
-            "@typescript-eslint/no-empty-interface": "warn",
             "@typescript-eslint/no-unused-vars": [
                 "error",
                 { argsIgnorePattern: "^_" },
