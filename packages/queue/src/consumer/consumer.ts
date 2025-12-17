@@ -28,6 +28,7 @@ export class Consumer<T = unknown> {
     private messageHandler: MessageHandler<T> | null = null;
     private isConsuming = false;
     private consumerTag: string | null = null;
+    private queueNameOverride: string | undefined = undefined;
 
     constructor(
         channelManager: ChannelManager,
@@ -48,7 +49,7 @@ export class Consumer<T = unknown> {
             .getConnectionManager()
             .addReconnectHandler(async () => {
                 if (this.messageHandler) {
-                    await this.startConsuming();
+                    await this.startConsuming(this.queueNameOverride);
                 }
             });
     }
@@ -76,6 +77,7 @@ export class Consumer<T = unknown> {
         }
 
         this.messageHandler = handler;
+        this.queueNameOverride = queueName;
         await this.startConsuming(queueName);
     }
 
