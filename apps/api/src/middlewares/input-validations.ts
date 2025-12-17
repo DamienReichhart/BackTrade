@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { z } from "zod";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 import BadRequestError from "../errors/web/bad-request-error";
 import { formatZodError } from "@backtrade/utils";
 

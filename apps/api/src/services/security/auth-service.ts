@@ -6,7 +6,7 @@ import {
 import { Role } from "@backtrade/datas";
 import userService from "../base/users-service";
 import hashService from "./hash-service";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import jwtService from "./jwt-service";
 
 /**

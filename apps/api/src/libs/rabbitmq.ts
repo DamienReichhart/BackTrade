@@ -1,6 +1,6 @@
 import { createPublisher, type Publisher } from "@backtrade/queue";
 import { ENV } from "../config/env";
-import { logger } from "./logger/pino";
+import { logger } from "./pino";
 
 const rabbitmqLogger = logger.child({
     service: "rabbitmq",

@@ -4,7 +4,7 @@ import {
     datasetsRepo as datasetsRepository,
 } from "@backtrade/datas";
 import datasetsCacheService from "../cache/datasets-cache-service";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { SearchQuery } from "@backtrade/types";
 

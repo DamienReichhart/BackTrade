@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import NotFoundError from "../errors/web/not-found-error";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 const notFoundHandlerLogger = logger.child({
     service: "not-found-handler",

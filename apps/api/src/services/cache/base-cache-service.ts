@@ -5,7 +5,7 @@
  * Implements the standard cache interface with error handling and logging.
  */
 
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import { redis } from "../../libs/redis";
 import type { z } from "zod";
 

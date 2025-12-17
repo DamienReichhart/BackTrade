@@ -7,7 +7,7 @@
 
 import type { Request, Response } from "express";
 import usersService from "../services/base/users-service";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 /**
  * Users Controller

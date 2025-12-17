@@ -6,7 +6,7 @@
 
 import nodemailer from "nodemailer";
 import { ENV } from "../config/env";
-import { logger } from "./logger/pino";
+import { logger } from "./pino";
 
 const mailerLogger = logger.child({
     service: "mailer",

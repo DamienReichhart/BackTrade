@@ -30,7 +30,7 @@ registerHelpers();
 
 // Initialize templates on module load
 import { precompileTemplates } from "./compiler";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 const emailLogger = logger.child({ service: "email" });
 

@@ -8,7 +8,7 @@
 import datasetsService from "../services/base/datasets-service";
 import type { Request, Response } from "express";
 import BadRequestError from "../errors/web/bad-request-error";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 /**
  * Datasets Controller

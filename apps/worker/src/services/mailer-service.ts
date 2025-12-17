@@ -6,7 +6,7 @@
 
 import mailer from "../libs/mailer";
 import { ENV } from "../config/env";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 import { maskEmailForLogging } from "@backtrade/utils";
 
 /**

@@ -1,7 +1,7 @@
 import * as Minio from "minio";
 import type { Readable } from "stream";
 import { ENV } from "../config/env";
-import { logger } from "./logger/pino";
+import { logger } from "./pino";
 
 const minioLogger = logger.child({
     service: "minio",

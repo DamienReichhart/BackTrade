@@ -15,7 +15,7 @@ import {
     PublicUserSchema,
     type RefreshTokenRequest,
 } from "@backtrade/types";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 /**
  * Auth Controller

@@ -10,7 +10,7 @@ import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import type { Prisma } from "@backtrade/datas";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 type InstrumentCreateInput = Prisma.InstrumentCreateInput;
 type InstrumentUpdateInput = Prisma.InstrumentUpdateInput;

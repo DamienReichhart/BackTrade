@@ -1,5 +1,5 @@
 import { createLogger } from "@backtrade/logger";
-import { ENV } from "../../config/env";
+import { ENV } from "../config/env";
 
 /**
  * Main logger instance for the Worker application

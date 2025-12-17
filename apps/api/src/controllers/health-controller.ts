@@ -7,7 +7,7 @@
 
 import { type Request, type Response } from "express";
 import healthService from "../services/utils/health-service";
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 
 /**
  * Health Controller

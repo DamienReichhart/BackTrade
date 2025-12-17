@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { ENV } from "../../config/env";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import {
     type JwtPayload,

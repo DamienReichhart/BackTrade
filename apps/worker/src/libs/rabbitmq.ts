@@ -1,7 +1,7 @@
 import { createConsumer, type Consumer } from "@backtrade/queue";
 import type { QueueMessage } from "@backtrade/types";
 import { ENV } from "../config/env";
-import { logger } from "./logger/pino";
+import { logger } from "./pino";
 
 const rabbitmqLogger = logger.child({
     service: "rabbitmq",

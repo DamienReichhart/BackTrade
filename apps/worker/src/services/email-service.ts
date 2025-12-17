@@ -5,7 +5,7 @@
  * Validates mail message data and renders appropriate templates.
  */
 
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 import mailerService from "./mailer-service";
 import { templates } from "../email";
 import {

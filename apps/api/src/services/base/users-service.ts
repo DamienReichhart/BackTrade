@@ -1,6 +1,6 @@
 import { type User, type Prisma, usersRepo } from "@backtrade/datas";
 import usersCacheService from "../cache/users-cache-service";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
 

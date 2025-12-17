@@ -7,7 +7,7 @@ import {
 import candlesCacheService from "../cache/candles-cache-service";
 import NotFoundError from "../../errors/web/not-found-error";
 import type { DateRange, SearchQuery } from "@backtrade/types";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 
 /**
  * Candles Service

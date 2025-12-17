@@ -1,4 +1,4 @@
-import { logger } from "./libs/logger/pino";
+import { logger } from "./libs/pino";
 import { connect, consumeMessages, close } from "./libs/rabbitmq";
 import messageProcessor from "./processor/message-processor";
 

@@ -5,7 +5,7 @@
  */
 
 import { verify, hash, argon2id } from "argon2";
-import { logger } from "../../libs/logger/pino";
+import { logger } from "../../libs/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 
 /**

@@ -1,4 +1,4 @@
-import { logger } from "../libs/logger/pino";
+import { logger } from "../libs/pino";
 import type { QueueMessage } from "@backtrade/types";
 import emailService from "../services/email-service";
 

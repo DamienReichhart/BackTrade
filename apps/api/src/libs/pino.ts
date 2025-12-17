@@ -1,5 +1,5 @@
 import { createLogger, expressSerializers } from "@backtrade/logger";
-import { ENV } from "../../config/env";
+import { ENV } from "../config/env";
 
 /**
  * Main logger instance for the API application
