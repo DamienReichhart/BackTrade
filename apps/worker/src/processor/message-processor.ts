@@ -1,6 +1,6 @@
 import { logger } from "../libs/logger/pino";
 import type { QueueMessage } from "@backtrade/types";
-import emailService from "./email-service";
+import emailService from "../services/email-service";
 
 const messageProcessorLogger = logger.child({
     service: "message-processor",
