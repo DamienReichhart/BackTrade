@@ -17,6 +17,7 @@ export const HealthSchema = z.object({
     database: SingleServiceHealthStatusSchema,
     redis: SingleServiceHealthStatusSchema,
     smtp: SingleServiceHealthStatusSchema,
+    rabbitmq: SingleServiceHealthStatusSchema,
 });
 export type Health = z.infer<typeof HealthSchema>;
 

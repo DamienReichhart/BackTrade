@@ -206,4 +206,27 @@ connect().catch((err) => {
     rabbitmqLogger.error(err, "Failed to initialize RabbitMQ connection");
 });
 
-export { connect, publishMessage, close, QUEUE_NAME };
+/**
+ * Checks if RabbitMQ connection is healthy
+ *
+ * @returns Promise resolving to true if connection and channel are available and open, false otherwise
+ */
+async function checkConnection(): Promise<boolean> {
+    try {
+        if (!connection || !channel) {
+            return false;
+        }
+
+        // Check if connection is closed (amqplib connections have a 'closed' property)
+        const conn = connection as unknown as { closed?: boolean };
+        if (conn.closed === true) {
+            return false;
+        }
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export { connect, publishMessage, close, checkConnection, QUEUE_NAME };
