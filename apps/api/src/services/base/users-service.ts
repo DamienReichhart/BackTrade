@@ -148,7 +148,7 @@ class UsersService {
      */
     async getAllUsers(where?: Prisma.UserWhereInput): Promise<User[]> {
         const users = await usersRepo.getAllUsers(where);
-        this.logger.trace({ users }, "Users fetched");
+        this.logger.trace({ count: users.length }, "Users fetched");
         return users;
     }
 
