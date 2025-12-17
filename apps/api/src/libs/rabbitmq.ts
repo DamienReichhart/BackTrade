@@ -13,6 +13,8 @@ type AmqpChannel = Awaited<ReturnType<AmqpConnection["createChannel"]>>;
 let connection: AmqpConnection | null = null;
 let channel: AmqpChannel | null = null;
 
+let isClosingIntentionally = false;
+
 const QUEUE_NAME = ENV.RABBITMQ_QUEUE_NAME;
 const RECONNECT_INITIAL_DELAY_MS = 1_000;
 const RECONNECT_MAX_DELAY_MS = 30_000;
@@ -36,19 +38,25 @@ async function connectOnce(): Promise<void> {
     });
 
     newConnection.on("close", () => {
-        rabbitmqLogger.warn(
-            "RabbitMQ connection closed, will attempt to reconnect"
-        );
+        if (isClosingIntentionally) {
+            rabbitmqLogger.info("RabbitMQ connection closed intentionally");
+        } else {
+            rabbitmqLogger.warn(
+                "RabbitMQ connection closed, will attempt to reconnect"
+            );
+
+            // Background reconnection loop
+            void connect().catch((err) => {
+                rabbitmqLogger.error(
+                    err,
+                    "Error while attempting to reconnect to RabbitMQ"
+                );
+            });
+        }
+
+        // In all cases, clear connection and channel references once closed
         connection = null;
         channel = null;
-
-        // Background reconnection loop
-        void connect().catch((err) => {
-            rabbitmqLogger.error(
-                err,
-                "Error while attempting to reconnect to RabbitMQ"
-            );
-        });
     });
 
     const newChannel = await newConnection.createChannel();
@@ -174,16 +182,22 @@ async function publishMessage(message: unknown): Promise<void> {
  * Closes the RabbitMQ connection
  */
 async function close(): Promise<void> {
-    if (channel) {
-        await channel.close();
-        channel = null;
-        rabbitmqLogger.info("RabbitMQ channel closed");
-    }
+    isClosingIntentionally = true;
 
-    if (connection) {
-        await connection.close();
-        connection = null;
-        rabbitmqLogger.info("RabbitMQ connection closed");
+    try {
+        if (channel) {
+            await channel.close();
+            channel = null;
+            rabbitmqLogger.info("RabbitMQ channel closed");
+        }
+
+        if (connection) {
+            await connection.close();
+            connection = null;
+            rabbitmqLogger.info("RabbitMQ connection closed");
+        }
+    } finally {
+        isClosingIntentionally = false;
     }
 }
 
