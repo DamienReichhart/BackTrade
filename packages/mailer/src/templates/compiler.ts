@@ -64,12 +64,30 @@ export class TemplateCompiler {
     async compileTemplate<T = Record<string, unknown>>(
         name: string
     ): Promise<CompiledTemplate<T>> {
+        // Validate template name to prevent path traversal
+        if (
+            name.includes("..") ||
+            name.includes("/") ||
+            name.includes("\\") ||
+            name.includes("\0") ||
+            name.trim() !== name ||
+            name.length === 0
+        ) {
+            throw new Error(`Invalid template name: ${name}`);
+        }
+
         // Return cached template if available
         if (this.templateCache.has(name)) {
             return this.templateCache.get(name) as CompiledTemplate<T>;
         }
 
-        const filePath = path.join(TEMPLATE_DIR, `${name}.mjml`);
+        // Resolve path and verify it's within TEMPLATE_DIR to prevent path traversal
+        const filePath = path.resolve(TEMPLATE_DIR, `${name}.mjml`);
+        const templateDirResolved = path.resolve(TEMPLATE_DIR);
+
+        if (!filePath.startsWith(templateDirResolved + path.sep)) {
+            throw new Error(`Invalid template name: ${name}`);
+        }
 
         // Verify file exists
         try {
