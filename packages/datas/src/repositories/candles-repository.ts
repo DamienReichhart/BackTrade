@@ -9,7 +9,6 @@ import type {
     Candle,
     CandleWhereInput,
     CandleCreateInput,
-    CandleUpdateInput,
     CandleOrderBy,
 } from "@backtrade/types";
 import { BaseRepository } from "./base-repository";
@@ -43,18 +42,6 @@ class CandlesRepository extends BaseRepository {
     }
 
     /**
-     * Get a candle by ID.
-     *
-     * @param id - Candle ID as number or string
-     * @returns Candle entity or null if not found
-     */
-    async getCandleById(id: number | string): Promise<Candle | null> {
-        return this.prisma.candle.findUnique({
-            where: { id: this.toNumericId(id) },
-        }) as unknown as Candle | null;
-    }
-
-    /**
      * Create a new candle.
      *
      * @param data - Candle creation data
@@ -63,35 +50,6 @@ class CandlesRepository extends BaseRepository {
     async createCandle(data: CandleCreateInput): Promise<Candle> {
         return this.prisma.candle.create({
             data: data as Prisma.CandleCreateInput,
-        }) as unknown as Candle;
-    }
-
-    /**
-     * Update an existing candle.
-     *
-     * @param id - Candle ID as number or string
-     * @param data - Candle update data
-     * @returns Updated candle entity
-     */
-    async updateCandle(
-        id: number | string,
-        data: CandleUpdateInput
-    ): Promise<Candle> {
-        return this.prisma.candle.update({
-            where: { id: this.toNumericId(id) },
-            data: data as CandleUpdateInput as Prisma.CandleUpdateInput,
-        }) as unknown as Candle;
-    }
-
-    /**
-     * Delete a candle by ID.
-     *
-     * @param id - Candle ID as number or string
-     * @returns Deleted candle entity
-     */
-    async deleteCandle(id: number | string): Promise<Candle> {
-        return this.prisma.candle.delete({
-            where: { id: this.toNumericId(id) },
         }) as unknown as Candle;
     }
 }

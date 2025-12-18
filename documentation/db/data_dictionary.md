@@ -101,17 +101,20 @@
 
 ## CANDLE
 
-| Attribute  | Type     | Size | Constraints              | Description                                        | Domain                                    |
-| ---------- | -------- | ---- | ------------------------ | -------------------------------------------------- | ----------------------------------------- |
-| timeframe  | Enum     | -    | NOT NULL                 | Timeframe of the candle                            | M1, M5, M10, M15, M30, H1, H2, H4, D1, W1 |
-| ts         | DateTime | -    | NOT NULL                 | Timestamp of the candle (start of the period)      | ISO 8601 datetime                         |
-| open       | Decimal  | 18,8 | NOT NULL                 | Opening price of the candle                        | Positive decimal number                   |
-| high       | Decimal  | 18,8 | NOT NULL                 | Highest price during the candle period             | Positive decimal number, >= open, >= low  |
-| low        | Decimal  | 18,8 | NOT NULL                 | Lowest price during the candle period              | Positive decimal number, <= open, <= high |
-| close      | Decimal  | 18,8 | NOT NULL                 | Closing price of the candle                        | Positive decimal number                   |
-| volume     | Decimal  | 18,8 | NOT NULL                 | Trading volume for the candle period               | Positive decimal number                   |
-| created_at | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the candle record was created       | ISO 8601 datetime                         |
-| updated_at | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the candle record was last modified | ISO 8601 datetime                         |
+| Attribute     | Type     | Size | Constraints                   | Description                                        | Domain                                    |
+| ------------- | -------- | ---- | ----------------------------- | -------------------------------------------------- | ----------------------------------------- |
+| instrument_id | Integer  | -    | NOT NULL, FK → INSTRUMENT(id) | Instrument associated with the candle              | Existing instrument identifier            |
+| timeframe     | Enum     | -    | NOT NULL                      | Timeframe of the candle                            | M1, M5, M10, M15, M30, H1, H2, H4, D1, W1 |
+| ts            | DateTime | -    | NOT NULL                      | Timestamp of the candle (start of the period)      | ISO 8601 datetime                         |
+| open          | Decimal  | 18,8 | NOT NULL                      | Opening price of the candle                        | Positive decimal number                   |
+| high          | Decimal  | 18,8 | NOT NULL                      | Highest price during the candle period             | Positive decimal number, >= open, >= low  |
+| low           | Decimal  | 18,8 | NOT NULL                      | Lowest price during the candle period              | Positive decimal number, <= open, <= high |
+| close         | Decimal  | 18,8 | NOT NULL                      | Closing price of the candle                        | Positive decimal number                   |
+| volume        | Decimal  | 18,8 | NOT NULL                      | Trading volume for the candle period               | Positive decimal number                   |
+| created_at    | DateTime | -    | NOT NULL, DEFAULT: now()      | Timestamp when the candle record was created       | ISO 8601 datetime                         |
+| updated_at    | DateTime | -    | NOT NULL, AUTO UPDATE         | Timestamp when the candle record was last modified | ISO 8601 datetime                         |
+
+> Primary Key: **(instrument_id, timeframe, ts)**
 
 ---
 

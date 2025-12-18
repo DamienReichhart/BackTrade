@@ -87,7 +87,6 @@ export type {
     DatasetOrderBy,
     CandleWhereInput,
     CandleCreateInput,
-    CandleUpdateInput,
     CandleOrderBy,
     SessionAnalyticsWhereInput,
     SessionAnalyticsCreateInput,

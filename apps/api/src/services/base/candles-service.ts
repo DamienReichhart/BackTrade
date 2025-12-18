@@ -8,8 +8,6 @@ import type {
     DateRange,
     SearchQuery,
 } from "@backtrade/types";
-import { candlesCacheRepo } from "../../libs/cache";
-import NotFoundError from "../../errors/web/not-found-error";
 import { logger } from "../../libs/pino";
 
 /**
@@ -24,37 +22,6 @@ class CandlesService {
         this.logger = logger.child({
             service: "candle-service",
         });
-    }
-
-    /**
-     * Get a candle by ID with caching
-     *
-     * @param id - Candle ID
-     * @returns Candle entity
-     * @throws NotFoundError if candle doesn't exist
-     */
-    async getCandleById(id: string): Promise<Candle> {
-        const numericId = Number(id);
-        const cachedCandle = await candlesCacheRepo.getCachedCandle(numericId);
-        if (cachedCandle) {
-            this.logger.trace({ id }, "Candle found in cache");
-            return cachedCandle;
-        }
-        this.logger.trace(
-            { id },
-            "Candle not found in cache, fetching from database"
-        );
-        const candle = await candlesRepository.getCandleById(id);
-        if (!candle) {
-            this.logger.debug(
-                { id },
-                "Candle not found, throwing not found error"
-            );
-            throw new NotFoundError("Candle not found");
-        }
-        await candlesCacheRepo.cacheCandle(numericId, candle);
-        this.logger.trace({ id }, "Candle cached");
-        return candle;
     }
 
     /**
@@ -119,9 +86,14 @@ class CandlesService {
      */
     async createCandle(candle: CandleCreateInput): Promise<Candle> {
         const created = await candlesRepository.createCandle(candle);
-        this.logger.debug({ id: created.id }, "Candle created");
-        await candlesCacheRepo.cacheCandle(created.id, created);
-        this.logger.trace({ id: created.id }, "Candle cached");
+        this.logger.debug(
+            {
+                instrument_id: created.instrument_id,
+                timeframe: created.timeframe,
+                ts: created.ts,
+            },
+            "Candle created"
+        );
         return created;
     }
 
@@ -132,22 +104,10 @@ class CandlesService {
      * @returns Deleted candle entity
      * @throws NotFoundError if candle doesn't exist
      */
-    async deleteCandle(id: string): Promise<Candle> {
-        const existing = await candlesRepository.getCandleById(id);
-        if (!existing) {
-            this.logger.debug(
-                { id },
-                "Candle not found, throwing not found error"
-            );
-            throw new NotFoundError("Candle not found");
-        }
-        const deleted = await candlesRepository.deleteCandle(id);
-        this.logger.debug({ id }, "Candle deleted");
-        const numericId = Number(id);
-        await candlesCacheRepo.invalidateCachedCandle(numericId);
-        this.logger.trace({ id }, "Candle invalidated from cache");
-        return deleted;
-    }
+    // NOTE: Delete by numeric ID has been removed because
+    // candles no longer have a standalone ID. Deletion should be
+    // implemented using the composite key (instrument_id, timeframe, ts)
+    // when the corresponding route is introduced.
 }
 
 export default new CandlesService();

@@ -289,7 +289,6 @@ model Dataset {
 }
 
 model Candle {
-  id            Int       @id @default(autoincrement())
   instrument_id Int
   timeframe     Timeframe
   ts            DateTime
@@ -304,7 +303,7 @@ model Candle {
   // Relations
   instrument Instrument @relation(fields: [instrument_id], references: [id])
 
-  @@unique([instrument_id, timeframe, ts])
+  @@id([instrument_id, timeframe, ts])
   @@index([instrument_id, timeframe])
   @@index([ts])
   @@map("candles")

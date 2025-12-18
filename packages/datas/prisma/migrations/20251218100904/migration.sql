@@ -185,7 +185,6 @@ CREATE TABLE "datasets" (
 
 -- CreateTable
 CREATE TABLE "candles" (
-    "id" SERIAL NOT NULL,
     "instrument_id" INTEGER NOT NULL,
     "timeframe" "Timeframe" NOT NULL,
     "ts" TIMESTAMP(3) NOT NULL,
@@ -197,7 +196,7 @@ CREATE TABLE "candles" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "candles_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "candles_pkey" PRIMARY KEY ("instrument_id","timeframe","ts")
 );
 
 -- CreateTable
@@ -258,9 +257,6 @@ CREATE INDEX "candles_instrument_id_timeframe_idx" ON "candles"("instrument_id",
 
 -- CreateIndex
 CREATE INDEX "candles_ts_idx" ON "candles"("ts");
-
--- CreateIndex
-CREATE UNIQUE INDEX "candles_instrument_id_timeframe_ts_key" ON "candles"("instrument_id", "timeframe", "ts");
 
 -- CreateIndex
 CREATE INDEX "session_analytics_session_id_idx" ON "session_analytics"("session_id");
