@@ -40,9 +40,4 @@ abstract class BasePostgresRepository {
     }
 }
 
-/**
- * @deprecated Use BasePostgresRepository instead. This export is kept for backward compatibility.
- */
-const BaseRepository = BasePostgresRepository;
-
-export { BasePostgresRepository, BaseRepository };
+export { BasePostgresRepository };

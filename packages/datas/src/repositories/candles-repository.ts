@@ -48,9 +48,20 @@ class CandlesRepository extends BaseClickHouseRepository {
                 params.instrument_id = where.instrument_id.equals;
             }
             if (where.instrument_id.in) {
+                // Validate and ensure all values are integers
+                const instrumentIds = where.instrument_id.in.map((id) => {
+                    const numId = typeof id === "number" ? id : Number(id);
+                    if (isNaN(numId) || !Number.isInteger(numId)) {
+                        throw new Error(
+                            `Invalid instrument_id value: ${id}. Expected integer.`
+                        );
+                    }
+                    return numId;
+                });
                 conditions.push(
-                    `instrument_id IN (${where.instrument_id.in.join(",")})`
+                    "instrument_id IN {instrument_ids:Array(UInt32)}"
                 );
+                params.instrument_ids = instrumentIds;
             }
         }
 
@@ -60,10 +71,9 @@ class CandlesRepository extends BaseClickHouseRepository {
                 params.timeframe = where.timeframe.equals;
             }
             if (where.timeframe.in) {
-                const values = where.timeframe.in
-                    .map((v) => `'${this.escapeString(v)}'`)
-                    .join(",");
-                conditions.push(`timeframe IN (${values})`);
+                // Use parameterized query for security
+                conditions.push("timeframe IN {timeframes:Array(String)}");
+                params.timeframes = where.timeframe.in;
             }
         }
 
@@ -137,9 +147,27 @@ class CandlesRepository extends BaseClickHouseRepository {
             return "ORDER BY ts DESC";
         }
 
+        // Whitelist of valid Candle field names to prevent SQL injection
+        const validFields = [
+            "instrument_id",
+            "timeframe",
+            "ts",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "created_at",
+            "updated_at",
+        ] as const;
+
         const orderByParts: string[] = [];
         for (const [field, direction] of Object.entries(orderBy)) {
-            if (direction === "asc" || direction === "desc") {
+            // Validate field name against whitelist
+            if (
+                validFields.includes(field as (typeof validFields)[number]) &&
+                (direction === "asc" || direction === "desc")
+            ) {
                 orderByParts.push(`${field} ${direction.toUpperCase()}`);
             }
         }
@@ -161,12 +189,21 @@ class CandlesRepository extends BaseClickHouseRepository {
         const { clause: whereClause, params } = this.buildWhereClause(where);
         const orderByClause = this.buildOrderByClause(orderBy);
 
+        // Validate and sanitize LIMIT values to prevent SQL injection
         let limitClause = "";
         if (take !== undefined) {
             const offset = skip ?? 0;
-            limitClause = `LIMIT ${offset}, ${take}`;
+            // Validate that offset and take are non-negative integers
+            const validatedOffset =
+                Number.isInteger(offset) && offset >= 0 ? offset : 0;
+            const validatedTake =
+                Number.isInteger(take) && take > 0 ? take : 20;
+            limitClause = `LIMIT ${validatedOffset}, ${validatedTake}`;
         } else if (skip !== undefined) {
-            limitClause = `LIMIT ${skip}, 3000`; // Default limit if only skip is provided
+            // Validate that skip is a non-negative integer
+            const validatedSkip =
+                Number.isInteger(skip) && skip >= 0 ? skip : 0;
+            limitClause = `LIMIT ${validatedSkip}, 3000`; // Default limit if only skip is provided
         }
 
         const query = `

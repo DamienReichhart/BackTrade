@@ -37,16 +37,6 @@ abstract class BaseClickHouseRepository {
     }
 
     /**
-     * Escape a string value for use in SQL queries.
-     *
-     * @param value - String value to escape
-     * @returns Escaped string safe for SQL queries
-     */
-    protected escapeString(value: string): string {
-        return value.replace(/'/g, "''");
-    }
-
-    /**
      * Format a date for ClickHouse queries.
      *
      * @param date - Date string or Date object
