@@ -28,8 +28,6 @@ export {
 // Repository option types
 export type { FindAllOptions as InstrumentsFindAllOptions } from "./repositories/instruments-repository";
 export type { FindAllOptions as DatasetsFindAllOptions } from "./repositories/datasets-repository";
-export type { FindAllOptions as CandlesFindAllOptions } from "./repositories/candles-repository";
-
 // Re-export types from @backtrade/types for consumer convenience
 export type {
     // Entity types
