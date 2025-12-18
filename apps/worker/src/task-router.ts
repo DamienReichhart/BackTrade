@@ -1,29 +1,29 @@
 /**
- * Message Processor
+ * Task Router
  *
- * Handles processing of messages from the queue.
- * Orchestrates message routing, status updates, retry logic, and error handling.
+ * Handles routing and processing of tasks from the queue.
+ * Orchestrates task routing, status updates, retry logic, and error handling.
  */
 
-import { logger } from "../libs/pino";
+import { logger } from "./libs/pino";
 import { QueueName, type QueueJobMessage } from "@backtrade/types";
-import queueJobService from "../services/queue-job-service";
-import dataProcessor from "./data-processor";
-import mailProcessor from "./mail-processor";
+import queueJobService from "./services/queue-job-service";
+import dataProcessor from "./processor/data-processor";
+import mailProcessor from "./processor/mail-processor";
 
 /**
- * Message Processor
+ * Task Router
  *
- * Processes messages from the queue, handles status transitions,
- * and delegates to specific processors based on message type.
+ * Routes tasks from the queue to appropriate processors, handles status transitions,
+ * and manages retry logic and error handling.
  */
-class MessageProcessor {
+class TaskRouter {
     private readonly logger: ReturnType<typeof logger.child>;
     private readonly maxRetries: number;
 
     constructor() {
         this.logger = logger.child({
-            service: "message-processor",
+            service: "task-router",
         });
         /**
          * Maximum number of retries before marking a job as permanently failed
@@ -32,18 +32,18 @@ class MessageProcessor {
     }
 
     /**
-     * Process a message from the queue
+     * Process a task message from the queue
      *
      * Fetches the QueueJob from the database using the queueJobId from the message,
-     * updates its status, processes it, and handles retries and errors.
+     * updates its status, routes it to the appropriate processor, and handles retries and errors.
      *
      * @param message - Queue job message from RabbitMQ
      * @throws Error if processing fails and retry should occur
      */
-    async processMessage(message: QueueJobMessage): Promise<void> {
+    async processTask(message: QueueJobMessage): Promise<void> {
         const { queueJobId, type } = message;
 
-        this.logger.info({ queueJobId, type }, "Processing message");
+        this.logger.info({ queueJobId, type }, "Processing task");
 
         // Fetch QueueJob from database
         let queueJob;
@@ -75,28 +75,15 @@ class MessageProcessor {
         }
 
         try {
-            // Process message based on type using payload from QueueJob
-            switch (type) {
-                case QueueName.dataProcessing:
-                    await dataProcessor.process(queueJob.payload);
-                    break;
-                case QueueName.mail:
-                    await mailProcessor.process(queueJob.payload);
-                    break;
-                default:
-                    this.logger.warn(
-                        { queueJobId, type },
-                        "Unknown message type"
-                    );
-                    throw new Error(`Unknown message type: ${type}`);
-            }
+            // Route task to appropriate processor based on type using payload from QueueJob
+            await this.routeTask(type, queueJob.payload);
 
             // Mark as completed on success
             await queueJobService.completeProcessing(queueJobId);
 
             this.logger.info(
                 { queueJobId, type },
-                "QueueJob processed successfully"
+                "Task processed successfully"
             );
         } catch (err) {
             const errorMessage =
@@ -104,7 +91,7 @@ class MessageProcessor {
 
             this.logger.error(
                 { queueJobId, type, err },
-                "Failed to process QueueJob"
+                "Failed to process task"
             );
 
             // Handle retry logic using service
@@ -125,6 +112,27 @@ class MessageProcessor {
             // The job is marked as FAILED in the database by the service
         }
     }
+
+    /**
+     * Route task to appropriate processor based on task type
+     *
+     * @param type - Queue task type
+     * @param payload - Task payload data
+     * @throws Error if task type is unknown or processing fails
+     */
+    private async routeTask(type: QueueName, payload: unknown): Promise<void> {
+        switch (type) {
+            case QueueName.dataProcessing:
+                await dataProcessor.process(payload);
+                break;
+            case QueueName.mail:
+                await mailProcessor.process(payload);
+                break;
+            default:
+                this.logger.warn({ type }, "Unknown task type");
+                throw new Error(`Unknown task type: ${type}`);
+        }
+    }
 }
 
-export default new MessageProcessor();
+export default new TaskRouter();
