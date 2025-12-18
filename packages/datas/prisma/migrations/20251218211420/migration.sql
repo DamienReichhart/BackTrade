@@ -23,7 +23,7 @@ CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'COMMISSION', 'P
 CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled', 'trialing', 'active_unpaid');
 
 -- CreateEnum
-CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING', 'QUEUE_FAILED');
+CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING', 'QUEUE_FAILED', 'PERMANENTLY_FAILED');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -205,6 +205,7 @@ CREATE TABLE "queue_jobs" (
     "payload" JSONB NOT NULL,
     "error" TEXT,
     "retry_count" INTEGER NOT NULL DEFAULT 0,
+    "next_attempt_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "processed_at" TIMESTAMP(3),
@@ -265,6 +266,9 @@ CREATE INDEX "queue_jobs_type_idx" ON "queue_jobs"("type");
 
 -- CreateIndex
 CREATE INDEX "queue_jobs_created_at_idx" ON "queue_jobs"("created_at");
+
+-- CreateIndex
+CREATE INDEX "queue_jobs_status_next_attempt_at_idx" ON "queue_jobs"("status", "next_attempt_at");
 
 -- AddForeignKey
 ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

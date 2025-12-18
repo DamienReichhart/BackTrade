@@ -349,6 +349,131 @@ class QueueJobsRepository extends BasePostgresRepository {
         });
         return result.count;
     }
+
+    /**
+     * Get queue failed jobs that are ready for retry.
+     *
+     * Queries QUEUE_FAILED jobs where next_attempt_at is null or has passed.
+     * Orders by created_at ASC (oldest first) to prioritize older jobs.
+     *
+     * @param limit - Optional limit on number of results
+     * @returns Array of queue failed jobs ready for retry
+     */
+    async getQueueFailedJobsReadyForRetry(limit?: number): Promise<QueueJob[]> {
+        const now = new Date();
+        // Note: next_attempt_at field will be available after Prisma client regeneration
+        return this.prisma.queueJob.findMany({
+            where: {
+                status: "QUEUE_FAILED",
+                OR: [
+                    { next_attempt_at: null },
+                    {
+                        next_attempt_at: {
+                            lte: now,
+                        },
+                    },
+                ],
+            } as unknown as Prisma.QueueJobWhereInput,
+            orderBy: { created_at: "asc" },
+            take: limit,
+        }) as unknown as QueueJob[];
+    }
+
+    /**
+     * Atomically claim a queue failed job for retry.
+     *
+     * Updates the job status from QUEUE_FAILED to RETRYING atomically.
+     * Returns the updated job if successfully claimed, null if already claimed
+     * by another process or if the job is not in QUEUE_FAILED status.
+     *
+     * @param id - Queue job ID as number or string
+     * @returns Updated queue job entity if claimed, null otherwise
+     */
+    async atomicallyClaimQueueFailedJob(
+        id: number | string
+    ): Promise<QueueJob | null> {
+        const numericId = this.toNumericId(id);
+        const result = await this.prisma.queueJob.updateMany({
+            where: {
+                id: numericId,
+                status: "QUEUE_FAILED",
+            },
+            data: {
+                status: "RETRYING",
+            },
+        });
+
+        if (result.count === 0) {
+            return null;
+        }
+
+        return this.getQueueJobById(id);
+    }
+
+    /**
+     * Update retry metadata for a failed retry attempt.
+     *
+     * Updates retry_count, next_attempt_at, error, and reverts status to QUEUE_FAILED.
+     * Used when a retry attempt fails and we need to schedule the next attempt.
+     *
+     * @param id - Queue job ID as number or string
+     * @param retryCount - New retry count value
+     * @param nextAttemptAt - Date for next retry attempt
+     * @param error - Error message from the failed attempt
+     * @returns Updated queue job entity
+     */
+    async updateRetryMetadata(
+        id: number | string,
+        retryCount: number,
+        nextAttemptAt: Date,
+        error: string
+    ): Promise<QueueJob> {
+        return this.updateQueueJob(id, {
+            status: "QUEUE_FAILED",
+            retry_count: retryCount,
+            next_attempt_at: nextAttemptAt,
+            error,
+        });
+    }
+
+    /**
+     * Mark a queue job as permanently failed.
+     *
+     * This status indicates that the job has exceeded the maximum number of retries
+     * and will not be retried again.
+     *
+     * @param id - Queue job ID as number or string
+     * @param error - Final error message
+     * @returns Updated queue job entity
+     */
+    async markAsPermanentlyFailed(
+        id: number | string,
+        error: string
+    ): Promise<QueueJob> {
+        return this.updateQueueJob(id, {
+            status: "PERMANENTLY_FAILED",
+            error,
+            processed_at: new Date(),
+        });
+    }
+
+    /**
+     * Mark a queue job as queued after successful republish.
+     *
+     * Updates status to PENDING, clears error, and resets retry metadata.
+     * Used when a job is successfully republished to RabbitMQ.
+     * The job will be picked up by the worker and processed.
+     *
+     * @param id - Queue job ID as number or string
+     * @returns Updated queue job entity
+     */
+    async markAsQueued(id: number | string): Promise<QueueJob> {
+        return this.updateQueueJob(id, {
+            status: "PENDING",
+            error: null,
+            next_attempt_at: null,
+        });
+    }
 }
 
 const queueJobsRepo = new QueueJobsRepository();

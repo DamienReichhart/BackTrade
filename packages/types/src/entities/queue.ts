@@ -30,6 +30,7 @@ export const QueueJobSchema = z.object({
     payload: z.unknown(), // JSON payload stored as unknown for flexibility
     error: z.string().optional().nullable(),
     retry_count: z.number().int().nonnegative().default(0),
+    next_attempt_at: z.coerce.date().optional().nullable(),
     created_at: z.coerce.date(),
     updated_at: z.coerce.date(),
     processed_at: z.coerce.date().optional().nullable(),

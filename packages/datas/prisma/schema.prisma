@@ -320,21 +320,24 @@ enum JobStatus {
   FAILED
   RETRYING
   QUEUE_FAILED
+  PERMANENTLY_FAILED
 }
 
 model QueueJob {
-  id          Int      @id @default(autoincrement())
-  type        String
-  status      JobStatus @default(PENDING)
-  payload     Json     // Full payload stored here
-  error       String?
-  retry_count Int      @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  processed_at DateTime?
+  id             Int       @id @default(autoincrement())
+  type           String
+  status         JobStatus @default(PENDING)
+  payload        Json      // Full payload stored here
+  error          String?
+  retry_count    Int       @default(0)
+  next_attempt_at DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  processed_at   DateTime?
   
   @@index([status])
   @@index([type])
   @@index([created_at])
+  @@index([status, next_attempt_at])
   @@map("queue_jobs")
 }

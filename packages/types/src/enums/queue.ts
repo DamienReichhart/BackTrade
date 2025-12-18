@@ -12,6 +12,7 @@ export const JobStatusSchema = z.enum([
     "FAILED",
     "RETRYING",
     "QUEUE_FAILED",
+    "PERMANENTLY_FAILED",
 ]);
 export type JobStatus = z.infer<typeof JobStatusSchema>;
 

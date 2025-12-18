@@ -1,0 +1,40 @@
+{
+    "name": "@backtrade/scheduler",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "nodemon --legacy-watch --watch src --ext ts,js,json --exec tsx src/scheduler.ts",
+        "build": "tsx scripts/build.ts",
+        "start": "node dist/scheduler.js",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "dependencies": {
+        "@backtrade/data": "workspace:*",
+        "@backtrade/logger": "workspace:*",
+        "@backtrade/queue": "workspace:*",
+        "@backtrade/types": "workspace:*",
+        "dotenv": "^17.2.3",
+        "node-cron": "^3.0.3",
+        "zod": "4.2.1"
+    },
+    "devDependencies": {
+        "@backtrade/eslint-config": "workspace:*",
+        "@backtrade/tsconfig": "workspace:*",
+        "@eslint/js": "^9.39.2",
+        "@types/node": "25.0.2",
+        "@types/node-cron": "^3.0.11",
+        "esbuild": "0.27.1",
+        "eslint": "^9.39.2",
+        "globals": "^16.5.0",
+        "nodemon": "^3.1.11",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "8.50.0"
+    },
+    "license": "PROPRIETARY",
+    "author": "REICHHART Damien"
+}

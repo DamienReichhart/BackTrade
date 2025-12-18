@@ -18,6 +18,7 @@ services:
             - /app/apps/api/node_modules
             - /app/apps/worker/node_modules
             - /app/apps/web/node_modules
+            - /app/apps/scheduler/node_modules
             - /app/packages/datas/node_modules
             - /app/packages/logger/node_modules
             - /app/packages/cache/node_modules
