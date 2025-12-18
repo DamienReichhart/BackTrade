@@ -309,3 +309,31 @@ model SessionAnalytics {
   @@map("session_analytics")
 }
 
+// ============================================================================
+// QUEUEJOB MODELS
+// ============================================================================
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  RETRYING
+}
+
+model QueueJob {
+  id          String   @id @default(autoincrement())
+  type        String
+  status      JobStatus @default(PENDING)
+  payload     Json     // Full payload stored here
+  error       String?
+  retry_count Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  processed_at DateTime?
+  
+  @@index([status])
+  @@index([type])
+  @@index([created_at])
+  @@map("queue_jobs")
+}
