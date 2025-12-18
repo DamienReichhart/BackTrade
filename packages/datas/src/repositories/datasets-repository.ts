@@ -12,7 +12,7 @@ import type {
     DatasetUpdateInput,
     DatasetOrderBy,
 } from "@backtrade/types";
-import { prisma } from "../libs/prisma";
+import { BaseRepository } from "./base-repository";
 
 export interface FindAllOptions {
     where?: DatasetWhereInput;
@@ -22,63 +22,80 @@ export interface FindAllOptions {
 }
 
 /**
- * Get all datasets matching optional filter, pagination, and sorting
+ * Repository for Dataset model CRUD operations with pagination and sorting.
  */
-async function getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
-    return prisma.dataset.findMany({
-        where: options?.where as Prisma.DatasetWhereInput | undefined,
-        skip: options?.skip,
-        take: options?.take,
-        orderBy: options?.orderBy as
-            | Prisma.DatasetOrderByWithRelationInput
-            | undefined,
-    }) as unknown as Dataset[];
+class DatasetsRepository extends BaseRepository {
+    /**
+     * Get all datasets matching optional filter, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching datasets
+     */
+    async getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
+        return this.prisma.dataset.findMany({
+            where: options?.where as Prisma.DatasetWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.DatasetOrderByWithRelationInput
+                | undefined,
+        }) as unknown as Dataset[];
+    }
+
+    /**
+     * Get a dataset by ID.
+     *
+     * @param id - Dataset ID as number or string
+     * @returns Dataset entity or null if not found
+     */
+    async getDatasetById(id: number | string): Promise<Dataset | null> {
+        return this.prisma.dataset.findUnique({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Dataset | null;
+    }
+
+    /**
+     * Create a new dataset.
+     *
+     * @param data - Dataset creation data
+     * @returns Created dataset entity
+     */
+    async createDataset(data: DatasetCreateInput): Promise<Dataset> {
+        return this.prisma.dataset.create({
+            data: data as Prisma.DatasetCreateInput,
+        }) as unknown as Dataset;
+    }
+
+    /**
+     * Update an existing dataset.
+     *
+     * @param id - Dataset ID as number or string
+     * @param data - Dataset update data
+     * @returns Updated dataset entity
+     */
+    async updateDataset(
+        id: number | string,
+        data: DatasetUpdateInput
+    ): Promise<Dataset> {
+        return this.prisma.dataset.update({
+            where: { id: this.toNumericId(id) },
+            data: data as DatasetUpdateInput as Prisma.DatasetUpdateInput,
+        }) as unknown as Dataset;
+    }
+
+    /**
+     * Delete a dataset by ID.
+     *
+     * @param id - Dataset ID as number or string
+     * @returns Deleted dataset entity
+     */
+    async deleteDataset(id: number | string): Promise<Dataset> {
+        return this.prisma.dataset.delete({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Dataset;
+    }
 }
 
-/**
- * Get a dataset by ID
- */
-async function getDatasetById(id: number | string): Promise<Dataset | null> {
-    return prisma.dataset.findUnique({
-        where: { id: Number(id) },
-    }) as unknown as Dataset | null;
-}
+const datasetsRepo = new DatasetsRepository();
 
-/**
- * Create a new dataset
- */
-async function createDataset(data: DatasetCreateInput): Promise<Dataset> {
-    return prisma.dataset.create({
-        data: data as Prisma.DatasetCreateInput,
-    }) as unknown as Dataset;
-}
-
-/**
- * Update an existing dataset
- */
-async function updateDataset(
-    id: number | string,
-    data: DatasetUpdateInput
-): Promise<Dataset> {
-    return prisma.dataset.update({
-        where: { id: Number(id) },
-        data: data as Prisma.DatasetUpdateInput,
-    }) as unknown as Dataset;
-}
-
-/**
- * Delete a dataset by ID
- */
-async function deleteDataset(id: number | string): Promise<Dataset> {
-    return prisma.dataset.delete({
-        where: { id: Number(id) },
-    }) as unknown as Dataset;
-}
-
-export default {
-    getAllDatasets,
-    getDatasetById,
-    createDataset,
-    updateDataset,
-    deleteDataset,
-};
+export default datasetsRepo;

@@ -11,69 +11,88 @@ import type {
     SessionAnalyticsCreateInput,
     SessionAnalyticsUpdateInput,
 } from "@backtrade/types";
-import { prisma } from "../libs/prisma";
+import { BaseRepository } from "./base-repository";
 
 /**
- * Get all session analytics matching optional filter conditions
+ * Repository for SessionAnalytics model CRUD operations.
  */
-async function getAllSessionAnalytics(
-    where?: SessionAnalyticsWhereInput
-): Promise<SessionAnalytics[]> {
-    return prisma.sessionAnalytics.findMany({
-        where: where as Prisma.SessionAnalyticsWhereInput,
-    }) as unknown as SessionAnalytics[];
+class SessionAnalyticsRepository extends BaseRepository {
+    /**
+     * Get all session analytics matching optional filter conditions.
+     *
+     * @param where - Optional filter conditions
+     * @returns Array of matching session analytics entities
+     */
+    async getAllSessionAnalytics(
+        where?: SessionAnalyticsWhereInput
+    ): Promise<SessionAnalytics[]> {
+        return this.prisma.sessionAnalytics.findMany({
+            where: where as SessionAnalyticsWhereInput as
+                | Prisma.SessionAnalyticsWhereInput
+                | undefined,
+        }) as unknown as SessionAnalytics[];
+    }
+
+    /**
+     * Get a session analytics entity by ID.
+     *
+     * @param id - SessionAnalytics ID as number or string
+     * @returns SessionAnalytics entity or null if not found
+     */
+    async getSessionAnalyticsById(
+        id: number | string
+    ): Promise<SessionAnalytics | null> {
+        return this.prisma.sessionAnalytics.findUnique({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as SessionAnalytics | null;
+    }
+
+    /**
+     * Create a new session analytics entity.
+     *
+     * @param data - SessionAnalytics creation data
+     * @returns Created session analytics entity
+     */
+    async createSessionAnalytics(
+        data: SessionAnalyticsCreateInput
+    ): Promise<SessionAnalytics> {
+        return this.prisma.sessionAnalytics.create({
+            data: data as Prisma.SessionAnalyticsCreateInput,
+        }) as unknown as SessionAnalytics;
+    }
+
+    /**
+     * Update an existing session analytics entity.
+     *
+     * @param id - SessionAnalytics ID as number or string
+     * @param data - SessionAnalytics update data
+     * @returns Updated session analytics entity
+     */
+    async updateSessionAnalytics(
+        id: number | string,
+        data: SessionAnalyticsUpdateInput
+    ): Promise<SessionAnalytics> {
+        return this.prisma.sessionAnalytics.update({
+            where: { id: this.toNumericId(id) },
+            data: data as Prisma.SessionAnalyticsUpdateInput,
+        }) as unknown as SessionAnalytics;
+    }
+
+    /**
+     * Delete a session analytics entity by ID.
+     *
+     * @param id - SessionAnalytics ID as number or string
+     * @returns Deleted session analytics entity
+     */
+    async deleteSessionAnalytics(
+        id: number | string
+    ): Promise<SessionAnalytics> {
+        return this.prisma.sessionAnalytics.delete({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as SessionAnalytics;
+    }
 }
 
-/**
- * Get a session analytics by ID
- */
-async function getSessionAnalyticsById(
-    id: number | string
-): Promise<SessionAnalytics | null> {
-    return prisma.sessionAnalytics.findUnique({
-        where: { id: Number(id) },
-    }) as unknown as SessionAnalytics | null;
-}
+const sessionsAnalyticsRepo = new SessionAnalyticsRepository();
 
-/**
- * Create a new session analytics
- */
-async function createSessionAnalytics(
-    data: SessionAnalyticsCreateInput
-): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.create({
-        data: data as Prisma.SessionAnalyticsCreateInput,
-    }) as unknown as SessionAnalytics;
-}
-
-/**
- * Update an existing session analytics
- */
-async function updateSessionAnalytics(
-    id: number | string,
-    data: SessionAnalyticsUpdateInput
-): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.update({
-        where: { id: Number(id) },
-        data: data as Prisma.SessionAnalyticsUpdateInput,
-    }) as unknown as SessionAnalytics;
-}
-
-/**
- * Delete a session analytics by ID
- */
-async function deleteSessionAnalytics(
-    id: number | string
-): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.delete({
-        where: { id: Number(id) },
-    }) as unknown as SessionAnalytics;
-}
-
-export default {
-    getAllSessionAnalytics,
-    getSessionAnalyticsById,
-    createSessionAnalytics,
-    updateSessionAnalytics,
-    deleteSessionAnalytics,
-};
+export default sessionsAnalyticsRepo;
