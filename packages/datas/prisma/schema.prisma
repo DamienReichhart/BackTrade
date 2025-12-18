@@ -322,7 +322,7 @@ enum JobStatus {
 }
 
 model QueueJob {
-  id          String   @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   type        String
   status      JobStatus @default(PENDING)
   payload     Json     // Full payload stored here

@@ -23,6 +23,7 @@ export {
     datasetsRepo,
     candlesRepo,
     sessionsAnalyticsRepo,
+    queueJobsRepo,
 } from "./repositories";
 
 // Repository option types
@@ -43,6 +44,7 @@ export type {
     Dataset,
     Candle,
     SessionAnalytics,
+    QueueJob,
     // Query types
     UserWhereInput,
     UserCreateInput,
@@ -91,6 +93,10 @@ export type {
     SessionAnalyticsCreateInput,
     SessionAnalyticsUpdateInput,
     SessionAnalyticsOrderBy,
+    QueueJobWhereInput,
+    QueueJobCreateInput,
+    QueueJobUpdateInput,
+    QueueJobOrderBy,
     // Enums
     Role,
     SessionStatus,
@@ -100,4 +106,5 @@ export type {
     Side,
     TransactionType,
     SubscriptionStatus,
+    JobStatus,
 } from "@backtrade/types";

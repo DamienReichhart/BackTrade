@@ -22,6 +22,9 @@ CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'COMMISSION', 'P
 -- CreateEnum
 CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled', 'trialing', 'active_unpaid');
 
+-- CreateEnum
+CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -194,6 +197,21 @@ CREATE TABLE "session_analytics" (
     CONSTRAINT "session_analytics_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "queue_jobs" (
+    "id" SERIAL NOT NULL,
+    "type" TEXT NOT NULL,
+    "status" "JobStatus" NOT NULL DEFAULT 'PENDING',
+    "payload" JSONB NOT NULL,
+    "error" TEXT,
+    "retry_count" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "processed_at" TIMESTAMP(3),
+
+    CONSTRAINT "queue_jobs_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -238,6 +256,15 @@ CREATE UNIQUE INDEX "datasets_instrument_id_timeframe_key" ON "datasets"("instru
 
 -- CreateIndex
 CREATE INDEX "session_analytics_session_id_idx" ON "session_analytics"("session_id");
+
+-- CreateIndex
+CREATE INDEX "queue_jobs_status_idx" ON "queue_jobs"("status");
+
+-- CreateIndex
+CREATE INDEX "queue_jobs_type_idx" ON "queue_jobs"("type");
+
+-- CreateIndex
+CREATE INDEX "queue_jobs_created_at_idx" ON "queue_jobs"("created_at");
 
 -- AddForeignKey
 ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

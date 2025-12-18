@@ -25,3 +25,6 @@ export { default as candlesRepo } from "./candles-repository";
 
 // Analytics repositories
 export { default as sessionsAnalyticsRepo } from "./sessions-analytics-repository";
+
+// Queue repositories
+export { default as queueJobsRepo } from "./queue-jobs-repository";
