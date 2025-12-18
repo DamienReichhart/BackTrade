@@ -72,9 +72,26 @@ class DatasetsService {
               }
             : undefined;
 
-        const orderBy: DatasetOrderBy | undefined = sort
-            ? { [sort]: order }
-            : undefined;
+        // Validate sort parameter against valid Dataset fields
+        const validDatasetSortFields = [
+            "id",
+            "instrument_id",
+            "timeframe",
+            "uploaded_at",
+            "records_count",
+            "file_name",
+            "start_time",
+            "end_time",
+            "created_at",
+            "updated_at",
+        ] as const;
+        const orderBy: DatasetOrderBy | undefined =
+            sort &&
+            validDatasetSortFields.includes(
+                sort as (typeof validDatasetSortFields)[number]
+            )
+                ? { [sort]: order }
+                : undefined;
 
         return datasetsRepository.getAllDatasets({
             where,

@@ -60,15 +60,42 @@ class CandlesService {
     async getAllCandles(query?: SearchQuery): Promise<Candle[]> {
         const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
 
+        // Validate and parse numeric search query for instrument_id
+        // If q is provided but not numeric, return no results (invalid search)
+        const numericQ = q ? Number(q) : undefined;
+        const isValidNumericQ =
+            numericQ !== undefined && Number.isFinite(numericQ);
         const where: CandleWhereInput | undefined = q
-            ? {
-                  OR: [{ instrument_id: { equals: Number(q) || undefined } }],
-              }
+            ? isValidNumericQ
+                ? {
+                      OR: [{ instrument_id: { equals: numericQ } }],
+                  }
+                : {
+                      // Invalid search query - return no results by using impossible condition
+                      AND: [{ instrument_id: { equals: -1 } }],
+                  }
             : undefined;
 
-        const orderBy: CandleOrderBy | undefined = sort
-            ? { [sort]: order }
-            : undefined;
+        // Validate sort parameter against valid Candle fields
+        const validCandleSortFields = [
+            "instrument_id",
+            "timeframe",
+            "ts",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "created_at",
+            "updated_at",
+        ] as const;
+        const orderBy: CandleOrderBy | undefined =
+            sort &&
+            validCandleSortFields.includes(
+                sort as (typeof validCandleSortFields)[number]
+            )
+                ? { [sort]: order }
+                : undefined;
 
         return candlesRepository.getAllCandles({
             where,
