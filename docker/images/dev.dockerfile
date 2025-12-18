@@ -13,9 +13,11 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/ ./packages/
 COPY apps/ ./apps/
 
-# Copy entrypoint script
-COPY docker/scripts/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
-RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+# Copy entrypoint script and ensure Unix line endings
+COPY docker/scripts/dev-entrypoint.sh /tmp/dev-entrypoint.sh
+RUN tr -d '\r' < /tmp/dev-entrypoint.sh > /usr/local/bin/dev-entrypoint.sh && \
+    chmod +x /usr/local/bin/dev-entrypoint.sh && \
+    rm /tmp/dev-entrypoint.sh
 
 # Install dependencies (will be relinked by entrypoint after volumes mount)
 RUN pnpm install --frozen-lockfile
