@@ -1,4 +1,10 @@
-import { type User, type Prisma, usersRepo } from "@backtrade/datas";
+import { usersRepo } from "@backtrade/datas";
+import type {
+    User,
+    UserWhereInput,
+    UserCreateInput,
+    UserUpdateInput,
+} from "@backtrade/types";
 import { usersCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -67,7 +73,10 @@ class UsersService {
      * @returns Created user entity
      * @throws AlreadyExistsError if email is already in use
      */
-    async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    async createUser(data: UserCreateInput): Promise<User> {
+        if (!data.email) {
+            throw new Error("Email is required");
+        }
         const isEmailAvailable = await this.isUserEmailAvailable(data.email);
         if (!isEmailAvailable) {
             this.logger.debug(
@@ -75,6 +84,9 @@ class UsersService {
                 "Email already in use, throwing already exists error"
             );
             throw new AlreadyExistsError("Email already in use");
+        }
+        if (!data.password_hash) {
+            throw new Error("Password is required");
         }
         data.password_hash = await hashService.hashPassword(
             data.password_hash as string
@@ -95,7 +107,7 @@ class UsersService {
      * @throws NotFoundError if user doesn't exist
      * @throws AlreadyExistsError if new email is already in use
      */
-    async updateUser(id: number, data: Prisma.UserUpdateInput): Promise<User> {
+    async updateUser(id: number, data: UserUpdateInput): Promise<User> {
         const existingUser = await usersRepo.getUserById(id);
         if (!existingUser) {
             this.logger.debug(
@@ -157,7 +169,7 @@ class UsersService {
      * @param where - Optional Prisma where clause
      * @returns Array of user entities
      */
-    async getAllUsers(where?: Prisma.UserWhereInput): Promise<User[]> {
+    async getAllUsers(where?: UserWhereInput): Promise<User[]> {
         const users = await usersRepo.getAllUsers(where);
         this.logger.trace({ count: users.length }, "Users fetched");
         return users;

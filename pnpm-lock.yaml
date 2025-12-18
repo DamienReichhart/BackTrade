@@ -345,6 +345,9 @@ importers:
 
   packages/datas:
     dependencies:
+      '@backtrade/types':
+        specifier: workspace:*
+        version: link:../types
       '@clickhouse/client':
         specifier: ^1.15.0
         version: 1.15.0

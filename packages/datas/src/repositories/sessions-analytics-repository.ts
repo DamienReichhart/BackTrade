@@ -4,16 +4,24 @@
  * Data access layer for SessionAnalytics model operations.
  */
 
-import type { Prisma, SessionAnalytics } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    SessionAnalytics,
+    SessionAnalyticsWhereInput,
+    SessionAnalyticsCreateInput,
+    SessionAnalyticsUpdateInput,
+} from "@backtrade/types";
 import { prisma } from "../libs/prisma";
 
 /**
  * Get all session analytics matching optional filter conditions
  */
 async function getAllSessionAnalytics(
-    where?: Prisma.SessionAnalyticsWhereInput
+    where?: SessionAnalyticsWhereInput
 ): Promise<SessionAnalytics[]> {
-    return prisma.sessionAnalytics.findMany({ where });
+    return prisma.sessionAnalytics.findMany({
+        where: where as Prisma.SessionAnalyticsWhereInput,
+    }) as unknown as SessionAnalytics[];
 }
 
 /**
@@ -24,16 +32,18 @@ async function getSessionAnalyticsById(
 ): Promise<SessionAnalytics | null> {
     return prisma.sessionAnalytics.findUnique({
         where: { id: Number(id) },
-    });
+    }) as unknown as SessionAnalytics | null;
 }
 
 /**
  * Create a new session analytics
  */
 async function createSessionAnalytics(
-    data: Prisma.SessionAnalyticsCreateInput
+    data: SessionAnalyticsCreateInput
 ): Promise<SessionAnalytics> {
-    return prisma.sessionAnalytics.create({ data });
+    return prisma.sessionAnalytics.create({
+        data: data as Prisma.SessionAnalyticsCreateInput,
+    }) as unknown as SessionAnalytics;
 }
 
 /**
@@ -41,12 +51,12 @@ async function createSessionAnalytics(
  */
 async function updateSessionAnalytics(
     id: number | string,
-    data: Prisma.SessionAnalyticsUpdateInput
+    data: SessionAnalyticsUpdateInput
 ): Promise<SessionAnalytics> {
     return prisma.sessionAnalytics.update({
         where: { id: Number(id) },
-        data,
-    });
+        data: data as Prisma.SessionAnalyticsUpdateInput,
+    }) as unknown as SessionAnalytics;
 }
 
 /**
@@ -57,7 +67,7 @@ async function deleteSessionAnalytics(
 ): Promise<SessionAnalytics> {
     return prisma.sessionAnalytics.delete({
         where: { id: Number(id) },
-    });
+    }) as unknown as SessionAnalytics;
 }
 
 export default {

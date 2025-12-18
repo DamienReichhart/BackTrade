@@ -4,14 +4,21 @@
  * Data access layer for Dataset model operations.
  */
 
-import type { Dataset, Prisma } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    Dataset,
+    DatasetWhereInput,
+    DatasetCreateInput,
+    DatasetUpdateInput,
+    DatasetOrderBy,
+} from "@backtrade/types";
 import { prisma } from "../libs/prisma";
 
 export interface FindAllOptions {
-    where?: Prisma.DatasetWhereInput;
+    where?: DatasetWhereInput;
     skip?: number;
     take?: number;
-    orderBy?: Prisma.DatasetOrderByWithRelationInput;
+    orderBy?: DatasetOrderBy;
 }
 
 /**
@@ -19,11 +26,13 @@ export interface FindAllOptions {
  */
 async function getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
     return prisma.dataset.findMany({
-        where: options?.where,
+        where: options?.where as Prisma.DatasetWhereInput | undefined,
         skip: options?.skip,
         take: options?.take,
-        orderBy: options?.orderBy,
-    });
+        orderBy: options?.orderBy as
+            | Prisma.DatasetOrderByWithRelationInput
+            | undefined,
+    }) as unknown as Dataset[];
 }
 
 /**
@@ -32,16 +41,16 @@ async function getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
 async function getDatasetById(id: number | string): Promise<Dataset | null> {
     return prisma.dataset.findUnique({
         where: { id: Number(id) },
-    });
+    }) as unknown as Dataset | null;
 }
 
 /**
  * Create a new dataset
  */
-async function createDataset(
-    data: Prisma.DatasetCreateInput
-): Promise<Dataset> {
-    return prisma.dataset.create({ data });
+async function createDataset(data: DatasetCreateInput): Promise<Dataset> {
+    return prisma.dataset.create({
+        data: data as Prisma.DatasetCreateInput,
+    }) as unknown as Dataset;
 }
 
 /**
@@ -49,12 +58,12 @@ async function createDataset(
  */
 async function updateDataset(
     id: number | string,
-    data: Prisma.DatasetUpdateInput
+    data: DatasetUpdateInput
 ): Promise<Dataset> {
     return prisma.dataset.update({
         where: { id: Number(id) },
-        data,
-    });
+        data: data as Prisma.DatasetUpdateInput,
+    }) as unknown as Dataset;
 }
 
 /**
@@ -63,7 +72,7 @@ async function updateDataset(
 async function deleteDataset(id: number | string): Promise<Dataset> {
     return prisma.dataset.delete({
         where: { id: Number(id) },
-    });
+    }) as unknown as Dataset;
 }
 
 export default {

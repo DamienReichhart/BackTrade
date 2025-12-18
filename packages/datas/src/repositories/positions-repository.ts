@@ -4,16 +4,24 @@
  * Data access layer for trading Position model operations.
  */
 
-import type { Position, Prisma } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    Position,
+    PositionWhereInput,
+    PositionCreateInput,
+    PositionUpdateInput,
+} from "@backtrade/types";
 import { prisma } from "../libs/prisma";
 
 /**
  * Get all positions matching optional filter conditions
  */
 async function getAllPositions(
-    where?: Prisma.PositionWhereInput
+    where?: PositionWhereInput
 ): Promise<Position[]> {
-    return prisma.position.findMany({ where });
+    return prisma.position.findMany({
+        where: where as Prisma.PositionWhereInput,
+    }) as unknown as Position[];
 }
 
 /**
@@ -22,16 +30,16 @@ async function getAllPositions(
 async function getPositionById(id: number | string): Promise<Position | null> {
     return prisma.position.findUnique({
         where: { id: Number(id) },
-    });
+    }) as unknown as Position | null;
 }
 
 /**
  * Create a new position
  */
-async function createPosition(
-    data: Prisma.PositionCreateInput
-): Promise<Position> {
-    return prisma.position.create({ data });
+async function createPosition(data: PositionCreateInput): Promise<Position> {
+    return prisma.position.create({
+        data: data as Prisma.PositionCreateInput,
+    }) as unknown as Position;
 }
 
 /**
@@ -39,12 +47,12 @@ async function createPosition(
  */
 async function updatePosition(
     id: number | string,
-    data: Prisma.PositionUpdateInput
+    data: PositionUpdateInput
 ): Promise<Position> {
     return prisma.position.update({
         where: { id: Number(id) },
-        data,
-    });
+        data: data as Prisma.PositionUpdateInput,
+    }) as unknown as Position;
 }
 
 /**
@@ -53,7 +61,7 @@ async function updatePosition(
 async function deletePosition(id: number | string): Promise<Position> {
     return prisma.position.delete({
         where: { id: Number(id) },
-    });
+    }) as unknown as Position;
 }
 
 export default {

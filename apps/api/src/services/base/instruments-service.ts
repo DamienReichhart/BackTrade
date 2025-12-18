@@ -1,12 +1,15 @@
-import {
-    type Instrument,
-    type Prisma,
-    instrumentsRepo as instrumentsRepository,
-} from "@backtrade/datas";
+import { instrumentsRepo as instrumentsRepository } from "@backtrade/datas";
+import type {
+    Instrument,
+    InstrumentWhereInput,
+    InstrumentCreateInput,
+    InstrumentUpdateInput,
+    InstrumentOrderBy,
+    SearchQuery,
+} from "@backtrade/types";
 import { instrumentsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
-import type { SearchQuery } from "@backtrade/types";
 
 /**
  * Instruments Service
@@ -63,7 +66,7 @@ class InstrumentsService {
     async getAllInstruments(query?: SearchQuery): Promise<Instrument[]> {
         const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
 
-        const where: Prisma.InstrumentWhereInput | undefined = q
+        const where: InstrumentWhereInput | undefined = q
             ? {
                   OR: [
                       { symbol: { contains: q, mode: "insensitive" } },
@@ -72,8 +75,9 @@ class InstrumentsService {
               }
             : undefined;
 
-        const orderBy: Prisma.InstrumentOrderByWithRelationInput | undefined =
-            sort ? { [sort]: order } : undefined;
+        const orderBy: InstrumentOrderBy | undefined = sort
+            ? { [sort]: order }
+            : undefined;
 
         return instrumentsRepository.getAllInstruments({
             where,
@@ -90,7 +94,7 @@ class InstrumentsService {
      * @returns Created instrument entity
      */
     async createInstrument(
-        instrument: Prisma.InstrumentCreateInput
+        instrument: InstrumentCreateInput
     ): Promise<Instrument> {
         const created =
             await instrumentsRepository.createInstrument(instrument);
@@ -110,7 +114,7 @@ class InstrumentsService {
      */
     async updateInstrument(
         id: string,
-        instrument: Prisma.InstrumentUpdateInput
+        instrument: InstrumentUpdateInput
     ): Promise<Instrument> {
         const existing = await instrumentsRepository.getInstrumentById(id);
         if (!existing) {

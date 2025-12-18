@@ -1,12 +1,15 @@
-import {
-    type Candle,
-    type Prisma,
-    type Timeframe,
-    candlesRepo as candlesRepository,
-} from "@backtrade/datas";
+import { candlesRepo as candlesRepository } from "@backtrade/datas";
+import type {
+    Candle,
+    CandleWhereInput,
+    CandleCreateInput,
+    CandleOrderBy,
+    Timeframe,
+    DateRange,
+    SearchQuery,
+} from "@backtrade/types";
 import { candlesCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
-import type { DateRange, SearchQuery } from "@backtrade/types";
 import { logger } from "../../libs/pino";
 
 /**
@@ -70,8 +73,8 @@ class CandlesService {
         const { startDate, endDate } = dateRange;
         const candles = await candlesRepository.getAllCandles({
             where: {
-                instrument_id: Number(instrumentId),
-                timeframe,
+                instrument_id: { equals: Number(instrumentId) },
+                timeframe: { equals: timeframe },
                 ts: {
                     gte: startDate,
                     lte: endDate,
@@ -90,13 +93,13 @@ class CandlesService {
     async getAllCandles(query?: SearchQuery): Promise<Candle[]> {
         const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
 
-        const where: Prisma.CandleWhereInput | undefined = q
+        const where: CandleWhereInput | undefined = q
             ? {
                   OR: [{ instrument_id: { equals: Number(q) || undefined } }],
               }
             : undefined;
 
-        const orderBy: Prisma.CandleOrderByWithRelationInput | undefined = sort
+        const orderBy: CandleOrderBy | undefined = sort
             ? { [sort]: order }
             : undefined;
 
@@ -114,7 +117,7 @@ class CandlesService {
      * @param candle - Candle creation data
      * @returns Created candle entity
      */
-    async createCandle(candle: Prisma.CandleCreateInput): Promise<Candle> {
+    async createCandle(candle: CandleCreateInput): Promise<Candle> {
         const created = await candlesRepository.createCandle(candle);
         this.logger.debug({ id: created.id }, "Candle created");
         await candlesCacheRepo.cacheCandle(created.id, created);

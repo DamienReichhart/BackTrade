@@ -4,16 +4,24 @@
  * Data access layer for UserSession (auth sessions) model operations.
  */
 
-import type { Prisma, UserSession } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    UserSession,
+    UserSessionWhereInput,
+    UserSessionCreateInput,
+    UserSessionUpdateInput,
+} from "@backtrade/types";
 import { prisma } from "../libs/prisma";
 
 /**
  * Get all user sessions matching optional filter conditions
  */
 async function getAllUserSessions(
-    where?: Prisma.UserSessionWhereInput
+    where?: UserSessionWhereInput
 ): Promise<UserSession[]> {
-    return prisma.userSession.findMany({ where });
+    return prisma.userSession.findMany({
+        where: where as Prisma.UserSessionWhereInput,
+    }) as unknown as UserSession[];
 }
 
 /**
@@ -24,16 +32,18 @@ async function getUserSessionById(
 ): Promise<UserSession | null> {
     return prisma.userSession.findUnique({
         where: { id: Number(id) },
-    });
+    }) as unknown as UserSession | null;
 }
 
 /**
  * Create a new user session
  */
 async function createUserSession(
-    data: Prisma.UserSessionCreateInput
+    data: UserSessionCreateInput
 ): Promise<UserSession> {
-    return prisma.userSession.create({ data });
+    return prisma.userSession.create({
+        data: data as Prisma.UserSessionCreateInput,
+    }) as unknown as UserSession;
 }
 
 /**
@@ -41,12 +51,12 @@ async function createUserSession(
  */
 async function updateUserSession(
     id: number | string,
-    data: Prisma.UserSessionUpdateInput
+    data: UserSessionUpdateInput
 ): Promise<UserSession> {
     return prisma.userSession.update({
         where: { id: Number(id) },
-        data,
-    });
+        data: data as Prisma.UserSessionUpdateInput,
+    }) as unknown as UserSession;
 }
 
 /**
@@ -55,7 +65,7 @@ async function updateUserSession(
 async function deleteUserSession(id: number | string): Promise<UserSession> {
     return prisma.userSession.delete({
         where: { id: Number(id) },
-    });
+    }) as unknown as UserSession;
 }
 
 export default {

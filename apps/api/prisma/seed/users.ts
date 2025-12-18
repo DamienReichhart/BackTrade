@@ -1,4 +1,4 @@
-import { Role } from "@backtrade/datas";
+import { Role } from "@backtrade/types";
 import hashService from "../../src/services/security/hash-service";
 
 export interface SeedUser {
@@ -17,7 +17,7 @@ export async function getUsers(): Promise<SeedUser[]> {
             password_hash: await hashService.hashPassword(
                 "TheMostSecuredPasswordInTheWorld"
             ),
-            role: Role.ADMIN,
+            role: "ADMIN" as Role,
         },
     ];
 }

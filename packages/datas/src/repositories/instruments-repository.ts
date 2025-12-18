@@ -4,14 +4,21 @@
  * Data access layer for trading Instrument model operations.
  */
 
-import type { Instrument, Prisma } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    Instrument,
+    InstrumentWhereInput,
+    InstrumentCreateInput,
+    InstrumentUpdateInput,
+    InstrumentOrderBy,
+} from "@backtrade/types";
 import { prisma } from "../libs/prisma";
 
 export interface FindAllOptions {
-    where?: Prisma.InstrumentWhereInput;
+    where?: InstrumentWhereInput;
     skip?: number;
     take?: number;
-    orderBy?: Prisma.InstrumentOrderByWithRelationInput;
+    orderBy?: InstrumentOrderBy;
 }
 
 /**
@@ -21,11 +28,13 @@ async function getAllInstruments(
     options?: FindAllOptions
 ): Promise<Instrument[]> {
     return prisma.instrument.findMany({
-        where: options?.where,
+        where: options?.where as Prisma.InstrumentWhereInput | undefined,
         skip: options?.skip,
         take: options?.take,
-        orderBy: options?.orderBy,
-    });
+        orderBy: options?.orderBy as
+            | Prisma.InstrumentOrderByWithRelationInput
+            | undefined,
+    }) as unknown as Instrument[];
 }
 
 /**
@@ -36,16 +45,18 @@ async function getInstrumentById(
 ): Promise<Instrument | null> {
     return prisma.instrument.findUnique({
         where: { id: Number(id) },
-    });
+    }) as unknown as Instrument | null;
 }
 
 /**
  * Create a new instrument
  */
 async function createInstrument(
-    data: Prisma.InstrumentCreateInput
+    data: InstrumentCreateInput
 ): Promise<Instrument> {
-    return prisma.instrument.create({ data });
+    return prisma.instrument.create({
+        data: data as Prisma.InstrumentCreateInput,
+    }) as unknown as Instrument;
 }
 
 /**
@@ -53,12 +64,12 @@ async function createInstrument(
  */
 async function updateInstrument(
     id: number | string,
-    data: Prisma.InstrumentUpdateInput
+    data: InstrumentUpdateInput
 ): Promise<Instrument> {
     return prisma.instrument.update({
         where: { id: Number(id) },
-        data,
-    });
+        data: data as Prisma.InstrumentUpdateInput,
+    }) as unknown as Instrument;
 }
 
 /**
@@ -67,7 +78,7 @@ async function updateInstrument(
 async function deleteInstrument(id: number | string): Promise<Instrument> {
     return prisma.instrument.delete({
         where: { id: Number(id) },
-    });
+    }) as unknown as Instrument;
 }
 
 export default {

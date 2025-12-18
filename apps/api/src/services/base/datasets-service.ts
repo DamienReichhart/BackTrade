@@ -1,12 +1,15 @@
-import {
-    type Dataset,
-    type Prisma,
-    datasetsRepo as datasetsRepository,
-} from "@backtrade/datas";
+import { datasetsRepo as datasetsRepository } from "@backtrade/datas";
+import type {
+    Dataset,
+    DatasetWhereInput,
+    DatasetCreateInput,
+    DatasetUpdateInput,
+    DatasetOrderBy,
+    SearchQuery,
+} from "@backtrade/types";
 import { datasetsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
-import type { SearchQuery } from "@backtrade/types";
 
 /**
  * Datasets Service
@@ -63,13 +66,13 @@ class DatasetsService {
     async getAllDatasets(query?: SearchQuery): Promise<Dataset[]> {
         const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
 
-        const where: Prisma.DatasetWhereInput | undefined = q
+        const where: DatasetWhereInput | undefined = q
             ? {
                   OR: [{ file_name: { contains: q, mode: "insensitive" } }],
               }
             : undefined;
 
-        const orderBy: Prisma.DatasetOrderByWithRelationInput | undefined = sort
+        const orderBy: DatasetOrderBy | undefined = sort
             ? { [sort]: order }
             : undefined;
 
@@ -87,7 +90,7 @@ class DatasetsService {
      * @param dataset - Dataset creation data
      * @returns Created dataset entity
      */
-    async createDataset(dataset: Prisma.DatasetCreateInput): Promise<Dataset> {
+    async createDataset(dataset: DatasetCreateInput): Promise<Dataset> {
         const created = await datasetsRepository.createDataset(dataset);
         this.logger.debug({ id: created.id }, "Dataset created");
         await datasetsCacheRepo.cacheDataset(created.id, created);
@@ -105,7 +108,7 @@ class DatasetsService {
      */
     async updateDataset(
         id: string,
-        dataset: Prisma.DatasetUpdateInput
+        dataset: DatasetUpdateInput
     ): Promise<Dataset> {
         const existing = await datasetsRepository.getDatasetById(id);
         if (!existing) {

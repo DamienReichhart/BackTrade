@@ -2,7 +2,7 @@
  * @backtrade/datas
  *
  * Shared data access package for BackTrade.
- * Contains database client, repositories, and Prisma types.
+ * Contains database client and repositories.
  */
 
 // Prisma client instance
@@ -29,9 +29,9 @@ export type { FindAllOptions as InstrumentsFindAllOptions } from "./repositories
 export type { FindAllOptions as DatasetsFindAllOptions } from "./repositories/datasets-repository";
 export type { FindAllOptions as CandlesFindAllOptions } from "./repositories/candles-repository";
 
-// Re-export all Prisma types and enums for consumer convenience
+// Re-export types from @backtrade/types for consumer convenience
 export type {
-    // Models
+    // Entity types
     User,
     UserSession,
     Plan,
@@ -44,13 +44,56 @@ export type {
     Dataset,
     Candle,
     SessionAnalytics,
-    // Prisma namespace types
-    Prisma,
-    PrismaClient,
-} from "./generated/prisma/client";
-
-// Re-export enums
-export {
+    // Query types
+    UserWhereInput,
+    UserCreateInput,
+    UserUpdateInput,
+    UserOrderBy,
+    UserSessionWhereInput,
+    UserSessionCreateInput,
+    UserSessionUpdateInput,
+    UserSessionOrderBy,
+    PlanWhereInput,
+    PlanCreateInput,
+    PlanUpdateInput,
+    PlanOrderBy,
+    SubscriptionWhereInput,
+    SubscriptionCreateInput,
+    SubscriptionUpdateInput,
+    SubscriptionOrderBy,
+    StripeEventWhereInput,
+    StripeEventCreateInput,
+    StripeEventUpdateInput,
+    StripeEventOrderBy,
+    InstrumentWhereInput,
+    InstrumentCreateInput,
+    InstrumentUpdateInput,
+    InstrumentOrderBy,
+    SessionWhereInput,
+    SessionCreateInput,
+    SessionUpdateInput,
+    SessionOrderBy,
+    PositionWhereInput,
+    PositionCreateInput,
+    PositionUpdateInput,
+    PositionOrderBy,
+    TransactionWhereInput,
+    TransactionCreateInput,
+    TransactionUpdateInput,
+    TransactionOrderBy,
+    DatasetWhereInput,
+    DatasetCreateInput,
+    DatasetUpdateInput,
+    DatasetOrderBy,
+    CandleWhereInput,
+    CandleCreateInput,
+    CandleUpdateInput,
+    CandleOrderBy,
+    SessionAnalyticsWhereInput,
+    SessionAnalyticsCreateInput,
+    SessionAnalyticsUpdateInput,
+    SessionAnalyticsOrderBy,
+    // Enums
     Role,
     SessionStatus,
     Timeframe,
@@ -59,4 +102,4 @@ export {
     Side,
     TransactionType,
     SubscriptionStatus,
-} from "./generated/prisma/client";
+} from "@backtrade/types";
