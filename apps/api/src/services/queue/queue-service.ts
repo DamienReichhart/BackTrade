@@ -1,6 +1,6 @@
 import { publishMessage } from "../../libs/rabbitmq";
 import { logger } from "../../libs/pino";
-import type { QueueJobMessage } from "@backtrade/types";
+import type { QueueJobMessage, QueueName } from "@backtrade/types";
 import { queueJobsRepo } from "@backtrade/data";
 
 /**
@@ -30,7 +30,7 @@ class QueueService {
      * @returns The created QueueJob ID
      * @throws Error if QueueJob creation fails
      */
-    async queueMessage(type: string, data: unknown): Promise<number> {
+    async queueMessage(type: QueueName, data: unknown): Promise<number> {
         let queueJobId: number;
 
         try {

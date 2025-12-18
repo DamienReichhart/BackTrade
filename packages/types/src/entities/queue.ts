@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { JobStatusSchema } from "../enums/queue";
+import {
+    JobStatusSchema,
+    QueueNameSchema,
+    type QueueName,
+} from "../enums/queue";
 
 /**
  * Queue job message structure
@@ -8,7 +12,7 @@ import { JobStatusSchema } from "../enums/queue";
  * The worker will fetch the full job data from the database using the queueJobId.
  */
 export interface QueueJobMessage {
-    type: string;
+    type: QueueName;
     queueJobId: number;
     timestamp: string;
 }
@@ -21,7 +25,7 @@ export interface QueueJobMessage {
  */
 export const QueueJobSchema = z.object({
     id: z.number().int().positive(),
-    type: z.string(),
+    type: QueueNameSchema,
     status: JobStatusSchema,
     payload: z.unknown(), // JSON payload stored as unknown for flexibility
     error: z.string().optional().nullable(),

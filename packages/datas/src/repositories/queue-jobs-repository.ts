@@ -13,6 +13,7 @@ import type {
     QueueJobUpdateInput,
     QueueJobOrderBy,
     JobStatus,
+    QueueName,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
@@ -124,11 +125,15 @@ class QueueJobsRepository extends BasePostgresRepository {
      * @returns Array of queue jobs with the specified type
      */
     async getQueueJobsByType(
-        type: string,
+        type: QueueName,
         orderBy?: QueueJobOrderBy,
         limit?: number
     ): Promise<QueueJob[]> {
-        return this.getAllQueueJobs({ type: { equals: type } }, orderBy, limit);
+        return this.getAllQueueJobs(
+            { type: { equals: type } as QueueJobWhereInput["type"] },
+            orderBy,
+            limit
+        );
     }
 
     /**

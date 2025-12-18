@@ -1,5 +1,5 @@
 import { logger } from "../libs/pino";
-import type { QueueJobMessage } from "@backtrade/types";
+import { QueueName, type QueueJobMessage } from "@backtrade/types";
 import queueJobService from "../services/queue-job-service";
 import emailService from "../services/email-service";
 
@@ -55,10 +55,10 @@ async function processMessage(message: QueueJobMessage): Promise<void> {
     try {
         // Process message based on type using payload from QueueJob
         switch (type) {
-            case "data-processing":
+            case QueueName.dataProcessing:
                 await processDataProcessing(queueJob.payload);
                 break;
-            case "mail":
+            case QueueName.mail:
                 await processMailMessage(queueJob.payload);
                 break;
             default:
