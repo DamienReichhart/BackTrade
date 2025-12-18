@@ -29,6 +29,7 @@
         "prisma:init": "pnpm prisma:generate && pnpm prisma:deploy && pnpm prisma:seed"
     },
     "dependencies": {
+        "@clickhouse/client": "^1.15.0",
         "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.1.0",
         "pg": "^8.16.3",

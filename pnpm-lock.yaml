@@ -345,6 +345,9 @@ importers:
 
   packages/datas:
     dependencies:
+      '@clickhouse/client':
+        specifier: ^1.15.0
+        version: 1.15.0
       '@prisma/adapter-pg':
         specifier: ^7.1.0
         version: 7.1.0
@@ -927,6 +930,13 @@ packages:
 
   '@chevrotain/utils@10.5.0':
     resolution: {integrity: sha512-hBzuU5+JjB2cqNZyszkDHZgOSrUUT8V3dhgRl8Q9Gp6dAj/H5+KILGjbhDpc3Iy9qmqlm/akuOI2ut9VUtzJxQ==}
+
+  '@clickhouse/client-common@1.15.0':
+    resolution: {integrity: sha512-/1BXaNNsBzH2w5ALWiH6M9zS+cJwlM9uMnMj9e8ETwvDjJzO+nIYlyxzp8Prc+9pEDZ5iAilZ4F8c0YVCzzNaA==}
+
+  '@clickhouse/client@1.15.0':
+    resolution: {integrity: sha512-QmW+p4c/r0oa3X6Un6lcBs4GZtJEQUdvf//x8GeqM5ru6m4oIUg3WwvermP3HE31kpEGoFOQfKbMN5ooR5gvNw==}
+    engines: {node: '>=16'}
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -5596,6 +5606,12 @@ snapshots:
   '@chevrotain/types@10.5.0': {}
 
   '@chevrotain/utils@10.5.0': {}
+
+  '@clickhouse/client-common@1.15.0': {}
+
+  '@clickhouse/client@1.15.0':
+    dependencies:
+      '@clickhouse/client-common': 1.15.0
 
   '@csstools/color-helpers@5.1.0': {}
 
