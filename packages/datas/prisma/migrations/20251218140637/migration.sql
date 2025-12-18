@@ -184,23 +184,6 @@ CREATE TABLE "datasets" (
 );
 
 -- CreateTable
-CREATE TABLE "candles" (
-    "id" SERIAL NOT NULL,
-    "instrument_id" INTEGER NOT NULL,
-    "timeframe" "Timeframe" NOT NULL,
-    "ts" TIMESTAMP(3) NOT NULL,
-    "open" DECIMAL(18,8) NOT NULL,
-    "high" DECIMAL(18,8) NOT NULL,
-    "low" DECIMAL(18,8) NOT NULL,
-    "close" DECIMAL(18,8) NOT NULL,
-    "volume" DECIMAL(18,8) NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "candles_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "session_analytics" (
     "id" SERIAL NOT NULL,
     "session_id" INTEGER NOT NULL,
@@ -254,15 +237,6 @@ CREATE INDEX "datasets_instrument_id_idx" ON "datasets"("instrument_id");
 CREATE UNIQUE INDEX "datasets_instrument_id_timeframe_key" ON "datasets"("instrument_id", "timeframe");
 
 -- CreateIndex
-CREATE INDEX "candles_instrument_id_timeframe_idx" ON "candles"("instrument_id", "timeframe");
-
--- CreateIndex
-CREATE INDEX "candles_ts_idx" ON "candles"("ts");
-
--- CreateIndex
-CREATE UNIQUE INDEX "candles_instrument_id_timeframe_ts_key" ON "candles"("instrument_id", "timeframe", "ts");
-
--- CreateIndex
 CREATE INDEX "session_analytics_session_id_idx" ON "session_analytics"("session_id");
 
 -- AddForeignKey
@@ -288,9 +262,6 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_session_id_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "datasets" ADD CONSTRAINT "datasets_instrument_id_fkey" FOREIGN KEY ("instrument_id") REFERENCES "instruments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "candles" ADD CONSTRAINT "candles_instrument_id_fkey" FOREIGN KEY ("instrument_id") REFERENCES "instruments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "session_analytics" ADD CONSTRAINT "session_analytics_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,6 +1,5 @@
 import { useGet } from "..";
 import {
-    CandleSchema,
     CandleListResponseSchema,
     type DateRangeQuery,
 } from "@backtrade/types";
@@ -23,10 +22,6 @@ export function useCandles(query?: DateRangeQuery) {
     const url = query ? `/candles?${searchParams.toString()}` : "/candles";
 
     return useGet(url, CandleListResponseSchema);
-}
-
-export function useCandle(id: string) {
-    return useGet(`/candles/${id}`, CandleSchema, { enabled: !!id });
 }
 
 export function useCandlesByInstrument(

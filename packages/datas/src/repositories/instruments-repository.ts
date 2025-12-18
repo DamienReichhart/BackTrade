@@ -4,76 +4,98 @@
  * Data access layer for trading Instrument model operations.
  */
 
-import type { Instrument, Prisma } from "../generated/prisma/client";
-import { prisma } from "../libs/prisma";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    Instrument,
+    InstrumentWhereInput,
+    InstrumentCreateInput,
+    InstrumentUpdateInput,
+    InstrumentOrderBy,
+} from "@backtrade/types";
+import { BasePostgresRepository } from "./base-repository";
 
 export interface FindAllOptions {
-    where?: Prisma.InstrumentWhereInput;
+    where?: InstrumentWhereInput;
     skip?: number;
     take?: number;
-    orderBy?: Prisma.InstrumentOrderByWithRelationInput;
+    orderBy?: InstrumentOrderBy;
 }
 
 /**
- * Get all instruments matching optional filter, pagination, and sorting
+ * Repository for Instrument model CRUD operations with pagination and sorting.
  */
-async function getAllInstruments(
-    options?: FindAllOptions
-): Promise<Instrument[]> {
-    return prisma.instrument.findMany({
-        where: options?.where,
-        skip: options?.skip,
-        take: options?.take,
-        orderBy: options?.orderBy,
-    });
+class InstrumentsRepository extends BasePostgresRepository {
+    /**
+     * Get all instruments matching optional filter, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching instruments
+     */
+    async getAllInstruments(options?: FindAllOptions): Promise<Instrument[]> {
+        return this.prisma.instrument.findMany({
+            where: options?.where as Prisma.InstrumentWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.InstrumentOrderByWithRelationInput
+                | undefined,
+        }) as unknown as Instrument[];
+    }
+
+    /**
+     * Get an instrument by ID.
+     *
+     * @param id - Instrument ID as number or string
+     * @returns Instrument entity or null if not found
+     */
+    async getInstrumentById(id: number | string): Promise<Instrument | null> {
+        return this.prisma.instrument.findUnique({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Instrument | null;
+    }
+
+    /**
+     * Create a new instrument.
+     *
+     * @param data - Instrument creation data
+     * @returns Created instrument entity
+     */
+    async createInstrument(data: InstrumentCreateInput): Promise<Instrument> {
+        return this.prisma.instrument.create({
+            data: data as Prisma.InstrumentCreateInput,
+        }) as unknown as Instrument;
+    }
+
+    /**
+     * Update an existing instrument.
+     *
+     * @param id - Instrument ID as number or string
+     * @param data - Instrument update data
+     * @returns Updated instrument entity
+     */
+    async updateInstrument(
+        id: number | string,
+        data: InstrumentUpdateInput
+    ): Promise<Instrument> {
+        return this.prisma.instrument.update({
+            where: { id: this.toNumericId(id) },
+            data: data as Prisma.InstrumentUpdateInput,
+        }) as unknown as Instrument;
+    }
+
+    /**
+     * Delete an instrument by ID.
+     *
+     * @param id - Instrument ID as number or string
+     * @returns Deleted instrument entity
+     */
+    async deleteInstrument(id: number | string): Promise<Instrument> {
+        return this.prisma.instrument.delete({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Instrument;
+    }
 }
 
-/**
- * Get an instrument by ID
- */
-async function getInstrumentById(
-    id: number | string
-): Promise<Instrument | null> {
-    return prisma.instrument.findUnique({
-        where: { id: Number(id) },
-    });
-}
+const instrumentsRepo = new InstrumentsRepository();
 
-/**
- * Create a new instrument
- */
-async function createInstrument(
-    data: Prisma.InstrumentCreateInput
-): Promise<Instrument> {
-    return prisma.instrument.create({ data });
-}
-
-/**
- * Update an existing instrument
- */
-async function updateInstrument(
-    id: number | string,
-    data: Prisma.InstrumentUpdateInput
-): Promise<Instrument> {
-    return prisma.instrument.update({
-        where: { id: Number(id) },
-        data,
-    });
-}
-
-/**
- * Delete an instrument by ID
- */
-async function deleteInstrument(id: number | string): Promise<Instrument> {
-    return prisma.instrument.delete({
-        where: { id: Number(id) },
-    });
-}
-
-export default {
-    getAllInstruments,
-    getInstrumentById,
-    createInstrument,
-    updateInstrument,
-    deleteInstrument,
-};
+export default instrumentsRepo;

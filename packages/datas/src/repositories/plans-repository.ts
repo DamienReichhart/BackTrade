@@ -4,58 +4,85 @@
  * Data access layer for subscription Plan model operations.
  */
 
-import type { Plan, Prisma } from "../generated/prisma/client";
-import { prisma } from "../libs/prisma";
+import type { Prisma } from "../generated/prisma/client";
+import type {
+    Plan,
+    PlanWhereInput,
+    PlanCreateInput,
+    PlanUpdateInput,
+} from "@backtrade/types";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
- * Get all plans matching optional filter conditions
+ * Repository for Plan model CRUD operations.
  */
-async function getAllPlans(where?: Prisma.PlanWhereInput): Promise<Plan[]> {
-    return prisma.plan.findMany({ where });
+class PlansRepository extends BasePostgresRepository {
+    /**
+     * Get all plans matching optional filter conditions.
+     *
+     * @param where - Optional filter conditions
+     * @returns Array of matching plans
+     */
+    async getAllPlans(where?: PlanWhereInput): Promise<Plan[]> {
+        return this.prisma.plan.findMany({
+            where: where as Prisma.PlanWhereInput,
+        }) as unknown as Plan[];
+    }
+
+    /**
+     * Get a plan by ID.
+     *
+     * @param id - Plan ID as number or string
+     * @returns Plan entity or null if not found
+     */
+    async getPlanById(id: number | string): Promise<Plan | null> {
+        return this.prisma.plan.findUnique({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Plan | null;
+    }
+
+    /**
+     * Create a new plan.
+     *
+     * @param data - Plan creation data
+     * @returns Created plan entity
+     */
+    async createPlan(data: PlanCreateInput): Promise<Plan> {
+        return this.prisma.plan.create({
+            data: data as Prisma.PlanCreateInput,
+        }) as unknown as Plan;
+    }
+
+    /**
+     * Update an existing plan.
+     *
+     * @param id - Plan ID as number or string
+     * @param data - Plan update data
+     * @returns Updated plan entity
+     */
+    async updatePlan(
+        id: number | string,
+        data: PlanUpdateInput
+    ): Promise<Plan> {
+        return this.prisma.plan.update({
+            where: { id: this.toNumericId(id) },
+            data: data as Prisma.PlanUpdateInput,
+        }) as unknown as Plan;
+    }
+
+    /**
+     * Delete a plan by ID.
+     *
+     * @param id - Plan ID as number or string
+     * @returns Deleted plan entity
+     */
+    async deletePlan(id: number | string): Promise<Plan> {
+        return this.prisma.plan.delete({
+            where: { id: this.toNumericId(id) },
+        }) as unknown as Plan;
+    }
 }
 
-/**
- * Get a plan by ID
- */
-async function getPlanById(id: number | string): Promise<Plan | null> {
-    return prisma.plan.findUnique({
-        where: { id: Number(id) },
-    });
-}
+const plansRepo = new PlansRepository();
 
-/**
- * Create a new plan
- */
-async function createPlan(data: Prisma.PlanCreateInput): Promise<Plan> {
-    return prisma.plan.create({ data });
-}
-
-/**
- * Update an existing plan
- */
-async function updatePlan(
-    id: number | string,
-    data: Prisma.PlanUpdateInput
-): Promise<Plan> {
-    return prisma.plan.update({
-        where: { id: Number(id) },
-        data,
-    });
-}
-
-/**
- * Delete a plan by ID
- */
-async function deletePlan(id: number | string): Promise<Plan> {
-    return prisma.plan.delete({
-        where: { id: Number(id) },
-    });
-}
-
-export default {
-    getAllPlans,
-    getPlanById,
-    createPlan,
-    updatePlan,
-    deletePlan,
-};
+export default plansRepo;

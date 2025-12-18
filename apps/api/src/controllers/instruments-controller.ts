@@ -5,15 +5,16 @@
  * Orchestrates instrument service operations.
  */
 
-import { SearchQuerySchema, type SearchQuery } from "@backtrade/types";
+import {
+    SearchQuerySchema,
+    type SearchQuery,
+    type InstrumentCreateInput,
+    type InstrumentUpdateInput,
+} from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
-import type { Prisma } from "@backtrade/datas";
 import { logger } from "../libs/pino";
-
-type InstrumentCreateInput = Prisma.InstrumentCreateInput;
-type InstrumentUpdateInput = Prisma.InstrumentUpdateInput;
 
 /**
  * Instruments Controller

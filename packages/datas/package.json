@@ -24,11 +24,14 @@
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "prisma studio",
         "prisma:reset": "prisma migrate reset",
-        "prisma:deploy": "prisma migrate deploy",
+        "clickhouse:deploy": "tsx scripts/clickhouse-migrate.ts",
+        "prisma:deploy": "prisma migrate deploy && pnpm clickhouse:deploy",
         "prisma:seed": "pnpm --filter @backtrade/api db:seed",
         "prisma:init": "pnpm prisma:generate && pnpm prisma:deploy && pnpm prisma:seed"
     },
     "dependencies": {
+        "@backtrade/types": "workspace:*",
+        "@clickhouse/client": "^1.15.0",
         "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.1.0",
         "pg": "^8.16.3",

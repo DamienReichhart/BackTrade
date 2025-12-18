@@ -2,8 +2,8 @@ import {
     type AuthResponse,
     type LoginRequest,
     type RegisterRequest,
+    type Role,
 } from "@backtrade/types";
-import { Role } from "@backtrade/datas";
 import userService from "../base/users-service";
 import hashService from "./hash-service";
 import { logger } from "../../libs/pino";
@@ -102,7 +102,7 @@ class AuthService {
         const user = await userService.createUser({
             email: registerRequest.email,
             password_hash: registerRequest.password,
-            role: Role.USER,
+            role: "USER" as Role,
         });
         this.logger.trace(
             { userId: user.id },

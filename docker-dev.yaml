@@ -82,6 +82,25 @@ services:
                 ipv4_address: 192.168.250.23
         restart: always
 
+    clickhouse:
+        build:
+            context: .
+            dockerfile: ./docker/images/clickhouse.dockerfile
+        ports:
+            - "8123:8123"
+            - "9002:9000"
+        environment:
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB:-default}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+            CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+        volumes:
+            - backtrade_clickhouse_data:/var/lib/clickhouse
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.24
+        restart: always
+
     rabbitmq:
         build:
             context: .
@@ -101,6 +120,8 @@ volumes:
     backtrade_db:
         driver: local
     backtrade_minio_data:
+        driver: local
+    backtrade_clickhouse_data:
         driver: local
 
 networks:
