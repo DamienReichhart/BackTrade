@@ -1,6 +1,6 @@
 import { logger } from "./libs/pino";
 import { connect, consumeMessages, close } from "./libs/rabbitmq";
-import messageProcessor from "./processor/message-processor";
+import taskRouter from "./task-router";
 import { createTemplateCompiler } from "@backtrade/mailer";
 
 const workerLogger = logger.child({
@@ -24,8 +24,8 @@ async function startWorker(): Promise<void> {
 
         // Start consuming messages
         await consumeMessages(async (message) => {
-            await messageProcessor.processMessage(
-                message as Parameters<typeof messageProcessor.processMessage>[0]
+            await taskRouter.processTask(
+                message as Parameters<typeof taskRouter.processTask>[0]
             );
         });
 

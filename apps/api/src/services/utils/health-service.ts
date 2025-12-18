@@ -1,6 +1,6 @@
 import { type Health, type SingleServiceHealthStatus } from "@backtrade/types";
 import { healthCacheRepo } from "../../libs/cache";
-import { prisma } from "@backtrade/datas";
+import { prisma } from "@backtrade/data";
 import { redis } from "../../libs/redis";
 import { checkConnection as checkRabbitMQConnection } from "../../libs/rabbitmq";
 import { mailerService } from "../../libs/mailer";

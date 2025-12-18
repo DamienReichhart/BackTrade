@@ -1,5 +1,4 @@
-import { createConsumer, type Consumer } from "@backtrade/queue";
-import type { QueueJobMessage } from "@backtrade/types";
+import { createPublisher, type Publisher } from "@backtrade/queue";
 import { ENV } from "../config/env";
 import { logger } from "./pino";
 
@@ -8,16 +7,16 @@ const rabbitmqLogger = logger.child({
 });
 
 /**
- * RabbitMQ consumer instance
+ * RabbitMQ publisher instance
  * Created as a singleton to share connection across the application
  */
-let consumerInstance: Consumer<QueueJobMessage> | null = null;
+let publisherInstance: Publisher | null = null;
 
 /**
- * Gets or creates the RabbitMQ consumer instance
+ * Gets or creates the RabbitMQ publisher instance
  */
-function getConsumer(): Consumer<QueueJobMessage> {
-    consumerInstance ??= createConsumer<QueueJobMessage>({
+function getPublisher(): Publisher {
+    publisherInstance ??= createPublisher({
         connection: {
             host: ENV.RABBITMQ_HOST,
             port: ENV.RABBITMQ_PORT,
@@ -28,10 +27,8 @@ function getConsumer(): Consumer<QueueJobMessage> {
             name: ENV.RABBITMQ_QUEUE_NAME,
             durable: true,
         },
-        consumer: {
-            prefetch: 1, // Process one message at a time
-            noAck: false, // Manual acknowledgment
-            requeueOnError: true, // Requeue on error
+        publisher: {
+            persistent: true,
         },
         logger: {
             info: (message: string, meta?: Record<string, unknown>) =>
@@ -49,35 +46,39 @@ function getConsumer(): Consumer<QueueJobMessage> {
                 rabbitmqLogger.trace(meta, message),
         },
     });
-    return consumerInstance;
+    return publisherInstance;
 }
 
 /**
- * Connects to RabbitMQ (initializes the consumer and ensures connection)
- */
-export async function connect(): Promise<void> {
-    const consumer = getConsumer();
-    await consumer.connect();
-}
-
-/**
- * Consumes messages from the queue
+ * Publishes a message to the queue
  *
- * @param onMessage - Message handler function
+ * @param message - The message to publish
  */
-export async function consumeMessages(
-    onMessage: (message: QueueJobMessage) => Promise<void>
-): Promise<void> {
-    const consumer = getConsumer();
-    await consumer.consume(onMessage);
+export async function publishMessage(message: unknown): Promise<void> {
+    const publisher = getPublisher();
+    await publisher.publish(message);
+}
+
+/**
+ * Checks if RabbitMQ connection is healthy
+ *
+ * @returns Promise resolving to true if connection is available, false otherwise
+ */
+export async function checkConnection(): Promise<boolean> {
+    try {
+        const publisher = getPublisher();
+        return publisher.isHealthy();
+    } catch {
+        return false;
+    }
 }
 
 /**
  * Closes the RabbitMQ connection
  */
 export async function close(): Promise<void> {
-    if (consumerInstance) {
-        await consumerInstance.close();
-        consumerInstance = null;
+    if (publisherInstance) {
+        await publisherInstance.close();
+        publisherInstance = null;
     }
 }

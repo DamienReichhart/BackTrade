@@ -15,8 +15,7 @@ import { z } from "zod";
 
 /** Base data included in all email templates */
 export interface BaseEmailData {
-    /** Current year for footer copyright */
-    year?: number;
+    // No base properties - all template-specific data is in extended interfaces
 }
 
 /** Data required for the registration welcome email template */

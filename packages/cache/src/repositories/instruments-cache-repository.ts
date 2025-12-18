@@ -5,7 +5,7 @@
  */
 
 import { BaseCacheRepository } from "./base-cache-repository";
-import type { Instrument } from "@backtrade/datas";
+import type { Instrument } from "@backtrade/data";
 import { InstrumentSchema } from "@backtrade/types";
 import type { Redis } from "ioredis";
 import type { Logger } from "@backtrade/logger";

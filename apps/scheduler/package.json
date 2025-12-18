@@ -1,25 +1,24 @@
 {
-    "name": "@backtrade/data-worker",
+    "name": "@backtrade/scheduler",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "nodemon --legacy-watch --watch src --ext ts,js,json --exec tsx src/worker.ts",
+        "dev": "nodemon --legacy-watch --watch src --ext ts,js,json --exec tsx src/scheduler.ts",
         "build": "tsx scripts/build.ts",
-        "start": "node dist/worker.js",
+        "start": "node dist/scheduler.js",
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },
     "dependencies": {
+        "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
-        "@backtrade/mailer": "workspace:*",
         "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
-        "@backtrade/utils": "workspace:*",
-        "@backtrade/data": "workspace:*",
         "dotenv": "^17.2.3",
+        "node-cron": "^3.0.3",
         "zod": "4.2.1"
     },
     "devDependencies": {
@@ -27,6 +26,7 @@
         "@backtrade/tsconfig": "workspace:*",
         "@eslint/js": "^9.39.2",
         "@types/node": "25.0.2",
+        "@types/node-cron": "^3.0.11",
         "esbuild": "0.27.1",
         "eslint": "^9.39.2",
         "globals": "^16.5.0",

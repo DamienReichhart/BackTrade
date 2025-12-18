@@ -24,7 +24,7 @@ BackTrade/
 
 ## Package Responsibilities
 
-### @backtrade/datas
+### @backtrade/data
 **DATA ACCESS ONLY** - Contains all database communication:
 - ✅ Prisma schema and migrations
 - ✅ Prisma client initialization

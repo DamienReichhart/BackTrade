@@ -131,10 +131,7 @@ export class TemplateCompiler {
         data: T
     ): Promise<string> {
         const template = await this.compileTemplate<T>(name);
-        return template({
-            ...data,
-            year: data.year ?? new Date().getFullYear(),
-        });
+        return template(data);
     }
 
     /**

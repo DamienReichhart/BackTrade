@@ -14,7 +14,7 @@ import {
     maskEmailForLogging,
 } from "../../utils";
 import queueService from "../queue/queue-service";
-import { MailMessageDataSchema } from "@backtrade/types";
+import { MailMessageDataSchema, QueueName } from "@backtrade/types";
 
 /**
  * Email Notification Service
@@ -75,7 +75,7 @@ class EmailNotificationService {
             "Queueing welcome email message"
         );
 
-        await queueService.queueMessage("mail", validatedData);
+        await queueService.queueMessage(QueueName.mail, validatedData);
 
         this.logger.info(
             { email: maskEmailForLogging(email), username },
@@ -147,7 +147,7 @@ class EmailNotificationService {
             "Queueing login notification email message"
         );
 
-        await queueService.queueMessage("mail", validatedData);
+        await queueService.queueMessage(QueueName.mail, validatedData);
 
         this.logger.info(
             {

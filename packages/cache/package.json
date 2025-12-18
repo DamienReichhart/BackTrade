@@ -22,7 +22,7 @@
         "typecheck": "npx tsc --noEmit"
     },
     "dependencies": {
-        "@backtrade/datas": "workspace:*",
+        "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/types": "workspace:*",
         "ioredis": "^5.8.2",
