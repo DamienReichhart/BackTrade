@@ -180,7 +180,7 @@ class CandlesRepository extends BaseClickHouseRepository {
                     `Candle not found: instrument_id=${instrument_id}, timeframe=${timeframe}, ts=${ts}`
                 );
             }
-            return existing[0];
+            return existing[0]!;
         }
 
         const query = `
@@ -209,7 +209,7 @@ class CandlesRepository extends BaseClickHouseRepository {
                     `Candle not found after update: instrument_id=${instrument_id}, timeframe=${timeframe}, ts=${ts}`
                 );
             }
-            return updated[0];
+            return updated[0]!;
         } catch (error) {
             throw new Error(
                 `Failed to update candle in ClickHouse: ${error instanceof Error ? error.message : String(error)}`
