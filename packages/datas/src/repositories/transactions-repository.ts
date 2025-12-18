@@ -11,12 +11,12 @@ import type {
     TransactionCreateInput,
     TransactionUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for Transaction model CRUD operations.
  */
-class TransactionsRepository extends BaseRepository {
+class TransactionsRepository extends BasePostgresRepository {
     /**
      * Get all transactions matching optional filter conditions.
      *

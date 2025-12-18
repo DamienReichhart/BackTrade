@@ -12,7 +12,7 @@ import type {
     InstrumentUpdateInput,
     InstrumentOrderBy,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 export interface FindAllOptions {
     where?: InstrumentWhereInput;
@@ -24,7 +24,7 @@ export interface FindAllOptions {
 /**
  * Repository for Instrument model CRUD operations with pagination and sorting.
  */
-class InstrumentsRepository extends BaseRepository {
+class InstrumentsRepository extends BasePostgresRepository {
     /**
      * Get all instruments matching optional filter, pagination, and sorting.
      *

@@ -9,6 +9,8 @@ export default [
             "coverage",
             "src/generated/**",
             "prisma.config.ts",
+            "scripts/**/*.d.ts",
+            "scripts/**/*.js",
         ],
     },
     {
@@ -19,6 +21,12 @@ export default [
                 tsconfigRootDir: import.meta.dirname,
                 project: "./tsconfig.json",
             },
+        },
+    },
+    {
+        files: ["scripts/**/*.{ts,tsx}"],
+        rules: {
+            "no-console": "off",
         },
     },
 ];

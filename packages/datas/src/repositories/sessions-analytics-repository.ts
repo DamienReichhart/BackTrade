@@ -11,12 +11,12 @@ import type {
     SessionAnalyticsCreateInput,
     SessionAnalyticsUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for SessionAnalytics model CRUD operations.
  */
-class SessionAnalyticsRepository extends BaseRepository {
+class SessionAnalyticsRepository extends BasePostgresRepository {
     /**
      * Get all session analytics matching optional filter conditions.
      *

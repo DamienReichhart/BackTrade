@@ -11,12 +11,12 @@ import type {
     UserCreateInput,
     UserUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for User model CRUD operations.
  */
-class UsersRepository extends BaseRepository {
+class UsersRepository extends BasePostgresRepository {
     /**
      * Get all users matching optional filter conditions.
      *

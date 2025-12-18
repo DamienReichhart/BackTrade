@@ -11,12 +11,12 @@ import type {
     UserSessionCreateInput,
     UserSessionUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for UserSession model CRUD operations.
  */
-class UserSessionsRepository extends BaseRepository {
+class UserSessionsRepository extends BasePostgresRepository {
     /**
      * Get all user sessions matching optional filter conditions.
      *

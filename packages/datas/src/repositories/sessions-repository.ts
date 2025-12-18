@@ -11,12 +11,12 @@ import type {
     SessionCreateInput,
     SessionUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for Session model CRUD operations.
  */
-class SessionsRepository extends BaseRepository {
+class SessionsRepository extends BasePostgresRepository {
     /**
      * Get all sessions matching optional filter conditions.
      *

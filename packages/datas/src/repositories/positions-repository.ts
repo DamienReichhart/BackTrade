@@ -11,12 +11,12 @@ import type {
     PositionCreateInput,
     PositionUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for Position model CRUD operations.
  */
-class PositionsRepository extends BaseRepository {
+class PositionsRepository extends BasePostgresRepository {
     /**
      * Get all positions matching optional filter conditions.
      *

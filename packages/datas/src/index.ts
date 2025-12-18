@@ -5,8 +5,9 @@
  * Contains database client and repositories.
  */
 
-// Prisma client instance
+// Database client instances
 export { prisma } from "./libs/prisma";
+export { clickhouse } from "./libs/clickhouse";
 
 // All repositories
 export {

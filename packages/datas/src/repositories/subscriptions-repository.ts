@@ -11,12 +11,12 @@ import type {
     SubscriptionCreateInput,
     SubscriptionUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for Subscription model CRUD operations.
  */
-class SubscriptionsRepository extends BaseRepository {
+class SubscriptionsRepository extends BasePostgresRepository {
     /**
      * Get all subscriptions matching optional filter conditions.
      *

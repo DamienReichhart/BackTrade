@@ -187,7 +187,6 @@ model Instrument {
   // Relations
   sessions Session[]
   datasets Dataset[]
-  candles  Candle[]
 
   @@map("instruments")
 }
@@ -288,26 +287,9 @@ model Dataset {
   @@map("datasets")
 }
 
-model Candle {
-  instrument_id Int
-  timeframe     Timeframe
-  ts            DateTime
-  open          Decimal   @db.Decimal(18, 8)
-  high          Decimal   @db.Decimal(18, 8)
-  low           Decimal   @db.Decimal(18, 8)
-  close         Decimal   @db.Decimal(18, 8)
-  volume        Decimal   @db.Decimal(18, 8)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-
-  // Relations
-  instrument Instrument @relation(fields: [instrument_id], references: [id])
-
-  @@id([instrument_id, timeframe, ts])
-  @@index([instrument_id, timeframe])
-  @@index([ts])
-  @@map("candles")
-}
+// NOTE: Candle model has been moved to ClickHouse for better time-series performance.
+// The candles table is now managed in ClickHouse, not PostgreSQL.
+// See: packages/datas/clickhouse/migrations/001_create_candles_table.sql
 
 // ============================================================================
 // ANALYTICS MODELS

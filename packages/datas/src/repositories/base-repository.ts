@@ -1,7 +1,7 @@
 /**
- * Base Repository
+ * Base Postgres Repository
  *
- * Shared base class for all data access repositories in @backtrade/datas.
+ * Shared base class for all PostgreSQL data access repositories in @backtrade/datas.
  * Provides access to the Prisma client singleton and common helpers.
  */
 
@@ -9,9 +9,9 @@ import type { PrismaClient } from "../generated/prisma/client";
 import { prisma } from "../libs/prisma";
 
 /**
- * Abstract base repository providing shared Prisma access and utilities.
+ * Abstract base repository providing shared Prisma access and utilities for PostgreSQL.
  */
-abstract class BaseRepository {
+abstract class BasePostgresRepository {
     /**
      * Shared Prisma client instance for all repositories.
      *
@@ -40,4 +40,9 @@ abstract class BaseRepository {
     }
 }
 
-export { BaseRepository };
+/**
+ * @deprecated Use BasePostgresRepository instead. This export is kept for backward compatibility.
+ */
+const BaseRepository = BasePostgresRepository;
+
+export { BasePostgresRepository, BaseRepository };

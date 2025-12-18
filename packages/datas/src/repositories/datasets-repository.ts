@@ -12,7 +12,7 @@ import type {
     DatasetUpdateInput,
     DatasetOrderBy,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 export interface FindAllOptions {
     where?: DatasetWhereInput;
@@ -24,7 +24,7 @@ export interface FindAllOptions {
 /**
  * Repository for Dataset model CRUD operations with pagination and sorting.
  */
-class DatasetsRepository extends BaseRepository {
+class DatasetsRepository extends BasePostgresRepository {
     /**
      * Get all datasets matching optional filter, pagination, and sorting.
      *

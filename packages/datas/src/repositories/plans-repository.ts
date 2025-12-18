@@ -11,12 +11,12 @@ import type {
     PlanCreateInput,
     PlanUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for Plan model CRUD operations.
  */
-class PlansRepository extends BaseRepository {
+class PlansRepository extends BasePostgresRepository {
     /**
      * Get all plans matching optional filter conditions.
      *

@@ -24,7 +24,8 @@
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "prisma studio",
         "prisma:reset": "prisma migrate reset",
-        "prisma:deploy": "prisma migrate deploy",
+        "clickhouse:deploy": "tsx scripts/clickhouse-migrate.ts",
+        "prisma:deploy": "prisma migrate deploy && pnpm clickhouse:deploy",
         "prisma:seed": "pnpm --filter @backtrade/api db:seed",
         "prisma:init": "pnpm prisma:generate && pnpm prisma:deploy && pnpm prisma:seed"
     },

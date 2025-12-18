@@ -11,12 +11,12 @@ import type {
     StripeEventCreateInput,
     StripeEventUpdateInput,
 } from "@backtrade/types";
-import { BaseRepository } from "./base-repository";
+import { BasePostgresRepository } from "./base-repository";
 
 /**
  * Repository for StripeEvent model CRUD operations.
  */
-class StripeEventsRepository extends BaseRepository {
+class StripeEventsRepository extends BasePostgresRepository {
     /**
      * Get all stripe events matching optional filter conditions.
      *
