@@ -6,7 +6,7 @@
  */
 
 import { logger } from "../libs/pino";
-import { queueJobsRepo } from "@backtrade/datas";
+import { queueJobsRepo } from "@backtrade/data";
 import type { QueueJob } from "@backtrade/types";
 
 /**

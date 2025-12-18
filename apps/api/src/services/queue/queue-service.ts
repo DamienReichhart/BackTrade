@@ -1,7 +1,7 @@
 import { publishMessage } from "../../libs/rabbitmq";
 import { logger } from "../../libs/pino";
 import type { QueueJobMessage } from "@backtrade/types";
-import { queueJobsRepo } from "@backtrade/datas";
+import { queueJobsRepo } from "@backtrade/data";
 
 /**
  * Queue Service

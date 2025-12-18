@@ -1,7 +1,7 @@
 /**
  * ClickHouse Client Initialization
  *
- * ClickHouse client singleton for the @backtrade/datas package.
+ * ClickHouse client singleton for the @backtrade/data package.
  * Reads ClickHouse configuration from environment variables.
  */
 

@@ -6,7 +6,7 @@ DOCKER_COMPOSE_DEV := docker compose -f docker-dev.yaml
 DOCKER_COMPOSE_PROD := docker compose -f docker-prod.yaml
 DEV_SERVICE := dev
 API_FILTER := --filter @backtrade/api
-DATABASE_FILTER := --filter @backtrade/datas
+DATABASE_FILTER := --filter @backtrade/data
 PNPM := pnpm
 
 .PHONY: help

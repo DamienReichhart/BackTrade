@@ -1,4 +1,4 @@
-import { prisma } from "@backtrade/datas";
+import { prisma } from "@backtrade/data";
 import { getPlans } from "./plans";
 import { getUsers } from "./users";
 import { getInstruments } from "./instruments";

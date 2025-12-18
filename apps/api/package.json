@@ -18,7 +18,7 @@
     },
     "dependencies": {
         "@backtrade/cache": "workspace:*",
-        "@backtrade/datas": "workspace:*",
+        "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/mailer": "workspace:*",
         "@backtrade/queue": "workspace:*",

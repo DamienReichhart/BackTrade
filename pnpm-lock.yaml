@@ -32,7 +32,7 @@ importers:
       '@backtrade/cache':
         specifier: workspace:*
         version: link:../../packages/cache
-      '@backtrade/datas':
+      '@backtrade/data':
         specifier: workspace:*
         version: link:../../packages/datas
       '@backtrade/logger':
@@ -250,7 +250,7 @@ importers:
 
   apps/worker:
     dependencies:
-      '@backtrade/datas':
+      '@backtrade/data':
         specifier: workspace:*
         version: link:../../packages/datas
       '@backtrade/logger':
@@ -311,7 +311,7 @@ importers:
 
   packages/cache:
     dependencies:
-      '@backtrade/datas':
+      '@backtrade/data':
         specifier: workspace:*
         version: link:../datas
       '@backtrade/logger':

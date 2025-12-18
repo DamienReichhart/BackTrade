@@ -1,7 +1,7 @@
 /**
  * Base ClickHouse Repository
  *
- * Shared base class for all ClickHouse data access repositories in @backtrade/datas.
+ * Shared base class for all ClickHouse data access repositories in @backtrade/data.
  * Provides access to the ClickHouse client singleton and common helpers.
  */
 

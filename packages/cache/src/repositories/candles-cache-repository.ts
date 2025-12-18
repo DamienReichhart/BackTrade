@@ -5,7 +5,7 @@
  */
 
 import { BaseCacheRepository } from "./base-cache-repository";
-import type { Candle } from "@backtrade/datas";
+import type { Candle } from "@backtrade/data";
 import { CandleSchema } from "@backtrade/types";
 import type { Redis } from "ioredis";
 import type { Logger } from "@backtrade/logger";

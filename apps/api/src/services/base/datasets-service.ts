@@ -1,4 +1,4 @@
-import { datasetsRepo as datasetsRepository } from "@backtrade/datas";
+import { datasetsRepo as datasetsRepository } from "@backtrade/data";
 import type {
     Dataset,
     DatasetWhereInput,

@@ -1,4 +1,4 @@
-import { usersRepo } from "@backtrade/datas";
+import { usersRepo } from "@backtrade/data";
 import type {
     User,
     UserWhereInput,

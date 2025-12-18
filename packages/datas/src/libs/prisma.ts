@@ -1,7 +1,7 @@
 /**
  * Prisma Client Initialization
  *
- * Database client singleton for the @backtrade/datas package.
+ * Database client singleton for the @backtrade/data package.
  * Reads DATABASE_URL from environment variables.
  */
 

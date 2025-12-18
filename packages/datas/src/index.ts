@@ -1,5 +1,5 @@
 /**
- * @backtrade/datas
+ * @backtrade/data
  *
  * Shared data access package for BackTrade.
  * Contains database client and repositories.

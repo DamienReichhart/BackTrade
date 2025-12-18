@@ -18,7 +18,7 @@
         "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
-        "@backtrade/datas": "workspace:*",
+        "@backtrade/data": "workspace:*",
         "dotenv": "^17.2.3",
         "zod": "4.2.1"
     },

@@ -1,4 +1,4 @@
-import { instrumentsRepo as instrumentsRepository } from "@backtrade/datas";
+import { instrumentsRepo as instrumentsRepository } from "@backtrade/data";
 import type {
     Instrument,
     InstrumentWhereInput,

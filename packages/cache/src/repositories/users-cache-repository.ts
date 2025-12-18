@@ -5,7 +5,7 @@
  */
 
 import { BaseCacheRepository } from "./base-cache-repository";
-import type { User } from "@backtrade/datas";
+import type { User } from "@backtrade/data";
 import { UserSchema } from "@backtrade/types";
 import type { Redis } from "ioredis";
 import type { Logger } from "@backtrade/logger";

@@ -1,7 +1,7 @@
 /**
  * Base Postgres Repository
  *
- * Shared base class for all PostgreSQL data access repositories in @backtrade/datas.
+ * Shared base class for all PostgreSQL data access repositories in @backtrade/data.
  * Provides access to the Prisma client singleton and common helpers.
  */
 
