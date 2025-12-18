@@ -23,7 +23,7 @@ CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'COMMISSION', 'P
 CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled', 'trialing', 'active_unpaid');
 
 -- CreateEnum
-CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING');
+CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING', 'QUEUE_FAILED');
 
 -- CreateTable
 CREATE TABLE "users" (

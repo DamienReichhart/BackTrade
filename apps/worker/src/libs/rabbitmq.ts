@@ -1,5 +1,5 @@
 import { createConsumer, type Consumer } from "@backtrade/queue";
-import type { QueueMessage } from "@backtrade/types";
+import type { QueueJobMessage } from "@backtrade/types";
 import { ENV } from "../config/env";
 import { logger } from "./pino";
 
@@ -11,13 +11,13 @@ const rabbitmqLogger = logger.child({
  * RabbitMQ consumer instance
  * Created as a singleton to share connection across the application
  */
-let consumerInstance: Consumer<QueueMessage> | null = null;
+let consumerInstance: Consumer<QueueJobMessage> | null = null;
 
 /**
  * Gets or creates the RabbitMQ consumer instance
  */
-function getConsumer(): Consumer<QueueMessage> {
-    consumerInstance ??= createConsumer<QueueMessage>({
+function getConsumer(): Consumer<QueueJobMessage> {
+    consumerInstance ??= createConsumer<QueueJobMessage>({
         connection: {
             host: ENV.RABBITMQ_HOST,
             port: ENV.RABBITMQ_PORT,
@@ -66,7 +66,7 @@ export async function connect(): Promise<void> {
  * @param onMessage - Message handler function
  */
 export async function consumeMessages(
-    onMessage: (message: QueueMessage) => Promise<void>
+    onMessage: (message: QueueJobMessage) => Promise<void>
 ): Promise<void> {
     const consumer = getConsumer();
     await consumer.consume(onMessage);

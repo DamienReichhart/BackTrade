@@ -250,6 +250,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@backtrade/datas':
+        specifier: workspace:*
+        version: link:../../packages/datas
       '@backtrade/logger':
         specifier: workspace:*
         version: link:../../packages/logger

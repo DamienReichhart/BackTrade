@@ -319,6 +319,7 @@ enum JobStatus {
   COMPLETED
   FAILED
   RETRYING
+  QUEUE_FAILED
 }
 
 model QueueJob {

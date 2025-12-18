@@ -209,6 +209,26 @@ class QueueJobsRepository extends BasePostgresRepository {
     }
 
     /**
+     * Mark a queue job as queue failed.
+     *
+     * This status indicates that the QueueJob was created in the database
+     * but failed to be published to RabbitMQ.
+     *
+     * @param id - Queue job ID as number or string
+     * @param error - Error message or details
+     * @returns Updated queue job entity
+     */
+    async markAsQueueFailed(
+        id: number | string,
+        error: string
+    ): Promise<QueueJob> {
+        return this.updateQueueJob(id, {
+            status: "QUEUE_FAILED",
+            error,
+        });
+    }
+
+    /**
      * Increment retry count and mark as retrying.
      *
      * @param id - Queue job ID as number or string
