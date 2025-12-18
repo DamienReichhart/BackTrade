@@ -12,7 +12,6 @@ import {
     createTemplateRenderer,
 } from "@backtrade/mailer";
 import {
-    MailMessageDataSchema,
     type MailMessageData,
     type WelcomeEmailData,
     type LoginNotificationEmailData,
@@ -46,14 +45,11 @@ class EmailService {
      * @param mailData - Mail message data from the queue
      * @throws Error if validation fails or email sending fails
      */
-    async processMailMessage(mailData: unknown): Promise<void> {
-        // Validate the mail message data
-        const validatedData = MailMessageDataSchema.parse(mailData);
-
+    async processMailMessage(mailData: MailMessageData): Promise<void> {
         this.logger.debug(
             {
-                template: validatedData.template,
-                to: maskEmailForLogging(validatedData.emailData.to),
+                template: mailData.template,
+                to: maskEmailForLogging(mailData.emailData.to),
             },
             "Processing mail message"
         );
@@ -61,20 +57,20 @@ class EmailService {
         // Render template and send email based on template type
         // TypeScript can't narrow the union type automatically, so we use type assertions
         // The schema validation ensures emailData matches the template type
-        switch (validatedData.template) {
+        switch (mailData.template) {
             case "welcome": {
-                const emailData = validatedData.emailData as WelcomeEmailData;
+                const emailData = mailData.emailData as WelcomeEmailData;
                 await this.sendWelcomeEmail(emailData);
                 break;
             }
             case "login-notification": {
                 const emailData =
-                    validatedData.emailData as LoginNotificationEmailData;
+                    mailData.emailData as LoginNotificationEmailData;
                 await this.sendLoginNotificationEmail(emailData);
                 break;
             }
             default: {
-                const errorMessage = `Unknown email template type: ${(validatedData as MailMessageData).template}`;
+                const errorMessage = `Unknown email template type: ${(mailData as MailMessageData).template}`;
                 this.logger.error(errorMessage);
                 throw new Error(errorMessage);
             }
@@ -82,8 +78,8 @@ class EmailService {
 
         this.logger.info(
             {
-                template: validatedData.template,
-                to: maskEmailForLogging(validatedData.emailData.to),
+                template: mailData.template,
+                to: maskEmailForLogging(mailData.emailData.to),
             },
             "Email sent successfully"
         );

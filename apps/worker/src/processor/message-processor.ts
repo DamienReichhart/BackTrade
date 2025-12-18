@@ -1,133 +1,130 @@
+/**
+ * Message Processor
+ *
+ * Handles processing of messages from the queue.
+ * Orchestrates message routing, status updates, retry logic, and error handling.
+ */
+
 import { logger } from "../libs/pino";
 import { QueueName, type QueueJobMessage } from "@backtrade/types";
 import queueJobService from "../services/queue-job-service";
-import emailService from "../services/email-service";
-
-const messageProcessorLogger = logger.child({
-    service: "message-processor",
-});
+import dataProcessor from "./data-processor";
+import mailProcessor from "./mail-processor";
 
 /**
- * Maximum number of retries before marking a job as permanently failed
- */
-const MAX_RETRIES = 3;
-
-/**
- * Processes a message from the queue
+ * Message Processor
  *
- * Fetches the QueueJob from the database using the queueJobId from the message,
- * updates its status, processes it, and handles retries and errors.
+ * Processes messages from the queue, handles status transitions,
+ * and delegates to specific processors based on message type.
  */
-async function processMessage(message: QueueJobMessage): Promise<void> {
-    const { queueJobId, type } = message;
+class MessageProcessor {
+    private readonly logger: ReturnType<typeof logger.child>;
+    private readonly maxRetries: number;
 
-    messageProcessorLogger.info({ queueJobId, type }, "Processing message");
-
-    // Fetch QueueJob from database
-    let queueJob;
-    try {
-        queueJob = await queueJobService.getQueueJobById(queueJobId);
-    } catch (err) {
-        // Service already logged the error
-        // Re-throw to trigger RabbitMQ requeue for transient DB errors
-        throw err;
+    constructor() {
+        this.logger = logger.child({
+            service: "message-processor",
+        });
+        /**
+         * Maximum number of retries before marking a job as permanently failed
+         */
+        this.maxRetries = 3;
     }
 
-    // Handle missing QueueJob
-    if (!queueJob) {
-        messageProcessorLogger.error(
-            { queueJobId, type },
-            "QueueJob not found in database, acknowledging message"
-        );
-        // Don't throw - acknowledge the message to prevent infinite requeue
-        return;
-    }
+    /**
+     * Process a message from the queue
+     *
+     * Fetches the QueueJob from the database using the queueJobId from the message,
+     * updates its status, processes it, and handles retries and errors.
+     *
+     * @param message - Queue job message from RabbitMQ
+     * @throws Error if processing fails and retry should occur
+     */
+    async processMessage(message: QueueJobMessage): Promise<void> {
+        const { queueJobId, type } = message;
 
-    // Update status to PROCESSING
-    try {
-        await queueJobService.startProcessing(queueJobId);
-    } catch (err) {
-        // Service already logged the error
-        // Re-throw to trigger RabbitMQ requeue for transient DB errors
-        throw err;
-    }
+        this.logger.info({ queueJobId, type }, "Processing message");
 
-    try {
-        // Process message based on type using payload from QueueJob
-        switch (type) {
-            case QueueName.dataProcessing:
-                await processDataProcessing(queueJob.payload);
-                break;
-            case QueueName.mail:
-                await processMailMessage(queueJob.payload);
-                break;
-            default:
-                messageProcessorLogger.warn(
-                    { queueJobId, type },
-                    "Unknown message type"
-                );
-                throw new Error(`Unknown message type: ${type}`);
-        }
-
-        // Mark as completed on success
-        await queueJobService.completeProcessing(queueJobId);
-
-        messageProcessorLogger.info(
-            { queueJobId, type },
-            "QueueJob processed successfully"
-        );
-    } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-
-        messageProcessorLogger.error(
-            { queueJobId, type, err },
-            "Failed to process QueueJob"
-        );
-
-        // Handle retry logic using service
-        const { shouldRetry } = await queueJobService.handleProcessingFailure(
-            queueJobId,
-            queueJob.retry_count,
-            MAX_RETRIES,
-            errorMessage,
-            queueJob
-        );
-
-        if (shouldRetry) {
-            // Throw error to trigger RabbitMQ requeue
+        // Fetch QueueJob from database
+        let queueJob;
+        try {
+            queueJob = await queueJobService.getQueueJobById(queueJobId);
+        } catch (err) {
+            // Service already logged the error
+            // Re-throw to trigger RabbitMQ requeue for transient DB errors
             throw err;
         }
-        // If shouldRetry is false, don't throw - acknowledge the message
-        // The job is marked as FAILED in the database by the service
+
+        // Handle missing QueueJob
+        if (!queueJob) {
+            this.logger.error(
+                { queueJobId, type },
+                "QueueJob not found in database, acknowledging message"
+            );
+            // Don't throw - acknowledge the message to prevent infinite requeue
+            return;
+        }
+
+        // Update status to PROCESSING
+        try {
+            await queueJobService.startProcessing(queueJobId);
+        } catch (err) {
+            // Service already logged the error
+            // Re-throw to trigger RabbitMQ requeue for transient DB errors
+            throw err;
+        }
+
+        try {
+            // Process message based on type using payload from QueueJob
+            switch (type) {
+                case QueueName.dataProcessing:
+                    await dataProcessor.process(queueJob.payload);
+                    break;
+                case QueueName.mail:
+                    await mailProcessor.process(queueJob.payload);
+                    break;
+                default:
+                    this.logger.warn(
+                        { queueJobId, type },
+                        "Unknown message type"
+                    );
+                    throw new Error(`Unknown message type: ${type}`);
+            }
+
+            // Mark as completed on success
+            await queueJobService.completeProcessing(queueJobId);
+
+            this.logger.info(
+                { queueJobId, type },
+                "QueueJob processed successfully"
+            );
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error ? err.message : String(err);
+
+            this.logger.error(
+                { queueJobId, type, err },
+                "Failed to process QueueJob"
+            );
+
+            // Handle retry logic using service
+            const { shouldRetry } =
+                await queueJobService.handleProcessingFailure(
+                    queueJobId,
+                    queueJob.retry_count,
+                    this.maxRetries,
+                    errorMessage,
+                    queueJob
+                );
+
+            if (shouldRetry) {
+                // Throw error to trigger RabbitMQ requeue
+                throw err;
+            }
+            // If shouldRetry is false, don't throw - acknowledge the message
+            // The job is marked as FAILED in the database by the service
+        }
     }
 }
 
-/**
- * Processes data processing messages
- */
-async function processDataProcessing(data: unknown): Promise<void> {
-    messageProcessorLogger.info({ data }, "Processing data");
-
-    // TODO: Implement actual data processing logic here
-    // For now, just log the data
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate processing
-
-    messageProcessorLogger.info("Data processing completed");
-}
-
-/**
- * Processes mail messages
- *
- * @param data - Mail message data
- */
-async function processMailMessage(data: unknown): Promise<void> {
-    messageProcessorLogger.debug({ data }, "Processing mail message");
-
-    await emailService.processMailMessage(data);
-
-    messageProcessorLogger.info("Mail message processed successfully");
-}
-
-export default {
-    processMessage,
-};
+export default new MessageProcessor();
