@@ -240,16 +240,19 @@ class QueueJobsRepository extends BasePostgresRepository {
      * @returns Updated queue job entity
      */
     async incrementRetry(id: number | string): Promise<QueueJob> {
-        const job = await this.getQueueJobById(id);
-        if (!job) {
-            throw new Error(`Queue job with id ${id} not found`);
-        }
+        const numericId = this.toNumericId(id);
 
-        return this.updateQueueJob(id, {
-            status: "RETRYING",
-            retry_count: job.retry_count + 1,
-            error: null, // Clear error when retrying
+        // Use atomic increment to prevent lost updates from concurrent modifications
+        const updated = await this.prisma.queueJob.update({
+            where: { id: numericId },
+            data: {
+                status: "RETRYING",
+                retry_count: { increment: 1 },
+                error: null, // Clear error when retrying
+            },
         });
+
+        return updated as unknown as QueueJob;
     }
 
     /**
@@ -326,31 +329,6 @@ class QueueJobsRepository extends BasePostgresRepository {
     }
 
     /**
-     * Delete old failed queue jobs that exceeded max retries (cleanup operation).
-     *
-     * @param maxRetries - Maximum number of retries before deletion
-     * @param olderThan - Delete jobs failed before this date
-     * @returns Number of deleted jobs
-     */
-    async deleteOldFailedJobs(
-        maxRetries: number,
-        olderThan: Date
-    ): Promise<number> {
-        const result = await this.prisma.queueJob.deleteMany({
-            where: {
-                status: "FAILED",
-                retry_count: {
-                    gte: maxRetries,
-                },
-                updated_at: {
-                    lt: olderThan,
-                },
-            },
-        });
-        return result.count;
-    }
-
-    /**
      * Get queue failed jobs that are ready for retry.
      *
      * Queries QUEUE_FAILED jobs where next_attempt_at is null or has passed.
@@ -361,7 +339,6 @@ class QueueJobsRepository extends BasePostgresRepository {
      */
     async getQueueFailedJobsReadyForRetry(limit?: number): Promise<QueueJob[]> {
         const now = new Date();
-        // Note: next_attempt_at field will be available after Prisma client regeneration
         return this.prisma.queueJob.findMany({
             where: {
                 status: "QUEUE_FAILED",
