@@ -1,5 +1,6 @@
 import type { Dataset } from "@backtrade/types";
 import { useMemo } from "react";
+import { calculateDatasetStats } from "./utils";
 import styles from "./StatsCards.module.css";
 
 /**
@@ -23,76 +24,8 @@ interface StatsCardsProps {
 interface StatCard {
     label: string;
     value: string | number;
-    icon: React.ReactNode;
     variant: "primary" | "success" | "warning" | "info";
 }
-
-/**
- * SVG Icons for stats cards
- */
-const Icons = {
-    database: (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <ellipse cx="12" cy="5" rx="9" ry="3" />
-            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
-            <path d="M3 12A9 3 0 0 0 21 12" />
-        </svg>
-    ),
-    chart: (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M3 3v18h18" />
-            <path d="m19 9-5 5-4-4-3 3" />
-        </svg>
-    ),
-    checkCircle: (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <path d="m9 12 2 2 4-4" />
-        </svg>
-    ),
-    clock: (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-        </svg>
-    ),
-};
 
 /**
  * StatsCards component
@@ -101,48 +34,49 @@ const Icons = {
  */
 export function StatsCards({ datasets, isLoading = false }: StatsCardsProps) {
     const stats = useMemo((): StatCard[] => {
-        const totalDatasets = datasets.length;
-        const uploadedDatasets = datasets.filter((d) => d.file_name).length;
-        const pendingDatasets = totalDatasets - uploadedDatasets;
-        const totalRecords = datasets.reduce(
-            (acc, d) => acc + (d.records_count ?? 0),
-            0
-        );
+        const {
+            totalRegistered,
+            withDataUploaded,
+            awaitingUpload,
+            totalDataPoints,
+        } = calculateDatasetStats(datasets);
 
-        return [
+        const cards: StatCard[] = [
             {
-                label: "Total Datasets",
-                value: totalDatasets,
-                icon: Icons.database,
+                label: "Registered Datasets",
+                value: totalRegistered,
                 variant: "primary",
             },
             {
-                label: "Total Records",
-                value: totalRecords.toLocaleString(),
-                icon: Icons.chart,
+                label: "Data Points",
+                value: totalDataPoints.toLocaleString(),
                 variant: "info",
             },
-            {
-                label: "Uploaded",
-                value: uploadedDatasets,
-                icon: Icons.checkCircle,
-                variant: "success",
-            },
-            {
-                label: "Pending Upload",
-                value: pendingDatasets,
-                icon: Icons.clock,
-                variant: "warning",
-            },
         ];
+
+        // Only show "Upload Complete" card if there are uploaded datasets
+        if (withDataUploaded > 0) {
+            cards.push({
+                label: "Upload Complete",
+                value: withDataUploaded,
+                variant: "success",
+            });
+        }
+
+        cards.push({
+            label: "Awaiting Upload",
+            value: awaitingUpload,
+            variant: "warning",
+        });
+
+        return cards;
     }, [datasets]);
 
     if (isLoading) {
         return (
             <div className={styles.grid}>
-                {[...Array(4)].map((_, i) => (
+                {[...Array(3)].map((_, i) => (
                     <div key={i} className={styles.cardSkeleton}>
-                        <div className={styles.skeletonIcon} />
                         <div className={styles.skeletonContent}>
                             <div className={styles.skeletonValue} />
                             <div className={styles.skeletonLabel} />
@@ -160,7 +94,6 @@ export function StatsCards({ datasets, isLoading = false }: StatsCardsProps) {
                     key={stat.label}
                     className={`${styles.card} ${styles[stat.variant]}`}
                 >
-                    <span className={styles.icon}>{stat.icon}</span>
                     <div className={styles.content}>
                         <span className={styles.value}>{stat.value}</span>
                         <span className={styles.label}>{stat.label}</span>

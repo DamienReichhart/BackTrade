@@ -119,7 +119,6 @@ export function SearchFilter({
         <div className={styles.container}>
             <div className={styles.searchWrapper}>
                 <div className={styles.searchInputWrapper}>
-                    <span className={styles.searchIcon}>🔍</span>
                     <Input
                         type="text"
                         placeholder="Search by file name or instrument..."

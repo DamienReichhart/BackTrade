@@ -158,7 +158,6 @@ export function FileUploadButton({
                         </div>
                     ) : (
                         <>
-                            <span className={styles.dropZoneIcon}>📁</span>
                             <span className={styles.dropZoneText}>
                                 {hasFile
                                     ? "Click to re-upload CSV file"
