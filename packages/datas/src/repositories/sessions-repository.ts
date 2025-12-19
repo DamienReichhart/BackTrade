@@ -10,22 +10,35 @@ import type {
     SessionWhereInput,
     SessionCreateInput,
     SessionUpdateInput,
+    SessionOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
+export interface FindAllOptions {
+    where?: SessionWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: SessionOrderBy;
+}
+
 /**
- * Repository for Session model CRUD operations.
+ * Repository for Session model CRUD operations with pagination and sorting.
  */
 class SessionsRepository extends BasePostgresRepository {
     /**
-     * Get all sessions matching optional filter conditions.
+     * Get all sessions matching optional filter, pagination, and sorting.
      *
-     * @param where - Optional filter conditions
+     * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching sessions
      */
-    async getAllSessions(where?: SessionWhereInput): Promise<Session[]> {
+    async getAllSessions(options?: FindAllOptions): Promise<Session[]> {
         return this.prisma.session.findMany({
-            where: where as Prisma.SessionWhereInput,
+            where: options?.where as Prisma.SessionWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.SessionOrderByWithRelationInput
+                | undefined,
         }) as unknown as Session[];
     }
 

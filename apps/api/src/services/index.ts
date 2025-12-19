@@ -11,6 +11,7 @@ export { default as jwtService } from "./security/jwt-service";
 
 // Base services
 export { default as userService } from "./base/users-service";
+export { default as sessionsService } from "./base/sessions-service";
 
 // Utility services
 export { default as healthService } from "./utils/health-service";

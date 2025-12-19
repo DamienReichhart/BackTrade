@@ -18,5 +18,6 @@ export {
     createCandlesCacheRepository,
     createDatasetsCacheRepository,
     createInstrumentsCacheRepository,
+    createSessionsCacheRepository,
     createHealthCacheRepository,
 } from "./repositories";
