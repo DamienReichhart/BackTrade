@@ -7,6 +7,7 @@
 
 import type { Candle, CandleCreateInput } from "@backtrade/types";
 import { BaseClickHouseRepository } from "./base-clickhouse-repository";
+import { toClickHouseDateTime } from "../utils/date";
 
 /**
  * Repository for Candle model CRUD operations.
@@ -34,6 +35,8 @@ class CandlesRepository extends BaseClickHouseRepository {
             updated_at: (data as Candle).updated_at ?? now,
         };
 
+        const clickHouseNow = toClickHouseDateTime(now);
+
         try {
             await this.clickhouse.insert({
                 table: "candles",
@@ -41,14 +44,18 @@ class CandlesRepository extends BaseClickHouseRepository {
                     {
                         instrument_id: candleData.instrument_id,
                         timeframe: candleData.timeframe,
-                        ts: candleData.ts,
+                        ts: toClickHouseDateTime(candleData.ts),
                         open: Number(candleData.open),
                         high: Number(candleData.high),
                         low: Number(candleData.low),
                         close: Number(candleData.close),
                         volume: Number(candleData.volume),
-                        created_at: candleData.created_at,
-                        updated_at: candleData.updated_at,
+                        created_at: candleData.created_at
+                            ? toClickHouseDateTime(candleData.created_at)
+                            : clickHouseNow,
+                        updated_at: candleData.updated_at
+                            ? toClickHouseDateTime(candleData.updated_at)
+                            : clickHouseNow,
                     },
                 ],
                 format: "JSONEachRow",
@@ -90,20 +97,26 @@ class CandlesRepository extends BaseClickHouseRepository {
             };
         });
 
+        const clickHouseNow = toClickHouseDateTime(now);
+
         try {
             await this.clickhouse.insert({
                 table: "candles",
                 values: candles.map((candle) => ({
                     instrument_id: candle.instrument_id,
                     timeframe: candle.timeframe,
-                    ts: candle.ts,
+                    ts: toClickHouseDateTime(candle.ts),
                     open: Number(candle.open),
                     high: Number(candle.high),
                     low: Number(candle.low),
                     close: Number(candle.close),
                     volume: Number(candle.volume),
-                    created_at: candle.created_at,
-                    updated_at: candle.updated_at,
+                    created_at: candle.created_at
+                        ? toClickHouseDateTime(candle.created_at)
+                        : clickHouseNow,
+                    updated_at: candle.updated_at
+                        ? toClickHouseDateTime(candle.updated_at)
+                        : clickHouseNow,
                 })),
                 format: "JSONEachRow",
             });
@@ -269,6 +282,7 @@ class CandlesRepository extends BaseClickHouseRepository {
         start: string,
         end: string
     ): Promise<Candle[]> {
+        // Use FINAL to get deduplicated results from ReplacingMergeTree
         const query = `
             SELECT 
                 instrument_id,
@@ -281,7 +295,7 @@ class CandlesRepository extends BaseClickHouseRepository {
                 volume,
                 created_at,
                 updated_at
-            FROM candles
+            FROM candles FINAL
             WHERE instrument_id = {instrument_id:UInt32}
               AND timeframe = {timeframe:String}
               AND ts >= {start:DateTime}

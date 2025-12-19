@@ -282,7 +282,6 @@ model Dataset {
   // Relations
   instrument       Instrument @relation(fields: [instrument_id], references: [id])
 
-  @@unique([instrument_id, timeframe])
   @@index([instrument_id])
   @@map("datasets")
 }

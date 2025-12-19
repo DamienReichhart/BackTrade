@@ -94,6 +94,38 @@ class DatasetsController {
         await datasetsService.deleteDataset(id);
         res.status(204).send();
     }
+
+    /**
+     * Upload a file for a dataset
+     *
+     * @param req - Express request object with file from multer
+     * @param res - Express response object
+     * @throws BadRequestError if dataset ID or file is missing
+     */
+    async uploadFile(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Dataset ID is required");
+        }
+
+        const file = req.file;
+        if (!file) {
+            throw new BadRequestError("File is required");
+        }
+
+        this.logger.info(
+            { datasetId: id, fileName: file.originalname, fileSize: file.size },
+            "Processing dataset file upload"
+        );
+
+        await datasetsService.uploadDatasetFile(
+            id,
+            file.buffer,
+            file.originalname
+        );
+
+        res.status(204).send();
+    }
 }
 
 export default new DatasetsController();

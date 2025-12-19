@@ -23,6 +23,8 @@ export type JobStatus = z.infer<typeof JobStatusSchema>;
  */
 export const QueueName = {
     dataProcessing: "dataProcessing" as const,
+    datasetFileSplit: "datasetFileSplit" as const,
+    datasetPartProcess: "datasetPartProcess" as const,
     mail: "mail" as const,
 } as const;
 
@@ -40,5 +42,7 @@ export type QueueName = (typeof QueueName)[keyof typeof QueueName];
  */
 export const QueueNameSchema = z.enum([
     QueueName.dataProcessing,
+    QueueName.datasetFileSplit,
+    QueueName.datasetPartProcess,
     QueueName.mail,
 ]);

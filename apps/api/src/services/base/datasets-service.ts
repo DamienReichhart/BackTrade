@@ -1,15 +1,20 @@
 import { datasetsRepo as datasetsRepository } from "@backtrade/data";
-import type {
-    Dataset,
-    DatasetWhereInput,
-    DatasetCreateInput,
-    DatasetUpdateInput,
-    DatasetOrderBy,
-    SearchQuery,
+import {
+    QueueName,
+    type Dataset,
+    type DatasetWhereInput,
+    type DatasetCreateInput,
+    type DatasetUpdateInput,
+    type DatasetOrderBy,
+    type SearchQuery,
+    type DatasetFileSplitPayload,
 } from "@backtrade/types";
 import { datasetsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
+import { storageService } from "../../libs/storage";
+import queueService from "../queue/queue-service";
 import NotFoundError from "../../errors/web/not-found-error";
+import { ENV } from "../../config/env";
 
 /**
  * Datasets Service
@@ -162,6 +167,87 @@ class DatasetsService {
         const numericId = Number(id);
         await datasetsCacheRepo.invalidateCachedDataset(numericId);
         this.logger.trace({ id }, "Dataset invalidated from cache");
+    }
+
+    /**
+     * Upload a file for a dataset
+     *
+     * Uploads the file to MinIO and creates a queue job for processing.
+     *
+     * @param id - Dataset ID
+     * @param file - File buffer
+     * @param originalFileName - Original file name
+     * @returns Updated dataset entity
+     * @throws NotFoundError if dataset doesn't exist
+     */
+    async uploadDatasetFile(
+        id: string,
+        file: Buffer,
+        originalFileName: string
+    ): Promise<Dataset> {
+        const numericId = Number(id);
+
+        // Fetch dataset to validate it exists and get metadata
+        const dataset = await datasetsRepository.getDatasetById(id);
+        if (!dataset) {
+            this.logger.debug(
+                { id },
+                "Dataset not found, throwing not found error"
+            );
+            throw new NotFoundError("Dataset not found");
+        }
+
+        // Build file path in MinIO: datasets/{datasetId}/raw/{filename}
+        const filePath = `${numericId}/raw/${originalFileName}`;
+
+        this.logger.info(
+            { datasetId: numericId, filePath, fileSize: file.length },
+            "Uploading dataset file to MinIO"
+        );
+
+        // Upload file to MinIO
+        await storageService.upload(ENV.MINIO_DATASETS_BUCKET, filePath, file, {
+            contentType: "text/csv",
+            metadata: {
+                datasetId: String(numericId),
+                originalFileName,
+            },
+        });
+
+        this.logger.debug(
+            { datasetId: numericId, filePath },
+            "File uploaded to MinIO successfully"
+        );
+
+        // Update dataset with file information
+        const updatedDataset = await datasetsRepository.updateDataset(id, {
+            file_name: originalFileName,
+            uploaded_at: new Date().toISOString(),
+        });
+
+        // Invalidate cache and re-cache with updated data
+        await datasetsCacheRepo.invalidateCachedDataset(numericId);
+        await datasetsCacheRepo.cacheDataset(numericId, updatedDataset);
+
+        // Create queue job for file splitting
+        const payload: DatasetFileSplitPayload = {
+            datasetId: numericId,
+            filePath: `${ENV.MINIO_DATASETS_BUCKET}/${filePath}`,
+            instrumentId: dataset.instrument_id,
+            timeframe: dataset.timeframe,
+        };
+
+        const queueJobId = await queueService.queueMessage(
+            QueueName.datasetFileSplit,
+            payload
+        );
+
+        this.logger.info(
+            { datasetId: numericId, queueJobId },
+            "Dataset file split job queued"
+        );
+
+        return updatedDataset;
     }
 }
 

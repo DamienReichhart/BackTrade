@@ -4,6 +4,7 @@ export * from "./subscription";
 export * from "./stripe";
 export * from "./instrument";
 export * from "./dataset";
+export * from "./dataset-processing";
 export * from "./candle";
 export * from "./session";
 export * from "./position";
