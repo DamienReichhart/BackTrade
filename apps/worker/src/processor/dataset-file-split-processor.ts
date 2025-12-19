@@ -24,6 +24,14 @@ import queueService from "../services/queue-service";
 const MAX_LINES_PER_PART = 10000;
 
 /**
+ * Common CSV header patterns (case-insensitive)
+ */
+const HEADER_PATTERNS = [
+    /^date\s*,\s*time\s*,\s*open\s*,\s*high\s*,\s*low\s*,\s*close\s*,\s*volume$/i,
+    /^date,time,open,high,low,close,volume$/i,
+];
+
+/**
  * Dataset File Split Processor
  *
  * Handles splitting large dataset files into smaller chunks for parallel processing.
@@ -35,6 +43,50 @@ class DatasetFileSplitProcessor {
         this.logger = logger.child({
             service: "dataset-file-split-processor",
         });
+    }
+
+    /**
+     * Detect if a line is a CSV header row
+     *
+     * Checks for common header patterns and non-numeric values in expected numeric columns.
+     *
+     * @param line - CSV line to check
+     * @returns true if the line appears to be a header
+     */
+    private isHeaderLine(line: string): boolean {
+        const trimmedLine = line.trim();
+
+        if (!trimmedLine) {
+            return false;
+        }
+
+        // Check against known header patterns
+        for (const pattern of HEADER_PATTERNS) {
+            if (pattern.test(trimmedLine)) {
+                return true;
+            }
+        }
+
+        // Check if line has 7 comma-separated values
+        const parts = trimmedLine.split(",");
+        if (parts.length !== 7) {
+            return false;
+        }
+
+        // Check if numeric columns (indices 2-6: open, high, low, close, volume) contain non-numeric values
+        // Indices 0-1 are date and time which can be text
+        const numericColumns = parts.slice(2);
+        const hasNonNumericValues = numericColumns.some((col) => {
+            const trimmed = col.trim();
+            // Check if it's not a valid number (including negative numbers and decimals)
+            return (
+                trimmed !== "" &&
+                !/^-?\d+\.?\d*$/.test(trimmed) &&
+                !/^-?\.\d+$/.test(trimmed)
+            );
+        });
+
+        return hasNonNumericValues;
     }
 
     /**
@@ -82,18 +134,42 @@ class DatasetFileSplitProcessor {
         const fileContent = fileBuffer.toString("utf-8");
 
         // Split content into lines (handle both \n and \r\n line endings)
-        const lines = fileContent
+        const allLines = fileContent
             .split(/\r?\n/)
             .filter((line) => line.trim() !== "");
-        const totalLines = lines.length;
+
+        if (allLines.length === 0) {
+            this.logger.warn({ datasetId }, "Empty file, nothing to process");
+            return;
+        }
+
+        // Detect and remove header row if present
+        let dataLines: string[];
+        let hasHeader = false;
+
+        if (this.isHeaderLine(allLines[0]!)) {
+            hasHeader = true;
+            dataLines = allLines.slice(1);
+            this.logger.info(
+                { datasetId, headerLine: allLines[0] },
+                "Detected and removing CSV header row"
+            );
+        } else {
+            dataLines = allLines;
+        }
+
+        const totalLines = dataLines.length;
 
         this.logger.info(
-            { datasetId, totalLines },
+            { datasetId, totalLines, hasHeader },
             "File downloaded and parsed"
         );
 
         if (totalLines === 0) {
-            this.logger.warn({ datasetId }, "Empty file, nothing to process");
+            this.logger.warn(
+                { datasetId },
+                "No data lines found after header removal"
+            );
             return;
         }
 
@@ -119,7 +195,7 @@ class DatasetFileSplitProcessor {
                 startLine + MAX_LINES_PER_PART,
                 totalLines
             );
-            const partLines = lines.slice(startLine, endLine);
+            const partLines = dataLines.slice(startLine, endLine);
 
             // Create part content
             const partContent = partLines.join("\n");
