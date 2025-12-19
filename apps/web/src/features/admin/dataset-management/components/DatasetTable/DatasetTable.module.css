@@ -195,13 +195,23 @@
 }
 
 .deleteButton {
-    color: var(--color-text-tertiary);
-    transition: color var(--transition-fast);
+    color: var(--color-text-secondary);
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast);
 }
 
 .deleteButton:hover {
     color: var(--color-danger);
     background-color: var(--color-danger-bg-20);
+}
+
+.deleteButton svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+    min-width: 16px;
+    min-height: 16px;
 }
 
 /* Error State */
