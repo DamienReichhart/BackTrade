@@ -27,6 +27,10 @@ export function calculateDatasetStats(datasets: Dataset[]): DatasetStats {
         0
     );
 
+    const totalDataPointsUploaded = datasets
+        .filter((d) => d.file_name)
+        .reduce((acc, d) => acc + (d.records_count ?? 0), 0);
+
     const uploadCompletionRate =
         totalRegistered > 0
             ? Math.round((withDataUploaded / totalRegistered) * 100)
@@ -34,7 +38,7 @@ export function calculateDatasetStats(datasets: Dataset[]): DatasetStats {
 
     const averageRecordsPerDataset =
         withDataUploaded > 0
-            ? Math.round(totalDataPoints / withDataUploaded)
+            ? Math.round(totalDataPointsUploaded / withDataUploaded)
             : 0;
 
     return {
