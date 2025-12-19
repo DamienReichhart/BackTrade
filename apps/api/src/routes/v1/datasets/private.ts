@@ -1,6 +1,7 @@
 import { Router } from "express";
 import datasetsController from "../../../controllers/datasets-controller";
 import inputValidations from "../../../middlewares/input-validations";
+import { uploadDatasetFile } from "../../../middlewares/file-upload";
 import {
     CreateDatasetRequestSchema,
     UpdateDatasetRequestSchema,
@@ -21,5 +22,10 @@ datasetsPrivateRouter.put(
     datasetsController.updateDataset
 );
 datasetsPrivateRouter.delete("/:id", datasetsController.deleteDataset);
+datasetsPrivateRouter.post(
+    "/:id/file",
+    uploadDatasetFile,
+    datasetsController.uploadFile.bind(datasetsController)
+);
 
 export default datasetsPrivateRouter;

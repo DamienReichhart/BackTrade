@@ -61,7 +61,6 @@ export function EmptyState({
             </p>
             <div className={styles.features}>
                 <div className={styles.feature}>
-                    <span className={styles.featureIcon}>📁</span>
                     <span className={styles.featureText}>
                         Upload CSV files with OHLCV data
                     </span>

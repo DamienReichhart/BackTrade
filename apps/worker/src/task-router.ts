@@ -9,6 +9,8 @@ import { logger } from "./libs/pino";
 import { QueueName, type QueueJobMessage } from "@backtrade/types";
 import queueJobService from "./services/queue-job-service";
 import dataProcessor from "./processor/data-processor";
+import datasetFileSplitProcessor from "./processor/dataset-file-split-processor";
+import datasetPartProcessor from "./processor/dataset-part-processor";
 import mailProcessor from "./processor/mail-processor";
 
 /**
@@ -124,6 +126,12 @@ class TaskRouter {
         switch (type) {
             case QueueName.dataProcessing:
                 await dataProcessor.process(payload);
+                break;
+            case QueueName.datasetFileSplit:
+                await datasetFileSplitProcessor.process(payload);
+                break;
+            case QueueName.datasetPartProcess:
+                await datasetPartProcessor.process(payload);
                 break;
             case QueueName.mail:
                 await mailProcessor.process(payload);

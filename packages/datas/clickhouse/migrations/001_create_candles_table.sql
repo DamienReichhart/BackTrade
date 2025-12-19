@@ -1,5 +1,7 @@
 -- ClickHouse Migration: Create candles table
 -- This table stores market data candles (OHLCV) for time-series analysis
+-- Uses ReplacingMergeTree to handle duplicate candles (upsert behavior)
+-- Duplicates are deduplicated based on (instrument_id, timeframe, ts), keeping latest updated_at
 
 CREATE TABLE IF NOT EXISTS candles
 (
@@ -14,7 +16,7 @@ CREATE TABLE IF NOT EXISTS candles
     created_at DateTime DEFAULT now(),
     updated_at DateTime DEFAULT now()
 )
-ENGINE = MergeTree()
+ENGINE = ReplacingMergeTree(updated_at)
 PRIMARY KEY (instrument_id, timeframe, ts)
 ORDER BY (instrument_id, timeframe, ts)
 PARTITION BY toYYYYMM(ts)

@@ -253,9 +253,6 @@ CREATE INDEX "transactions_session_id_idx" ON "transactions"("session_id");
 CREATE INDEX "datasets_instrument_id_idx" ON "datasets"("instrument_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "datasets_instrument_id_timeframe_key" ON "datasets"("instrument_id", "timeframe");
-
--- CreateIndex
 CREATE INDEX "session_analytics_session_id_idx" ON "session_analytics"("session_id");
 
 -- CreateIndex

@@ -13,12 +13,13 @@
         "format:check": "prettier --check ."
     },
     "dependencies": {
+        "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/mailer": "workspace:*",
         "@backtrade/queue": "workspace:*",
+        "@backtrade/storage": "workspace:*",
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
-        "@backtrade/data": "workspace:*",
         "dotenv": "^17.2.3",
         "zod": "4.2.1"
     },
