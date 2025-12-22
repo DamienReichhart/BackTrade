@@ -33,7 +33,7 @@
         "@backtrade/types": "workspace:*",
         "@clickhouse/client": "^1.15.0",
         "@prisma/adapter-pg": "^7.1.0",
-        "@prisma/client": "^7.1.0",
+        "@prisma/client": "^7.2.0",
         "pg": "^8.16.3",
         "zod": "4.2.1"
     },
