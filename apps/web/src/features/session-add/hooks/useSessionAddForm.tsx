@@ -1,6 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import type { CreateSessionRequest, Speed, Leverage } from "@backtrade/types";
+import {
+    type CreateSessionRequest,
+    type Speed,
+    type Leverage,
+    getSpeedOptions,
+    getLeverageOptions,
+} from "@backtrade/types";
 import { useCreateSession } from "../../../api/hooks/requests/sessions";
 import { useInstruments } from "../../../api/hooks/requests/instruments";
 import { useAuthStore } from "../../../store/auth";
@@ -15,31 +21,6 @@ import {
     formatLocalDateTimeToISO,
     validateStartTsVsEndTs,
 } from "../utils/validation";
-
-/**
- * Speed options for the select dropdown
- */
-const SPEED_OPTIONS: SelectOption[] = [
-    { value: "0.5x", label: "0.5x" },
-    { value: "1x", label: "1x" },
-    { value: "2x", label: "2x" },
-    { value: "3x", label: "3x" },
-    { value: "5x", label: "5x" },
-    { value: "10x", label: "10x" },
-    { value: "15x", label: "15x" },
-];
-
-/**
- * Leverage options for the select dropdown
- */
-const LEVERAGE_OPTIONS: SelectOption[] = [
-    { value: "1", label: "1x" },
-    { value: "50", label: "50x" },
-    { value: "100", label: "100x" },
-    { value: "200", label: "200x" },
-    { value: "500", label: "500x" },
-    { value: "1000", label: "1000x" },
-];
 
 /**
  * Hook to manage session add form state and submission
@@ -330,11 +311,8 @@ export function useSessionAddForm() {
             // current_time is automatically set to start_time
             const currentTsValue = startTs;
 
-            // Get current timestamp in ISO format for created_at and updated_at
-            const now = formatLocalDateTimeToISO(new Date().toISOString());
-
             // Build request payload
-            // Include all required fields: user_id, session_status, created_at, updated_at
+            // user_id, created_at, and updated_at are handled by the backend
             const request: CreateSessionRequest = {
                 instrument_id: instrumentId!,
                 name: name || undefined,
@@ -347,13 +325,8 @@ export function useSessionAddForm() {
                 spread_pts: parseInt(spreadPts, 10),
                 slippage_pts: parseInt(slippagePts, 10),
                 commission_per_fill: parseFloat(commissionPerFill),
-                // Include user_id from auth context
-                user_id: user.id,
-                // Set session_status to PAUSED
+                // session_status defaults to PAUSED in the backend if not provided
                 session_status: "PAUSED",
-                // Set created_at and updated_at to current time
-                created_at: now,
-                updated_at: now,
             };
 
             const result = await execute(request);
@@ -410,8 +383,8 @@ export function useSessionAddForm() {
         isFormValid,
         instrumentOptions,
         isLoadingInstruments,
-        speedOptions: SPEED_OPTIONS,
-        leverageOptions: LEVERAGE_OPTIONS,
+        speedOptions: getSpeedOptions(),
+        leverageOptions: getLeverageOptions(),
         handleInstrumentChange,
         handleNameChange,
         handleSpeedChange,

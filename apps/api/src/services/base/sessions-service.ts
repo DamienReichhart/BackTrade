@@ -1,4 +1,4 @@
-import { sessionsRepo } from "@backtrade/data";
+import { sessionsRepo, instrumentsRepo } from "@backtrade/data";
 import type {
     Session,
     SessionWhereInput,
@@ -10,6 +10,7 @@ import type {
 import { sessionsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
+import BadRequestError from "../../errors/web/bad-request-error";
 
 /**
  * Sessions Service
@@ -134,11 +135,47 @@ class SessionsService {
     /**
      * Create a new session
      *
-     * @param session - Session creation data
+     * Validates that the instrument exists before creating the session.
+     * Business logic validations (start_time <= end_time, current_time = start_time)
+     * are handled by the request schema validation.
+     *
+     * @param session - Session creation data (must include instrument_id, user_id, and other required fields)
      * @returns Created session entity
+     * @throws NotFoundError if instrument doesn't exist
+     * @throws BadRequestError if required fields are missing
      */
     async createSession(session: SessionCreateInput): Promise<Session> {
-        const created = await sessionsRepo.createSession(session);
+        // Validate required fields
+        if (!session.instrument_id) {
+            throw new BadRequestError("instrument_id is required");
+        }
+        if (!session.user_id) {
+            throw new BadRequestError("user_id is required");
+        }
+
+        // Validate that instrument exists
+        const instrument = await instrumentsRepo.getInstrumentById(
+            session.instrument_id
+        );
+        if (!instrument) {
+            this.logger.debug(
+                { instrument_id: session.instrument_id },
+                "Instrument not found when creating session"
+            );
+            throw new NotFoundError(
+                `Instrument with ID ${session.instrument_id} not found`
+            );
+        }
+
+        this.logger.trace(
+            { instrument_id: session.instrument_id, user_id: session.user_id },
+            "Creating session"
+        );
+
+        // Speed is already in Prisma format from the request
+        const prismaSessionData = session as SessionCreateInput;
+
+        const created = await sessionsRepo.createSession(prismaSessionData);
         this.logger.debug({ id: created.id }, "Session created");
         await sessionsCacheRepo.cacheSession(created.id, created);
         this.logger.trace({ id: created.id }, "Session cached");

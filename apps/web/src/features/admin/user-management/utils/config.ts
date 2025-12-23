@@ -2,6 +2,8 @@
  * Configuration constants for user management feature
  */
 
+import { getRoleOptions } from "@backtrade/types";
+
 /**
  * Role option for select dropdowns
  */
@@ -12,12 +14,9 @@ export interface RoleOption {
 
 /**
  * Available role options for user management
+ * Uses enum values from types package
  */
-export const ROLE_OPTIONS: RoleOption[] = [
-    { value: "ANONYMOUS", label: "Anonymous" },
-    { value: "USER", label: "User" },
-    { value: "ADMIN", label: "Admin" },
-];
+export const ROLE_OPTIONS: RoleOption[] = getRoleOptions();
 
 /**
  * Role filter options (includes "all" option)

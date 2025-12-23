@@ -1,8 +1,10 @@
-import type { CreateSubscriptionRequest } from "@backtrade/types";
+import {
+    type CreateSubscriptionRequest,
+    getSubscriptionStatusOptions,
+} from "@backtrade/types";
 import { Button } from "../../../../../../../components/Button";
 import { Input } from "../../../../../../../components/Input";
 import { Select } from "../../../../../../../components/Select";
-import { SUBSCRIPTION_STATUS_OPTIONS } from "../../hooks/useSubscriptionManagementModal";
 import styles from "./CreateSubscriptionForm.module.css";
 
 /**
@@ -157,7 +159,7 @@ export function CreateSubscriptionForm({
                                 status: value as CreateSubscriptionRequest["status"],
                             })
                         }
-                        options={SUBSCRIPTION_STATUS_OPTIONS}
+                        options={getSubscriptionStatusOptions()}
                         disabled={isLoading}
                     />
                 </div>

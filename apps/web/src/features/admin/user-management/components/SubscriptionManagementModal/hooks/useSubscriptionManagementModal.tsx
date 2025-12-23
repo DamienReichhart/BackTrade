@@ -16,16 +16,6 @@ import { usePlans } from "../../../../../../api/hooks/requests/plans";
 import { useModalBehavior } from "../../../../../../hooks/useModalBehavior";
 
 /**
- * Subscription status options for select
- */
-export const SUBSCRIPTION_STATUS_OPTIONS = [
-    { value: "active", label: "Active" },
-    { value: "canceled", label: "Canceled" },
-    { value: "trialing", label: "Trialing" },
-    { value: "active_unpaid", label: "Active Unpaid" },
-];
-
-/**
  * Hook for managing subscription management modal state and logic
  */
 export function useSubscriptionManagementModal(
