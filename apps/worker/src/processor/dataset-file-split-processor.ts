@@ -27,8 +27,8 @@ const MAX_LINES_PER_PART = 10000;
  * Common CSV header patterns (case-insensitive)
  */
 const HEADER_PATTERNS = [
-    /^date\s*,\s*time\s*,\s*open\s*,\s*high\s*,\s*low\s*,\s*close\s*,\s*volume$/i,
-    /^date,time,open,high,low,close,volume$/i,
+    /^timestamp\s*,\s*open\s*,\s*high\s*,\s*low\s*,\s*close\s*,\s*volume$/i,
+    /^timestamp,open,high,low,close,volume$/i,
 ];
 
 /**
@@ -67,15 +67,15 @@ class DatasetFileSplitProcessor {
             }
         }
 
-        // Check if line has 7 comma-separated values
+        // Check if line has 6 comma-separated values
         const parts = trimmedLine.split(",");
-        if (parts.length !== 7) {
+        if (parts.length !== 6) {
             return false;
         }
 
-        // Check if numeric columns (indices 2-6: open, high, low, close, volume) contain non-numeric values
-        // Indices 0-1 are date and time which can be text
-        const numericColumns = parts.slice(2);
+        // Check if numeric columns (indices 1-5: open, high, low, close, volume) contain non-numeric values
+        // Index 0 is the timestamp which should be numeric, but we also check indices 1-5
+        const numericColumns = parts.slice(1);
         const hasNonNumericValues = numericColumns.some((col) => {
             const trimmed = col.trim();
             // Check if it's not a valid number (including negative numbers and decimals)

@@ -2,8 +2,8 @@
  * Dataset Parser Utilities
  *
  * Utilities for parsing dataset CSV lines into candle data.
- * Handles the specific format: date,time,open,high,low,close,volume
- * Example: 2025.01.01,18:00,2625.098000,2626.005000,2624.355000,2625.048000,0
+ * Handles the format: timestamp,open,high,low,close,volume
+ * Example: 1764543600,0.89500000,0.89701864,0.89344566,0.89496843,59823147.2954
  */
 
 /**
@@ -34,83 +34,55 @@ export interface ParseResult<T> {
 }
 
 /**
- * Parse a dataset date and time string into an ISO datetime
+ * Convert a Unix timestamp (seconds) to an ISO datetime string
  *
- * Converts from format "YYYY.MM.DD" and "HH:MM" to ISO datetime string.
- *
- * @param dateStr - Date string in format "YYYY.MM.DD" (e.g., "2025.01.01")
- * @param timeStr - Time string in format "HH:MM" (e.g., "18:00")
- * @returns ISO datetime string (e.g., "2025-01-01T18:00:00.000Z")
+ * @param timestamp - Unix timestamp in seconds
+ * @returns ISO datetime string (e.g., "2025-12-01T01:00:00.000Z")
+ * @throws Error if timestamp is invalid
  *
  * @example
- * parseDatasetDateTime("2025.01.01", "18:00")
- * // Returns: "2025-01-01T18:00:00.000Z"
+ * parseUnixTimestamp(1764543600)
+ * // Returns: "2025-12-01T01:00:00.000Z"
  */
-export function parseDatasetDateTime(dateStr: string, timeStr: string): string {
-    // Convert date from "YYYY.MM.DD" to "YYYY-MM-DD"
-    const [year, month, day] = dateStr.split(".");
-
-    if (!year || !month || !day) {
-        throw new Error(`Invalid date format: ${dateStr}. Expected YYYY.MM.DD`);
+export function parseUnixTimestamp(timestamp: number): string {
+    if (!Number.isFinite(timestamp) || timestamp < 0) {
+        throw new Error(
+            `Invalid timestamp: ${timestamp}. Expected positive number.`
+        );
     }
 
-    // Validate date components
-    const yearNum = parseInt(year, 10);
-    const monthNum = parseInt(month, 10);
-    const dayNum = parseInt(day, 10);
+    // Convert seconds to milliseconds and create Date
+    const date = new Date(timestamp * 1000);
 
-    if (isNaN(yearNum) || isNaN(monthNum) || isNaN(dayNum)) {
-        throw new Error(`Invalid date values: ${dateStr}`);
+    // Validate the date is valid
+    if (isNaN(date.getTime())) {
+        throw new Error(
+            `Invalid timestamp: ${timestamp}. Could not convert to date.`
+        );
     }
 
-    if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
-        throw new Error(`Date out of range: ${dateStr}`);
-    }
-
-    // Validate time format
-    const [hours, minutes] = timeStr.split(":");
-
-    if (!hours || !minutes) {
-        throw new Error(`Invalid time format: ${timeStr}. Expected HH:MM`);
-    }
-
-    const hoursNum = parseInt(hours, 10);
-    const minutesNum = parseInt(minutes, 10);
-
-    if (isNaN(hoursNum) || isNaN(minutesNum)) {
-        throw new Error(`Invalid time values: ${timeStr}`);
-    }
-
-    if (hoursNum < 0 || hoursNum > 23 || minutesNum < 0 || minutesNum > 59) {
-        throw new Error(`Time out of range: ${timeStr}`);
-    }
-
-    // Build ISO datetime string
-    const isoDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    const isoTime = `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}:00.000Z`;
-
-    return `${isoDate}T${isoTime}`;
+    return date.toISOString();
 }
 
 /**
  * Parse a single dataset CSV line into candle data
  *
- * Line format: date,time,open,high,low,close,volume
- * Example: 2025.01.01,18:00,2625.098000,2626.005000,2624.355000,2625.048000,0
+ * Line format: timestamp,open,high,low,close,volume
+ * Example: 1764543600,0.89500000,0.89701864,0.89344566,0.89496843,59823147.2954
  *
  * @param line - CSV line to parse
  * @returns Parsed candle data
  * @throws Error if line format is invalid
  *
  * @example
- * parseDatasetLine("2025.01.01,18:00,2625.098000,2626.005000,2624.355000,2625.048000,0")
+ * parseDatasetLine("1764543600,0.89500000,0.89701864,0.89344566,0.89496843,59823147.2954")
  * // Returns: {
- * //   ts: "2025-01-01T18:00:00.000Z",
- * //   open: 2625.098,
- * //   high: 2626.005,
- * //   low: 2624.355,
- * //   close: 2625.048,
- * //   volume: 0
+ * //   ts: "2025-12-01T01:00:00.000Z",
+ * //   open: 0.895,
+ * //   high: 0.89701864,
+ * //   low: 0.89344566,
+ * //   close: 0.89496843,
+ * //   volume: 59823147.2954
  * // }
  */
 export function parseDatasetLine(line: string): ParsedCandleData {
@@ -122,17 +94,20 @@ export function parseDatasetLine(line: string): ParsedCandleData {
 
     const parts = trimmedLine.split(",");
 
-    if (parts.length !== 7) {
+    if (parts.length !== 6) {
         throw new Error(
-            `Invalid line format: expected 7 comma-separated values, got ${parts.length}. Line: ${trimmedLine}`
+            `Invalid line format: expected 6 comma-separated values, got ${parts.length}. Line: ${trimmedLine}`
         );
     }
 
-    const [dateStr, timeStr, openStr, highStr, lowStr, closeStr, volumeStr] =
-        parts;
+    const [timestampStr, openStr, highStr, lowStr, closeStr, volumeStr] = parts;
 
-    // Parse datetime
-    const ts = parseDatasetDateTime(dateStr!, timeStr!);
+    // Parse timestamp
+    const timestamp = parseInt(timestampStr!, 10);
+    if (isNaN(timestamp)) {
+        throw new Error(`Invalid timestamp value: ${timestampStr}`);
+    }
+    const ts = parseUnixTimestamp(timestamp);
 
     // Parse OHLCV values
     const open = parseFloat(openStr!);
@@ -184,7 +159,7 @@ export function parseDatasetLine(line: string): ParsedCandleData {
  * @returns Parse result with success flag and data or error
  *
  * @example
- * const result = safeParseDatasetLine("2025.01.01,18:00,100,110,90,105,1000");
+ * const result = safeParseDatasetLine("1764543600,0.895,0.897,0.893,0.895,59823147");
  * if (result.success) {
  *   console.log(result.data);
  * } else {
@@ -212,7 +187,10 @@ export function safeParseDatasetLine(
  * @returns Object containing parsed candles and any errors encountered
  *
  * @example
- * const { candles, errors } = parseDatasetLines(["line1", "line2"]);
+ * const { candles, errors } = parseDatasetLines([
+ *   "1764543600,0.895,0.897,0.893,0.895,59823147",
+ *   "1764547200,0.895,0.897,0.893,0.896,61709200"
+ * ]);
  */
 export function parseDatasetLines(lines: string[]): {
     candles: ParsedCandleData[];
