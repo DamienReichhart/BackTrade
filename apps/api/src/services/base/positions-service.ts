@@ -450,14 +450,14 @@ class PositionsService {
             await this.ensureSessionAccess(cachedPosition.session_id, user);
             return cachedPosition;
         } catch (error) {
-            // If ForbiddenError, user doesn't have access - throw immediately
             // If NotFoundError, session doesn't exist - invalidate cache and return null
-            await positionsCacheRepo.invalidateCachedPosition(numericId);
-            if (!(error instanceof NotFoundError)) {
-                throw error;
+            if (error instanceof NotFoundError) {
+                await positionsCacheRepo.invalidateCachedPosition(numericId);
+                return null;
             }
-            // If NotFoundError, return null to fetch from DB
-            return null;
+            // If ForbiddenError or any other error, rethrow immediately without invalidating
+            // (cache is valid, user just doesn't have access)
+            throw error;
         }
     }
 
