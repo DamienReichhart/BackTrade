@@ -13,4 +13,5 @@ export { createDatasetsCacheRepository } from "./datasets-cache-repository";
 export { createInstrumentsCacheRepository } from "./instruments-cache-repository";
 export { createSessionsCacheRepository } from "./sessions-cache-repository";
 export { createPositionsCacheRepository } from "./positions-cache-repository";
+export { createTransactionsCacheRepository } from "./transactions-cache-repository";
 export { createHealthCacheRepository } from "./health-cache-repository";

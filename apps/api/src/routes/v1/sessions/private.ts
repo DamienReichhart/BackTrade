@@ -1,5 +1,6 @@
 import sessionsController from "../../../controllers/sessions-controller";
 import positionsController from "../../../controllers/positions-controller";
+import transactionsController from "../../../controllers/transactions-controller";
 import inputValidations from "../../../middlewares/input-validations";
 import {
     CreateSessionRequestSchema,
@@ -12,6 +13,11 @@ const sessionsPrivateRouter = Router();
 sessionsPrivateRouter.get(
     "/:sessionId/positions",
     positionsController.getPositionsBySession.bind(positionsController)
+);
+
+sessionsPrivateRouter.get(
+    "/:sessionId/transactions",
+    transactionsController.getTransactionsBySession.bind(transactionsController)
 );
 
 sessionsPrivateRouter.get(

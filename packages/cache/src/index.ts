@@ -20,5 +20,6 @@ export {
     createInstrumentsCacheRepository,
     createSessionsCacheRepository,
     createPositionsCacheRepository,
+    createTransactionsCacheRepository,
     createHealthCacheRepository,
 } from "./repositories";

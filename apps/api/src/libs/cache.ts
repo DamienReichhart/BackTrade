@@ -12,6 +12,7 @@ import {
     createInstrumentsCacheRepository,
     createSessionsCacheRepository,
     createPositionsCacheRepository,
+    createTransactionsCacheRepository,
     createHealthCacheRepository,
 } from "@backtrade/cache";
 import { redis } from "./redis";
@@ -27,4 +28,8 @@ export const instrumentsCacheRepo = createInstrumentsCacheRepository(
 );
 export const sessionsCacheRepo = createSessionsCacheRepository(redis, logger);
 export const positionsCacheRepo = createPositionsCacheRepository(redis, logger);
+export const transactionsCacheRepo = createTransactionsCacheRepository(
+    redis,
+    logger
+);
 export const healthCacheRepo = createHealthCacheRepository(redis, logger);
