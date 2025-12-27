@@ -1,4 +1,5 @@
 import sessionsController from "../../../controllers/sessions-controller";
+import positionsController from "../../../controllers/positions-controller";
 import inputValidations from "../../../middlewares/input-validations";
 import {
     CreateSessionRequestSchema,
@@ -7,6 +8,11 @@ import {
 import { Router } from "express";
 
 const sessionsPrivateRouter = Router();
+
+sessionsPrivateRouter.get(
+    "/:sessionId/positions",
+    positionsController.getPositionsBySession.bind(positionsController)
+);
 
 sessionsPrivateRouter.get(
     "/",
