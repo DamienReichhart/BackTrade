@@ -2,15 +2,14 @@ import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSession } from "../../../../api/hooks/requests/sessions";
 import { useInstrument } from "../../../../api/hooks/requests/instruments";
-import { useCandlesByInstrument } from "../../../../api/hooks/requests/candles";
-import type { Candle, DateRangeQuery } from "@backtrade/types";
+import { useCandlesBySession } from "../../../../api/hooks/requests/candles";
+import type { Candle } from "@backtrade/types";
 import {
     useCurrentSessionStore,
     useCurrentPriceStore,
     useCurrentSessionCandlesStore,
 } from "../../../../store/session";
 import { useChartSettingsStore } from "../../../../store/chart";
-import { calculateCandleDateRange } from "../../../../utils/data/candles";
 
 /**
  * Hook to fetch and manage session-related data
@@ -36,18 +35,9 @@ export function useSessionData() {
     const instrumentId = hasValidSession ? String(session.instrument_id) : "";
     const { data: instrument } = useInstrument(instrumentId);
 
-    // Fetch chart candles (last 1000 candles on the configured timeframe)
-    const chartDateRange = useMemo(() => {
-        if (!session) return undefined;
-        return calculateCandleDateRange(timeframe, session.current_time, 1000);
-    }, [session, timeframe]);
-
-    const { data: chartCandles } = useCandlesByInstrument(
-        // will be changed to useCandlesBySession when implemented in backend
-        instrumentId,
-        timeframe,
-        chartDateRange as DateRangeQuery | undefined
-    );
+    // Fetch chart candles for the session on the configured timeframe
+    // The backend returns the last 2000 candles for the session
+    const { data: chartCandles } = useCandlesBySession(id, timeframe);
 
     // Derive current price from the last candle of the chart data
     const currentPrice = useMemo(() => {

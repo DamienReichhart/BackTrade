@@ -71,8 +71,17 @@ export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
     return useGet(url, CandleListResponseSchema, { enabled: !!datasetId });
 }
 
-export function useCandlesBySession(id: string) {
-    return useGet(`/sessions/${id}/candles`, CandleListResponseSchema, {
-        enabled: !!id,
+export function useCandlesBySession(id: string, timeframe: string) {
+    const searchParams = new URLSearchParams();
+    searchParams.append("timeframe", timeframe);
+
+    const url = `/sessions/${id}/candles?${searchParams.toString()}`;
+
+    // Validate that session id is not empty and timeframe is provided
+    const isValidSessionId =
+        !!id && id !== "0" && !isNaN(Number(id)) && Number(id) > 0;
+
+    return useGet(url, CandleListResponseSchema, {
+        enabled: isValidSessionId && !!timeframe,
     });
 }
