@@ -35,7 +35,7 @@ class SessionsService {
      * @param user - User entity making the request
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
-    private ensureSessionOwnershipOrAdmin(session: Session, user: User): void {
+    public ensureSessionOwnershipOrAdmin(session: Session, user: User): void {
         if (session.user_id !== user.id && user.role !== "ADMIN") {
             this.logger.debug(
                 {
