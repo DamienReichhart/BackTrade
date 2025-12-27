@@ -55,7 +55,7 @@ export function RunningSessionChart() {
     );
 
     // Update chart data when candles change
-    useChartData(seriesRef, candles);
+    useChartData(seriesRef, candles, isReady);
 
     // Build and display entry/exit markers
     const { positions } = useSessionPositions();

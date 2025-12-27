@@ -19,7 +19,10 @@
         "lint:fix": "eslint . --ext .ts,.tsx --fix",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "typecheck": "npx tsc --noEmit"
+        "typecheck": "npx tsc --noEmit",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
     "dependencies": {
         "@backtrade/data": "workspace:*",
@@ -31,8 +34,11 @@
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
+        "@types/jest": "30.0.0",
         "@types/node": "25.0.2",
         "globals": "^16.5.0",
+        "jest": "30.2.0",
+        "ts-jest": "^29.4.6",
         "typescript": "^5.9.3",
         "typescript-eslint": "8.50.0"
     },

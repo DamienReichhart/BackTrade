@@ -16,3 +16,41 @@ export function toClickHouseDateTime(isoString: string | Date): string {
         .replace("T", " ")
         .replace(/\.\d{3}Z$/, "");
 }
+
+/**
+ * Convert a ClickHouse DateTime string or any datetime to ISO 8601 format.
+ *
+ * ClickHouse returns: YYYY-MM-DD HH:MM:SS (no timezone, no T separator)
+ * ISO 8601 format is: YYYY-MM-DDTHH:MM:SS.sssZ
+ *
+ * Returns `null` for null/undefined inputs to prevent masking missing database data.
+ * Callers must handle null values appropriately based on schema requirements.
+ *
+ * @param clickHouseDateTime - ClickHouse datetime string, ISO string, or Date object
+ * @returns ISO 8601 formatted datetime string, or `null` if input is null/undefined
+ */
+export function toISODateTime(
+    clickHouseDateTime: string | Date | undefined | null
+): string | null {
+    if (!clickHouseDateTime) {
+        return null;
+    }
+
+    if (clickHouseDateTime instanceof Date) {
+        return clickHouseDateTime.toISOString();
+    }
+
+    // If already in ISO format (YYYY-MM-DDTHH:MM:SS with optional fractional seconds and timezone), return as-is
+    // Matches: YYYY-MM-DDTHH:MM:SS, YYYY-MM-DDTHH:MM:SS.sss, YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DDTHH:MM:SS+HH:MM, etc.
+    if (
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})?$/.test(
+            clickHouseDateTime
+        )
+    ) {
+        return clickHouseDateTime;
+    }
+
+    // ClickHouse format: "YYYY-MM-DD HH:MM:SS" - convert to ISO
+    // Assume UTC timezone for ClickHouse datetimes
+    return new Date(clickHouseDateTime.replace(" ", "T") + "Z").toISOString();
+}

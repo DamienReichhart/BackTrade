@@ -10,22 +10,35 @@ import type {
     PositionWhereInput,
     PositionCreateInput,
     PositionUpdateInput,
+    PositionOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
+export interface FindAllOptions {
+    where?: PositionWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: PositionOrderBy;
+}
+
 /**
- * Repository for Position model CRUD operations.
+ * Repository for Position model CRUD operations with pagination and sorting.
  */
 class PositionsRepository extends BasePostgresRepository {
     /**
-     * Get all positions matching optional filter conditions.
+     * Get all positions matching optional filter, pagination, and sorting.
      *
-     * @param where - Optional filter conditions
+     * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching positions
      */
-    async getAllPositions(where?: PositionWhereInput): Promise<Position[]> {
+    async getAllPositions(options?: FindAllOptions): Promise<Position[]> {
         return this.prisma.position.findMany({
-            where: where as Prisma.PositionWhereInput,
+            where: options?.where as Prisma.PositionWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.PositionOrderByWithRelationInput
+                | undefined,
         }) as unknown as Position[];
     }
 

@@ -1,21 +1,12 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Speed } from "@backtrade/types";
+import {
+    type Speed,
+    SPEED_VALUES,
+    getSpeedDisplayLabel,
+} from "@backtrade/types";
 import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
 import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
-
-/**
- * Available speed options
- */
-const AVAILABLE_SPEEDS: Speed[] = [
-    "0.5x",
-    "1x",
-    "2x",
-    "3x",
-    "5x",
-    "10x",
-    "15x",
-];
 
 /**
  * Hook to manage speed selector functionality
@@ -29,7 +20,7 @@ export function useSpeedSelector(
     onSuccess?: () => void
 ) {
     const { currentSession } = useCurrentSessionStore();
-    const currentSpeed = currentSession?.speed ?? "1x";
+    const currentSpeed = currentSession?.speed ?? "SPEED_1X";
     const sessionId = currentSession?.id?.toString();
 
     const queryClient = useQueryClient();
@@ -38,9 +29,9 @@ export function useSpeedSelector(
 
     const speedOptions = useMemo(
         () =>
-            AVAILABLE_SPEEDS.map((speed) => ({
+            SPEED_VALUES.map((speed) => ({
                 value: speed,
-                label: speed,
+                label: getSpeedDisplayLabel(speed),
             })),
         []
     );

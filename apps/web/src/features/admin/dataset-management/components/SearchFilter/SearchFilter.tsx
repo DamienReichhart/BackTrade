@@ -3,6 +3,7 @@ import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
 import { Button } from "../../../../../components/Button";
 import type { SelectOption } from "../../../../../types/ui";
+import { getTimeframeOptions } from "@backtrade/types";
 import styles from "./SearchFilter.module.css";
 
 /**
@@ -50,18 +51,13 @@ interface SearchFilterProps {
     hasActiveFilters: boolean;
 }
 
+// Timeframe options with "All" option for filtering
 const timeframeOptions: SelectOption[] = [
     { value: "", label: "All Timeframes" },
-    { value: "M1", label: "M1 (1 Minute)" },
-    { value: "M5", label: "M5 (5 Minutes)" },
-    { value: "M10", label: "M10 (10 Minutes)" },
-    { value: "M15", label: "M15 (15 Minutes)" },
-    { value: "M30", label: "M30 (30 Minutes)" },
-    { value: "H1", label: "H1 (1 Hour)" },
-    { value: "H2", label: "H2 (2 Hours)" },
-    { value: "H4", label: "H4 (4 Hours)" },
-    { value: "D1", label: "D1 (1 Day)" },
-    { value: "W1", label: "W1 (1 Week)" },
+    ...getTimeframeOptions().map((opt) => ({
+        value: opt.value,
+        label: `${opt.value} (${opt.label})`,
+    })),
 ];
 
 const statusOptions: SelectOption[] = [

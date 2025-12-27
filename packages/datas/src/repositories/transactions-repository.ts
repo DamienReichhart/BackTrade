@@ -10,24 +10,35 @@ import type {
     TransactionWhereInput,
     TransactionCreateInput,
     TransactionUpdateInput,
+    TransactionOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
+export interface FindAllOptions {
+    where?: TransactionWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: TransactionOrderBy;
+}
+
 /**
- * Repository for Transaction model CRUD operations.
+ * Repository for Transaction model CRUD operations with pagination and sorting.
  */
 class TransactionsRepository extends BasePostgresRepository {
     /**
-     * Get all transactions matching optional filter conditions.
+     * Get all transactions matching optional filter, pagination, and sorting.
      *
-     * @param where - Optional filter conditions
+     * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching transactions
      */
-    async getAllTransactions(
-        where?: TransactionWhereInput
-    ): Promise<Transaction[]> {
+    async getAllTransactions(options?: FindAllOptions): Promise<Transaction[]> {
         return this.prisma.transaction.findMany({
-            where: where as Prisma.TransactionWhereInput,
+            where: options?.where as Prisma.TransactionWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.TransactionOrderByWithRelationInput
+                | undefined,
         }) as unknown as Transaction[];
     }
 

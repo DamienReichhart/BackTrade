@@ -19,7 +19,11 @@ export default [
     },
     {
         files: ["**/*.{ts,tsx,js,jsx}"],
-        ignores: ["**/*.config.{js,cjs,mjs,ts}"],
+        ignores: [
+            "**/*.config.{js,cjs,mjs,ts}",
+            "**/*.test.{ts,tsx}",
+            "**/*.spec.{ts,tsx}",
+        ],
         ...js.configs.recommended,
         ...tseslint.configs.recommended[0],
         languageOptions: {
@@ -68,7 +72,11 @@ export default [
     },
     {
         files: ["**/*.{ts,tsx}"],
-        ignores: ["**/*.config.{js,cjs,mjs,ts}"],
+        ignores: [
+            "**/*.config.{js,cjs,mjs,ts}",
+            "**/*.test.{ts,tsx}",
+            "**/*.spec.{ts,tsx}",
+        ],
         languageOptions: {
             parserOptions: {
                 project: true,

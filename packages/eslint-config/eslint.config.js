@@ -61,7 +61,11 @@ export default [
     },
     {
         files: ["**/*.{ts,tsx}"],
-        ignores: ["**/*.config.{js,cjs,mjs,ts}"],
+        ignores: [
+            "**/*.config.{js,cjs,mjs,ts}",
+            "**/*.test.{ts,tsx}",
+            "**/*.spec.{ts,tsx}",
+        ],
         languageOptions: {
             parserOptions: {
                 project: true,

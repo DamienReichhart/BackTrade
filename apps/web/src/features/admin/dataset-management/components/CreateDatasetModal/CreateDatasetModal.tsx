@@ -4,6 +4,7 @@ import { Select } from "../../../../../components/Select";
 import { useDatasetCreate } from "../../hooks";
 import { useInstruments } from "../../../../../api/hooks/requests/instruments";
 import type { SelectOption } from "../../../../../types/ui";
+import { getTimeframeOptions } from "@backtrade/types";
 import styles from "./CreateDatasetModal.module.css";
 
 /**
@@ -53,18 +54,13 @@ export function CreateDatasetModal({
             order: "asc",
         });
 
-    const timeframeOptions: SelectOption[] = [
-        { value: "M1", label: "M1 (1 Minute)" },
-        { value: "M5", label: "M5 (5 Minutes)" },
-        { value: "M10", label: "M10 (10 Minutes)" },
-        { value: "M15", label: "M15 (15 Minutes)" },
-        { value: "M30", label: "M30 (30 Minutes)" },
-        { value: "H1", label: "H1 (1 Hour)" },
-        { value: "H2", label: "H2 (2 Hours)" },
-        { value: "H4", label: "H4 (4 Hours)" },
-        { value: "D1", label: "D1 (1 Day)" },
-        { value: "W1", label: "W1 (1 Week)" },
-    ];
+    // Use enum values from types package
+    const timeframeOptions: SelectOption[] = getTimeframeOptions().map(
+        (opt) => ({
+            value: opt.value,
+            label: `${opt.value} (${opt.label})`,
+        })
+    );
 
     /**
      * Convert instruments to select options

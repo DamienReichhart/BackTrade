@@ -1,23 +1,7 @@
 import { Toggle, Select } from "../../../../../../../components";
-import type { Timeframe } from "@backtrade/types";
+import { type Timeframe, getTimeframeOptions } from "@backtrade/types";
 import { useChartSettings } from "./hooks";
 import styles from "./ChartControls.module.css";
-
-/**
- * Timeframe options for the chart
- */
-const TIMEFRAME_OPTIONS: Array<{ value: Timeframe; label: string }> = [
-    { value: "M1", label: "1 Minute" },
-    { value: "M5", label: "5 Minutes" },
-    { value: "M10", label: "10 Minutes" },
-    { value: "M15", label: "15 Minutes" },
-    { value: "M30", label: "30 Minutes" },
-    { value: "H1", label: "1 Hour" },
-    { value: "H2", label: "2 Hours" },
-    { value: "H4", label: "4 Hours" },
-    { value: "D1", label: "1 Day" },
-    { value: "W1", label: "1 Week" },
-];
 
 /**
  * ChartControls component
@@ -46,7 +30,7 @@ export function ChartControls() {
                 <label className={styles.label}>Timeframe</label>
                 <Select
                     value={timeframe}
-                    options={TIMEFRAME_OPTIONS}
+                    options={getTimeframeOptions()}
                     onChange={(value) =>
                         handleTimeframeChange(value as Timeframe)
                     }

@@ -28,5 +28,10 @@ export function useInstruments(query?: SearchQuery) {
 }
 
 export function useInstrument(id: string) {
-    return useGet(`/instruments/${id}`, InstrumentSchema, { enabled: !!id });
+    // Validate that ID is not empty, not "0", and is a valid positive number
+    const isValidId =
+        !!id && id !== "0" && !isNaN(Number(id)) && Number(id) > 0;
+    return useGet(`/instruments/${id}`, InstrumentSchema, {
+        enabled: isValidId,
+    });
 }
