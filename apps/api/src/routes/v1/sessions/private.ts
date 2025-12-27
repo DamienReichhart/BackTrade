@@ -21,6 +21,11 @@ sessionsPrivateRouter.get(
 );
 
 sessionsPrivateRouter.get(
+    "/:id/candles",
+    sessionsController.getSessionCandles.bind(sessionsController)
+);
+
+sessionsPrivateRouter.get(
     "/",
     sessionsController.getAllSessions.bind(sessionsController)
 );

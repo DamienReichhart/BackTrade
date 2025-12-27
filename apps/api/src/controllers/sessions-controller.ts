@@ -8,12 +8,14 @@
 import type { Request, Response } from "express";
 import {
     SearchQuerySchema,
+    TimeframeSchema,
     type SearchQuery,
     type CreateSessionRequest,
     type SessionCreateInput,
     type UpdateSessionRequest,
     type SessionUpdateInput,
 } from "@backtrade/types";
+import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import UnAuthenticatedError from "../errors/web/unauthenticated-error";
@@ -192,6 +194,78 @@ class SessionsController {
         );
 
         res.status(200).json(session);
+    }
+
+    /**
+     * Get candles for a session
+     *
+     * Returns the last 2000 candles for the session's instrument in the specified timeframe,
+     * up to the session's current_time. Only returns candles for sessions belonging to the
+     * authenticated user, unless the user is an admin.
+     *
+     * Query parameters:
+     * - timeframe: Required timeframe (M1, M5, M10, M15, M30, H1, H2, H4, D1, W1)
+     *
+     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param res - Express response object
+     * @throws UnAuthenticatedError if user is not authenticated
+     * @throws BadRequestError if session ID is missing, timeframe is missing or invalid
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async getSessionCandles(req: Request, res: Response): Promise<void> {
+        // Ensure user is authenticated
+        if (!req.user) {
+            throw new UnAuthenticatedError(
+                "You must be authenticated to access this route"
+            );
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        // Validate timeframe query parameter
+        let timeframe: string;
+        try {
+            const parsed = TimeframeSchema.parse(req.query.timeframe);
+            timeframe = parsed;
+        } catch (error) {
+            this.logger.debug(
+                { timeframe: req.query.timeframe, error },
+                "Invalid timeframe query parameter"
+            );
+            throw new BadRequestError(
+                "timeframe query parameter is required and must be a valid timeframe (M1, M5, M10, M15, M30, H1, H2, H4, D1, W1)"
+            );
+        }
+
+        // Get session (includes authorization check)
+        const session = await sessionsService.getSessionById(id, req.user);
+
+        // Get last 2000 candles for the session's instrument and timeframe
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                session.instrument_id,
+                timeframe,
+                session.current_time,
+                2000
+            );
+
+        this.logger.trace(
+            {
+                id,
+                userId: req.user.id,
+                instrument_id: session.instrument_id,
+                timeframe,
+                current_time: session.current_time,
+                candleCount: candles.length,
+            },
+            "Session candles retrieved successfully"
+        );
+
+        res.status(200).json(candles);
     }
 
     /**

@@ -147,12 +147,15 @@ class CandlesRepository extends BaseClickHouseRepository {
     ): Promise<Candle> {
         const now = new Date().toISOString();
 
+        // Convert ts to ClickHouse DateTime format
+        const clickHouseTs = toClickHouseDateTime(ts);
+
         // Build SET clause for update
         const setParts: string[] = [];
         const params: Record<string, unknown> = {
             instrument_id,
             timeframe,
-            ts,
+            ts: clickHouseTs,
         };
 
         if (data.open !== undefined) {
@@ -178,7 +181,7 @@ class CandlesRepository extends BaseClickHouseRepository {
 
         // Always update updated_at
         setParts.push("updated_at = {updated_at:DateTime}");
-        params.updated_at = now;
+        params.updated_at = toClickHouseDateTime(now);
 
         if (setParts.length === 0) {
             // No fields to update, just return the existing candle
@@ -243,6 +246,9 @@ class CandlesRepository extends BaseClickHouseRepository {
         timeframe: string,
         ts: string
     ): Promise<void> {
+        // Convert ts to ClickHouse DateTime format
+        const clickHouseTs = toClickHouseDateTime(ts);
+
         const query = `
             ALTER TABLE candles
             DELETE
@@ -257,7 +263,7 @@ class CandlesRepository extends BaseClickHouseRepository {
                 query_params: {
                     instrument_id,
                     timeframe,
-                    ts,
+                    ts: clickHouseTs,
                 },
             });
         } catch (error) {
@@ -282,6 +288,10 @@ class CandlesRepository extends BaseClickHouseRepository {
         start: string,
         end: string
     ): Promise<Candle[]> {
+        // Convert start and end to ClickHouse DateTime format
+        const clickHouseStart = toClickHouseDateTime(start);
+        const clickHouseEnd = toClickHouseDateTime(end);
+
         // Use FINAL to get deduplicated results from ReplacingMergeTree
         const query = `
             SELECT 
@@ -309,8 +319,8 @@ class CandlesRepository extends BaseClickHouseRepository {
                 query_params: {
                     instrument_id,
                     timeframe,
-                    start,
-                    end,
+                    start: clickHouseStart,
+                    end: clickHouseEnd,
                 },
                 format: "JSONEachRow",
             });
@@ -330,6 +340,80 @@ class CandlesRepository extends BaseClickHouseRepository {
         } catch (error) {
             throw new Error(
                 `Failed to fetch candles from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
+
+    /**
+     * Get the last N candles by instrument, timeframe, up to a specific end time.
+     *
+     * Returns the most recent candles up to the end time, ordered chronologically (oldest first).
+     *
+     * @param instrument_id - Instrument identifier
+     * @param timeframe - Timeframe of the candles
+     * @param endTime - End timestamp (inclusive) - candles with ts <= endTime
+     * @param limit - Maximum number of candles to return (default: 2000)
+     * @returns Array of matching candles, ordered chronologically (oldest first)
+     */
+    async getLastCandlesByInstrumentAndTimeframe(
+        instrument_id: number,
+        timeframe: string,
+        endTime: string,
+        limit: number = 2000
+    ): Promise<Candle[]> {
+        // Convert endTime to ClickHouse DateTime format (YYYY-MM-DD HH:MM:SS)
+        const clickHouseEndTime = toClickHouseDateTime(endTime);
+
+        // Use FINAL to get deduplicated results from ReplacingMergeTree
+        // Order by ts DESC to get most recent first, then LIMIT, then reverse for chronological order
+        const query = `
+            SELECT 
+                instrument_id,
+                timeframe,
+                ts,
+                open,
+                high,
+                low,
+                close,
+                volume,
+                created_at,
+                updated_at
+            FROM candles FINAL
+            WHERE instrument_id = {instrument_id:UInt32}
+              AND timeframe = {timeframe:String}
+              AND ts <= {endTime:DateTime}
+            ORDER BY ts DESC
+            LIMIT {limit:UInt32}
+        `.trim();
+
+        try {
+            const resultSet = await this.clickhouse.query({
+                query,
+                query_params: {
+                    instrument_id,
+                    timeframe,
+                    endTime: clickHouseEndTime,
+                    limit,
+                },
+                format: "JSONEachRow",
+            });
+
+            const data = (await resultSet.json()) as Candle[];
+            // Reverse to get chronological order (oldest first)
+            return data.reverse().map((candle) => ({
+                ...candle,
+                ts:
+                    typeof candle.ts === "string"
+                        ? candle.ts
+                        : new Date(candle.ts).toISOString(),
+                created_at:
+                    candle.created_at?.toString() ?? new Date().toISOString(),
+                updated_at:
+                    candle.updated_at?.toString() ?? new Date().toISOString(),
+            }));
+        } catch (error) {
+            throw new Error(
+                `Failed to fetch last candles from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
             );
         }
     }
