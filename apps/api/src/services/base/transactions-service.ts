@@ -12,6 +12,7 @@ import { transactionsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
+import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
 
 /**
@@ -183,6 +184,65 @@ class TransactionsService {
         }
     }
 
+    /**
+     * Verify user has access to a transaction without throwing
+     *
+     * Used for filtering lists of transactions. Returns true if user has access,
+     * false otherwise. Logs access denials for security auditing.
+     *
+     * @param transaction - Transaction entity to check access for
+     * @param user - User entity making the request
+     * @returns true if user has access, false otherwise
+     */
+    private async verifyTransactionAccess(
+        transaction: Transaction,
+        user: User
+    ): Promise<boolean> {
+        try {
+            if (transaction.session_id) {
+                // Check session access - this will throw if user doesn't have access
+                await this.ensureSessionAccess(transaction.session_id, user);
+                return true;
+            } else {
+                // Transaction without session_id - only admins can access
+                if (user.role !== "ADMIN") {
+                    this.logger.debug(
+                        {
+                            transactionId: transaction.id,
+                            userId: user.id,
+                            userRole: user.role,
+                            reason: "non-admin accessing transaction without session_id",
+                        },
+                        "Transaction access denied: non-admin accessing transaction without session_id"
+                    );
+                    return false;
+                }
+                return true;
+            }
+        } catch (error) {
+            // Log the reason for access denial
+            const reason =
+                error instanceof NotFoundError
+                    ? "session not found"
+                    : error instanceof ForbiddenError
+                      ? "user does not own session"
+                      : "unknown error";
+
+            this.logger.debug(
+                {
+                    transactionId: transaction.id,
+                    sessionId: transaction.session_id,
+                    userId: user.id,
+                    userRole: user.role,
+                    reason,
+                },
+                "Transaction access denied"
+            );
+
+            return false;
+        }
+    }
+
     // ============================================================================
     // CACHE METHODS
     // ============================================================================
@@ -236,6 +296,60 @@ class TransactionsService {
             transaction
         );
         this.logger.trace({ id: transaction.id }, "Transaction cached");
+    }
+
+    /**
+     * Filter transactions by access rights
+     *
+     * Verifies access for each transaction in parallel and filters out
+     * inaccessible ones. Logs filtered transactions for security auditing.
+     *
+     * @param transactions - Array of transactions to filter
+     * @param user - User entity making the request
+     * @returns Array of accessible transactions
+     */
+    private async filterTransactionsByAccess(
+        transactions: Transaction[],
+        user: User
+    ): Promise<Transaction[]> {
+        if (transactions.length === 0) {
+            return transactions;
+        }
+
+        // Verify access for all transactions in parallel
+        const accessResults = await Promise.all(
+            transactions.map((transaction) =>
+                this.verifyTransactionAccess(transaction, user)
+            )
+        );
+
+        // Filter transactions based on access results
+        const accessibleTransactions: Transaction[] = [];
+        const filteredCount = { count: 0 };
+
+        transactions.forEach((transaction, index) => {
+            if (accessResults[index]) {
+                accessibleTransactions.push(transaction);
+            } else {
+                filteredCount.count++;
+            }
+        });
+
+        // Log if any transactions were filtered out
+        if (filteredCount.count > 0) {
+            this.logger.debug(
+                {
+                    userId: user.id,
+                    userRole: user.role,
+                    totalTransactions: transactions.length,
+                    filteredCount: filteredCount.count,
+                    accessibleCount: accessibleTransactions.length,
+                },
+                "Transactions filtered by access rights"
+            );
+        }
+
+        return accessibleTransactions;
     }
 
     // ============================================================================
@@ -457,12 +571,13 @@ class TransactionsService {
         const orderBy = this.buildOrderBy(sort, order);
 
         // Execute query
-        return transactionsRepo.getAllTransactions({
+        const transactions = await transactionsRepo.getAllTransactions({
             where,
             skip: (page - 1) * limit,
             take: limit,
             orderBy,
         });
+        return this.filterTransactionsByAccess(transactions, user);
     }
 
     /**
