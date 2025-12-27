@@ -8,28 +8,37 @@ import { Router } from "express";
 
 const instrumentsPrivateRouter = Router();
 
-instrumentsPrivateRouter.get("/", instrumentController.getAllInstruments);
+instrumentsPrivateRouter.get(
+    "/",
+    instrumentController.getAllInstruments.bind(instrumentController)
+);
 
-instrumentsPrivateRouter.get("/:id", instrumentController.getInstrumentById);
+instrumentsPrivateRouter.get(
+    "/:id",
+    instrumentController.getInstrumentById.bind(instrumentController)
+);
 
 instrumentsPrivateRouter.post(
     "/",
     inputValidations(CreateInstrumentRequestSchema),
-    instrumentController.createInstrument
+    instrumentController.createInstrument.bind(instrumentController)
 );
 
 instrumentsPrivateRouter.put(
     "/:id",
     inputValidations(UpdateInstrumentRequestSchema),
-    instrumentController.updateInstrument
+    instrumentController.updateInstrument.bind(instrumentController)
 );
 
 instrumentsPrivateRouter.patch(
     "/:id",
     inputValidations(UpdateInstrumentRequestSchema),
-    instrumentController.updateInstrument
+    instrumentController.updateInstrument.bind(instrumentController)
 );
 
-instrumentsPrivateRouter.delete("/:id", instrumentController.deleteInstrument);
+instrumentsPrivateRouter.delete(
+    "/:id",
+    instrumentController.deleteInstrument.bind(instrumentController)
+);
 
 export default instrumentsPrivateRouter;
