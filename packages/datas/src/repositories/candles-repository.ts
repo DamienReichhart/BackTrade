@@ -7,7 +7,7 @@
 
 import type { Candle, CandleCreateInput } from "@backtrade/types";
 import { BaseClickHouseRepository } from "./base-clickhouse-repository";
-import { toClickHouseDateTime } from "../utils/date";
+import { toClickHouseDateTime, toISODateTime } from "../utils/date";
 
 /**
  * Repository for Candle model CRUD operations.
@@ -328,14 +328,9 @@ class CandlesRepository extends BaseClickHouseRepository {
             const data = (await resultSet.json()) as Candle[];
             return data.map((candle) => ({
                 ...candle,
-                ts:
-                    typeof candle.ts === "string"
-                        ? candle.ts
-                        : new Date(candle.ts).toISOString(),
-                created_at:
-                    candle.created_at?.toString() ?? new Date().toISOString(),
-                updated_at:
-                    candle.updated_at?.toString() ?? new Date().toISOString(),
+                ts: toISODateTime(candle.ts),
+                created_at: toISODateTime(candle.created_at),
+                updated_at: toISODateTime(candle.updated_at),
             }));
         } catch (error) {
             throw new Error(
@@ -402,14 +397,9 @@ class CandlesRepository extends BaseClickHouseRepository {
             // Reverse to get chronological order (oldest first)
             return data.reverse().map((candle) => ({
                 ...candle,
-                ts:
-                    typeof candle.ts === "string"
-                        ? candle.ts
-                        : new Date(candle.ts).toISOString(),
-                created_at:
-                    candle.created_at?.toString() ?? new Date().toISOString(),
-                updated_at:
-                    candle.updated_at?.toString() ?? new Date().toISOString(),
+                ts: toISODateTime(candle.ts),
+                created_at: toISODateTime(candle.created_at),
+                updated_at: toISODateTime(candle.updated_at),
             }));
         } catch (error) {
             throw new Error(

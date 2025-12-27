@@ -8,13 +8,15 @@ import { convertCandleToChartData } from "../../../../utils/data/candles";
  *
  * @param seriesRef - Reference to the candlestick series
  * @param candles - Array of candle data
+ * @param isReady - Whether the chart series has been initialized
  */
 export function useChartData(
     seriesRef: React.RefObject<ISeriesApi<"Candlestick"> | null>,
-    candles: Candle[]
+    candles: Candle[],
+    isReady: boolean
 ) {
     useEffect(() => {
-        if (!seriesRef.current) return;
+        if (!isReady || !seriesRef.current) return;
 
         if (candles.length === 0) {
             seriesRef.current.setData([]);
@@ -23,5 +25,5 @@ export function useChartData(
 
         const chartData = candles.map(convertCandleToChartData);
         seriesRef.current.setData(chartData);
-    }, [seriesRef, candles]);
+    }, [seriesRef, candles, isReady]);
 }

@@ -16,3 +16,33 @@ export function toClickHouseDateTime(isoString: string | Date): string {
         .replace("T", " ")
         .replace(/\.\d{3}Z$/, "");
 }
+
+/**
+ * Convert a ClickHouse DateTime string or any datetime to ISO 8601 format.
+ *
+ * ClickHouse returns: YYYY-MM-DD HH:MM:SS (no timezone, no T separator)
+ * ISO 8601 format is: YYYY-MM-DDTHH:MM:SS.sssZ
+ *
+ * @param clickHouseDateTime - ClickHouse datetime string, ISO string, or Date object
+ * @returns ISO 8601 formatted datetime string
+ */
+export function toISODateTime(
+    clickHouseDateTime: string | Date | undefined | null
+): string {
+    if (!clickHouseDateTime) {
+        return new Date().toISOString();
+    }
+
+    if (clickHouseDateTime instanceof Date) {
+        return clickHouseDateTime.toISOString();
+    }
+
+    // If already in ISO format (contains T and Z), return as-is
+    if (clickHouseDateTime.includes("T") && clickHouseDateTime.includes("Z")) {
+        return clickHouseDateTime;
+    }
+
+    // ClickHouse format: "YYYY-MM-DD HH:MM:SS" - convert to ISO
+    // Assume UTC timezone for ClickHouse datetimes
+    return new Date(clickHouseDateTime.replace(" ", "T") + "Z").toISOString();
+}
