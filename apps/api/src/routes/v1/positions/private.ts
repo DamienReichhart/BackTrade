@@ -30,6 +30,12 @@ positionsPrivateRouter.put(
     positionsController.updatePosition.bind(positionsController)
 );
 
+positionsPrivateRouter.patch(
+    "/:id",
+    inputValidations(UpdatePositionRequestSchema),
+    positionsController.updatePosition.bind(positionsController)
+);
+
 positionsPrivateRouter.delete(
     "/:id",
     positionsController.deletePosition.bind(positionsController)

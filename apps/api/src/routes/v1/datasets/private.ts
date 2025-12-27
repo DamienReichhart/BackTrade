@@ -10,18 +10,29 @@ import {
 const datasetsPrivateRouter = Router();
 
 datasetsPrivateRouter.get("/", datasetsController.getAllDatasets);
+
 datasetsPrivateRouter.get("/:id", datasetsController.getDatasetById);
+
 datasetsPrivateRouter.post(
     "/",
     inputValidations(CreateDatasetRequestSchema),
     datasetsController.createDataset
 );
+
 datasetsPrivateRouter.put(
     "/:id",
     inputValidations(UpdateDatasetRequestSchema),
     datasetsController.updateDataset
 );
+
+datasetsPrivateRouter.patch(
+    "/:id",
+    inputValidations(UpdateDatasetRequestSchema),
+    datasetsController.updateDataset
+);
+
 datasetsPrivateRouter.delete("/:id", datasetsController.deleteDataset);
+
 datasetsPrivateRouter.post(
     "/:id/file",
     uploadDatasetFile,

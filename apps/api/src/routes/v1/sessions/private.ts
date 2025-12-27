@@ -42,6 +42,12 @@ sessionsPrivateRouter.put(
     sessionsController.updateSession.bind(sessionsController)
 );
 
+sessionsPrivateRouter.patch(
+    "/:id",
+    inputValidations(UpdateSessionRequestSchema),
+    sessionsController.updateSession.bind(sessionsController)
+);
+
 sessionsPrivateRouter.delete(
     "/:id",
     sessionsController.deleteSession.bind(sessionsController)

@@ -8,22 +8,282 @@ import type {
 import { usersCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
+import BadRequestError from "../../errors/web/bad-request-error";
+import ForbiddenError from "../../errors/web/forbidden-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
 import hashService from "../security/hash-service";
 
 /**
+ * Valid user roles
+ */
+const VALID_ROLES = ["USER", "ADMIN"] as const;
+
+/**
+ * Email validation regex pattern
+ */
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
  * Users Service
  *
- * Handles business logic for user operations including CRUD and caching.
+ * Handles business logic for user operations including CRUD, validation, and caching.
+ * Users represent registered accounts in the system.
+ *
+ * Authorization model:
+ * - Users can access their own data
+ * - Admins can access all user data
+ * - Create/Update/Delete have specific permission rules
  */
 class UsersService {
     private readonly logger: ReturnType<typeof logger.child>;
 
     constructor() {
         this.logger = logger.child({
-            service: "user-service",
+            service: "users-service",
         });
     }
+
+    // ============================================================================
+    // VALIDATION METHODS
+    // ============================================================================
+
+    /**
+     * Validate that email is provided and has valid format
+     *
+     * @param email - Email to validate
+     * @throws BadRequestError if email is missing or invalid
+     */
+    private validateEmail(email: string | undefined | null): void {
+        if (!email) {
+            throw new BadRequestError("email is required");
+        }
+        if (!EMAIL_REGEX.test(email)) {
+            throw new BadRequestError("Invalid email format");
+        }
+    }
+
+    /**
+     * Validate that password is provided
+     *
+     * @param password - Password to validate
+     * @throws BadRequestError if password is missing
+     */
+    private validatePassword(password: string | undefined | null): void {
+        if (!password) {
+            throw new BadRequestError("password is required");
+        }
+    }
+
+    /**
+     * Validate that email is available for registration
+     *
+     * @param email - Email to check
+     * @param excludeUserId - Optional user ID to exclude (for updates)
+     * @throws AlreadyExistsError if email is already in use
+     */
+    private async validateEmailAvailability(
+        email: string,
+        excludeUserId?: number
+    ): Promise<void> {
+        const existingUser = await usersRepo.getUserByEmail(email);
+        if (existingUser && existingUser.id !== excludeUserId) {
+            this.logger.debug(
+                { email, excludeUserId },
+                "Email already in use, throwing already exists error"
+            );
+            throw new AlreadyExistsError("Email already in use");
+        }
+    }
+
+    /**
+     * Validate role is valid if provided
+     *
+     * @param role - Role to validate
+     * @throws BadRequestError if role is invalid
+     */
+    private validateRole(role: string | undefined | null): void {
+        if (role !== undefined && role !== null) {
+            if (!VALID_ROLES.includes(role as (typeof VALID_ROLES)[number])) {
+                throw new BadRequestError(
+                    `Invalid role. Must be one of: ${VALID_ROLES.join(", ")}`
+                );
+            }
+        }
+    }
+
+    /**
+     * Validate all business rules for user creation
+     *
+     * @param user - User creation data
+     * @throws BadRequestError if validation fails
+     * @throws AlreadyExistsError if email is already in use
+     */
+    private async validateUserCreation(user: UserCreateInput): Promise<void> {
+        this.validateEmail(user.email);
+        this.validatePassword(user.password_hash);
+        this.validateRole(user.role);
+        await this.validateEmailAvailability(user.email as string);
+    }
+
+    /**
+     * Validate all business rules for user update
+     *
+     * @param user - User update data
+     * @param existingUser - Existing user entity
+     * @throws BadRequestError if validation fails
+     * @throws AlreadyExistsError if email is already in use by another user
+     */
+    private async validateUserUpdate(
+        user: UserUpdateInput,
+        existingUser: User
+    ): Promise<void> {
+        // Validate email format if provided
+        if (user.email !== undefined) {
+            this.validateEmail(user.email);
+            // Check email availability only if it's being changed
+            if (user.email !== existingUser.email) {
+                await this.validateEmailAvailability(
+                    user.email as string,
+                    existingUser.id
+                );
+            }
+        }
+
+        // Validate role if provided
+        this.validateRole(user.role);
+    }
+
+    // ============================================================================
+    // AUTHORIZATION METHODS
+    // ============================================================================
+
+    /**
+     * Ensure user has access to view/modify a user account
+     *
+     * Users can only access their own data. Admins can access any user.
+     *
+     * @param targetUserId - ID of the user being accessed
+     * @param requestingUser - User entity making the request
+     * @throws ForbiddenError if user doesn't have access
+     */
+    private ensureUserAccess(targetUserId: number, requestingUser: User): void {
+        if (
+            targetUserId !== requestingUser.id &&
+            requestingUser.role !== "ADMIN"
+        ) {
+            this.logger.debug(
+                {
+                    targetUserId,
+                    requestingUserId: requestingUser.id,
+                    requestingUserRole: requestingUser.role,
+                },
+                "User attempted to access another user's data"
+            );
+            throw new ForbiddenError(
+                "You don't have permission to access this user"
+            );
+        }
+    }
+
+    /**
+     * Ensure user has admin access for privileged operations
+     *
+     * @param user - User entity making the request
+     * @param operation - Operation being performed (for logging)
+     * @throws ForbiddenError if user is not admin
+     */
+    private ensureAdminAccess(user: User, operation: string): void {
+        if (user.role !== "ADMIN") {
+            this.logger.debug(
+                {
+                    userId: user.id,
+                    userRole: user.role,
+                    operation,
+                },
+                "Non-admin user attempted privileged operation"
+            );
+            throw new ForbiddenError(
+                "Only administrators can perform this operation"
+            );
+        }
+    }
+
+    // ============================================================================
+    // CACHE METHODS
+    // ============================================================================
+
+    /**
+     * Get user from cache
+     *
+     * @param id - User ID
+     * @returns Cached user or null if not found
+     */
+    private async getCachedUser(id: number): Promise<User | null> {
+        const cachedUser = await usersCacheRepo.getCachedUser(id);
+        if (cachedUser) {
+            this.logger.trace({ id }, "User found in cache");
+        }
+        return cachedUser;
+    }
+
+    /**
+     * Get user from cache with access verification
+     *
+     * @param id - User ID
+     * @param requestingUser - User entity making the request
+     * @returns Cached user or null if not found
+     * @throws ForbiddenError if user doesn't have access
+     */
+    private async getCachedUserWithAccess(
+        id: number,
+        requestingUser: User
+    ): Promise<User | null> {
+        const cachedUser = await this.getCachedUser(id);
+        if (!cachedUser) {
+            return null;
+        }
+
+        this.ensureUserAccess(id, requestingUser);
+        return cachedUser;
+    }
+
+    /**
+     * Cache a user after retrieval
+     *
+     * @param user - User entity to cache
+     */
+    private async cacheUser(user: User): Promise<void> {
+        await usersCacheRepo.cacheUser(user.id, user);
+        this.logger.trace({ id: user.id }, "User cached");
+    }
+
+    /**
+     * Invalidate a cached user
+     *
+     * @param id - User ID
+     */
+    private async invalidateCachedUser(id: number): Promise<void> {
+        await usersCacheRepo.invalidateCachedUser(id);
+        this.logger.trace({ id }, "User invalidated from cache");
+    }
+
+    // ============================================================================
+    // PASSWORD HANDLING METHODS
+    // ============================================================================
+
+    /**
+     * Hash a password for storage
+     *
+     * @param password - Plain text password
+     * @returns Hashed password
+     */
+    private async hashPassword(password: string): Promise<string> {
+        return hashService.hashPassword(password);
+    }
+
+    // ============================================================================
+    // PUBLIC METHODS
+    // ============================================================================
 
     /**
      * Check if an email is available for registration
@@ -33,7 +293,7 @@ class UsersService {
      */
     async isUserEmailAvailable(email: string): Promise<boolean> {
         const user = await usersRepo.getUserByEmail(email);
-        return user ? false : true;
+        return !user;
     }
 
     /**
@@ -44,11 +304,13 @@ class UsersService {
      * @throws NotFoundError if user doesn't exist
      */
     async getUserById(id: number): Promise<User> {
-        const cachedUser = await usersCacheRepo.getCachedUser(id);
+        // Try to get from cache first
+        const cachedUser = await this.getCachedUser(id);
         if (cachedUser) {
-            this.logger.trace({ id }, "User found in cache");
             return cachedUser;
         }
+
+        // Fetch from database
         this.logger.trace(
             { id },
             "User not found in cache, fetching from database"
@@ -61,122 +323,60 @@ class UsersService {
             );
             throw new NotFoundError("User not found");
         }
-        await usersCacheRepo.cacheUser(id, user);
-        this.logger.trace({ id }, "User cached");
+
+        // Cache and return
+        await this.cacheUser(user);
         return user;
     }
 
     /**
-     * Create a new user
+     * Get a user by ID with access verification
      *
-     * @param data - User creation data
-     * @returns Created user entity
-     * @throws AlreadyExistsError if email is already in use
+     * @param id - User ID
+     * @param requestingUser - User entity making the request
+     * @returns User entity
+     * @throws NotFoundError if user doesn't exist
+     * @throws ForbiddenError if user doesn't have access
      */
-    async createUser(data: UserCreateInput): Promise<User> {
-        if (!data.email) {
-            throw new Error("Email is required");
-        }
-        const isEmailAvailable = await this.isUserEmailAvailable(data.email);
-        if (!isEmailAvailable) {
-            this.logger.debug(
-                { email: data.email },
-                "Email already in use, throwing already exists error"
-            );
-            throw new AlreadyExistsError("Email already in use");
-        }
-        if (!data.password_hash) {
-            throw new Error("Password is required");
-        }
-        data.password_hash = await hashService.hashPassword(
-            data.password_hash as string
+    async getUserByIdWithAccess(
+        id: number,
+        requestingUser: User
+    ): Promise<User> {
+        // Try to get from cache first (includes access verification)
+        const cachedUser = await this.getCachedUserWithAccess(
+            id,
+            requestingUser
         );
-        const user = await usersRepo.createUser(data);
-        this.logger.debug({ id: user.id }, "User created");
-        await usersCacheRepo.cacheUser(user.id, user);
-        this.logger.trace({ id: user.id }, "User cached");
-        return user;
-    }
+        if (cachedUser) {
+            return cachedUser;
+        }
 
-    /**
-     * Update an existing user
-     *
-     * @param id - User ID
-     * @param data - User update data
-     * @returns Updated user entity
-     * @throws NotFoundError if user doesn't exist
-     * @throws AlreadyExistsError if new email is already in use
-     */
-    async updateUser(id: number, data: UserUpdateInput): Promise<User> {
-        const existingUser = await usersRepo.getUserById(id);
-        if (!existingUser) {
+        // Fetch from database
+        this.logger.trace(
+            { id },
+            "User not found in cache, fetching from database"
+        );
+        const user = await usersRepo.getUserById(id);
+        if (!user) {
             this.logger.debug(
                 { id },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
         }
-        if (existingUser.email !== data.email) {
-            const existingUserByEmail = await usersRepo.getUserByEmail(
-                data.email as string
-            );
-            if (existingUserByEmail) {
-                this.logger.debug(
-                    { email: data.email },
-                    "User already exists with same email, throwing already exists error"
-                );
-                throw new AlreadyExistsError(
-                    "User with this email already exists"
-                );
-            }
-        }
-        if (data.password_hash) {
-            data.password_hash = await hashService.hashPassword(
-                data.password_hash as string
-            );
-        }
-        const user = await usersRepo.updateUser(id, data);
-        this.logger.debug({ id: user.id }, "User updated");
-        await usersCacheRepo.cacheUser(id, user);
-        this.logger.trace({ id: user.id }, "User cached");
+
+        // Verify access
+        this.ensureUserAccess(id, requestingUser);
+
+        // Cache and return
+        await this.cacheUser(user);
         return user;
-    }
-
-    /**
-     * Delete a user
-     *
-     * @param id - User ID
-     * @throws NotFoundError if user doesn't exist
-     */
-    async deleteUser(id: number): Promise<void> {
-        const existingUser = await usersRepo.getUserById(id);
-        if (!existingUser) {
-            this.logger.debug(
-                { id },
-                "User not found, throwing not found error"
-            );
-            throw new NotFoundError("User not found");
-        }
-        await usersRepo.deleteUser(id);
-        this.logger.debug({ id }, "User deleted");
-        await usersCacheRepo.invalidateCachedUser(id);
-        this.logger.trace({ id }, "User invalidated from cache");
-    }
-
-    /**
-     * Get all users with optional filtering
-     *
-     * @param where - Optional Prisma where clause
-     * @returns Array of user entities
-     */
-    async getAllUsers(where?: UserWhereInput): Promise<User[]> {
-        const users = await usersRepo.getAllUsers(where);
-        this.logger.trace({ count: users.length }, "Users fetched");
-        return users;
     }
 
     /**
      * Get a user by email address
+     *
+     * Used primarily for authentication - no access check needed.
      *
      * @param email - Email address
      * @returns User entity
@@ -191,8 +391,144 @@ class UsersService {
             );
             throw new NotFoundError("User not found");
         }
-        this.logger.trace({ email }, "User fetched");
+        this.logger.trace({ email }, "User fetched by email");
         return user;
+    }
+
+    /**
+     * Get all users with optional filtering
+     *
+     * Admin-only operation.
+     *
+     * @param requestingUser - User entity making the request
+     * @param where - Optional where clause for filtering
+     * @returns Array of user entities
+     * @throws ForbiddenError if user is not admin
+     */
+    async getAllUsers(
+        requestingUser: User,
+        where?: UserWhereInput
+    ): Promise<User[]> {
+        // Check admin access
+        this.ensureAdminAccess(requestingUser, "getAllUsers");
+
+        // Execute query
+        const users = await usersRepo.getAllUsers(where);
+
+        this.logger.trace({ count: users.length }, "Users fetched");
+        return users;
+    }
+
+    /**
+     * Create a new user
+     *
+     * Used by auth-service for registration.
+     *
+     * @param data - User creation data
+     * @returns Created user entity
+     * @throws BadRequestError if validation fails
+     * @throws AlreadyExistsError if email is already in use
+     */
+    async createUser(data: UserCreateInput): Promise<User> {
+        // Validate business rules
+        await this.validateUserCreation(data);
+
+        // Hash password
+        const hashedPassword = await this.hashPassword(
+            data.password_hash as string
+        );
+        const userData: UserCreateInput = {
+            ...data,
+            password_hash: hashedPassword,
+        };
+
+        this.logger.trace({ email: data.email }, "Creating user");
+
+        const user = await usersRepo.createUser(userData);
+        this.logger.debug({ id: user.id }, "User created");
+
+        await this.cacheUser(user);
+        return user;
+    }
+
+    /**
+     * Update an existing user
+     *
+     * Users can update their own data. Admins can update any user.
+     *
+     * @param id - User ID
+     * @param data - User update data
+     * @param requestingUser - User entity making the request
+     * @returns Updated user entity
+     * @throws NotFoundError if user doesn't exist
+     * @throws ForbiddenError if user doesn't have access
+     * @throws BadRequestError if validation fails
+     * @throws AlreadyExistsError if email is already in use
+     */
+    async updateUser(
+        id: number,
+        data: UserUpdateInput,
+        requestingUser: User
+    ): Promise<User> {
+        // Check access
+        this.ensureUserAccess(id, requestingUser);
+
+        const existingUser = await usersRepo.getUserById(id);
+        if (!existingUser) {
+            this.logger.debug(
+                { id },
+                "User not found, throwing not found error"
+            );
+            throw new NotFoundError("User not found");
+        }
+
+        // Validate business rules
+        await this.validateUserUpdate(data, existingUser);
+
+        // Prepare update data
+        const updateData: UserUpdateInput = { ...data };
+
+        // Hash password if provided
+        if (data.password_hash) {
+            updateData.password_hash = await this.hashPassword(
+                data.password_hash as string
+            );
+        }
+
+        const user = await usersRepo.updateUser(id, updateData);
+        this.logger.debug({ id: user.id }, "User updated");
+
+        await this.cacheUser(user);
+        return user;
+    }
+
+    /**
+     * Delete a user
+     *
+     * Admin-only operation (users cannot delete themselves through this method).
+     *
+     * @param id - User ID
+     * @param requestingUser - User entity making the request
+     * @throws NotFoundError if user doesn't exist
+     * @throws ForbiddenError if user is not admin
+     */
+    async deleteUser(id: number, requestingUser: User): Promise<void> {
+        // Check admin access
+        this.ensureAdminAccess(requestingUser, "deleteUser");
+
+        const existingUser = await usersRepo.getUserById(id);
+        if (!existingUser) {
+            this.logger.debug(
+                { id },
+                "User not found, throwing not found error"
+            );
+            throw new NotFoundError("User not found");
+        }
+
+        await usersRepo.deleteUser(id);
+        this.logger.debug({ id }, "User deleted");
+
+        await this.invalidateCachedUser(id);
     }
 }
 
