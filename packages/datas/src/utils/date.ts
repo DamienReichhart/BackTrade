@@ -37,8 +37,13 @@ export function toISODateTime(
         return clickHouseDateTime.toISOString();
     }
 
-    // If already in ISO format (contains T and Z), return as-is
-    if (clickHouseDateTime.includes("T") && clickHouseDateTime.includes("Z")) {
+    // If already in ISO format (YYYY-MM-DDTHH:MM:SS with optional fractional seconds and timezone), return as-is
+    // Matches: YYYY-MM-DDTHH:MM:SS, YYYY-MM-DDTHH:MM:SS.sss, YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DDTHH:MM:SS+HH:MM, etc.
+    if (
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})?$/.test(
+            clickHouseDateTime
+        )
+    ) {
         return clickHouseDateTime;
     }
 
