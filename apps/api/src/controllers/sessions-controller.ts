@@ -11,6 +11,8 @@ import {
     type SearchQuery,
     type CreateSessionRequest,
     type SessionCreateInput,
+    type UpdateSessionRequest,
+    type SessionUpdateInput,
 } from "@backtrade/types";
 import sessionsService from "../services/base/sessions-service";
 import BadRequestError from "../errors/web/bad-request-error";
@@ -154,6 +156,143 @@ class SessionsController {
         );
 
         res.status(201).json(session);
+    }
+
+    /**
+     * Get a session by ID
+     *
+     * Returns a single session by its ID. Only returns sessions belonging to the
+     * authenticated user, unless the user is an admin.
+     *
+     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param res - Express response object
+     * @throws UnAuthenticatedError if user is not authenticated
+     * @throws BadRequestError if session ID is missing or invalid
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async getSessionById(req: Request, res: Response): Promise<void> {
+        // Ensure user is authenticated
+        if (!req.user) {
+            throw new UnAuthenticatedError(
+                "You must be authenticated to access this route"
+            );
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        const session = await sessionsService.getSessionById(id, req.user);
+
+        this.logger.trace(
+            { id, userId: req.user.id },
+            "Session retrieved successfully"
+        );
+
+        res.status(200).json(session);
+    }
+
+    /**
+     * Update an existing session
+     *
+     * Updates a session with the provided data. Only allows updates to sessions
+     * belonging to the authenticated user, unless the user is an admin.
+     *
+     * Request body can include:
+     * - name: Optional session name
+     * - session_status: Optional status (RUNNING, PAUSED, ARCHIVED)
+     * - speed: Optional playback speed
+     * - current_time: Optional current timestamp (must be >= start_time and <= end_time)
+     * - end_time: Optional end timestamp (must be >= start_time and >= current_time)
+     *
+     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param res - Express response object
+     * @throws UnAuthenticatedError if user is not authenticated
+     * @throws BadRequestError if session ID is missing or request body is invalid
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async updateSession(req: Request, res: Response): Promise<void> {
+        // Ensure user is authenticated
+        if (!req.user) {
+            throw new UnAuthenticatedError(
+                "You must be authenticated to update a session"
+            );
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        const requestData = req.body as UpdateSessionRequest;
+
+        // Transform request data to update input
+        const sessionData: SessionUpdateInput = {
+            name: requestData.name,
+            session_status: requestData.session_status,
+            speed: requestData.speed,
+            current_time: requestData.current_time,
+            end_time: requestData.end_time,
+        };
+
+        this.logger.trace(
+            { id, userId: req.user.id, updates: sessionData },
+            "Updating session"
+        );
+
+        const session = await sessionsService.updateSession(
+            id,
+            sessionData,
+            req.user
+        );
+
+        this.logger.info(
+            { id, userId: req.user.id },
+            "Session updated successfully"
+        );
+
+        res.status(200).json(session);
+    }
+
+    /**
+     * Delete a session
+     *
+     * Deletes a session by its ID. Only allows deletion of sessions belonging to
+     * the authenticated user, unless the user is an admin.
+     *
+     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param res - Express response object
+     * @throws UnAuthenticatedError if user is not authenticated
+     * @throws BadRequestError if session ID is missing
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async deleteSession(req: Request, res: Response): Promise<void> {
+        // Ensure user is authenticated
+        if (!req.user) {
+            throw new UnAuthenticatedError(
+                "You must be authenticated to delete a session"
+            );
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        this.logger.trace({ id, userId: req.user.id }, "Deleting session");
+
+        await sessionsService.deleteSession(id, req.user);
+
+        this.logger.info(
+            { id, userId: req.user.id },
+            "Session deleted successfully"
+        );
+
+        res.status(204).send();
     }
 }
 

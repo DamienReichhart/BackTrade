@@ -31,7 +31,9 @@ export function useSessionData() {
 
     const { data: session, isLoading: isLoadingSession } = useSession(id);
     const hasValidSession = !!session && !!session.instrument_id;
-    const instrumentId = hasValidSession ? String(session.instrument_id) : "0";
+    // Only use actual instrument_id when session is loaded and valid
+    // Use empty string as placeholder to prevent invalid API calls
+    const instrumentId = hasValidSession ? String(session.instrument_id) : "";
     const { data: instrument } = useInstrument(instrumentId);
 
     // Fetch chart candles (last 1000 candles on the configured timeframe)

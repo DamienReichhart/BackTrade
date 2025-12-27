@@ -42,8 +42,15 @@ export function useCandlesByInstrument(
 
     const url = `/instruments/${instrumentId}/candles?${searchParams.toString()}`;
 
+    // Validate that instrumentId is not empty, not "0", and is a valid positive number
+    const isValidInstrumentId =
+        !!instrumentId &&
+        instrumentId !== "0" &&
+        !isNaN(Number(instrumentId)) &&
+        Number(instrumentId) > 0;
+
     return useGet(url, CandleListResponseSchema, {
-        enabled: !!instrumentId && !!timeframe,
+        enabled: isValidInstrumentId && !!timeframe,
     });
 }
 
