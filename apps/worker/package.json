@@ -10,7 +10,10 @@
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",
         "format": "prettier --write .",
-        "format:check": "prettier --check ."
+        "format:check": "prettier --check .",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
     "dependencies": {
         "@backtrade/data": "workspace:*",
@@ -27,11 +30,14 @@
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@eslint/js": "^9.39.2",
+        "@types/jest": "30.0.0",
         "@types/node": "25.0.2",
         "esbuild": "0.27.1",
         "eslint": "^9.39.2",
         "globals": "^16.5.0",
+        "jest": "30.2.0",
         "nodemon": "^3.1.11",
+        "ts-jest": "^29.4.6",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "typescript-eslint": "8.50.0"

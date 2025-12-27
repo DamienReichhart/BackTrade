@@ -326,12 +326,20 @@ class CandlesRepository extends BaseClickHouseRepository {
             });
 
             const data = (await resultSet.json()) as Candle[];
-            return data.map((candle) => ({
-                ...candle,
-                ts: toISODateTime(candle.ts),
-                created_at: toISODateTime(candle.created_at),
-                updated_at: toISODateTime(candle.updated_at),
-            }));
+            return data.map((candle) => {
+                const ts = toISODateTime(candle.ts);
+                if (ts === null) {
+                    throw new Error(
+                        `Candle has null timestamp (ts) - data integrity issue: instrument_id=${candle.instrument_id}, timeframe=${candle.timeframe}`
+                    );
+                }
+                return {
+                    ...candle,
+                    ts,
+                    created_at: toISODateTime(candle.created_at) ?? undefined,
+                    updated_at: toISODateTime(candle.updated_at) ?? undefined,
+                };
+            });
         } catch (error) {
             throw new Error(
                 `Failed to fetch candles from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
@@ -395,12 +403,20 @@ class CandlesRepository extends BaseClickHouseRepository {
 
             const data = (await resultSet.json()) as Candle[];
             // Reverse to get chronological order (oldest first)
-            return data.reverse().map((candle) => ({
-                ...candle,
-                ts: toISODateTime(candle.ts),
-                created_at: toISODateTime(candle.created_at),
-                updated_at: toISODateTime(candle.updated_at),
-            }));
+            return data.reverse().map((candle) => {
+                const ts = toISODateTime(candle.ts);
+                if (ts === null) {
+                    throw new Error(
+                        `Candle has null timestamp (ts) - data integrity issue: instrument_id=${candle.instrument_id}, timeframe=${candle.timeframe}`
+                    );
+                }
+                return {
+                    ...candle,
+                    ts,
+                    created_at: toISODateTime(candle.created_at) ?? undefined,
+                    updated_at: toISODateTime(candle.updated_at) ?? undefined,
+                };
+            });
         } catch (error) {
             throw new Error(
                 `Failed to fetch last candles from ClickHouse: ${error instanceof Error ? error.message : String(error)}`

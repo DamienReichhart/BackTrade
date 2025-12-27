@@ -15,7 +15,12 @@ export default [
     },
     {
         files: ["**/*.{ts,tsx}"],
-        ignores: ["src/generated/**", "prisma.config.ts"],
+        ignores: [
+            "src/generated/**",
+            "prisma.config.ts",
+            "**/*.test.ts",
+            "**/*.spec.ts",
+        ],
         languageOptions: {
             parserOptions: {
                 tsconfigRootDir: import.meta.dirname,

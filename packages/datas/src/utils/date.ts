@@ -23,14 +23,17 @@ export function toClickHouseDateTime(isoString: string | Date): string {
  * ClickHouse returns: YYYY-MM-DD HH:MM:SS (no timezone, no T separator)
  * ISO 8601 format is: YYYY-MM-DDTHH:MM:SS.sssZ
  *
+ * Returns `null` for null/undefined inputs to prevent masking missing database data.
+ * Callers must handle null values appropriately based on schema requirements.
+ *
  * @param clickHouseDateTime - ClickHouse datetime string, ISO string, or Date object
- * @returns ISO 8601 formatted datetime string
+ * @returns ISO 8601 formatted datetime string, or `null` if input is null/undefined
  */
 export function toISODateTime(
     clickHouseDateTime: string | Date | undefined | null
-): string {
+): string | null {
     if (!clickHouseDateTime) {
-        return new Date().toISOString();
+        return null;
     }
 
     if (clickHouseDateTime instanceof Date) {
