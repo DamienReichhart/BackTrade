@@ -102,9 +102,9 @@ export function parseDatasetLine(line: string): ParsedCandleData {
 
     const [timestampStr, openStr, highStr, lowStr, closeStr, volumeStr] = parts;
 
-    // Parse timestamp
-    const timestamp = parseInt(timestampStr!, 10);
-    if (isNaN(timestamp)) {
+    // Parse timestamp (may include fractional seconds)
+    const timestamp = parseFloat(timestampStr!);
+    if (isNaN(timestamp) || !Number.isFinite(timestamp)) {
         throw new Error(`Invalid timestamp value: ${timestampStr}`);
     }
     const ts = parseUnixTimestamp(timestamp);

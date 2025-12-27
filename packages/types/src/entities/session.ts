@@ -21,7 +21,7 @@ export const SessionSchema = z.object({
     spread_pts: numberCoerce.nonnegative(),
     slippage_pts: numberCoerce.nonnegative(),
     commission_per_fill: numberCoerce.nonnegative(),
-    created_at: z.string().optional(), // optional only for the front only, will be required when backend is impelemnted
+    created_at: z.string().optional(),
     updated_at: z.string().optional(),
 });
 export type Session = z.infer<typeof SessionSchema>;
