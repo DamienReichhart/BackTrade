@@ -42,7 +42,7 @@
         "@vitejs/plugin-react": "5.1.2",
         "eslint": "^9.39.2",
         "eslint-plugin-react-hooks": "7.0.1",
-        "eslint-plugin-react-refresh": "0.4.25",
+        "eslint-plugin-react-refresh": "0.4.26",
         "globals": "^16.5.0",
         "identity-obj-proxy": "^3.0.0",
         "jest": "30.2.0",
@@ -51,7 +51,7 @@
         "json-server": "1.0.0-beta.3",
         "ts-jest": "^29.4.6",
         "typescript": "5.9.3",
-        "typescript-eslint": "8.50.0",
+        "typescript-eslint": "8.50.1",
         "vite": "7.3.0"
     },
     "license": "PROPRIETARY",
