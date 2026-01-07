@@ -175,7 +175,7 @@ class CandlesRepository extends BaseClickHouseRepository {
             params.close = Number(data.close);
         }
         if (data.volume !== undefined) {
-            setParts.push("volume = {volume:Decimal64(8)}");
+            setParts.push("volume = {volume:Float64}");
             params.volume = Number(data.volume);
         }
 

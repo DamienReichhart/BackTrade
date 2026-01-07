@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS candles
     high Decimal64(8) NOT NULL,
     low Decimal64(8) NOT NULL,
     close Decimal64(8) NOT NULL,
-    volume Decimal64(8) NOT NULL,
+    volume Float64 NOT NULL,
     created_at DateTime DEFAULT now(),
     updated_at DateTime DEFAULT now()
 )

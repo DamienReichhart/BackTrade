@@ -10,9 +10,9 @@ import type { Request } from "express";
 import BadRequestError from "../errors/web/bad-request-error";
 
 /**
- * Maximum file size in bytes (1GB - matching frontend validation)
+ * Maximum file size in bytes (2GB - matching frontend validation)
  */
-const MAX_FILE_SIZE = 1000 * 1024 * 1024;
+const MAX_FILE_SIZE = 1000 * 1024 * 1024 * 2;
 
 /**
  * Allowed file extensions
