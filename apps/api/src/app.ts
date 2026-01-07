@@ -22,7 +22,7 @@ function createApp(): Express {
     app.use(cors({ origin: true, credentials: true }));
     app.use(compression());
     app.use(express.json());
-    app.use(rateLimit({ windowMs: 60_000, max: 120 }));
+    app.use(rateLimit({ windowMs: 60_000, max: 1200 }));
     app.use(requestId);
     app.use(requestLogger);
 
