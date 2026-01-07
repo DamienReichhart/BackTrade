@@ -56,6 +56,20 @@ export const ChangePasswordRequestSchema = z.object({
 });
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
+/**
+ * Schema for changing a user's password by ID
+ *
+ * For users changing their own password: currentPassword is required
+ * For admins changing another user's password: currentPassword is optional
+ */
+export const ChangeUserPasswordRequestSchema = z.object({
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(8),
+});
+export type ChangeUserPasswordRequest = z.infer<
+    typeof ChangeUserPasswordRequestSchema
+>;
+
 export const ForgotPasswordRequestSchema = z.object({
     email: z
         .string()

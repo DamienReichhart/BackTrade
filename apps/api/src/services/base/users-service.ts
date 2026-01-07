@@ -11,6 +11,7 @@ import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
+import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import hashService from "../security/hash-service";
 
 /**
@@ -500,6 +501,123 @@ class UsersService {
 
         await this.cacheUser(user);
         return user;
+    }
+
+    /**
+     * Change a user's password
+     *
+     * Users can change their own password by providing their current password.
+     * Admins can change any user's password without providing the current password.
+     *
+     * @param id - User ID whose password is being changed
+     * @param currentPassword - Current password (required for non-admin users)
+     * @param newPassword - New password to set
+     * @param requestingUser - User entity making the request
+     * @throws NotFoundError if user doesn't exist
+     * @throws ForbiddenError if user doesn't have access
+     * @throws BadRequestError if current password is incorrect or new password is invalid
+     * @throws UnAuthenticatedError if current password verification fails (for non-admin users)
+     */
+    async changePassword(
+        id: number,
+        currentPassword: string,
+        newPassword: string,
+        requestingUser: User
+    ): Promise<void> {
+        // Check access - users can change their own password, admins can change any
+        this.ensureUserAccess(id, requestingUser);
+
+        // Get the target user
+        const targetUser = await usersRepo.getUserById(id);
+        if (!targetUser) {
+            this.logger.debug(
+                { id },
+                "User not found, throwing not found error"
+            );
+            throw new NotFoundError("User not found");
+        }
+
+        // Validate new password strength
+        const { validatePassword } = await import("@backtrade/utils");
+        const passwordValidation = validatePassword(newPassword);
+        if (!passwordValidation.isValid) {
+            throw new BadRequestError(
+                passwordValidation.error ?? "Invalid new password"
+            );
+        }
+
+        // Verify current password (unless admin is changing another user's password)
+        const isAdminChangingOtherUser =
+            requestingUser.role === "ADMIN" && requestingUser.id !== id;
+        if (!isAdminChangingOtherUser) {
+            // User is changing their own password - must verify current password
+            if (!currentPassword) {
+                throw new BadRequestError("Current password is required");
+            }
+
+            try {
+                await hashService.verifyPassword(
+                    currentPassword,
+                    targetUser.password_hash
+                );
+            } catch (error) {
+                // Convert UnAuthenticatedError to BadRequestError for better UX
+                // The user is already authenticated, so this is a validation error
+                if (error instanceof UnAuthenticatedError) {
+                    this.logger.debug(
+                        { id, userId: requestingUser.id },
+                        "Current password verification failed"
+                    );
+                    throw new BadRequestError("Current password is incorrect");
+                }
+                throw error;
+            }
+        } else {
+            // Admin is changing another user's password - current password not required
+            this.logger.debug(
+                { id, adminId: requestingUser.id },
+                "Admin changing another user's password"
+            );
+        }
+
+        // Prevent setting the same password
+        try {
+            await hashService.verifyPassword(
+                newPassword,
+                targetUser.password_hash
+            );
+            // If verification succeeds, the new password is the same as the current one
+            throw new BadRequestError(
+                "New password must be different from current password"
+            );
+        } catch (error) {
+            // If verification fails, that's good - passwords are different
+            // But if it's a BadRequestError we just threw, rethrow it
+            if (error instanceof BadRequestError) {
+                throw error;
+            }
+            // Otherwise, it's an UnAuthenticatedError which means passwords are different - continue
+        }
+
+        // Hash the new password
+        const hashedPassword = await this.hashPassword(newPassword);
+
+        // Update the user's password
+        await usersRepo.updateUser(id, {
+            password_hash: hashedPassword,
+        });
+
+        this.logger.debug(
+            {
+                id,
+                userId: requestingUser.id,
+                isAdmin: isAdminChangingOtherUser,
+            },
+            "Password changed successfully"
+        );
+
+        // Invalidate cache to force fresh fetch on next request
+        await this.invalidateCachedUser(id);
     }
 
     /**
