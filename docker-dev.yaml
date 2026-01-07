@@ -68,7 +68,6 @@ services:
         build:
             context: .
             dockerfile: ./docker/images/minio.dockerfile
-        command: server /data --console-address ":9001"
         ports:
             - "9000:9000"
             - "9001:9001"
@@ -77,7 +76,7 @@ services:
             MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
         volumes:
             - backtrade_minio_data:/data
-            - ./docker/config/minio/certs:/root/.minio/certs:ro
+            - ./docker/config/minio:/mnt/minio:ro
         networks:
             backtrade:
                 ipv4_address: 192.168.250.23
