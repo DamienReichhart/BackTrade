@@ -1,6 +1,7 @@
 import { Router } from "express";
 import usersController from "../../../controllers/users-controller";
 import { authMiddleware } from "../../../middlewares/auth-middleware";
+import { adminMiddleware } from "../../../middlewares/admin-middleware";
 import inputValidations from "../../../middlewares/input-validations";
 import {
     ChangeUserPasswordRequestSchema,
@@ -8,6 +9,21 @@ import {
 } from "@backtrade/types";
 
 const usersRouter = Router();
+
+// Admin-only routes
+usersRouter.get(
+    "/",
+    authMiddleware,
+    adminMiddleware,
+    usersController.getAllUsers.bind(usersController)
+);
+
+// Routes requiring authentication (admin or owner)
+usersRouter.get(
+    "/:id/subscriptions",
+    authMiddleware,
+    usersController.getUserSubscriptions.bind(usersController)
+);
 
 usersRouter.patch(
     "/:id/password",

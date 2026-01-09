@@ -1,0 +1,576 @@
+/**
+ * Subscriptions Service
+ *
+ * Handles business logic for subscription operations including CRUD, validation, and authorization.
+ * Subscriptions link users to their subscription plans.
+ *
+ * Authorization model:
+ * - Read own subscriptions: Any authenticated user
+ * - Read all subscriptions: Admin only
+ * - Write operations (create, update, delete): Admin only
+ */
+
+import { subscriptionsRepo, usersRepo, plansRepo } from "@backtrade/data";
+import type {
+    Subscription,
+    SubscriptionWhereInput,
+    SubscriptionCreateInput,
+    SubscriptionUpdateInput,
+    User,
+    DateRangeQuery,
+} from "@backtrade/types";
+import NotFoundError from "../../errors/web/not-found-error";
+import BadRequestError from "../../errors/web/bad-request-error";
+import ForbiddenError from "../../errors/web/forbidden-error";
+import { BaseService } from "./base-service";
+import { buildPagination } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
+
+/**
+ * Valid subscription statuses
+ */
+const VALID_STATUSES = [
+    "active",
+    "canceled",
+    "trialing",
+    "active_unpaid",
+] as const;
+
+/**
+ * Subscriptions Service
+ *
+ * Handles business logic for subscription operations.
+ */
+class SubscriptionsService extends BaseService {
+    constructor() {
+        super("subscriptions-service");
+    }
+
+    // ============================================================================
+    // VALIDATION METHODS
+    // ============================================================================
+
+    /**
+     * Validate user_id exists
+     *
+     * @param userId - User ID to validate
+     * @throws BadRequestError if user_id is missing
+     * @throws NotFoundError if user doesn't exist
+     */
+    private async validateUserId(
+        userId: number | undefined | null
+    ): Promise<void> {
+        if (!userId) {
+            throw new BadRequestError("User ID is required");
+        }
+
+        const user = await usersRepo.getUserById(userId);
+        if (!user) {
+            this.logger.debug(
+                { userId },
+                "User not found when creating subscription"
+            );
+            throw new NotFoundError(`User with ID ${userId} not found`);
+        }
+    }
+
+    /**
+     * Validate plan_id exists
+     *
+     * @param planId - Plan ID to validate
+     * @throws BadRequestError if plan_id is missing
+     * @throws NotFoundError if plan doesn't exist
+     */
+    private async validatePlanId(
+        planId: number | undefined | null
+    ): Promise<void> {
+        if (!planId) {
+            throw new BadRequestError("Plan ID is required");
+        }
+
+        const plan = await plansRepo.getPlanById(planId);
+        if (!plan) {
+            this.logger.debug(
+                { planId },
+                "Plan not found when creating subscription"
+            );
+            throw new NotFoundError(`Plan with ID ${planId} not found`);
+        }
+    }
+
+    /**
+     * Validate Stripe subscription ID is provided
+     *
+     * @param stripeSubscriptionId - Stripe subscription ID to validate
+     * @throws BadRequestError if missing or empty
+     */
+    private validateStripeSubscriptionId(
+        stripeSubscriptionId: string | undefined | null
+    ): void {
+        if (!stripeSubscriptionId || stripeSubscriptionId.trim().length === 0) {
+            throw new BadRequestError("Stripe subscription ID is required");
+        }
+    }
+
+    /**
+     * Validate period dates (start < end)
+     *
+     * @param start - Period start date
+     * @param end - Period end date
+     * @throws BadRequestError if dates are invalid
+     */
+    private validatePeriodDates(
+        start: string | undefined | null,
+        end: string | undefined | null
+    ): void {
+        if (!start) {
+            throw new BadRequestError("Current period start is required");
+        }
+        if (!end) {
+            throw new BadRequestError("Current period end is required");
+        }
+
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        if (isNaN(startDate.getTime())) {
+            throw new BadRequestError("Invalid current period start date");
+        }
+        if (isNaN(endDate.getTime())) {
+            throw new BadRequestError("Invalid current period end date");
+        }
+        if (startDate >= endDate) {
+            throw new BadRequestError(
+                "Current period start must be before current period end"
+            );
+        }
+    }
+
+    /**
+     * Validate status is valid if provided
+     *
+     * @param status - Status to validate
+     * @throws BadRequestError if status is invalid
+     */
+    private validateStatus(status: string | undefined | null): void {
+        if (status !== undefined && status !== null) {
+            if (
+                !VALID_STATUSES.includes(
+                    status as (typeof VALID_STATUSES)[number]
+                )
+            ) {
+                throw new BadRequestError(
+                    `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`
+                );
+            }
+        }
+    }
+
+    /**
+     * Validate all business rules for subscription creation
+     *
+     * @param subscription - Subscription creation data
+     * @throws BadRequestError if validation fails
+     * @throws NotFoundError if user or plan doesn't exist
+     */
+    private async validateSubscriptionCreation(
+        subscription: SubscriptionCreateInput
+    ): Promise<void> {
+        await this.validateUserId(subscription.user_id);
+        await this.validatePlanId(subscription.plan_id);
+        this.validateStripeSubscriptionId(subscription.stripe_subscription_id);
+        this.validatePeriodDates(
+            subscription.current_period_start,
+            subscription.current_period_end
+        );
+        this.validateStatus(subscription.status);
+    }
+
+    /**
+     * Validate all business rules for subscription update
+     *
+     * @param subscription - Subscription update data
+     * @throws BadRequestError if validation fails
+     */
+    private validateSubscriptionUpdate(
+        subscription: SubscriptionUpdateInput
+    ): void {
+        // Validate status if provided
+        this.validateStatus(subscription.status);
+
+        // Validate canceled_at date format if provided
+        if (
+            subscription.canceled_at !== undefined &&
+            subscription.canceled_at !== null
+        ) {
+            const canceledDate = new Date(subscription.canceled_at);
+            if (isNaN(canceledDate.getTime())) {
+                throw new BadRequestError("Invalid canceled_at date");
+            }
+        }
+
+        // Validate trial_end date format if provided
+        if (
+            subscription.trial_end !== undefined &&
+            subscription.trial_end !== null
+        ) {
+            const trialEndDate = new Date(subscription.trial_end);
+            if (isNaN(trialEndDate.getTime())) {
+                throw new BadRequestError("Invalid trial_end date");
+            }
+        }
+    }
+
+    // ============================================================================
+    // AUTHORIZATION METHODS
+    // ============================================================================
+
+    /**
+     * Ensure user has access to view a subscription
+     *
+     * Users can only view their own subscriptions. Admins can view any subscription.
+     *
+     * @param subscription - Subscription entity
+     * @param requestingUser - User entity making the request
+     * @throws ForbiddenError if user doesn't have access
+     */
+    private ensureSubscriptionAccess(
+        subscription: Subscription,
+        requestingUser: User
+    ): void {
+        if (
+            subscription.user_id !== requestingUser.id &&
+            requestingUser.role !== "ADMIN"
+        ) {
+            this.logger.debug(
+                {
+                    subscriptionId: subscription.id,
+                    subscriptionUserId: subscription.user_id,
+                    requestingUserId: requestingUser.id,
+                    requestingUserRole: requestingUser.role,
+                },
+                "User attempted to access another user's subscription"
+            );
+            throw new ForbiddenError(
+                "You don't have permission to access this subscription"
+            );
+        }
+    }
+
+    /**
+     * Ensure user has admin access for write operations
+     *
+     * @param user - User entity making the request
+     * @param operation - Operation being performed (for logging)
+     * @throws ForbiddenError if user is not admin
+     */
+    private ensureAdminAccess(user: User, operation: string): void {
+        if (user.role !== "ADMIN") {
+            this.logger.debug(
+                {
+                    userId: user.id,
+                    userRole: user.role,
+                    operation,
+                },
+                "Non-admin user attempted subscription write operation"
+            );
+            throw new ForbiddenError(
+                "Only administrators can perform this operation on subscriptions"
+            );
+        }
+    }
+
+    // ============================================================================
+    // QUERY BUILDING METHODS
+    // ============================================================================
+
+    /**
+     * Build date range conditions for subscription queries
+     *
+     * @param tsGte - Greater than or equal date filter
+     * @param tsLte - Less than or equal date filter
+     * @returns Where clause with date conditions or undefined
+     */
+    private buildDateRangeConditions(
+        tsGte?: string,
+        tsLte?: string
+    ): SubscriptionWhereInput | undefined {
+        if (!tsGte && !tsLte) {
+            return undefined;
+        }
+
+        const conditions: SubscriptionWhereInput = {};
+
+        if (tsGte) {
+            conditions.current_period_start = {
+                gte: tsGte,
+            };
+        }
+
+        if (tsLte) {
+            conditions.current_period_end = {
+                lte: tsLte,
+            };
+        }
+
+        return conditions;
+    }
+
+    // ============================================================================
+    // PUBLIC METHODS
+    // ============================================================================
+
+    /**
+     * Get a subscription by ID
+     *
+     * @param id - Subscription ID
+     * @param requestingUser - User entity making the request
+     * @returns Subscription entity
+     * @throws NotFoundError if subscription doesn't exist
+     * @throws ForbiddenError if user doesn't have access
+     */
+    async getSubscriptionById(
+        id: string | number,
+        requestingUser: User
+    ): Promise<Subscription> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
+        const subscription =
+            await subscriptionsRepo.getSubscriptionById(numericId);
+        if (!subscription) {
+            this.logger.debug(
+                { id: numericId },
+                "Subscription not found, throwing not found error"
+            );
+            throw new NotFoundError("Subscription not found");
+        }
+
+        // Verify access
+        this.ensureSubscriptionAccess(subscription, requestingUser);
+
+        return subscription;
+    }
+
+    /**
+     * Get all subscriptions with optional filtering and pagination
+     *
+     * Regular users can only see their own subscriptions.
+     * Admins can see all subscriptions.
+     *
+     * @param requestingUser - User entity making the request
+     * @param query - Optional query parameters with pagination and date range
+     * @returns Array of subscription entities
+     */
+    async getAllSubscriptions(
+        requestingUser: User,
+        query?: DateRangeQuery
+    ): Promise<Subscription[]> {
+        const {
+            ts_gte,
+            ts_lte,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+        } = query ?? {};
+
+        // Build base where condition
+        let where: SubscriptionWhereInput | undefined;
+
+        // Non-admins can only see their own subscriptions
+        if (requestingUser.role !== "ADMIN") {
+            where = { user_id: { equals: requestingUser.id } };
+        }
+
+        // Add date range conditions
+        const dateConditions = this.buildDateRangeConditions(ts_gte, ts_lte);
+        if (dateConditions) {
+            where = where ? { AND: [where, dateConditions] } : dateConditions;
+        }
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
+
+        // Get all subscriptions matching criteria
+        const subscriptions =
+            await subscriptionsRepo.getAllSubscriptions(where);
+
+        // Apply pagination manually (until repo is updated to support it)
+        const paginatedSubscriptions = subscriptions.slice(skip, skip + take);
+
+        this.logger.trace(
+            { count: paginatedSubscriptions.length },
+            "Subscriptions fetched"
+        );
+        return paginatedSubscriptions;
+    }
+
+    /**
+     * Get subscriptions for a specific user
+     *
+     * @param userId - User ID
+     * @param requestingUser - User entity making the request
+     * @param query - Optional query parameters
+     * @returns Array of subscription entities
+     * @throws ForbiddenError if user doesn't have access
+     */
+    async getSubscriptionsByUser(
+        userId: string | number,
+        requestingUser: User,
+        query?: DateRangeQuery
+    ): Promise<Subscription[]> {
+        const numericUserId =
+            typeof userId === "string" ? Number(userId) : userId;
+
+        // Check access - users can only see their own, admins can see any
+        if (
+            numericUserId !== requestingUser.id &&
+            requestingUser.role !== "ADMIN"
+        ) {
+            throw new ForbiddenError(
+                "You don't have permission to view this user's subscriptions"
+            );
+        }
+
+        const { ts_gte, ts_lte } = query ?? {};
+
+        // Build where condition
+        let where: SubscriptionWhereInput = {
+            user_id: { equals: numericUserId },
+        };
+
+        // Add date range conditions
+        const dateConditions = this.buildDateRangeConditions(ts_gte, ts_lte);
+        if (dateConditions) {
+            where = { AND: [where, dateConditions] };
+        }
+
+        const subscriptions =
+            await subscriptionsRepo.getAllSubscriptions(where);
+
+        this.logger.trace(
+            { userId: numericUserId, count: subscriptions.length },
+            "User subscriptions fetched"
+        );
+        return subscriptions;
+    }
+
+    /**
+     * Create a new subscription
+     *
+     * Admin-only operation.
+     *
+     * @param subscription - Subscription creation data
+     * @param user - User entity making the request (for authorization)
+     * @returns Created subscription entity
+     * @throws ForbiddenError if user is not admin
+     * @throws BadRequestError if validation fails
+     * @throws NotFoundError if user or plan doesn't exist
+     */
+    async createSubscription(
+        subscription: SubscriptionCreateInput,
+        user: User
+    ): Promise<Subscription> {
+        // Check admin access
+        this.ensureAdminAccess(user, "create");
+
+        // Validate business rules
+        await this.validateSubscriptionCreation(subscription);
+
+        // Set default status if not provided
+        const subscriptionData: SubscriptionCreateInput = {
+            ...subscription,
+            status: subscription.status ?? "active",
+        };
+
+        this.logger.trace(
+            {
+                userId: subscription.user_id,
+                planId: subscription.plan_id,
+                adminId: user.id,
+            },
+            "Creating subscription"
+        );
+
+        const created =
+            await subscriptionsRepo.createSubscription(subscriptionData);
+        this.logger.debug({ id: created.id }, "Subscription created");
+
+        return created;
+    }
+
+    /**
+     * Update an existing subscription
+     *
+     * Admin-only operation.
+     *
+     * @param id - Subscription ID
+     * @param subscription - Subscription update data
+     * @param user - User entity making the request (for authorization)
+     * @returns Updated subscription entity
+     * @throws NotFoundError if subscription doesn't exist
+     * @throws ForbiddenError if user is not admin
+     * @throws BadRequestError if validation fails
+     */
+    async updateSubscription(
+        id: string | number,
+        subscription: SubscriptionUpdateInput,
+        user: User
+    ): Promise<Subscription> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
+        // Check admin access
+        this.ensureAdminAccess(user, "update");
+
+        // Verify subscription exists
+        const existing = await subscriptionsRepo.getSubscriptionById(numericId);
+        if (!existing) {
+            this.logger.debug(
+                { id: numericId },
+                "Subscription not found, throwing not found error"
+            );
+            throw new NotFoundError("Subscription not found");
+        }
+
+        // Validate business rules
+        this.validateSubscriptionUpdate(subscription);
+
+        const updated = await subscriptionsRepo.updateSubscription(
+            numericId,
+            subscription
+        );
+        this.logger.debug({ id: updated.id }, "Subscription updated");
+
+        return updated;
+    }
+
+    /**
+     * Delete a subscription
+     *
+     * Admin-only operation.
+     *
+     * @param id - Subscription ID
+     * @param user - User entity making the request (for authorization)
+     * @throws NotFoundError if subscription doesn't exist
+     * @throws ForbiddenError if user is not admin
+     */
+    async deleteSubscription(id: string | number, user: User): Promise<void> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
+        // Check admin access
+        this.ensureAdminAccess(user, "delete");
+
+        // Verify subscription exists
+        const existing = await subscriptionsRepo.getSubscriptionById(numericId);
+        if (!existing) {
+            this.logger.debug(
+                { id: numericId },
+                "Subscription not found, throwing not found error"
+            );
+            throw new NotFoundError("Subscription not found");
+        }
+
+        await subscriptionsRepo.deleteSubscription(numericId);
+        this.logger.debug({ id: numericId }, "Subscription deleted");
+    }
+}
+
+export default new SubscriptionsService();

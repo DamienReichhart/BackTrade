@@ -4,6 +4,8 @@ import type {
     UserWhereInput,
     UserCreateInput,
     UserUpdateInput,
+    UserOrderBy,
+    SearchQueryUser,
 } from "@backtrade/types";
 import { usersCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -15,6 +17,8 @@ import hashService from "../security/hash-service";
 import emailNotificationService from "../notifications/email-notification-service";
 import { validatePassword } from "@backtrade/utils";
 import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid user roles
@@ -25,6 +29,20 @@ const VALID_ROLES = ["USER", "ADMIN"] as const;
  * Email validation regex pattern
  */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Valid sortable fields for users
+ */
+const VALID_SORT_FIELDS = [
+    "id",
+    "email",
+    "role",
+    "is_banned",
+    "created_at",
+    "updated_at",
+] as const;
+
+type UserSortField = (typeof VALID_SORT_FIELDS)[number];
 
 /**
  * Users Service
@@ -398,6 +416,59 @@ class UsersService extends BaseService {
         return user;
     }
 
+    // ============================================================================
+    // QUERY BUILDING METHODS
+    // ============================================================================
+
+    /**
+     * Build search conditions for user queries
+     *
+     * @param searchQuery - Search query string (searches email)
+     * @returns Where clause with search conditions or undefined
+     */
+    private buildSearchConditions(
+        searchQuery: string
+    ): UserWhereInput | undefined {
+        if (!searchQuery) {
+            return undefined;
+        }
+
+        return {
+            email: {
+                contains: searchQuery,
+                mode: "insensitive" as const,
+            },
+        };
+    }
+
+    /**
+     * Combine multiple where conditions with AND logic
+     *
+     * @param conditions - Array of where conditions to combine
+     * @returns Combined where clause or undefined if empty
+     */
+    private combineWhereConditions(
+        conditions: (UserWhereInput | undefined)[]
+    ): UserWhereInput | undefined {
+        const validConditions = conditions.filter(
+            (c): c is UserWhereInput => c !== undefined
+        );
+
+        if (validConditions.length === 0) {
+            return undefined;
+        }
+
+        if (validConditions.length === 1) {
+            return validConditions[0];
+        }
+
+        return { AND: validConditions };
+    }
+
+    // ============================================================================
+    // PUBLIC METHODS - USER LISTING
+    // ============================================================================
+
     /**
      * Get all users with optional filtering
      *
@@ -416,9 +487,92 @@ class UsersService extends BaseService {
         this.ensureAdminAccess(requestingUser, "getAllUsers");
 
         // Execute query
-        const users = await usersRepo.getAllUsers(where);
+        const users = await usersRepo.getAllUsers({ where });
 
         this.logger.trace({ count: users.length }, "Users fetched");
+        return users;
+    }
+
+    /**
+     * Get all users with search, filtering, sorting, and pagination
+     *
+     * Admin-only operation supporting:
+     * - Text search (q) - searches email
+     * - Role filter (role) - USER or ADMIN
+     * - Banned status filter (is_banned) - true or false
+     * - Sorting (sort, order) - by id, email, role, is_banned, created_at, updated_at
+     * - Pagination (page, limit)
+     *
+     * @param requestingUser - User entity making the request
+     * @param query - Search query parameters
+     * @returns Array of user entities
+     * @throws ForbiddenError if user is not admin
+     */
+    async getAllUsersWithFilters(
+        requestingUser: User,
+        query?: SearchQueryUser
+    ): Promise<User[]> {
+        // Check admin access
+        this.ensureAdminAccess(requestingUser, "getAllUsersWithFilters");
+
+        const {
+            q,
+            role,
+            is_banned,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
+
+        // Build where conditions
+        const searchConditions = this.buildSearchConditions(q ?? "");
+
+        // Build role filter
+        const roleCondition: UserWhereInput | undefined = role
+            ? { role: { equals: role } }
+            : undefined;
+
+        // Build banned status filter
+        const bannedCondition: UserWhereInput | undefined =
+            is_banned !== undefined
+                ? { is_banned: { equals: is_banned } }
+                : undefined;
+
+        // Combine all conditions
+        const where = this.combineWhereConditions([
+            searchConditions,
+            roleCondition,
+            bannedCondition,
+        ]);
+
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<UserSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as UserOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
+
+        this.logger.trace(
+            { q, role, is_banned, page, limit, sort, order },
+            "Fetching users with filters"
+        );
+
+        // Execute query
+        const users = await usersRepo.getAllUsers({
+            where,
+            skip,
+            take,
+            orderBy,
+        });
+
+        this.logger.trace(
+            { count: users.length },
+            "Users fetched with filters"
+        );
         return users;
     }
 

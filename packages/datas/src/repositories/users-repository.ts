@@ -10,22 +10,38 @@ import type {
     UserWhereInput,
     UserCreateInput,
     UserUpdateInput,
+    UserOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
 /**
- * Repository for User model CRUD operations.
+ * Options for finding multiple users with pagination and sorting.
+ */
+export interface UserFindAllOptions {
+    where?: UserWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: UserOrderBy;
+}
+
+/**
+ * Repository for User model CRUD operations with pagination and sorting.
  */
 class UsersRepository extends BasePostgresRepository {
     /**
-     * Get all users matching optional filter conditions.
+     * Get all users matching optional filter, pagination, and sorting.
      *
-     * @param where - Optional filter conditions
+     * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching users
      */
-    async getAllUsers(where?: UserWhereInput): Promise<User[]> {
+    async getAllUsers(options?: UserFindAllOptions): Promise<User[]> {
         return this.prisma.user.findMany({
-            where: where as Prisma.UserWhereInput,
+            where: options?.where as Prisma.UserWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.UserOrderByWithRelationInput
+                | undefined,
         }) as unknown as User[];
     }
 
