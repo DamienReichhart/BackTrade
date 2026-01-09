@@ -10,6 +10,11 @@ import { Router } from "express";
 
 const sessionsPrivateRouter = Router();
 
+sessionsPrivateRouter.patch(
+    "/:sessionId/positions",
+    positionsController.closeAllPositions.bind(positionsController)
+);
+
 sessionsPrivateRouter.get(
     "/:sessionId/positions",
     positionsController.getPositionsBySession.bind(positionsController)

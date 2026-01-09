@@ -333,6 +333,61 @@ class PositionsController {
 
         res.status(204).send();
     }
+
+    /**
+     * Close all open positions for a session
+     *
+     * Closes all OPEN positions for the specified session using the current market price
+     * at the session's current_time. Returns a summary of the operation including
+     * counts of successfully closed positions and any failures.
+     *
+     * Query parameters:
+     * - closeAll: Must be "true" to trigger the close all operation
+     *
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
+     * @param res - Express response object
+     * @throws BadRequestError if closeAll query parameter is missing or invalid
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     */
+    async closeAllPositions(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const { sessionId } = req.params;
+        const closeAll = req.query.closeAll as string | undefined;
+
+        if (!sessionId) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        if (closeAll !== "true") {
+            throw new BadRequestError(
+                'Query parameter "closeAll" must be set to "true"'
+            );
+        }
+
+        this.logger.trace(
+            { sessionId, userId: user.id },
+            "Closing all positions for session"
+        );
+
+        const result = await positionsService.closeAllPositions(
+            sessionId,
+            user
+        );
+
+        this.logger.info(
+            {
+                sessionId,
+                userId: user.id,
+                closed: result.closed,
+                failed: result.failed,
+                total: result.total,
+            },
+            "Close all positions operation completed"
+        );
+
+        res.status(200).json(result);
+    }
 }
 
 export default new PositionsController();

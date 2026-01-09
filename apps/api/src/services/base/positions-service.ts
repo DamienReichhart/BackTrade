@@ -1,4 +1,4 @@
-import { positionsRepo } from "@backtrade/data";
+import { positionsRepo, candlesRepo, sessionsRepo } from "@backtrade/data";
 import type {
     Position,
     PositionWhereInput,
@@ -16,7 +16,12 @@ import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
 import positionClosingService from "../trading/position-closing-service";
 import { BaseService } from "./base-service";
-import { buildOrderBy, buildPagination, filterByAccess } from "../../utils";
+import {
+    buildOrderBy,
+    buildPagination,
+    filterByAccess,
+    toNumber,
+} from "../../utils";
 import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
@@ -38,6 +43,20 @@ const VALID_SORT_FIELDS = [
 ] as const;
 
 type PositionSortField = (typeof VALID_SORT_FIELDS)[number];
+
+/**
+ * Result of closing all positions for a session
+ */
+export interface CloseAllPositionsResult {
+    /** Number of positions successfully closed */
+    closed: number;
+    /** Number of positions that failed to close */
+    failed: number;
+    /** Total number of open positions found */
+    total: number;
+    /** Array of errors for positions that failed to close */
+    errors?: Array<{ positionId: string; error: string }>;
+}
 
 /**
  * Positions Service
@@ -811,6 +830,184 @@ class PositionsService extends BaseService {
         this.logger.debug({ id }, "Position deleted");
 
         await this.invalidateCachedPosition(Number(id));
+    }
+
+    /**
+     * Close all open positions for a session
+     *
+     * Closes all OPEN positions for the specified session using the current market price
+     * at the session's current_time. Each position is closed sequentially to ensure
+     * accurate balance updates and transaction creation.
+     *
+     * This method:
+     * 1. Validates session exists and user has access
+     * 2. Gets session with instrument data
+     * 3. Retrieves all OPEN positions for the session
+     * 4. Gets current market price from last M1 candle at session.current_time
+     * 5. Closes each position sequentially using position closing service
+     * 6. Refreshes session balance after each close for accuracy
+     * 7. Collects results and errors
+     *
+     * @param sessionId - Session ID
+     * @param user - User entity making the request (for authorization)
+     * @returns Summary of the close all operation
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     * @throws BadRequestError if no price data is available
+     */
+    async closeAllPositions(
+        sessionId: string,
+        user: User
+    ): Promise<CloseAllPositionsResult> {
+        this.logger.debug(
+            { sessionId, userId: user.id },
+            "Starting close all positions operation"
+        );
+
+        // 1. Get session with instrument (includes access check)
+        const session = await sessionsRepo.getSessionWithInstrument(sessionId);
+        if (!session) {
+            this.logger.debug({ sessionId }, "Session not found");
+            throw new NotFoundError("Session not found");
+        }
+
+        // 2. Validate user access
+        await this.ensureSessionAccess(session.id, user);
+
+        // 3. Get all OPEN positions for the session
+        const allPositions = await positionsRepo.getAllPositions({
+            where: {
+                session_id: { equals: session.id },
+                position_status: { equals: "OPEN" },
+            },
+        });
+
+        if (allPositions.length === 0) {
+            this.logger.info(
+                { sessionId, userId: user.id },
+                "No open positions to close"
+            );
+            return {
+                closed: 0,
+                failed: 0,
+                total: 0,
+            };
+        }
+
+        this.logger.debug(
+            { sessionId, openPositionCount: allPositions.length },
+            "Found open positions to close"
+        );
+
+        // 4. Get current market price from last M1 candle at session.current_time
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                session.instrument_id,
+                "M1",
+                session.current_time,
+                1
+            );
+
+        if (candles.length === 0) {
+            this.logger.debug(
+                {
+                    sessionId,
+                    instrumentId: session.instrument_id,
+                    currentTime: session.current_time,
+                },
+                "No candle data available for current price"
+            );
+            throw new BadRequestError(
+                "No price data available at current session time. Cannot close positions without market price."
+            );
+        }
+
+        const currentPrice = toNumber(candles[0]!.close);
+        const closedAt = session.current_time;
+
+        this.logger.debug(
+            {
+                sessionId,
+                currentPrice,
+                closedAt,
+                positionCount: allPositions.length,
+            },
+            "Closing all positions with current market price"
+        );
+
+        // 5. Close each position sequentially
+        const results: CloseAllPositionsResult = {
+            closed: 0,
+            failed: 0,
+            total: allPositions.length,
+            errors: [],
+        };
+
+        for (const position of allPositions) {
+            try {
+                // Close position using position closing service
+                // Note: positionClosingService.closePosition() gets the session fresh
+                // from the database each time, ensuring accurate balance calculations
+                const closingResult =
+                    await positionClosingService.closePosition(
+                        position.id.toString(),
+                        currentPrice,
+                        closedAt,
+                        user,
+                        "CLOSED"
+                    );
+
+                results.closed++;
+
+                this.logger.debug(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        realizedPnl: closingResult.netPnL,
+                    },
+                    "Position closed successfully"
+                );
+            } catch (error) {
+                results.failed++;
+
+                const errorMessage =
+                    error instanceof Error
+                        ? error.message
+                        : (String(error) ?? "Unknown error");
+
+                const errorEntry = {
+                    positionId: position.id.toString(),
+                    error: errorMessage,
+                };
+
+                results.errors = results.errors ?? [];
+                results.errors.push(errorEntry);
+
+                this.logger.warn(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        error: errorMessage,
+                    },
+                    "Failed to close position, continuing with others"
+                );
+
+                // Continue closing other positions even if one fails
+            }
+        }
+
+        this.logger.info(
+            {
+                sessionId,
+                userId: user.id,
+                closed: results.closed,
+                failed: results.failed,
+                total: results.total,
+            },
+            "Close all positions operation completed"
+        );
+
+        return results;
     }
 }
 
