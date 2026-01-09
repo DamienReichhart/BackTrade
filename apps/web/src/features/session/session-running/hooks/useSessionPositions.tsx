@@ -12,10 +12,10 @@ export interface UseSessionPositionsResult {
 }
 
 /**
- * Fetch and normalize all positions tied to the current session.
+ * Fetch and normalize open positions for the current session.
  *
- * Centralizing this logic keeps components focused on rendering while hooks
- * coordinate data fetching and cleanup.
+ * This hook fetches only OPEN positions from the server for use on the session page.
+ * For viewing all positions (including closed), use the positions list page.
  */
 export function useSessionPositions(): UseSessionPositionsResult {
     const { id = "" } = useParams<{ id: string }>();
@@ -25,7 +25,7 @@ export function useSessionPositions(): UseSessionPositionsResult {
 
     const { data: positionsData, isLoading } = usePositionsBySession(
         sessionId,
-        undefined
+        "OPEN"
     );
 
     const positions = useMemo<Position[]>(() => {

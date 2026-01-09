@@ -2,7 +2,7 @@ import styles from "./PositionsTable.module.css";
 import { PositionDetailsModal } from "../PositionDetailsModal";
 import { ClosePositionButton, EditablePriceInput } from "./components";
 import { usePositionsTable } from "../../hooks";
-import { formatPnL, getPnLClassName } from "./utils";
+import { formatPnL, getPnLClassName, getDisplayPnL } from "./utils";
 import { useCurrentSessionStore } from "../../../../../store/session";
 
 /**
@@ -88,12 +88,12 @@ export function PositionsTable() {
                                             className={
                                                 styles[
                                                     getPnLClassName(
-                                                        p.realized_pnl
+                                                        getDisplayPnL(p)
                                                     )
                                                 ]
                                             }
                                         >
-                                            {formatPnL(p.realized_pnl)}
+                                            {formatPnL(getDisplayPnL(p))}
                                         </td>
                                         <td
                                             onClick={(e) => e.stopPropagation()}

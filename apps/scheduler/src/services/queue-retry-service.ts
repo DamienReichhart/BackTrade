@@ -69,7 +69,6 @@ export class QueueRetryService {
                 void this.processRetries();
             },
             {
-                scheduled: true,
                 timezone: "UTC",
             }
         );

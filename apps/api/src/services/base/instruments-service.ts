@@ -9,10 +9,12 @@ import type {
     User,
 } from "@backtrade/types";
 import { instrumentsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
+import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid sortable fields for instruments
@@ -26,6 +28,8 @@ const VALID_SORT_FIELDS = [
     "updated_at",
 ] as const;
 
+type InstrumentSortField = (typeof VALID_SORT_FIELDS)[number];
+
 /**
  * Instruments Service
  *
@@ -36,13 +40,9 @@ const VALID_SORT_FIELDS = [
  * - Read operations (getById, getAll): Public (any authenticated user)
  * - Write operations (create, update, delete): Admin only
  */
-class InstrumentsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class InstrumentsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "instruments-service",
-        });
+        super("instruments-service");
     }
 
     // ============================================================================
@@ -226,29 +226,6 @@ class InstrumentsService {
         };
     }
 
-    /**
-     * Build order by clause for instrument queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): InstrumentOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
-            return undefined;
-        }
-
-        return { [sort]: order } as InstrumentOrderBy;
-    }
-
     // ============================================================================
     // PUBLIC METHODS
     // ============================================================================
@@ -299,19 +276,32 @@ class InstrumentsService {
      * @returns Array of instrument entities
      */
     async getAllInstruments(query?: SearchQuery): Promise<Instrument[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            q,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build where clause
         const where = this.buildSearchConditions(q ?? "");
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<InstrumentSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as InstrumentOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         return instrumentsRepo.getAllInstruments({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
     }

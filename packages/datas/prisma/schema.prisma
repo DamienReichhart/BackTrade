@@ -177,12 +177,13 @@ model StripeEvent {
 // ============================================================================
 
 model Instrument {
-  id           Int      @id @default(autoincrement())
-  symbol       String   @unique
-  display_name String
-  pip_size     Decimal  @db.Decimal(10, 8)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  symbol        String   @unique
+  display_name  String
+  pip_size      Decimal  @db.Decimal(10, 8)
+  contract_size Int      @default(100000)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   // Relations
   sessions Session[]
@@ -202,6 +203,7 @@ model Session {
   current_time          DateTime
   end_time              DateTime?
   initial_balance     Decimal       @db.Decimal(18, 8)
+  current_balance     Decimal       @db.Decimal(18, 8)
   leverage            Int           @default(1)
   spread_pts          Decimal       @default(0) @db.Decimal(10, 4)
   slippage_pts        Decimal       @default(0) @db.Decimal(10, 4)
@@ -234,6 +236,7 @@ model Position {
   opened_at       DateTime
   closed_at       DateTime?
   realized_pnl    Decimal?       @db.Decimal(18, 8)
+  unrealized_pnl  Decimal?       @db.Decimal(18, 8)
   commission_cost Decimal?       @db.Decimal(18, 8)
   slippage_cost   Decimal?       @db.Decimal(18, 8)
   spread_cost     Decimal?       @db.Decimal(18, 8)

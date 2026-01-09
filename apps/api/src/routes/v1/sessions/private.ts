@@ -10,6 +10,11 @@ import { Router } from "express";
 
 const sessionsPrivateRouter = Router();
 
+sessionsPrivateRouter.patch(
+    "/:sessionId/positions",
+    positionsController.closeAllPositions.bind(positionsController)
+);
+
 sessionsPrivateRouter.get(
     "/:sessionId/positions",
     positionsController.getPositionsBySession.bind(positionsController)
@@ -23,6 +28,11 @@ sessionsPrivateRouter.get(
 sessionsPrivateRouter.get(
     "/:id/candles",
     sessionsController.getSessionCandles.bind(sessionsController)
+);
+
+sessionsPrivateRouter.get(
+    "/:id/info",
+    sessionsController.getSessionInfo.bind(sessionsController)
 );
 
 sessionsPrivateRouter.get(

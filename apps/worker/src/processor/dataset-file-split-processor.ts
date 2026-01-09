@@ -2,10 +2,14 @@
  * Dataset File Split Processor
  *
  * Processes uploaded dataset files by splitting them into smaller parts
- * for parallel processing. Each part is uploaded to MinIO and a
- * separate processing job is created for it.
+ * for parallel processing. Uses streaming to handle files of any size
+ * without loading them entirely into memory.
+ *
+ * Each part is uploaded to MinIO and a processing job is queued immediately,
+ * enabling progressive parallel processing of large files.
  */
 
+import { createInterface, type Interface as ReadlineInterface } from "readline";
 import { logger } from "../libs/pino";
 import { storageService } from "../libs/storage";
 import { datasetsRepo } from "@backtrade/data";
@@ -15,6 +19,7 @@ import {
     QueueName,
     type DatasetFileSplitPayload,
     type DatasetPartProcessPayload,
+    type Timeframe,
 } from "@backtrade/types";
 import queueService from "../services/queue-service";
 
@@ -32,9 +37,34 @@ const HEADER_PATTERNS = [
 ];
 
 /**
+ * State tracking for streaming file processing
+ */
+interface StreamProcessingState {
+    /** Current part number (0-indexed) */
+    partNumber: number;
+    /** Lines accumulated for current part */
+    currentPartLines: string[];
+    /** Total data lines processed (excluding header) */
+    totalDataLines: number;
+    /** Whether the first line was detected as a header */
+    hasHeader: boolean;
+    /** Whether we've processed the first line */
+    firstLineProcessed: boolean;
+    /** Bucket name for storage */
+    bucket: string;
+    /** Dataset ID */
+    datasetId: number;
+    /** Instrument ID for candle processing */
+    instrumentId: number;
+    /** Timeframe for candle processing */
+    timeframe: Timeframe;
+}
+
+/**
  * Dataset File Split Processor
  *
  * Handles splitting large dataset files into smaller chunks for parallel processing.
+ * Uses streaming to support files of any size without memory constraints.
  */
 class DatasetFileSplitProcessor {
     private readonly logger: ReturnType<typeof logger.child>;
@@ -90,10 +120,142 @@ class DatasetFileSplitProcessor {
     }
 
     /**
-     * Process a dataset file split job
+     * Upload a part to MinIO and queue its processing job
      *
-     * Downloads the file from MinIO, splits it into parts,
-     * uploads each part, and creates processing jobs for each.
+     * @param state - Current processing state
+     * @param totalParts - Total number of parts (may be estimated during streaming)
+     * @returns The full path to the uploaded part
+     */
+    private async uploadPartAndQueueJob(
+        state: StreamProcessingState,
+        totalParts: number
+    ): Promise<string> {
+        const {
+            bucket,
+            datasetId,
+            partNumber,
+            currentPartLines,
+            instrumentId,
+            timeframe,
+        } = state;
+        const partPath = `${datasetId}/parts/part_${partNumber}.csv`;
+        const fullPartPath = `${bucket}/${partPath}`;
+
+        // Create part content and upload
+        const partContent = currentPartLines.join("\n");
+        const partBuffer = Buffer.from(partContent, "utf-8");
+
+        this.logger.debug(
+            {
+                datasetId,
+                partNumber,
+                lineCount: currentPartLines.length,
+            },
+            "Uploading part to MinIO"
+        );
+
+        await storageService.upload(bucket, partPath, partBuffer, {
+            contentType: "text/csv",
+            metadata: {
+                datasetId: String(datasetId),
+                partNumber: String(partNumber),
+                totalParts: String(totalParts),
+                lineCount: String(currentPartLines.length),
+            },
+        });
+
+        // Queue processing job immediately
+        const partPayload: DatasetPartProcessPayload = {
+            datasetId,
+            partPath: fullPartPath,
+            partNumber,
+            totalParts,
+            instrumentId,
+            timeframe,
+        };
+
+        // Validate the payload before queuing
+        const partParseResult =
+            DatasetPartProcessPayloadSchema.safeParse(partPayload);
+        if (!partParseResult.success) {
+            this.logger.error(
+                { error: partParseResult.error, partPayload },
+                "Invalid part processing payload"
+            );
+            throw new Error(
+                `Invalid part payload: ${partParseResult.error.message}`
+            );
+        }
+
+        await queueService.queueMessage(
+            QueueName.datasetPartProcess,
+            partPayload
+        );
+
+        this.logger.debug(
+            { datasetId, partNumber, lineCount: currentPartLines.length },
+            "Part uploaded and processing job queued"
+        );
+
+        return fullPartPath;
+    }
+
+    /**
+     * Process a single line from the stream
+     *
+     * @param line - The line to process
+     * @param state - Current processing state (mutated)
+     * @returns Promise that resolves when line is processed
+     */
+    private async processLine(
+        line: string,
+        state: StreamProcessingState
+    ): Promise<void> {
+        const trimmedLine = line.trim();
+
+        // Skip empty lines
+        if (!trimmedLine) {
+            return;
+        }
+
+        // Handle first line - check for header
+        if (!state.firstLineProcessed) {
+            state.firstLineProcessed = true;
+
+            if (this.isHeaderLine(trimmedLine)) {
+                state.hasHeader = true;
+                this.logger.info(
+                    { datasetId: state.datasetId, headerLine: trimmedLine },
+                    "Detected and skipping CSV header row"
+                );
+                return; // Skip header line
+            }
+        }
+
+        // Add line to current part buffer
+        state.currentPartLines.push(trimmedLine);
+        state.totalDataLines++;
+
+        // Check if current part is full
+        if (state.currentPartLines.length >= MAX_LINES_PER_PART) {
+            // Estimate total parts based on current progress
+            // This estimate improves as we process more of the file
+            const estimatedTotalParts = state.partNumber + 1;
+
+            await this.uploadPartAndQueueJob(state, estimatedTotalParts);
+
+            // Reset for next part
+            state.currentPartLines = [];
+            state.partNumber++;
+        }
+    }
+
+    /**
+     * Process a dataset file split job using streaming
+     *
+     * Streams the file from MinIO, splits it into parts progressively,
+     * uploads each part, and immediately queues processing jobs.
+     * This approach handles files of any size without memory constraints.
      *
      * @param data - Job payload (validated against DatasetFileSplitPayloadSchema)
      * @throws Error if processing fails
@@ -125,149 +287,78 @@ class DatasetFileSplitProcessor {
             throw new Error(`Invalid file path format: ${filePath}`);
         }
 
-        // Download file from MinIO
+        // Get file stream from MinIO
         this.logger.debug(
             { bucket, objectPath },
-            "Downloading file from MinIO"
+            "Creating file stream from MinIO"
         );
-        const fileBuffer = await storageService.download(bucket, objectPath);
-        const fileContent = fileBuffer.toString("utf-8");
-
-        // Split content into lines (handle both \n and \r\n line endings)
-        const allLines = fileContent
-            .split(/\r?\n/)
-            .filter((line) => line.trim() !== "");
-
-        if (allLines.length === 0) {
-            this.logger.warn({ datasetId }, "Empty file, nothing to process");
-            return;
-        }
-
-        // Detect and remove header row if present
-        let dataLines: string[];
-        let hasHeader = false;
-
-        if (this.isHeaderLine(allLines[0]!)) {
-            hasHeader = true;
-            dataLines = allLines.slice(1);
-            this.logger.info(
-                { datasetId, headerLine: allLines[0] },
-                "Detected and removing CSV header row"
-            );
-        } else {
-            dataLines = allLines;
-        }
-
-        const totalLines = dataLines.length;
-
-        this.logger.info(
-            { datasetId, totalLines, hasHeader },
-            "File downloaded and parsed"
+        const fileStream = await storageService.getObjectStream(
+            bucket,
+            objectPath
         );
 
+        // Initialize processing state
+        const state: StreamProcessingState = {
+            partNumber: 0,
+            currentPartLines: [],
+            totalDataLines: 0,
+            hasHeader: false,
+            firstLineProcessed: false,
+            bucket,
+            datasetId,
+            instrumentId,
+            timeframe,
+        };
+
+        // Create readline interface for line-by-line processing
+        const rl: ReadlineInterface = createInterface({
+            input: fileStream,
+            crlfDelay: Infinity, // Handle both \n and \r\n line endings
+        });
+
+        // Process file line by line
+        try {
+            for await (const line of rl) {
+                await this.processLine(line, state);
+            }
+        } catch (error) {
+            // Clean up readline interface on error
+            rl.close();
+            fileStream.destroy();
+            throw error;
+        }
+
+        // Handle final part (if there are remaining lines)
+        if (state.currentPartLines.length > 0) {
+            const totalParts = state.partNumber + 1;
+            await this.uploadPartAndQueueJob(state, totalParts);
+            state.partNumber++;
+        }
+
+        const totalParts = state.partNumber;
+        const totalLines = state.totalDataLines;
+
+        // Handle edge cases
         if (totalLines === 0) {
             this.logger.warn(
-                { datasetId },
-                "No data lines found after header removal"
+                { datasetId, hasHeader: state.hasHeader },
+                state.hasHeader
+                    ? "No data lines found after header removal"
+                    : "Empty file, nothing to process"
             );
             return;
         }
-
-        // Calculate number of parts
-        const totalParts = Math.ceil(totalLines / MAX_LINES_PER_PART);
 
         this.logger.info(
             {
                 datasetId,
                 totalLines,
                 totalParts,
+                hasHeader: state.hasHeader,
                 maxLinesPerPart: MAX_LINES_PER_PART,
             },
-            "Splitting file into parts"
+            "File streaming and splitting completed"
         );
-
-        // Split and upload parts
-        const partPaths: string[] = [];
-
-        for (let partNumber = 0; partNumber < totalParts; partNumber++) {
-            const startLine = partNumber * MAX_LINES_PER_PART;
-            const endLine = Math.min(
-                startLine + MAX_LINES_PER_PART,
-                totalLines
-            );
-            const partLines = dataLines.slice(startLine, endLine);
-
-            // Create part content
-            const partContent = partLines.join("\n");
-            const partBuffer = Buffer.from(partContent, "utf-8");
-
-            // Build part path: datasets/{datasetId}/parts/part_{n}.csv
-            const partPath = `${datasetId}/parts/part_${partNumber}.csv`;
-
-            this.logger.debug(
-                {
-                    datasetId,
-                    partNumber,
-                    startLine,
-                    endLine,
-                    lineCount: partLines.length,
-                },
-                "Uploading part to MinIO"
-            );
-
-            // Upload part to MinIO
-            await storageService.upload(bucket, partPath, partBuffer, {
-                contentType: "text/csv",
-                metadata: {
-                    datasetId: String(datasetId),
-                    partNumber: String(partNumber),
-                    totalParts: String(totalParts),
-                    lineCount: String(partLines.length),
-                },
-            });
-
-            partPaths.push(`${bucket}/${partPath}`);
-        }
-
-        this.logger.info(
-            { datasetId, partCount: partPaths.length },
-            "All parts uploaded, creating processing jobs"
-        );
-
-        // Create processing jobs for each part
-        for (let partNumber = 0; partNumber < partPaths.length; partNumber++) {
-            const partPayload: DatasetPartProcessPayload = {
-                datasetId,
-                partPath: partPaths[partNumber]!,
-                partNumber,
-                totalParts,
-                instrumentId,
-                timeframe,
-            };
-
-            // Validate the payload before queuing
-            const partParseResult =
-                DatasetPartProcessPayloadSchema.safeParse(partPayload);
-            if (!partParseResult.success) {
-                this.logger.error(
-                    { error: partParseResult.error, partPayload },
-                    "Invalid part processing payload"
-                );
-                throw new Error(
-                    `Invalid part payload: ${partParseResult.error.message}`
-                );
-            }
-
-            await queueService.queueMessage(
-                QueueName.datasetPartProcess,
-                partPayload
-            );
-
-            this.logger.debug(
-                { datasetId, partNumber },
-                "Part processing job queued"
-            );
-        }
 
         // Update dataset with total records count
         await datasetsRepo.updateDataset(datasetId, {

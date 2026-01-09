@@ -99,6 +99,16 @@ export function getClientIp(req: Request): string {
  * @param date - Date to format
  * @returns Formatted date string
  */
+/**
+ * Format a date for display in emails
+ *
+ * @param date - Date to format
+ * @returns Formatted date string (e.g., "January 15, 2025 at 2:30 PM")
+ */
+export function formatDate(date: Date = new Date()): string {
+    return formatLoginDate(date);
+}
+
 export function formatLoginDate(date: Date = new Date()): string {
     return date.toLocaleString("en-US", {
         weekday: "long",

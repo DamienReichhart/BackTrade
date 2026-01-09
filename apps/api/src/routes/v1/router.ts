@@ -7,6 +7,8 @@ import datasetsRouter from "./datasets/router";
 import sessionsRouter from "./sessions/router";
 import positionsRouter from "./positions/router";
 import transactionsRouter from "./transactions/router";
+import plansRouter from "./plans/router";
+import subscriptionsRouter from "./subscriptions/router";
 
 const apiV1Router = Router();
 
@@ -18,5 +20,7 @@ apiV1Router.use("/datasets", datasetsRouter);
 apiV1Router.use("/sessions", sessionsRouter);
 apiV1Router.use("/positions", positionsRouter);
 apiV1Router.use("/transactions", transactionsRouter);
+apiV1Router.use("/plans", plansRouter);
+apiV1Router.use("/subscriptions", subscriptionsRouter);
 
 export default apiV1Router;

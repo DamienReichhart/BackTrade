@@ -9,10 +9,13 @@ import type {
     User,
 } from "@backtrade/types";
 import { sessionsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
+import barAdvancementService from "../trading/bar-advancement-service";
+import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid session statuses for search operations
@@ -33,10 +36,13 @@ const VALID_SORT_FIELDS = [
     "current_time",
     "end_time",
     "initial_balance",
+    "current_balance",
     "leverage",
     "created_at",
     "updated_at",
 ] as const;
+
+type SessionSortField = (typeof VALID_SORT_FIELDS)[number];
 
 /**
  * Sessions Service
@@ -44,13 +50,9 @@ const VALID_SORT_FIELDS = [
  * Handles business logic for session operations including CRUD, validation, and caching.
  * Sessions represent trading simulation instances owned by users.
  */
-class SessionsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class SessionsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "sessions-service",
-        });
+        super("sessions-service");
     }
 
     // ============================================================================
@@ -531,29 +533,6 @@ class SessionsService {
         return { OR: searchConditions };
     }
 
-    /**
-     * Build order by clause for session queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): SessionOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
-            return undefined;
-        }
-
-        return { [sort]: order } as SessionOrderBy;
-    }
-
     // ============================================================================
     // PUBLIC METHODS
     // ============================================================================
@@ -612,7 +591,13 @@ class SessionsService {
         userId?: number,
         query?: SearchQuery
     ): Promise<Session[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            q,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build user filter
         const userFilter = this.buildUserFilter(userId);
@@ -626,14 +611,21 @@ class SessionsService {
             searchConditions
         );
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<SessionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as SessionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         return sessionsRepo.getAllSessions({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
     }
@@ -669,6 +661,12 @@ class SessionsService {
     /**
      * Update an existing session
      *
+     * When current_time is advanced (moved forward), triggers bar advancement
+     * processing to:
+     * - Check TP/SL levels against M1 candle data
+     * - Close positions that hit TP/SL
+     * - Perform liquidation cascade if margin level drops below 50%
+     *
      * @param id - Session ID
      * @param session - Session update data
      * @param user - User entity making the request (for authorization)
@@ -696,6 +694,62 @@ class SessionsService {
 
         // Validate business rules
         this.validateSessionUpdate(session, existing, id);
+
+        // Process bar advancement if current_time is being advanced
+        if (session.current_time !== undefined) {
+            const oldTime = existing.current_time;
+            const newTime = session.current_time;
+
+            // Only process if time is moving forward
+            if (new Date(newTime) > new Date(oldTime)) {
+                this.logger.debug(
+                    { id, oldTime, newTime },
+                    "Bar advancement detected, processing positions"
+                );
+
+                // Fetch session with instrument for contract_size and other calculations
+                const sessionWithInstrument =
+                    await sessionsRepo.getSessionWithInstrument(id);
+
+                if (sessionWithInstrument) {
+                    try {
+                        const result =
+                            await barAdvancementService.processBarAdvancement(
+                                sessionWithInstrument,
+                                oldTime,
+                                newTime,
+                                user
+                            );
+
+                        this.logger.debug(
+                            {
+                                id,
+                                positionsClosedCount:
+                                    result.positionsClosed.length,
+                                marginLevelAfter: result.marginLevelAfter,
+                                equityAfter: result.equityAfter,
+                            },
+                            "Bar advancement processing complete"
+                        );
+                    } catch (error) {
+                        this.logger.error(
+                            {
+                                id,
+                                oldTime,
+                                newTime,
+                                error:
+                                    error instanceof Error
+                                        ? error.message
+                                        : String(error),
+                            },
+                            "Bar advancement processing failed"
+                        );
+                        // Re-throw to prevent session update if bar processing fails
+                        throw error;
+                    }
+                }
+            }
+        }
 
         const updated = await sessionsRepo.updateSession(id, session);
         this.logger.debug({ id: updated.id }, "Session updated");

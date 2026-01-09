@@ -1,29 +1,28 @@
-import { positionsRepo } from "@backtrade/data";
+import { positionsRepo, candlesRepo, sessionsRepo } from "@backtrade/data";
 import type {
     Position,
     PositionWhereInput,
     PositionCreateInput,
     PositionUpdateInput,
     PositionOrderBy,
-    SearchQuery,
+    PositionQuery,
+    PositionStatus,
     User,
 } from "@backtrade/types";
 import { positionsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
-
-/**
- * Valid position statuses for search operations
- */
-const VALID_POSITION_STATUSES = ["OPEN", "CLOSED", "LIQUIDATED"] as const;
-
-/**
- * Valid position sides for search operations
- */
-const VALID_SIDES = ["BUY", "SELL"] as const;
+import positionClosingService from "../trading/position-closing-service";
+import { BaseService } from "./base-service";
+import {
+    buildOrderBy,
+    buildPagination,
+    filterByAccess,
+    toNumber,
+} from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid sortable fields for positions
@@ -43,19 +42,31 @@ const VALID_SORT_FIELDS = [
     "updated_at",
 ] as const;
 
+type PositionSortField = (typeof VALID_SORT_FIELDS)[number];
+
+/**
+ * Result of closing all positions for a session
+ */
+export interface CloseAllPositionsResult {
+    /** Number of positions successfully closed */
+    closed: number;
+    /** Number of positions that failed to close */
+    failed: number;
+    /** Total number of open positions found */
+    total: number;
+    /** Array of errors for positions that failed to close */
+    errors?: Array<{ positionId: string; error: string }>;
+}
+
 /**
  * Positions Service
  *
  * Handles business logic for position operations including CRUD, validation, and caching.
  * Positions represent trading positions within a session.
  */
-class PositionsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class PositionsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "positions-service",
-        });
+        super("positions-service");
     }
 
     // ============================================================================
@@ -481,60 +492,6 @@ class PositionsService {
         this.logger.trace({ id: numericId }, "Position invalidated from cache");
     }
 
-    /**
-     * Filter positions by access rights
-     *
-     * Verifies access for each position in parallel and filters out
-     * inaccessible ones. Logs filtered positions for security auditing.
-     *
-     * @param positions - Array of positions to filter
-     * @param user - User entity making the request
-     * @returns Array of accessible positions
-     */
-    private async filterPositionsByAccess(
-        positions: Position[],
-        user: User
-    ): Promise<Position[]> {
-        if (positions.length === 0) {
-            return positions;
-        }
-
-        // Verify access for all positions in parallel
-        const accessResults = await Promise.all(
-            positions.map((position) =>
-                this.verifyPositionAccess(position, user)
-            )
-        );
-
-        // Filter positions based on access results
-        const accessiblePositions: Position[] = [];
-        let filteredCount = 0;
-
-        positions.forEach((position, index) => {
-            if (accessResults[index]) {
-                accessiblePositions.push(position);
-            } else {
-                filteredCount++;
-            }
-        });
-
-        // Log if any positions were filtered out
-        if (filteredCount > 0) {
-            this.logger.debug(
-                {
-                    userId: user.id,
-                    userRole: user.role,
-                    totalPositions: positions.length,
-                    filteredCount,
-                    accessibleCount: accessiblePositions.length,
-                },
-                "Positions filtered by access rights"
-            );
-        }
-
-        return accessiblePositions;
-    }
-
     // ============================================================================
     // QUERY BUILDING METHODS
     // ============================================================================
@@ -573,88 +530,39 @@ class PositionsService {
     }
 
     /**
-     * Build search conditions for position queries
+     * Build status filter for position queries
      *
-     * @param searchQuery - Search query string
-     * @returns Array of search conditions or empty array
+     * @param status - Optional position status to filter by
+     * @returns Where clause for status filtering or undefined
      */
-    private buildSearchConditions(searchQuery: string): PositionWhereInput[] {
-        const searchConditions: PositionWhereInput[] = [];
-        const upperQ = searchQuery.toUpperCase();
-
-        // Try to match position_status
-        if (
-            VALID_POSITION_STATUSES.includes(
-                upperQ as (typeof VALID_POSITION_STATUSES)[number]
-            )
-        ) {
-            searchConditions.push({
-                position_status: {
-                    equals: upperQ as (typeof VALID_POSITION_STATUSES)[number],
-                },
-            });
-        }
-
-        // Try to match side
-        if (VALID_SIDES.includes(upperQ as (typeof VALID_SIDES)[number])) {
-            searchConditions.push({
-                side: { equals: upperQ as (typeof VALID_SIDES)[number] },
-            });
-        }
-
-        return searchConditions;
-    }
-
-    /**
-     * Combine session filter with search conditions
-     *
-     * @param sessionFilter - Session filter where clause
-     * @param searchConditions - Search conditions array
-     * @returns Combined where clause
-     */
-    private combineFiltersWithSearch(
-        sessionFilter: PositionWhereInput,
-        searchConditions: PositionWhereInput[]
-    ): PositionWhereInput {
-        if (searchConditions.length === 0) {
-            return sessionFilter;
-        }
-
-        const hasSessionFilter = sessionFilter.session_id !== undefined;
-
-        if (hasSessionFilter) {
-            return {
-                AND: [
-                    { session_id: sessionFilter.session_id },
-                    { OR: searchConditions },
-                ],
-            };
-        }
-
-        return { OR: searchConditions };
-    }
-
-    /**
-     * Build order by clause for position queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): PositionOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
+    private buildStatusFilter(
+        status: PositionStatus | undefined
+    ): PositionWhereInput | undefined {
+        if (!status) {
             return undefined;
         }
 
-        return { [sort]: order } as PositionOrderBy;
+        return { position_status: { equals: status } };
+    }
+
+    /**
+     * Combine session filter with status filter
+     *
+     * @param sessionFilter - Session filter where clause
+     * @param statusFilter - Optional status filter where clause
+     * @returns Combined where clause
+     */
+    private combineFilters(
+        sessionFilter: PositionWhereInput,
+        statusFilter: PositionWhereInput | undefined
+    ): PositionWhereInput {
+        if (!statusFilter) {
+            return sessionFilter;
+        }
+
+        return {
+            AND: [sessionFilter, statusFilter],
+        };
     }
 
     // ============================================================================
@@ -709,16 +617,22 @@ class PositionsService {
      *
      * @param sessionId - Optional session ID to filter positions by
      * @param user - User entity making the request (for authorization)
-     * @param query - Optional search query with pagination and sorting
+     * @param query - Optional query with status filter, pagination, and sorting
      * @returns Array of position entities
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getAllPositions(
         sessionId: string | undefined,
         user: User,
-        query?: SearchQuery
+        query?: PositionQuery
     ): Promise<Position[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            status,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build session filter
         const sessionFilter = await this.buildSessionFilter(sessionId, user);
@@ -731,27 +645,39 @@ class PositionsService {
             }
         }
 
-        // Build search conditions
-        const searchConditions = q ? this.buildSearchConditions(q) : [];
+        // Build status filter
+        const statusFilter = this.buildStatusFilter(status);
 
         // Combine filters
-        const where = this.combineFiltersWithSearch(
-            sessionFilter,
-            searchConditions
-        );
+        const where = this.combineFilters(sessionFilter, statusFilter);
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<PositionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as PositionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         const positions = await positionsRepo.getAllPositions({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
 
-        return this.filterPositionsByAccess(positions, user);
+        // Filter by access using shared utility
+        const result = await filterByAccess(
+            positions,
+            (position) => this.verifyPositionAccess(position, user),
+            this.logger,
+            { userId: user.id, userRole: user.role, entityType: "Position" }
+        );
+
+        return result.accessible;
     }
 
     /**
@@ -790,7 +716,40 @@ class PositionsService {
     }
 
     /**
+     * Check if the update represents a position closing operation
+     *
+     * A position is being closed when:
+     * - The existing position is OPEN
+     * - The new status is CLOSED or LIQUIDATED
+     * - exit_price and closed_at are provided
+     *
+     * @param position - Position update data
+     * @param existing - Existing position entity
+     * @returns true if this is a closing operation
+     */
+    private isClosingPosition(
+        position: PositionUpdateInput,
+        existing: Position
+    ): boolean {
+        const isStatusChangingToClosed =
+            position.position_status === "CLOSED" ||
+            position.position_status === "LIQUIDATED";
+
+        const isCurrentlyOpen = existing.position_status === "OPEN";
+
+        const hasClosingData =
+            position.exit_price !== undefined &&
+            position.closed_at !== undefined;
+
+        return isStatusChangingToClosed && isCurrentlyOpen && hasClosingData;
+    }
+
+    /**
      * Update an existing position
+     *
+     * If the update is a position closing operation (status changing to CLOSED/LIQUIDATED
+     * with exit_price and closed_at), delegates to the position closing service to
+     * automatically calculate PnL, apply trading costs, and create transactions.
      *
      * @param id - Position ID
      * @param position - Position update data
@@ -817,7 +776,26 @@ class PositionsService {
         // Check session access
         await this.ensureSessionAccess(existing.session_id, user);
 
-        // Validate business rules
+        // Detect if this is a position closing operation
+        if (this.isClosingPosition(position, existing)) {
+            this.logger.debug(
+                { id, newStatus: position.position_status },
+                "Position closing detected, delegating to closing service"
+            );
+
+            // Delegate to position closing service for automatic PnL calculation
+            const result = await positionClosingService.closePosition(
+                id,
+                position.exit_price!,
+                position.closed_at!,
+                user,
+                position.position_status as "CLOSED" | "LIQUIDATED"
+            );
+
+            return result.position;
+        }
+
+        // Validate business rules for non-closing updates
         this.validatePositionUpdate(position, existing, id);
 
         const updated = await positionsRepo.updatePosition(id, position);
@@ -852,6 +830,184 @@ class PositionsService {
         this.logger.debug({ id }, "Position deleted");
 
         await this.invalidateCachedPosition(Number(id));
+    }
+
+    /**
+     * Close all open positions for a session
+     *
+     * Closes all OPEN positions for the specified session using the current market price
+     * at the session's current_time. Each position is closed sequentially to ensure
+     * accurate balance updates and transaction creation.
+     *
+     * This method:
+     * 1. Validates session exists and user has access
+     * 2. Gets session with instrument data
+     * 3. Retrieves all OPEN positions for the session
+     * 4. Gets current market price from last M1 candle at session.current_time
+     * 5. Closes each position sequentially using position closing service
+     * 6. Refreshes session balance after each close for accuracy
+     * 7. Collects results and errors
+     *
+     * @param sessionId - Session ID
+     * @param user - User entity making the request (for authorization)
+     * @returns Summary of the close all operation
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     * @throws BadRequestError if no price data is available
+     */
+    async closeAllPositions(
+        sessionId: string,
+        user: User
+    ): Promise<CloseAllPositionsResult> {
+        this.logger.debug(
+            { sessionId, userId: user.id },
+            "Starting close all positions operation"
+        );
+
+        // 1. Get session with instrument (includes access check)
+        const session = await sessionsRepo.getSessionWithInstrument(sessionId);
+        if (!session) {
+            this.logger.debug({ sessionId }, "Session not found");
+            throw new NotFoundError("Session not found");
+        }
+
+        // 2. Validate user access
+        await this.ensureSessionAccess(session.id, user);
+
+        // 3. Get all OPEN positions for the session
+        const allPositions = await positionsRepo.getAllPositions({
+            where: {
+                session_id: { equals: session.id },
+                position_status: { equals: "OPEN" },
+            },
+        });
+
+        if (allPositions.length === 0) {
+            this.logger.info(
+                { sessionId, userId: user.id },
+                "No open positions to close"
+            );
+            return {
+                closed: 0,
+                failed: 0,
+                total: 0,
+            };
+        }
+
+        this.logger.debug(
+            { sessionId, openPositionCount: allPositions.length },
+            "Found open positions to close"
+        );
+
+        // 4. Get current market price from last M1 candle at session.current_time
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                session.instrument_id,
+                "M1",
+                session.current_time,
+                1
+            );
+
+        if (candles.length === 0) {
+            this.logger.debug(
+                {
+                    sessionId,
+                    instrumentId: session.instrument_id,
+                    currentTime: session.current_time,
+                },
+                "No candle data available for current price"
+            );
+            throw new BadRequestError(
+                "No price data available at current session time. Cannot close positions without market price."
+            );
+        }
+
+        const currentPrice = toNumber(candles[0]!.close);
+        const closedAt = session.current_time;
+
+        this.logger.debug(
+            {
+                sessionId,
+                currentPrice,
+                closedAt,
+                positionCount: allPositions.length,
+            },
+            "Closing all positions with current market price"
+        );
+
+        // 5. Close each position sequentially
+        const results: CloseAllPositionsResult = {
+            closed: 0,
+            failed: 0,
+            total: allPositions.length,
+            errors: [],
+        };
+
+        for (const position of allPositions) {
+            try {
+                // Close position using position closing service
+                // Note: positionClosingService.closePosition() gets the session fresh
+                // from the database each time, ensuring accurate balance calculations
+                const closingResult =
+                    await positionClosingService.closePosition(
+                        position.id.toString(),
+                        currentPrice,
+                        closedAt,
+                        user,
+                        "CLOSED"
+                    );
+
+                results.closed++;
+
+                this.logger.debug(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        realizedPnl: closingResult.netPnL,
+                    },
+                    "Position closed successfully"
+                );
+            } catch (error) {
+                results.failed++;
+
+                const errorMessage =
+                    error instanceof Error
+                        ? error.message
+                        : (String(error) ?? "Unknown error");
+
+                const errorEntry = {
+                    positionId: position.id.toString(),
+                    error: errorMessage,
+                };
+
+                results.errors = results.errors ?? [];
+                results.errors.push(errorEntry);
+
+                this.logger.warn(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        error: errorMessage,
+                    },
+                    "Failed to close position, continuing with others"
+                );
+
+                // Continue closing other positions even if one fails
+            }
+        }
+
+        this.logger.info(
+            {
+                sessionId,
+                userId: user.id,
+                closed: results.closed,
+                failed: results.failed,
+                total: results.total,
+            },
+            "Close all positions operation completed"
+        );
+
+        return results;
     }
 }
 

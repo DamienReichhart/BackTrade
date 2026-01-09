@@ -5,21 +5,17 @@
  */
 
 import { verify, hash, argon2id } from "argon2";
-import { logger } from "../../libs/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
+import { BaseService } from "../base/base-service";
 
 /**
  * Hash Service
  *
  * Handles password hashing and verification using argon2.
  */
-class HashService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class HashService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "hash-service",
-        });
+        super("hash-service");
     }
 
     /**

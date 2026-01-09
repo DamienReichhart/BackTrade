@@ -13,9 +13,9 @@ import { z } from "zod";
  * Type definitions for all email template data structures
  */
 
-/** Base data included in all email templates */
+/** Base data type for all email templates (allows any string keys) */
 export interface BaseEmailData {
-    // No base properties - all template-specific data is in extended interfaces
+    [key: string]: unknown;
 }
 
 /** Data required for the registration welcome email template */
@@ -43,7 +43,11 @@ export interface LoginEmailData extends BaseEmailData {
 /**
  * Mail template types
  */
-export const MailTemplateTypeSchema = z.enum(["welcome", "login-notification"]);
+export const MailTemplateTypeSchema = z.enum([
+    "welcome",
+    "login-notification",
+    "account-deleted",
+]);
 export type MailTemplateType = z.infer<typeof MailTemplateTypeSchema>;
 
 /**
@@ -83,11 +87,22 @@ const LoginNotificationEmailDataSchema = BaseEmailDataSchema.extend({
 });
 
 /**
+ * Account deleted email data schema
+ */
+const AccountDeletedEmailDataSchema = BaseEmailDataSchema.extend({
+    /** User's display name or email */
+    username: z.string().min(1),
+    /** Formatted deletion date and time */
+    deletionDate: z.string().min(1),
+});
+
+/**
  * Union schema for all email data types (without template discriminator)
  */
 export const EmailDataSchema = z.union([
     WelcomeEmailDataSchema,
     LoginNotificationEmailDataSchema,
+    AccountDeletedEmailDataSchema,
 ]);
 
 /**
@@ -120,4 +135,11 @@ export type WelcomeEmailData = z.infer<typeof WelcomeEmailDataSchema>;
  */
 export type LoginNotificationEmailData = z.infer<
     typeof LoginNotificationEmailDataSchema
+>;
+
+/**
+ * Account deleted email data type
+ */
+export type AccountDeletedEmailData = z.infer<
+    typeof AccountDeletedEmailDataSchema
 >;

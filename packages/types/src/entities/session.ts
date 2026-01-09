@@ -1,10 +1,7 @@
 import { z } from "zod";
 import { SessionStatusSchema, SpeedSchema, LeverageSchema } from "../enums";
-
-/**
- * Coerce value to number, handling Prisma Decimal objects, strings, and numbers
- */
-const numberCoerce = z.coerce.number();
+import { numberCoerce } from "./coerce";
+import { InstrumentSchema } from "./instrument";
 
 export const SessionSchema = z.object({
     id: numberCoerce.int().positive(),
@@ -17,6 +14,7 @@ export const SessionSchema = z.object({
     current_time: z.iso.datetime(),
     end_time: z.iso.datetime().nullable().optional(),
     initial_balance: numberCoerce.positive(),
+    current_balance: numberCoerce.nonnegative(),
     leverage: numberCoerce.pipe(LeverageSchema),
     spread_pts: numberCoerce.nonnegative(),
     slippage_pts: numberCoerce.nonnegative(),
@@ -25,3 +23,11 @@ export const SessionSchema = z.object({
     updated_at: z.string().optional(),
 });
 export type Session = z.infer<typeof SessionSchema>;
+
+/**
+ * Session with included instrument relation
+ */
+export const SessionWithInstrumentSchema = SessionSchema.extend({
+    instrument: InstrumentSchema,
+});
+export type SessionWithInstrument = z.infer<typeof SessionWithInstrumentSchema>;

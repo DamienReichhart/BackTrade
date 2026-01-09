@@ -1,12 +1,18 @@
 import { z } from "zod";
 import { TimeframeSchema } from "../enums";
+import { numberCoerce } from "./coerce";
 
+/**
+ * Dataset entity schema with proper handling for:
+ * - Prisma numeric fields (coerced to number)
+ * - Nullable database fields
+ */
 export const DatasetSchema = z.object({
-    id: z.number().int().positive(),
-    instrument_id: z.number().int().positive(),
+    id: numberCoerce.int().positive(),
+    instrument_id: numberCoerce.int().positive(),
     timeframe: TimeframeSchema,
     uploaded_at: z.iso.datetime().nullable(),
-    records_count: z.number().int().nonnegative().nullable(),
+    records_count: numberCoerce.int().nonnegative().nullable(),
     file_name: z.string().nullable(),
     start_time: z.iso.datetime().nullable(),
     end_time: z.iso.datetime().nullable(),

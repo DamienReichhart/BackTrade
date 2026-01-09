@@ -1,7 +1,7 @@
 import { publishMessage } from "../../libs/rabbitmq";
-import { logger } from "../../libs/pino";
 import type { QueueJobMessage, QueueName } from "@backtrade/types";
 import { queueJobsRepo } from "@backtrade/data";
+import { BaseService } from "../base/base-service";
 
 /**
  * Queue Service
@@ -9,13 +9,9 @@ import { queueJobsRepo } from "@backtrade/data";
  * Handles message queuing operations for worker processing.
  * Creates QueueJob records in the database and publishes minimal messages to RabbitMQ.
  */
-class QueueService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class QueueService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "queue-service",
-        });
+        super("queue-service");
     }
 
     /**

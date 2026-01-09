@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Position } from "@backtrade/types";
 import { useModal } from "../../../../hooks/useModal";
@@ -7,12 +6,14 @@ import { useSessionPositions } from "./useSessionPositions";
 /**
  * Hook to manage positions table data and interactions
  *
+ * Positions are fetched server-side with status=OPEN filter via useSessionPositions.
+ *
  * @returns Positions table state and handlers
  */
 export function usePositionsTable() {
     const navigate = useNavigate();
     const {
-        positions,
+        positions: openPositions,
         isLoading: loading,
         hasValidSession,
         sessionId,
@@ -24,11 +25,6 @@ export function usePositionsTable() {
         openModal,
         closeModal,
     } = useModal<Position>();
-
-    const openPositions = useMemo(
-        () => positions.filter((p) => p.position_status === "OPEN"),
-        [positions]
-    );
 
     const handleRowClick = (position: Position) => {
         openModal(position);
