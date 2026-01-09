@@ -1,12 +1,6 @@
 import { z } from "zod";
 import { TimeframeSchema } from "../enums";
-
-/**
- * Coerce value to number, handling Prisma Decimal objects, strings, and numbers.
- * Prisma's Decimal type is serialized as a string by JSON.stringify(),
- * so we need to coerce it back to a number for frontend consumption.
- */
-const numberCoerce = z.coerce.number();
+import { numberCoerce } from "./coerce";
 
 /**
  * Dataset entity schema with proper handling for:

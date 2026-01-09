@@ -1,11 +1,7 @@
 import { z } from "zod";
 import { SessionStatusSchema, SpeedSchema, LeverageSchema } from "../enums";
+import { numberCoerce } from "./coerce";
 import { InstrumentSchema } from "./instrument";
-
-/**
- * Coerce value to number, handling Prisma Decimal objects, strings, and numbers
- */
-const numberCoerce = z.coerce.number();
 
 export const SessionSchema = z.object({
     id: numberCoerce.int().positive(),

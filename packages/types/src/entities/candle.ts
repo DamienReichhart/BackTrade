@@ -1,12 +1,6 @@
 import { z } from "zod";
 import { TimeframeSchema } from "../enums";
-
-/**
- * Coerce value to number, handling Decimal objects, strings, and numbers.
- * ClickHouse's Decimal64 type may be serialized as a string,
- * so we need to coerce it back to a number for frontend consumption.
- */
-const numberCoerce = z.coerce.number();
+import { numberCoerce } from "./coerce";
 
 /**
  * Candle entity schema with proper handling for:

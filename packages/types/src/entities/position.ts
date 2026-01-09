@@ -1,21 +1,6 @@
 import { z } from "zod";
 import { PositionStatusSchema, SideSchema } from "../enums";
-
-/**
- * Coerce value to number, handling Prisma Decimal objects, strings, and numbers.
- * Prisma's Decimal type is serialized as a string by JSON.stringify(),
- * so we need to coerce it back to a number for frontend consumption.
- */
-const numberCoerce = z.coerce.number();
-
-/**
- * Nullable number coercion that properly handles null/undefined before coercing.
- * This prevents NaN issues when null values are passed through z.coerce.number().
- */
-const nullableNumberCoerce = z.preprocess(
-    (val) => val ?? null,
-    z.coerce.number().nullable()
-);
+import { numberCoerce, nullableNumberCoerce } from "./coerce";
 
 /**
  * Position entity schema with proper handling for:
