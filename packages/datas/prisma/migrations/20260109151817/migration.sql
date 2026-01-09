@@ -106,6 +106,7 @@ CREATE TABLE "instruments" (
     "symbol" TEXT NOT NULL,
     "display_name" TEXT NOT NULL,
     "pip_size" DECIMAL(10,8) NOT NULL,
+    "contract_size" INTEGER NOT NULL DEFAULT 100000,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -124,6 +125,7 @@ CREATE TABLE "sessions" (
     "current_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
     "initial_balance" DECIMAL(18,8) NOT NULL,
+    "current_balance" DECIMAL(18,8) NOT NULL,
     "leverage" INTEGER NOT NULL DEFAULT 1,
     "spread_pts" DECIMAL(10,4) NOT NULL DEFAULT 0,
     "slippage_pts" DECIMAL(10,4) NOT NULL DEFAULT 0,
@@ -148,6 +150,7 @@ CREATE TABLE "positions" (
     "opened_at" TIMESTAMP(3) NOT NULL,
     "closed_at" TIMESTAMP(3),
     "realized_pnl" DECIMAL(18,8),
+    "unrealized_pnl" DECIMAL(18,8),
     "commission_cost" DECIMAL(18,8),
     "slippage_cost" DECIMAL(18,8),
     "spread_cost" DECIMAL(18,8),
