@@ -129,6 +129,7 @@ class SessionsController {
         // user_id comes from authenticated user, not request body
         // created_at and updated_at are set by database
         // session_status defaults to PAUSED if not provided
+        // current_balance defaults to initial_balance for new sessions
         const sessionData: SessionCreateInput = {
             user_id: userId,
             instrument_id: requestData.instrument_id,
@@ -138,6 +139,7 @@ class SessionsController {
             current_time: requestData.current_time,
             end_time: requestData.end_time,
             initial_balance: requestData.initial_balance,
+            current_balance: requestData.initial_balance,
             leverage: requestData.leverage,
             spread_pts: requestData.spread_pts,
             slippage_pts: requestData.slippage_pts,

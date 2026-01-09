@@ -202,6 +202,7 @@ model Session {
   current_time          DateTime
   end_time              DateTime?
   initial_balance     Decimal       @db.Decimal(18, 8)
+  current_balance     Decimal       @db.Decimal(18, 8)
   leverage            Int           @default(1)
   spread_pts          Decimal       @default(0) @db.Decimal(10, 4)
   slippage_pts        Decimal       @default(0) @db.Decimal(10, 4)

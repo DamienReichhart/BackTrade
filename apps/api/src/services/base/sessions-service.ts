@@ -33,6 +33,7 @@ const VALID_SORT_FIELDS = [
     "current_time",
     "end_time",
     "initial_balance",
+    "current_balance",
     "leverage",
     "created_at",
     "updated_at",

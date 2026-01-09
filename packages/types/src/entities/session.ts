@@ -17,6 +17,7 @@ export const SessionSchema = z.object({
     current_time: z.iso.datetime(),
     end_time: z.iso.datetime().nullable().optional(),
     initial_balance: numberCoerce.positive(),
+    current_balance: numberCoerce.nonnegative(),
     leverage: numberCoerce.pipe(LeverageSchema),
     spread_pts: numberCoerce.nonnegative(),
     slippage_pts: numberCoerce.nonnegative(),

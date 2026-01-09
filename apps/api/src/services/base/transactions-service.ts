@@ -7,6 +7,7 @@ import type {
     SearchQuery,
     User,
     TransactionType,
+    SessionUpdateInput,
 } from "@backtrade/types";
 import { transactionsCacheRepo } from "../../libs/cache";
 import { logger } from "../../libs/pino";
@@ -621,6 +622,30 @@ class TransactionsService {
 
         const created = await transactionsRepo.createTransaction(transaction);
         this.logger.debug({ id: created.id }, "Transaction created");
+
+        // Update session's current_balance when a transaction is created
+        // Use sessionsService to ensure proper cache invalidation
+        if (
+            created.session_id !== undefined &&
+            created.session_id !== null
+        ) {
+            const sessionUpdate: SessionUpdateInput = {
+                current_balance: created.balance_after,
+            };
+            await sessionsService.updateSession(
+                created.session_id.toString(),
+                sessionUpdate,
+                user
+            );
+            this.logger.debug(
+                {
+                    session_id: created.session_id,
+                    new_balance: created.balance_after,
+                },
+                "Session current_balance updated"
+            );
+        }
+
         await this.cacheTransaction(created);
         return created;
     }
