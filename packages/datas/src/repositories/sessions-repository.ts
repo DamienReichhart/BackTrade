@@ -7,6 +7,7 @@
 import type { Prisma } from "../generated/prisma/client";
 import type {
     Session,
+    SessionWithInstrument,
     SessionWhereInput,
     SessionCreateInput,
     SessionUpdateInput,
@@ -52,6 +53,21 @@ class SessionsRepository extends BasePostgresRepository {
         return this.prisma.session.findUnique({
             where: { id: this.toNumericId(id) },
         }) as unknown as Session | null;
+    }
+
+    /**
+     * Get a session by ID with its instrument relation.
+     *
+     * @param id - Session ID as number or string
+     * @returns Session with instrument or null if not found
+     */
+    async getSessionWithInstrument(
+        id: number | string
+    ): Promise<SessionWithInstrument | null> {
+        return this.prisma.session.findUnique({
+            where: { id: this.toNumericId(id) },
+            include: { instrument: true },
+        }) as unknown as SessionWithInstrument | null;
     }
 
     /**

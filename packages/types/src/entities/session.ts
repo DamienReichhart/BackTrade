@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SessionStatusSchema, SpeedSchema, LeverageSchema } from "../enums";
+import { InstrumentSchema } from "./instrument";
 
 /**
  * Coerce value to number, handling Prisma Decimal objects, strings, and numbers
@@ -26,3 +27,11 @@ export const SessionSchema = z.object({
     updated_at: z.string().optional(),
 });
 export type Session = z.infer<typeof SessionSchema>;
+
+/**
+ * Session with included instrument relation
+ */
+export const SessionWithInstrumentSchema = SessionSchema.extend({
+    instrument: InstrumentSchema,
+});
+export type SessionWithInstrument = z.infer<typeof SessionWithInstrumentSchema>;

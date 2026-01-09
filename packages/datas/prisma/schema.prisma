@@ -177,12 +177,13 @@ model StripeEvent {
 // ============================================================================
 
 model Instrument {
-  id           Int      @id @default(autoincrement())
-  symbol       String   @unique
-  display_name String
-  pip_size     Decimal  @db.Decimal(10, 8)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  symbol        String   @unique
+  display_name  String
+  pip_size      Decimal  @db.Decimal(10, 8)
+  contract_size Int      @default(100000)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   // Relations
   sessions Session[]

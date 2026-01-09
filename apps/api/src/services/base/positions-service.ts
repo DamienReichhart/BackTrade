@@ -14,6 +14,7 @@ import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
+import positionClosingService from "../trading/position-closing-service";
 
 /**
  * Valid position statuses for search operations
@@ -790,7 +791,39 @@ class PositionsService {
     }
 
     /**
+     * Check if the update represents a position closing operation
+     *
+     * A position is being closed when:
+     * - The existing position is OPEN
+     * - The new status is CLOSED or LIQUIDATED
+     * - exit_price and closed_at are provided
+     *
+     * @param position - Position update data
+     * @param existing - Existing position entity
+     * @returns true if this is a closing operation
+     */
+    private isClosingPosition(
+        position: PositionUpdateInput,
+        existing: Position
+    ): boolean {
+        const isStatusChangingToClosed =
+            position.position_status === "CLOSED" ||
+            position.position_status === "LIQUIDATED";
+
+        const isCurrentlyOpen = existing.position_status === "OPEN";
+
+        const hasClosingData =
+            position.exit_price !== undefined && position.closed_at !== undefined;
+
+        return isStatusChangingToClosed && isCurrentlyOpen && hasClosingData;
+    }
+
+    /**
      * Update an existing position
+     *
+     * If the update is a position closing operation (status changing to CLOSED/LIQUIDATED
+     * with exit_price and closed_at), delegates to the position closing service to
+     * automatically calculate PnL, apply trading costs, and create transactions.
      *
      * @param id - Position ID
      * @param position - Position update data
@@ -817,7 +850,26 @@ class PositionsService {
         // Check session access
         await this.ensureSessionAccess(existing.session_id, user);
 
-        // Validate business rules
+        // Detect if this is a position closing operation
+        if (this.isClosingPosition(position, existing)) {
+            this.logger.debug(
+                { id, newStatus: position.position_status },
+                "Position closing detected, delegating to closing service"
+            );
+
+            // Delegate to position closing service for automatic PnL calculation
+            const result = await positionClosingService.closePosition(
+                id,
+                position.exit_price!,
+                position.closed_at!,
+                user,
+                position.position_status as "CLOSED" | "LIQUIDATED"
+            );
+
+            return result.position;
+        }
+
+        // Validate business rules for non-closing updates
         this.validatePositionUpdate(position, existing, id);
 
         const updated = await positionsRepo.updatePosition(id, position);

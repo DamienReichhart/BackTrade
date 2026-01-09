@@ -16,6 +16,7 @@ export const InstrumentSchema = z.object({
     symbol: z.string(),
     display_name: z.string(),
     pip_size: numberCoerce.positive(),
+    contract_size: numberCoerce.int().positive().default(100000),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
 });

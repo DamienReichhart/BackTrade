@@ -4,10 +4,20 @@
  * Pure calculation service for computing margin requirements and margin levels
  * for trading positions. This service contains no database access - it receives
  * data and returns calculations.
+ *
+ * All calculations use contract_size to convert lots to actual tradeable units:
+ * - Standard Forex lot = 100,000 units of base currency
+ * - Position value = quantity_lots × contract_size × price
+ * - Required margin = position_value / leverage
  */
 
 import type { Position } from "@backtrade/types";
 import { logger } from "../../libs/pino";
+
+/**
+ * Default contract size for standard Forex lots (100,000 units)
+ */
+const DEFAULT_CONTRACT_SIZE = 100000;
 
 /**
  * Margin Service
@@ -27,17 +37,19 @@ class MarginService {
     /**
      * Calculate margin requirement for a single position
      *
-     * Formula: (quantity * currentPrice) / leverage
+     * Formula: (quantity_lots × contract_size × currentPrice) / leverage
      *
      * @param position - The position to calculate margin for
      * @param currentPrice - Current market price
      * @param leverage - Account leverage multiplier
+     * @param contractSize - Contract size per lot (default: 100,000 for standard Forex lot)
      * @returns Required margin for the position
      */
     calculatePositionMargin(
         position: Position,
         currentPrice: number,
-        leverage: number
+        leverage: number,
+        contractSize: number = DEFAULT_CONTRACT_SIZE
     ): number {
         if (leverage <= 0) {
             this.logger.warn(
@@ -47,13 +59,17 @@ class MarginService {
             leverage = 1;
         }
 
-        const positionValue = position.quantity_lots * currentPrice;
+        // Convert Prisma Decimal to number for calculations
+        const quantityLots = Number(position.quantity_lots);
+
+        const positionValue = quantityLots * contractSize * currentPrice;
         const requiredMargin = positionValue / leverage;
 
         this.logger.trace(
             {
                 positionId: position.id,
-                quantity: position.quantity_lots,
+                quantity: quantityLots,
+                contractSize,
                 currentPrice,
                 leverage,
                 positionValue,
@@ -71,12 +87,14 @@ class MarginService {
      * @param positions - Array of open positions
      * @param currentPrice - Current market price
      * @param leverage - Account leverage multiplier
+     * @param contractSize - Contract size per lot (default: 100,000 for standard Forex lot)
      * @returns Total margin used by all positions
      */
     calculateUsedMargin(
         positions: Position[],
         currentPrice: number,
-        leverage: number
+        leverage: number,
+        contractSize: number = DEFAULT_CONTRACT_SIZE
     ): number {
         if (positions.length === 0) {
             return 0;
@@ -85,7 +103,12 @@ class MarginService {
         const totalMargin = positions.reduce((total, position) => {
             return (
                 total +
-                this.calculatePositionMargin(position, currentPrice, leverage)
+                this.calculatePositionMargin(
+                    position,
+                    currentPrice,
+                    leverage,
+                    contractSize
+                )
             );
         }, 0);
 
@@ -94,6 +117,7 @@ class MarginService {
                 positionCount: positions.length,
                 currentPrice,
                 leverage,
+                contractSize,
                 totalMargin,
             },
             "Calculated total used margin"

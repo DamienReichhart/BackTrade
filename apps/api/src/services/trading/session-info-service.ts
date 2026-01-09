@@ -4,12 +4,22 @@
  * Orchestration service that coordinates all calculations needed to
  * produce session information (equity, drawdown, win rate, margin level).
  * This is the main entry point for the session info endpoint.
+ *
+ * All calculations use the instrument's contract_size for proper leverage handling:
+ * - Standard Forex lot = 100,000 units of base currency
+ * - Position value = quantity_lots × contract_size × price
  */
 
-import type { User, SessionInfoResponse, Position } from "@backtrade/types";
+import type {
+    User,
+    SessionInfoResponse,
+    Position,
+    SessionWithInstrument,
+} from "@backtrade/types";
 import {
     candlesRepo,
     positionsRepo,
+    sessionsRepo,
     transactionsRepo,
 } from "@backtrade/data";
 import { logger } from "../../libs/pino";
@@ -17,6 +27,7 @@ import sessionsService from "../base/sessions-service";
 import pnlCalculationService from "./pnl-calculation-service";
 import marginService from "./margin-service";
 import performanceMetricsService from "./performance-metrics-service";
+import NotFoundError from "../../errors/web/not-found-error";
 
 /**
  * Session Info Service
@@ -116,9 +127,9 @@ class SessionInfoService {
             return initialBalance;
         }
 
-        // Find max balance_after
+        // Find max balance_after (convert Prisma Decimal to number)
         const maxBalanceAfter = Math.max(
-            ...transactions.map((t) => t.balance_after)
+            ...transactions.map((t) => Number(t.balance_after))
         );
 
         // Peak is the higher of initial balance and max recorded balance
@@ -139,6 +150,34 @@ class SessionInfoService {
     }
 
     /**
+     * Get session with instrument data
+     *
+     * Fetches session and validates user access, then loads instrument
+     * for contract_size needed in calculations.
+     *
+     * @param sessionId - Session ID
+     * @param user - User making the request (for authorization)
+     * @returns Session with instrument data
+     * @throws NotFoundError if session not found
+     * @throws ForbiddenError if user doesn't have access
+     */
+    private async getSessionWithInstrument(
+        sessionId: string,
+        user: User
+    ): Promise<SessionWithInstrument> {
+        // First validate access using sessions service
+        await sessionsService.getSessionById(sessionId, user);
+
+        // Then fetch with instrument
+        const session = await sessionsRepo.getSessionWithInstrument(sessionId);
+        if (!session) {
+            throw new NotFoundError("Session not found");
+        }
+
+        return session;
+    }
+
+    /**
      * Get comprehensive session information
      *
      * Orchestrates all calculations to produce:
@@ -149,6 +188,8 @@ class SessionInfoService {
      * - leverage: Session leverage setting
      * - margin_level: Equity / used margin * 100
      *
+     * All calculations use the instrument's contract_size for proper leverage handling.
+     *
      * @param sessionId - Session ID
      * @param user - User making the request (for authorization)
      * @returns Complete session info response
@@ -157,43 +198,52 @@ class SessionInfoService {
         sessionId: string,
         user: User
     ): Promise<SessionInfoResponse> {
-        // Fetch session (includes authorization check)
-        const session = await sessionsService.getSessionById(sessionId, user);
+        // Fetch session with instrument (includes authorization check)
+        const session = await this.getSessionWithInstrument(sessionId, user);
+        const contractSize = session.instrument.contract_size;
 
         this.logger.debug(
-            { sessionId, userId: user.id },
+            { sessionId, userId: user.id, contractSize },
             "Fetching session info"
         );
+
+        // Convert Prisma Decimal to number for initial balance
+        const initialBalance = Number(session.initial_balance);
 
         // Fetch all required data in parallel
         const [positions, currentPrice, peakBalance] = await Promise.all([
             this.getSessionPositions(session.id),
             this.getCurrentPrice(session.instrument_id, session.current_time),
-            this.getPeakBalance(session.id, session.initial_balance),
+            this.getPeakBalance(session.id, initialBalance),
         ]);
 
         // Separate open positions
         const openPositions = this.filterOpenPositions(positions);
 
-        // Calculate unrealized PnL (0 if no price data)
+        // Calculate unrealized PnL using contract_size (0 if no price data)
         const unrealizedPnL =
             currentPrice !== null
                 ? pnlCalculationService.calculateTotalUnrealizedPnL(
                       openPositions,
-                      currentPrice
+                      currentPrice,
+                      contractSize
                   )
                 : 0;
 
-        // Calculate current equity
-        const currentEquity = session.current_balance + unrealizedPnL;
+        // Convert Prisma Decimal to number for calculations
+        const currentBalance = Number(session.current_balance);
 
-        // Calculate used margin (0 if no price data or no open positions)
+        // Calculate current equity
+        const currentEquity = currentBalance + unrealizedPnL;
+
+        // Calculate used margin using contract_size (0 if no price data or no open positions)
         const usedMargin =
             currentPrice !== null && openPositions.length > 0
                 ? marginService.calculateUsedMargin(
                       openPositions,
                       currentPrice,
-                      session.leverage
+                      session.leverage,
+                      contractSize
                   )
                 : 0;
 
@@ -215,7 +265,7 @@ class SessionInfoService {
         );
 
         const sessionInfo: SessionInfoResponse = {
-            start_balance: session.initial_balance,
+            start_balance: initialBalance,
             current_equity: currentEquity,
             drawdown,
             win_rate: winRate,
@@ -233,6 +283,7 @@ class SessionInfoService {
                 unrealizedPnL,
                 usedMargin,
                 peakBalance,
+                contractSize,
             },
             "Session info calculated"
         );
