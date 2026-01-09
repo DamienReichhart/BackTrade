@@ -75,7 +75,11 @@ class UsersController {
         }
 
         const requestData = req.body as UpdateUserRequest;
-        const updatedUser = await usersService.updateUser(id, requestData, user);
+        const updatedUser = await usersService.updateUser(
+            id,
+            requestData,
+            user
+        );
 
         // Transform User to PublicUser (exclude sensitive fields)
         const publicUser = PublicUserSchema.parse(updatedUser);
@@ -110,6 +114,38 @@ class UsersController {
         );
 
         res.status(200).json({ message: "Password changed successfully" });
+    }
+
+    /**
+     * Delete user account
+     *
+     * Users can delete their own account. Admins can delete any user's account.
+     * Sends a confirmation email after successful deletion.
+     * This action is permanent and cannot be undone.
+     *
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
+     * @param res - Express response object
+     * @throws BadRequestError if user ID is missing
+     * @throws NotFoundError if user doesn't exist
+     * @throws ForbiddenError if user doesn't have permission to delete this account
+     */
+    async deleteUserAccount(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("User ID is required");
+        }
+
+        this.logger.trace({ id, userId: user.id }, "Deleting user account");
+
+        await usersService.deleteUser(id, user);
+
+        this.logger.info(
+            { id, userId: user.id },
+            "User account deleted successfully"
+        );
+
+        res.status(204).send();
     }
 }
 

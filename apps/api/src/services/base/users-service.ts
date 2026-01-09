@@ -12,6 +12,8 @@ import ForbiddenError from "../../errors/web/forbidden-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import hashService from "../security/hash-service";
+import emailNotificationService from "../notifications/email-notification-service";
+import { validatePassword } from "@backtrade/utils";
 import { BaseService } from "./base-service";
 
 /**
@@ -542,7 +544,6 @@ class UsersService extends BaseService {
         }
 
         // Validate new password strength
-        const { validatePassword } = await import("@backtrade/utils");
         const passwordValidation = validatePassword(newPassword);
         if (!passwordValidation.isValid) {
             throw new BadRequestError(
@@ -627,18 +628,19 @@ class UsersService extends BaseService {
     /**
      * Delete a user
      *
-     * Admin-only operation (users cannot delete themselves through this method).
+     * Users can delete their own account. Admins can delete any user's account.
+     * Sends a confirmation email after successful deletion.
      *
      * @param id - User ID (string from route params, converted internally)
      * @param requestingUser - User entity making the request
      * @throws NotFoundError if user doesn't exist
-     * @throws ForbiddenError if user is not admin
+     * @throws ForbiddenError if user doesn't have permission to delete this account
      */
     async deleteUser(id: string | number, requestingUser: User): Promise<void> {
         const numericId = typeof id === "string" ? Number(id) : id;
 
-        // Check admin access
-        this.ensureAdminAccess(requestingUser, "deleteUser");
+        // Check access - users can delete their own account, admins can delete any account
+        this.ensureUserAccess(numericId, requestingUser);
 
         const existingUser = await usersRepo.getUserById(numericId);
         if (!existingUser) {
@@ -649,10 +651,56 @@ class UsersService extends BaseService {
             throw new NotFoundError("User not found");
         }
 
-        await usersRepo.deleteUser(numericId);
-        this.logger.debug({ id: numericId }, "User deleted");
+        // Store user email and username before deletion for email notification
+        // Email is required in the schema, but we validate it for safety
+        if (!existingUser.email) {
+            this.logger.error(
+                { id: numericId },
+                "User email is missing, cannot send deletion confirmation email"
+            );
+            throw new BadRequestError("User email is required");
+        }
+        const userEmail: string = existingUser.email;
+        // Extract username from email (part before @)
+        const emailParts = userEmail.split("@");
+        const username: string = emailParts[0] ?? userEmail; // Use email prefix as username, fallback to full email
+        const deletionDate = new Date();
 
+        // Delete the user (cascade will handle related data)
+        await usersRepo.deleteUser(numericId);
+        this.logger.debug(
+            { id: numericId, email: userEmail },
+            "User deleted successfully"
+        );
+
+        // Invalidate cache
         await this.invalidateCachedUser(numericId);
+
+        // Send account deletion confirmation email
+        // Note: This is done after deletion, so if email fails, the account is already deleted
+        // This is intentional - the account deletion should succeed even if email fails
+        try {
+            await emailNotificationService.sendAccountDeletedEmail(
+                userEmail,
+                username,
+                deletionDate
+            );
+            this.logger.debug(
+                { email: userEmail },
+                "Account deletion confirmation email queued successfully"
+            );
+        } catch (error) {
+            // Log error but don't throw - account is already deleted
+            // Email failure should not prevent account deletion from completing
+            this.logger.error(
+                {
+                    email: userEmail,
+                    error:
+                        error instanceof Error ? error.message : String(error),
+                },
+                "Failed to queue account deletion confirmation email, but account was deleted"
+            );
+        }
     }
 }
 

@@ -25,4 +25,10 @@ usersRouter.patch(
 
 usersRouter.get("/:id", authMiddleware, usersController.getUserById);
 
+usersRouter.delete(
+    "/:id",
+    authMiddleware,
+    usersController.deleteUserAccount.bind(usersController)
+);
+
 export default usersRouter;

@@ -6,7 +6,11 @@
  */
 
 import type { TemplateCompiler } from "./compiler";
-import type { RegisterEmailData, LoginEmailData } from "@backtrade/types";
+import type {
+    RegisterEmailData,
+    LoginEmailData,
+    AccountDeletedEmailData,
+} from "@backtrade/types";
 
 /**
  * Template renderer class
@@ -53,5 +57,23 @@ export class TemplateRenderer {
      */
     async renderLogin(data: LoginEmailData): Promise<string> {
         return this.compiler.renderTemplate("login", data);
+    }
+
+    /**
+     * Render the account deletion confirmation email
+     *
+     * @param data - Account deletion email data
+     * @returns Rendered HTML string
+     *
+     * @example
+     * ```ts
+     * const html = await renderer.renderAccountDeleted({
+     *   username: "john.doe",
+     *   deletionDate: "January 15, 2025 at 2:30 PM"
+     * });
+     * ```
+     */
+    async renderAccountDeleted(data: AccountDeletedEmailData): Promise<string> {
+        return this.compiler.renderTemplate("account-deleted", data);
     }
 }

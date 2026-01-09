@@ -7,11 +7,7 @@
  */
 
 import { ENV } from "../../config/env";
-import {
-    formatLoginDate,
-    type DeviceInfo,
-    maskEmailForLogging,
-} from "../../utils";
+import { formatDate, type DeviceInfo, maskEmailForLogging } from "../../utils";
 import { BaseService } from "../base/base-service";
 import queueService from "../queue/queue-service";
 import { MailMessageDataSchema, QueueName } from "@backtrade/types";
@@ -120,7 +116,7 @@ class EmailNotificationService extends BaseService {
             "Preparing login notification email message"
         );
 
-        const formattedDate = formatLoginDate(loginDate);
+        const formattedDate = formatDate(loginDate);
 
         const mailMessage = {
             template: "login-notification" as const,
@@ -152,6 +148,68 @@ class EmailNotificationService extends BaseService {
                 device: deviceInfo.device,
             },
             "Login notification email message queued successfully"
+        );
+    }
+
+    /**
+     * Queue account deletion confirmation email after successful account deletion
+     *
+     * Queues the email message to RabbitMQ for processing by the worker.
+     * Throws an error if queuing fails.
+     *
+     * @param email - Recipient email address
+     * @param username - User's display name or email
+     * @param deletionDate - Deletion timestamp
+     * @throws Error if message validation or queuing fails
+     *
+     * @example
+     * ```ts
+     * try {
+     *   await emailNotificationService.sendAccountDeletedEmail(
+     *     "user@example.com",
+     *     "John",
+     *     new Date()
+     *   );
+     * } catch (error) {
+     *   // Handle error
+     * }
+     * ```
+     */
+    async sendAccountDeletedEmail(
+        email: string,
+        username: string,
+        deletionDate: Date
+    ): Promise<void> {
+        this.logger.debug(
+            { email: maskEmailForLogging(email), username },
+            "Preparing account deletion confirmation email message"
+        );
+
+        const formattedDate = formatDate(deletionDate);
+
+        const mailMessage = {
+            template: "account-deleted" as const,
+            emailData: {
+                to: email,
+                subject: "Your BackTrade account has been deleted",
+                username,
+                deletionDate: formattedDate,
+            },
+        };
+
+        // Validate the mail message
+        const validatedData = MailMessageDataSchema.parse(mailMessage);
+
+        this.logger.debug(
+            { email: maskEmailForLogging(email) },
+            "Queueing account deletion confirmation email message"
+        );
+
+        await queueService.queueMessage(QueueName.mail, validatedData);
+
+        this.logger.info(
+            { email: maskEmailForLogging(email), username },
+            "Account deletion confirmation email message queued successfully"
         );
     }
 }

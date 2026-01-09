@@ -15,6 +15,7 @@ import {
     type MailMessageData,
     type WelcomeEmailData,
     type LoginNotificationEmailData,
+    type AccountDeletedEmailData,
 } from "@backtrade/types";
 import { maskEmailForLogging } from "@backtrade/utils";
 
@@ -67,6 +68,11 @@ class EmailService {
                 const emailData =
                     mailData.emailData as LoginNotificationEmailData;
                 await this.sendLoginNotificationEmail(emailData);
+                break;
+            }
+            case "account-deleted": {
+                const emailData = mailData.emailData as AccountDeletedEmailData;
+                await this.sendAccountDeletedEmail(emailData);
                 break;
             }
             default: {
@@ -144,6 +150,41 @@ class EmailService {
         this.logger.debug(
             { to: maskEmailForLogging(data.to) },
             "Sending login notification email"
+        );
+
+        await mailerService.sendEmail({
+            to: data.to,
+            subject: data.subject,
+            html,
+        });
+    }
+
+    /**
+     * Send account deletion confirmation email
+     *
+     * @param data - Account deletion email data
+     */
+    private async sendAccountDeletedEmail(
+        data: AccountDeletedEmailData
+    ): Promise<void> {
+        this.logger.debug(
+            {
+                to: maskEmailForLogging(data.to),
+                username: data.username,
+            },
+            "Rendering account deletion confirmation email template"
+        );
+
+        const html = await templateRenderer.renderAccountDeleted({
+            username: data.username,
+            deletionDate: data.deletionDate,
+            to: data.to,
+            subject: data.subject,
+        });
+
+        this.logger.debug(
+            { to: maskEmailForLogging(data.to) },
+            "Sending account deletion confirmation email"
         );
 
         await mailerService.sendEmail({

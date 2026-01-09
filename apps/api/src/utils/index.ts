@@ -8,6 +8,7 @@ export {
     getDeviceInfo,
     getClientIp,
     formatLoginDate,
+    formatDate,
     type DeviceInfo,
 } from "./request-context";
 
