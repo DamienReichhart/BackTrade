@@ -26,6 +26,11 @@ sessionsPrivateRouter.get(
 );
 
 sessionsPrivateRouter.get(
+    "/:id/info",
+    sessionsController.getSessionInfo.bind(sessionsController)
+);
+
+sessionsPrivateRouter.get(
     "/",
     sessionsController.getAllSessions.bind(sessionsController)
 );

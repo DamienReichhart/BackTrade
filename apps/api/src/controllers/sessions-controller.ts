@@ -17,6 +17,7 @@ import {
 } from "@backtrade/types";
 import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
+import sessionInfoService from "../services/trading/session-info-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import UnAuthenticatedError from "../errors/web/unauthenticated-error";
 import { logger } from "../libs/pino";
@@ -268,6 +269,54 @@ class SessionsController {
         );
 
         res.status(200).json(candles);
+    }
+
+    /**
+     * Get session info (trading metrics)
+     *
+     * Returns calculated trading metrics for a session including:
+     * - start_balance: Initial balance
+     * - current_equity: Current balance + unrealized PnL
+     * - drawdown: Percentage decline from peak balance
+     * - win_rate: Percentage of winning closed trades
+     * - leverage: Session leverage setting
+     * - margin_level: Equity / used margin * 100
+     *
+     * Only returns info for sessions belonging to the authenticated user,
+     * unless the user is an admin.
+     *
+     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param res - Express response object
+     * @throws UnAuthenticatedError if user is not authenticated
+     * @throws BadRequestError if session ID is missing
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async getSessionInfo(req: Request, res: Response): Promise<void> {
+        // Ensure user is authenticated
+        if (!req.user) {
+            throw new UnAuthenticatedError(
+                "You must be authenticated to access this route"
+            );
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("Session ID is required");
+        }
+
+        // Get session info (includes authorization check)
+        const sessionInfo = await sessionInfoService.getSessionInfo(
+            id,
+            req.user
+        );
+
+        this.logger.trace(
+            { id, userId: req.user.id },
+            "Session info retrieved successfully"
+        );
+
+        res.status(200).json(sessionInfo);
     }
 
     /**

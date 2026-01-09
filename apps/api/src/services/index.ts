@@ -17,6 +17,12 @@ export { default as transactionsService } from "./base/transactions-service";
 export { default as instrumentsService } from "./base/instruments-service";
 export { default as datasetsService } from "./base/datasets-service";
 
+// Trading services
+export { default as pnlCalculationService } from "./trading/pnl-calculation-service";
+export { default as marginService } from "./trading/margin-service";
+export { default as performanceMetricsService } from "./trading/performance-metrics-service";
+export { default as sessionInfoService } from "./trading/session-info-service";
+
 // Utility services
 export { default as healthService } from "./utils/health-service";
 
