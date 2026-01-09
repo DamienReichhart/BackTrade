@@ -9,6 +9,15 @@ import { PositionStatusSchema, SideSchema } from "../enums";
 const numberCoerce = z.coerce.number();
 
 /**
+ * Nullable number coercion that properly handles null/undefined before coercing.
+ * This prevents NaN issues when null values are passed through z.coerce.number().
+ */
+const nullableNumberCoerce = z.preprocess(
+    (val) => val ?? null,
+    z.coerce.number().nullable()
+);
+
+/**
  * Position entity schema with proper handling for:
  * - Prisma Decimal fields (coerced to number)
  * - Nullable database fields (using .nullable())
@@ -25,7 +34,8 @@ export const PositionSchema = z.object({
     exit_price: numberCoerce.positive().nullable(),
     opened_at: z.iso.datetime(),
     closed_at: z.iso.datetime().nullable(),
-    realized_pnl: numberCoerce.nullable(),
+    realized_pnl: nullableNumberCoerce,
+    unrealized_pnl: nullableNumberCoerce,
     commission_cost: numberCoerce.nonnegative().nullable(),
     slippage_cost: numberCoerce.nonnegative().nullable(),
     spread_cost: numberCoerce.nonnegative().nullable(),

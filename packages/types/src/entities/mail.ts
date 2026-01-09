@@ -13,13 +13,11 @@ import { z } from "zod";
  * Type definitions for all email template data structures
  */
 
-/** Base data included in all email templates */
-export interface BaseEmailData {
-    // No base properties - all template-specific data is in extended interfaces
-}
+/** Base data type for all email templates (empty object type) */
+export type BaseEmailData = Record<string, never>;
 
 /** Data required for the registration welcome email template */
-export interface RegisterEmailData extends BaseEmailData {
+export interface RegisterEmailData {
     /** User's display name or email */
     username: string;
     /** URL to the dashboard */
@@ -27,7 +25,7 @@ export interface RegisterEmailData extends BaseEmailData {
 }
 
 /** Data required for the login notification email template */
-export interface LoginEmailData extends BaseEmailData {
+export interface LoginEmailData {
     /** User's display name or email */
     username: string;
     /** Formatted login date and time */

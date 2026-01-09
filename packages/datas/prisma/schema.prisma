@@ -236,6 +236,7 @@ model Position {
   opened_at       DateTime
   closed_at       DateTime?
   realized_pnl    Decimal?       @db.Decimal(18, 8)
+  unrealized_pnl  Decimal?       @db.Decimal(18, 8)
   commission_cost Decimal?       @db.Decimal(18, 8)
   slippage_cost   Decimal?       @db.Decimal(18, 8)
   spread_cost     Decimal?       @db.Decimal(18, 8)

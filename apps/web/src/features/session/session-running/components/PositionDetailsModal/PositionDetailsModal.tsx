@@ -97,18 +97,34 @@ export function PositionDetailsModal({
                     </div>
 
                     <div className={styles.section}>
-                        <div className={styles.row}>
-                            <span className={styles.label}>Realized P&L:</span>
-                            <span
-                                className={`${styles.value} ${
-                                    (position.realized_pnl ?? 0) >= 0
-                                        ? styles.pnlPos
-                                        : styles.pnlNeg
-                                }`}
-                            >
-                                €{(position.realized_pnl ?? 0).toFixed(2)}
-                            </span>
-                        </div>
+                        {position.position_status === "OPEN" && (
+                            <div className={styles.row}>
+                                <span className={styles.label}>Unrealized P&L:</span>
+                                <span
+                                    className={`${styles.value} ${
+                                        (position.unrealized_pnl ?? 0) >= 0
+                                            ? styles.pnlPos
+                                            : styles.pnlNeg
+                                    }`}
+                                >
+                                    €{(position.unrealized_pnl ?? 0).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+                        {position.position_status !== "OPEN" && (
+                            <div className={styles.row}>
+                                <span className={styles.label}>Realized P&L:</span>
+                                <span
+                                    className={`${styles.value} ${
+                                        (position.realized_pnl ?? 0) >= 0
+                                            ? styles.pnlPos
+                                            : styles.pnlNeg
+                                    }`}
+                                >
+                                    €{(position.realized_pnl ?? 0).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
                         <div className={styles.row}>
                             <span className={styles.label}>Commission:</span>
                             <span className={styles.value}>

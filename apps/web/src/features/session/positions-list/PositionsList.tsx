@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { PositionDetailsModal } from "../session-running/components/PositionDetailsModal";
 import { usePositionsList } from "./hooks/usePositionsList";
 import { formatDateTime } from "@backtrade/utils";
+import { getDisplayPnL } from "../session-running/components/PositionsTable/utils";
 import styles from "./PositionsList.module.css";
 
 /**
@@ -158,15 +159,12 @@ export function PositionsList() {
                                         </td>
                                         <td
                                             className={
-                                                (position.realized_pnl ?? 0) >=
-                                                0
+                                                (getDisplayPnL(position) ?? 0) >= 0
                                                     ? styles.pnlPos
                                                     : styles.pnlNeg
                                             }
                                         >
-                                            {Number(
-                                                position.realized_pnl ?? 0
-                                            ).toFixed(2)}
+                                            {Number(getDisplayPnL(position) ?? 0).toFixed(2)}
                                         </td>
                                         <td>
                                             {position.sl_price

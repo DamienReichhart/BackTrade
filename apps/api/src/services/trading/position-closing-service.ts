@@ -228,11 +228,13 @@ class PositionClosingService {
         );
 
         // 7. Update position with closing data
+        // Set unrealized_pnl to null since position is now closed (realized takes over)
         const positionUpdateData: PositionUpdateInput = {
             position_status: positionStatus,
             exit_price: exitPrice,
             closed_at: closedAt,
             realized_pnl: netPnL,
+            unrealized_pnl: null,
             commission_cost: costs.commission,
             spread_cost: costs.spread,
             slippage_cost: costs.slippage,

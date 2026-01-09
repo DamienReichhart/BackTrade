@@ -1,3 +1,19 @@
+import type { Position } from "@backtrade/types";
+
+/**
+ * Get the appropriate PnL value to display for a position
+ *
+ * Returns unrealized_pnl for open positions and realized_pnl for closed positions.
+ *
+ * @param position - Position object
+ * @returns The PnL value to display (unrealized for open, realized for closed)
+ */
+export function getDisplayPnL(position: Position): number | null {
+    return position.position_status === "OPEN"
+        ? position.unrealized_pnl
+        : position.realized_pnl;
+}
+
 /**
  * Format PnL value for display
  *

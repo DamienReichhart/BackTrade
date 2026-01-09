@@ -152,7 +152,8 @@
 | exit_price      | Decimal  | 18,8 | NULLABLE                 | Price at which the position was closed               | Positive decimal number or NULL          |
 | opened_at       | DateTime | -    | NOT NULL                 | Timestamp when the position was opened               | ISO 8601 datetime                        |
 | closed_at       | DateTime | -    | NULLABLE                 | Timestamp when the position was closed               | ISO 8601 datetime or NULL, >= opened_at  |
-| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for the position             | Decimal number (can be negative) or NULL |
+| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for closed positions         | Decimal number (can be negative) or NULL |
+| unrealized_pnl  | Decimal  | 18,8 | NULLABLE                 | Unrealized profit or loss for open positions (updated on bar advancement) | Decimal number (can be negative) or NULL |
 | commission_cost | Decimal  | 18,8 | NULLABLE                 | Total commission cost for the position               | Non-negative decimal number or NULL      |
 | slippage_cost   | Decimal  | 18,8 | NULLABLE                 | Total slippage cost for the position                 | Non-negative decimal number or NULL      |
 | spread_cost     | Decimal  | 18,8 | NULLABLE                 | Total spread cost for the position                   | Non-negative decimal number or NULL      |

@@ -9,6 +9,7 @@ export { default as marginService } from "./margin-service";
 export { default as performanceMetricsService } from "./performance-metrics-service";
 export { default as sessionInfoService } from "./session-info-service";
 export { default as positionClosingService } from "./position-closing-service";
+export { default as barAdvancementService } from "./bar-advancement-service";
 export type {
     TradingCosts,
     PositionClosingResult,

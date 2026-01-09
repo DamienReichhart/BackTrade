@@ -9,6 +9,7 @@ export type PositionSortField =
     | "quantity_lots"
     | "entry_price"
     | "realized_pnl"
+    | "unrealized_pnl"
     | "sl_price"
     | "tp_price"
     | "position_status"
@@ -42,6 +43,8 @@ function getSortValue(
             return position.entry_price;
         case "realized_pnl":
             return position.realized_pnl ?? 0;
+        case "unrealized_pnl":
+            return position.unrealized_pnl ?? 0;
         case "sl_price":
             return position.sl_price ?? 0;
         case "tp_price":

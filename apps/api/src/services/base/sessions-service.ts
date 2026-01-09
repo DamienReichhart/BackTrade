@@ -13,6 +13,7 @@ import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
+import barAdvancementService from "../trading/bar-advancement-service";
 
 /**
  * Valid session statuses for search operations
@@ -670,6 +671,12 @@ class SessionsService {
     /**
      * Update an existing session
      *
+     * When current_time is advanced (moved forward), triggers bar advancement
+     * processing to:
+     * - Check TP/SL levels against M1 candle data
+     * - Close positions that hit TP/SL
+     * - Perform liquidation cascade if margin level drops below 50%
+     *
      * @param id - Session ID
      * @param session - Session update data
      * @param user - User entity making the request (for authorization)
@@ -697,6 +704,61 @@ class SessionsService {
 
         // Validate business rules
         this.validateSessionUpdate(session, existing, id);
+
+        // Process bar advancement if current_time is being advanced
+        if (session.current_time !== undefined) {
+            const oldTime = existing.current_time;
+            const newTime = session.current_time;
+
+            // Only process if time is moving forward
+            if (new Date(newTime) > new Date(oldTime)) {
+                this.logger.debug(
+                    { id, oldTime, newTime },
+                    "Bar advancement detected, processing positions"
+                );
+
+                // Fetch session with instrument for contract_size and other calculations
+                const sessionWithInstrument =
+                    await sessionsRepo.getSessionWithInstrument(id);
+
+                if (sessionWithInstrument) {
+                    try {
+                        const result =
+                            await barAdvancementService.processBarAdvancement(
+                                sessionWithInstrument,
+                                oldTime,
+                                newTime,
+                                user
+                            );
+
+                        this.logger.debug(
+                            {
+                                id,
+                                positionsClosedCount: result.positionsClosed.length,
+                                marginLevelAfter: result.marginLevelAfter,
+                                equityAfter: result.equityAfter,
+                            },
+                            "Bar advancement processing complete"
+                        );
+                    } catch (error) {
+                        this.logger.error(
+                            {
+                                id,
+                                oldTime,
+                                newTime,
+                                error:
+                                    error instanceof Error
+                                        ? error.message
+                                        : String(error),
+                            },
+                            "Bar advancement processing failed"
+                        );
+                        // Re-throw to prevent session update if bar processing fails
+                        throw error;
+                    }
+                }
+            }
+        }
 
         const updated = await sessionsRepo.updateSession(id, session);
         this.logger.debug({ id: updated.id }, "Session updated");
