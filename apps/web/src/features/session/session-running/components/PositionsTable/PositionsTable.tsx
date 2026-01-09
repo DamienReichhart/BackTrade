@@ -87,7 +87,9 @@ export function PositionsTable() {
                                         <td
                                             className={
                                                 styles[
-                                                    getPnLClassName(getDisplayPnL(p))
+                                                    getPnLClassName(
+                                                        getDisplayPnL(p)
+                                                    )
                                                 ]
                                             }
                                         >

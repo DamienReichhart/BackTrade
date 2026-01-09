@@ -10,11 +10,13 @@ import type {
     SessionUpdateInput,
 } from "@backtrade/types";
 import { transactionsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
+import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination, filterByAccess } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid transaction types for search operations
@@ -42,19 +44,17 @@ const VALID_SORT_FIELDS = [
     "updated_at",
 ] as const;
 
+type TransactionSortField = (typeof VALID_SORT_FIELDS)[number];
+
 /**
  * Transactions Service
  *
  * Handles business logic for transaction operations including CRUD, validation, and caching.
  * Transactions are immutable financial records (create and read only).
  */
-class TransactionsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class TransactionsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "transactions-service",
-        });
+        super("transactions-service");
     }
 
     // ============================================================================
@@ -301,60 +301,6 @@ class TransactionsService {
         this.logger.trace({ id: transaction.id }, "Transaction cached");
     }
 
-    /**
-     * Filter transactions by access rights
-     *
-     * Verifies access for each transaction in parallel and filters out
-     * inaccessible ones. Logs filtered transactions for security auditing.
-     *
-     * @param transactions - Array of transactions to filter
-     * @param user - User entity making the request
-     * @returns Array of accessible transactions
-     */
-    private async filterTransactionsByAccess(
-        transactions: Transaction[],
-        user: User
-    ): Promise<Transaction[]> {
-        if (transactions.length === 0) {
-            return transactions;
-        }
-
-        // Verify access for all transactions in parallel
-        const accessResults = await Promise.all(
-            transactions.map((transaction) =>
-                this.verifyTransactionAccess(transaction, user)
-            )
-        );
-
-        // Filter transactions based on access results
-        const accessibleTransactions: Transaction[] = [];
-        const filteredCount = { count: 0 };
-
-        transactions.forEach((transaction, index) => {
-            if (accessResults[index]) {
-                accessibleTransactions.push(transaction);
-            } else {
-                filteredCount.count++;
-            }
-        });
-
-        // Log if any transactions were filtered out
-        if (filteredCount.count > 0) {
-            this.logger.debug(
-                {
-                    userId: user.id,
-                    userRole: user.role,
-                    totalTransactions: transactions.length,
-                    filteredCount: filteredCount.count,
-                    accessibleCount: accessibleTransactions.length,
-                },
-                "Transactions filtered by access rights"
-            );
-        }
-
-        return accessibleTransactions;
-    }
-
     // ============================================================================
     // QUERY BUILDING METHODS
     // ============================================================================
@@ -464,29 +410,6 @@ class TransactionsService {
         return { OR: searchConditions };
     }
 
-    /**
-     * Build order by clause for transaction queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): TransactionOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
-            return undefined;
-        }
-
-        return { [sort]: order } as TransactionOrderBy;
-    }
-
     // ============================================================================
     // PUBLIC METHODS
     // ============================================================================
@@ -548,7 +471,13 @@ class TransactionsService {
         user: User,
         query?: SearchQuery
     ): Promise<Transaction[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            q,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build session filter
         const sessionFilter = await this.buildSessionFilter(sessionId, user);
@@ -570,17 +499,33 @@ class TransactionsService {
             searchConditions
         );
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<TransactionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as TransactionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         const transactions = await transactionsRepo.getAllTransactions({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
-        return this.filterTransactionsByAccess(transactions, user);
+
+        // Filter by access using shared utility
+        const result = await filterByAccess(
+            transactions,
+            (transaction) => this.verifyTransactionAccess(transaction, user),
+            this.logger,
+            { userId: user.id, userRole: user.role, entityType: "Transaction" }
+        );
+
+        return result.accessible;
     }
 
     /**
@@ -625,10 +570,7 @@ class TransactionsService {
 
         // Update session's current_balance when a transaction is created
         // Use sessionsService to ensure proper cache invalidation
-        if (
-            created.session_id !== undefined &&
-            created.session_id !== null
-        ) {
+        if (created.session_id !== undefined && created.session_id !== null) {
             const sessionUpdate: SessionUpdateInput = {
                 current_balance: created.balance_after,
             };

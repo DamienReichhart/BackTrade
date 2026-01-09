@@ -99,7 +99,9 @@ export function PositionDetailsModal({
                     <div className={styles.section}>
                         {position.position_status === "OPEN" && (
                             <div className={styles.row}>
-                                <span className={styles.label}>Unrealized P&L:</span>
+                                <span className={styles.label}>
+                                    Unrealized P&L:
+                                </span>
                                 <span
                                     className={`${styles.value} ${
                                         (position.unrealized_pnl ?? 0) >= 0
@@ -113,7 +115,9 @@ export function PositionDetailsModal({
                         )}
                         {position.position_status !== "OPEN" && (
                             <div className={styles.row}>
-                                <span className={styles.label}>Realized P&L:</span>
+                                <span className={styles.label}>
+                                    Realized P&L:
+                                </span>
                                 <span
                                     className={`${styles.value} ${
                                         (position.realized_pnl ?? 0) >= 0

@@ -12,12 +12,9 @@
  */
 
 import type { Position } from "@backtrade/types";
-import { logger } from "../../libs/pino";
-
-/**
- * Default contract size for standard Forex lots (100,000 units)
- */
-const DEFAULT_CONTRACT_SIZE = 100000;
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
+import { TRADING_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Margin Service
@@ -25,13 +22,9 @@ const DEFAULT_CONTRACT_SIZE = 100000;
  * Handles all margin-related calculations for trading positions.
  * All methods are pure functions with no side effects.
  */
-class MarginService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class MarginService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "margin-service",
-        });
+        super("margin-service");
     }
 
     /**
@@ -49,7 +42,7 @@ class MarginService {
         position: Position,
         currentPrice: number,
         leverage: number,
-        contractSize: number = DEFAULT_CONTRACT_SIZE
+        contractSize: number = TRADING_CONSTANTS.DEFAULT_CONTRACT_SIZE
     ): number {
         if (leverage <= 0) {
             this.logger.warn(
@@ -60,7 +53,7 @@ class MarginService {
         }
 
         // Convert Prisma Decimal to number for calculations
-        const quantityLots = Number(position.quantity_lots);
+        const quantityLots = toNumber(position.quantity_lots);
 
         const positionValue = quantityLots * contractSize * currentPrice;
         const requiredMargin = positionValue / leverage;
@@ -94,7 +87,7 @@ class MarginService {
         positions: Position[],
         currentPrice: number,
         leverage: number,
-        contractSize: number = DEFAULT_CONTRACT_SIZE
+        contractSize: number = TRADING_CONSTANTS.DEFAULT_CONTRACT_SIZE
     ): number {
         if (positions.length === 0) {
             return 0;

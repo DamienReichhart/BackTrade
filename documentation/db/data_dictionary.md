@@ -141,24 +141,24 @@
 
 ## POSITION
 
-| Attribute       | Type     | Size | Constraints              | Description                                          | Domain                                   |
-| --------------- | -------- | ---- | ------------------------ | ---------------------------------------------------- | ---------------------------------------- |
-| position_status | Enum     | -    | NOT NULL, DEFAULT: OPEN  | Current status of the trading position               | OPEN, CLOSED, LIQUIDATED                 |
-| side            | Enum     | -    | NOT NULL                 | Direction of the position                            | BUY, SELL                                |
-| quantity_lots   | Decimal  | 18,8 | NOT NULL                 | Size of the position in lots                         | Positive decimal number                  |
-| tp_price        | Decimal  | 18,8 | NULLABLE                 | Take profit price level                              | Positive decimal number or NULL          |
-| sl_price        | Decimal  | 18,8 | NULLABLE                 | Stop loss price level                                | Positive decimal number or NULL          |
-| entry_price     | Decimal  | 18,8 | NOT NULL                 | Price at which the position was opened               | Positive decimal number                  |
-| exit_price      | Decimal  | 18,8 | NULLABLE                 | Price at which the position was closed               | Positive decimal number or NULL          |
-| opened_at       | DateTime | -    | NOT NULL                 | Timestamp when the position was opened               | ISO 8601 datetime                        |
-| closed_at       | DateTime | -    | NULLABLE                 | Timestamp when the position was closed               | ISO 8601 datetime or NULL, >= opened_at  |
-| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for closed positions         | Decimal number (can be negative) or NULL |
+| Attribute       | Type     | Size | Constraints              | Description                                                               | Domain                                   |
+| --------------- | -------- | ---- | ------------------------ | ------------------------------------------------------------------------- | ---------------------------------------- |
+| position_status | Enum     | -    | NOT NULL, DEFAULT: OPEN  | Current status of the trading position                                    | OPEN, CLOSED, LIQUIDATED                 |
+| side            | Enum     | -    | NOT NULL                 | Direction of the position                                                 | BUY, SELL                                |
+| quantity_lots   | Decimal  | 18,8 | NOT NULL                 | Size of the position in lots                                              | Positive decimal number                  |
+| tp_price        | Decimal  | 18,8 | NULLABLE                 | Take profit price level                                                   | Positive decimal number or NULL          |
+| sl_price        | Decimal  | 18,8 | NULLABLE                 | Stop loss price level                                                     | Positive decimal number or NULL          |
+| entry_price     | Decimal  | 18,8 | NOT NULL                 | Price at which the position was opened                                    | Positive decimal number                  |
+| exit_price      | Decimal  | 18,8 | NULLABLE                 | Price at which the position was closed                                    | Positive decimal number or NULL          |
+| opened_at       | DateTime | -    | NOT NULL                 | Timestamp when the position was opened                                    | ISO 8601 datetime                        |
+| closed_at       | DateTime | -    | NULLABLE                 | Timestamp when the position was closed                                    | ISO 8601 datetime or NULL, >= opened_at  |
+| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for closed positions                              | Decimal number (can be negative) or NULL |
 | unrealized_pnl  | Decimal  | 18,8 | NULLABLE                 | Unrealized profit or loss for open positions (updated on bar advancement) | Decimal number (can be negative) or NULL |
-| commission_cost | Decimal  | 18,8 | NULLABLE                 | Total commission cost for the position               | Non-negative decimal number or NULL      |
-| slippage_cost   | Decimal  | 18,8 | NULLABLE                 | Total slippage cost for the position                 | Non-negative decimal number or NULL      |
-| spread_cost     | Decimal  | 18,8 | NULLABLE                 | Total spread cost for the position                   | Non-negative decimal number or NULL      |
-| created_at      | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the position was created              | ISO 8601 datetime                        |
-| updated_at      | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the position record was last modified | ISO 8601 datetime                        |
+| commission_cost | Decimal  | 18,8 | NULLABLE                 | Total commission cost for the position                                    | Non-negative decimal number or NULL      |
+| slippage_cost   | Decimal  | 18,8 | NULLABLE                 | Total slippage cost for the position                                      | Non-negative decimal number or NULL      |
+| spread_cost     | Decimal  | 18,8 | NULLABLE                 | Total spread cost for the position                                        | Non-negative decimal number or NULL      |
+| created_at      | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the position was created                                   | ISO 8601 datetime                        |
+| updated_at      | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the position record was last modified                      | ISO 8601 datetime                        |
 
 ---
 

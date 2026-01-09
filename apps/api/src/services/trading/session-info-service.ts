@@ -22,25 +22,22 @@ import {
     sessionsRepo,
     transactionsRepo,
 } from "@backtrade/data";
-import { logger } from "../../libs/pino";
 import sessionsService from "../base/sessions-service";
 import pnlCalculationService from "./pnl-calculation-service";
 import marginService from "./margin-service";
 import performanceMetricsService from "./performance-metrics-service";
 import NotFoundError from "../../errors/web/not-found-error";
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
 
 /**
  * Session Info Service
  *
  * Orchestrates all trading calculations to produce comprehensive session info.
  */
-class SessionInfoService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class SessionInfoService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "session-info-service",
-        });
+        super("session-info-service");
     }
 
     /**
@@ -57,12 +54,13 @@ class SessionInfoService {
         instrumentId: number,
         currentTime: string
     ): Promise<number | null> {
-        const candles = await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
-            instrumentId,
-            "M1",
-            currentTime,
-            1
-        );
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                instrumentId,
+                "M1",
+                currentTime,
+                1
+            );
 
         if (candles.length === 0) {
             this.logger.debug(
@@ -72,7 +70,7 @@ class SessionInfoService {
             return null;
         }
 
-        return candles[0]!.close;
+        return toNumber(candles[0]!.close);
     }
 
     /**
@@ -129,7 +127,7 @@ class SessionInfoService {
 
         // Find max balance_after (convert Prisma Decimal to number)
         const maxBalanceAfter = Math.max(
-            ...transactions.map((t) => Number(t.balance_after))
+            ...transactions.map((t) => toNumber(t.balance_after))
         );
 
         // Peak is the higher of initial balance and max recorded balance
@@ -208,7 +206,7 @@ class SessionInfoService {
         );
 
         // Convert Prisma Decimal to number for initial balance
-        const initialBalance = Number(session.initial_balance);
+        const initialBalance = toNumber(session.initial_balance);
 
         // Fetch all required data in parallel
         const [positions, currentPrice, peakBalance] = await Promise.all([
@@ -231,7 +229,7 @@ class SessionInfoService {
                 : 0;
 
         // Convert Prisma Decimal to number for calculations
-        const currentBalance = Number(session.current_balance);
+        const currentBalance = toNumber(session.current_balance);
 
         // Calculate current equity
         const currentEquity = currentBalance + unrealizedPnL;

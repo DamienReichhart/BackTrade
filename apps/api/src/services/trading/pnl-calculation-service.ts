@@ -11,21 +11,12 @@
  */
 
 import type { Position } from "@backtrade/types";
-import { logger } from "../../libs/pino";
-
-/**
- * Side multiplier for PnL calculation
- * BUY positions profit when price goes up, SELL positions profit when price goes down
- */
-const SIDE_MULTIPLIERS: Record<string, number> = {
-    BUY: 1,
-    SELL: -1,
-};
-
-/**
- * Default contract size for standard Forex lots (100,000 units)
- */
-const DEFAULT_CONTRACT_SIZE = 100000;
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
+import {
+    TRADING_CONSTANTS,
+    SIDE_MULTIPLIERS,
+} from "../../config/trading-constants";
 
 /**
  * PnL Calculation Service
@@ -33,13 +24,9 @@ const DEFAULT_CONTRACT_SIZE = 100000;
  * Handles all profit/loss calculations for trading positions.
  * All methods are pure functions with no side effects.
  */
-class PnLCalculationService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class PnLCalculationService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "pnl-calculation-service",
-        });
+        super("pnl-calculation-service");
     }
 
     /**
@@ -57,11 +44,11 @@ class PnLCalculationService {
     calculatePositionUnrealizedPnL(
         position: Position,
         currentPrice: number,
-        contractSize: number = DEFAULT_CONTRACT_SIZE
+        contractSize: number = TRADING_CONSTANTS.DEFAULT_CONTRACT_SIZE
     ): number {
         // Convert Prisma Decimals to numbers for calculations
-        const entryPrice = Number(position.entry_price);
-        const quantityLots = Number(position.quantity_lots);
+        const entryPrice = toNumber(position.entry_price);
+        const quantityLots = toNumber(position.quantity_lots);
 
         const sideMultiplier = SIDE_MULTIPLIERS[position.side] ?? 1;
         const priceDifference = currentPrice - entryPrice;
@@ -95,7 +82,7 @@ class PnLCalculationService {
     calculateTotalUnrealizedPnL(
         positions: Position[],
         currentPrice: number,
-        contractSize: number = DEFAULT_CONTRACT_SIZE
+        contractSize: number = TRADING_CONSTANTS.DEFAULT_CONTRACT_SIZE
     ): number {
         if (positions.length === 0) {
             return 0;
@@ -142,11 +129,11 @@ class PnLCalculationService {
     calculateGrossRealizedPnL(
         position: Position,
         exitPrice: number,
-        contractSize: number = DEFAULT_CONTRACT_SIZE
+        contractSize: number = TRADING_CONSTANTS.DEFAULT_CONTRACT_SIZE
     ): number {
         // Convert Prisma Decimals to numbers for calculations
-        const entryPrice = Number(position.entry_price);
-        const quantityLots = Number(position.quantity_lots);
+        const entryPrice = toNumber(position.entry_price);
+        const quantityLots = toNumber(position.quantity_lots);
 
         const sideMultiplier = SIDE_MULTIPLIERS[position.side] ?? 1;
         const priceDifference = exitPrice - entryPrice;
@@ -181,7 +168,7 @@ class PnLCalculationService {
         }
 
         const totalRealizedPnL = closedPositions.reduce((total, position) => {
-            return total + (position.realized_pnl ?? 0);
+            return total + toNumber(position.realized_pnl);
         }, 0);
 
         this.logger.trace(

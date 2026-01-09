@@ -6,21 +6,17 @@ import {
 } from "@backtrade/types";
 import userService from "../base/users-service";
 import hashService from "./hash-service";
-import { logger } from "../../libs/pino";
 import jwtService from "./jwt-service";
+import { BaseService } from "../base/base-service";
 
 /**
  * Auth Service
  *
  * Handles user authentication, registration, and token management.
  */
-class AuthService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class AuthService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "auth-service",
-        });
+        super("auth-service");
     }
 
     /**

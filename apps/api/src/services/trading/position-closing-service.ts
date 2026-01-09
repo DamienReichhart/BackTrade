@@ -22,13 +22,14 @@ import type {
     SessionWithInstrument,
 } from "@backtrade/types";
 import { positionsRepo, sessionsRepo } from "@backtrade/data";
-import { logger } from "../../libs/pino";
 import pnlCalculationService from "./pnl-calculation-service";
 import transactionsService from "../base/transactions-service";
 import { positionsCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import sessionsService from "../base/sessions-service";
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
 
 /**
  * Trading costs breakdown for a closed position
@@ -66,13 +67,9 @@ export interface PositionClosingResult {
  * Orchestrates all operations required to close a trading position,
  * including PnL calculation, cost application, and transaction creation.
  */
-class PositionClosingService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class PositionClosingService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "position-closing-service",
-        });
+        super("position-closing-service");
     }
 
     /**
@@ -92,14 +89,14 @@ class PositionClosingService {
         session: SessionWithInstrument
     ): TradingCosts {
         const { instrument } = session;
-        const contractSize = Number(instrument.contract_size);
-        const pipSize = Number(instrument.pip_size);
-        const quantityLots = Number(position.quantity_lots);
+        const contractSize = toNumber(instrument.contract_size);
+        const pipSize = toNumber(instrument.pip_size);
+        const quantityLots = toNumber(position.quantity_lots);
 
         // Convert Prisma Decimals to numbers for calculations
-        const commissionPerFill = Number(session.commission_per_fill);
-        const spreadPts = Number(session.spread_pts);
-        const slippagePts = Number(session.slippage_pts);
+        const commissionPerFill = toNumber(session.commission_per_fill);
+        const spreadPts = toNumber(session.spread_pts);
+        const slippagePts = toNumber(session.slippage_pts);
 
         // Commission is per fill, and closing requires 2 fills (entry was already done)
         // For closing, we charge commission for the exit fill
@@ -165,7 +162,13 @@ class PositionClosingService {
         positionStatus: "CLOSED" | "LIQUIDATED" = "CLOSED"
     ): Promise<PositionClosingResult> {
         this.logger.debug(
-            { positionId, exitPrice, closedAt, userId: user.id, positionStatus },
+            {
+                positionId,
+                exitPrice,
+                closedAt,
+                userId: user.id,
+                positionStatus,
+            },
             "Starting position close operation"
         );
 
@@ -246,7 +249,10 @@ class PositionClosingService {
         );
 
         // Update position cache
-        await positionsCacheRepo.cachePosition(updatedPosition.id, updatedPosition);
+        await positionsCacheRepo.cachePosition(
+            updatedPosition.id,
+            updatedPosition
+        );
 
         this.logger.debug(
             { positionId: updatedPosition.id },
@@ -255,7 +261,7 @@ class PositionClosingService {
 
         // 8. Create PNL transaction
         // Convert Prisma Decimal to number before arithmetic
-        const currentBalance = Number(session.current_balance);
+        const currentBalance = toNumber(session.current_balance);
         const newBalance = currentBalance + netPnL;
         const transactionData: TransactionCreateInput = {
             session_id: session.id,

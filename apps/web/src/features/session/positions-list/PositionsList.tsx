@@ -159,12 +159,15 @@ export function PositionsList() {
                                         </td>
                                         <td
                                             className={
-                                                (getDisplayPnL(position) ?? 0) >= 0
+                                                (getDisplayPnL(position) ??
+                                                    0) >= 0
                                                     ? styles.pnlPos
                                                     : styles.pnlNeg
                                             }
                                         >
-                                            {Number(getDisplayPnL(position) ?? 0).toFixed(2)}
+                                            {Number(
+                                                getDisplayPnL(position) ?? 0
+                                            ).toFixed(2)}
                                         </td>
                                         <td>
                                             {position.sl_price

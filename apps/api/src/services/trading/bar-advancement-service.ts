@@ -20,16 +20,12 @@ import type {
     PositionClosureReason,
 } from "@backtrade/types";
 import { candlesRepo, positionsRepo, sessionsRepo } from "@backtrade/data";
-import { logger } from "../../libs/pino";
 import positionClosingService from "./position-closing-service";
 import pnlCalculationService from "./pnl-calculation-service";
 import marginService from "./margin-service";
-
-/**
- * Minimum margin level threshold (50%)
- * When margin level drops below this, liquidation cascade is triggered
- */
-const LIQUIDATION_THRESHOLD = 50;
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
+import { TRADING_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * TP/SL hit detection result
@@ -59,13 +55,9 @@ interface PositionWithPnL {
  * Handles position management during bar advancement including
  * TP/SL execution and margin-based liquidation.
  */
-class BarAdvancementService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class BarAdvancementService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "bar-advancement-service",
-        });
+        super("bar-advancement-service");
     }
 
     /**
@@ -118,7 +110,7 @@ class BarAdvancementService {
             return {
                 positionsClosed: [],
                 marginLevelAfter: 0,
-                equityAfter: Number(session.current_balance),
+                equityAfter: toNumber(session.current_balance),
             };
         }
 
@@ -147,7 +139,11 @@ class BarAdvancementService {
                 "No M1 candle data available for time range, skipping TP/SL checks"
             );
             // Still calculate margin level with current data
-            return this.calculateFinalState(session, openPositions, newCurrentTime);
+            return this.calculateFinalState(
+                session,
+                openPositions,
+                newCurrentTime
+            );
         }
 
         this.logger.trace(
@@ -175,13 +171,14 @@ class BarAdvancementService {
                 );
 
                 try {
-                    const closingResult = await positionClosingService.closePosition(
-                        position.id.toString(),
-                        tpSlResult.exitPrice,
-                        tpSlResult.candleTimestamp,
-                        user,
-                        "CLOSED"
-                    );
+                    const closingResult =
+                        await positionClosingService.closePosition(
+                            position.id.toString(),
+                            tpSlResult.exitPrice,
+                            tpSlResult.candleTimestamp,
+                            user,
+                            "CLOSED"
+                        );
 
                     positionsClosed.push({
                         positionId: position.id,
@@ -193,7 +190,10 @@ class BarAdvancementService {
                     this.logger.error(
                         {
                             positionId: position.id,
-                            error: error instanceof Error ? error.message : String(error),
+                            error:
+                                error instanceof Error
+                                    ? error.message
+                                    : String(error),
                         },
                         "Failed to close position on TP/SL hit"
                     );
@@ -207,7 +207,9 @@ class BarAdvancementService {
             session.id
         );
         if (!updatedSession) {
-            throw new Error(`Session ${session.id} not found after TP/SL processing`);
+            throw new Error(
+                `Session ${session.id} not found after TP/SL processing`
+            );
         }
 
         // 5. Get remaining open positions after TP/SL closures
@@ -226,7 +228,7 @@ class BarAdvancementService {
             return {
                 positionsClosed,
                 marginLevelAfter: 0,
-                equityAfter: Number(updatedSession.current_balance),
+                equityAfter: toNumber(updatedSession.current_balance),
             };
         }
 
@@ -290,8 +292,8 @@ class BarAdvancementService {
         position: Position,
         candles: Candle[]
     ): TpSlHitResult | null {
-        const tpPrice = position.tp_price ? Number(position.tp_price) : null;
-        const slPrice = position.sl_price ? Number(position.sl_price) : null;
+        const tpPrice = toNumber(position.tp_price) || null;
+        const slPrice = toNumber(position.sl_price) || null;
 
         // If no TP/SL set, nothing to check
         if (!tpPrice && !slPrice) {
@@ -302,8 +304,8 @@ class BarAdvancementService {
 
         // Check each candle chronologically
         for (const candle of candles) {
-            const high = Number(candle.high);
-            const low = Number(candle.low);
+            const high = toNumber(candle.high);
+            const low = toNumber(candle.low);
 
             let tpHit = false;
             let slHit = false;
@@ -382,7 +384,7 @@ class BarAdvancementService {
         tpPrice: number,
         slPrice: number
     ): "TP" | "SL" {
-        const open = Number(candle.open);
+        const open = toNumber(candle.open);
 
         // Calculate distance from open to each level
         const distanceToTp = Math.abs(open - tpPrice);
@@ -431,7 +433,7 @@ class BarAdvancementService {
      */
     private getCurrentPriceFromCandles(candles: Candle[]): number {
         const lastCandle = candles[candles.length - 1];
-        return Number(lastCandle!.close);
+        return toNumber(lastCandle!.close);
     }
 
     /**
@@ -450,24 +452,25 @@ class BarAdvancementService {
         currentTime: string
     ): Promise<BarAdvancementResult> {
         // Get current price
-        const candles = await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
-            session.instrument_id,
-            "M1",
-            currentTime,
-            1
-        );
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                session.instrument_id,
+                "M1",
+                currentTime,
+                1
+            );
 
         if (candles.length === 0) {
             return {
                 positionsClosed: [],
                 marginLevelAfter: 0,
-                equityAfter: Number(session.current_balance),
+                equityAfter: toNumber(session.current_balance),
             };
         }
 
-        const currentPrice = Number(candles[0]!.close);
+        const currentPrice = toNumber(candles[0]!.close);
         const contractSize = session.instrument.contract_size;
-        const currentBalance = Number(session.current_balance);
+        const currentBalance = toNumber(session.current_balance);
 
         const unrealizedPnL = pnlCalculationService.calculateTotalUnrealizedPnL(
             openPositions,
@@ -482,7 +485,10 @@ class BarAdvancementService {
             session.leverage,
             contractSize
         );
-        const marginLevel = marginService.calculateMarginLevel(equity, usedMargin);
+        const marginLevel = marginService.calculateMarginLevel(
+            equity,
+            usedMargin
+        );
 
         // Update unrealized PnL for all open positions
         await this.updatePositionsUnrealizedPnL(
@@ -532,7 +538,7 @@ class BarAdvancementService {
         let currentSession = session;
 
         // Calculate initial state
-        let currentBalance = Number(currentSession.current_balance);
+        let currentBalance = toNumber(currentSession.current_balance);
         let unrealizedPnL = pnlCalculationService.calculateTotalUnrealizedPnL(
             remainingPositions,
             currentPrice,
@@ -545,7 +551,10 @@ class BarAdvancementService {
             currentSession.leverage,
             contractSize
         );
-        let marginLevel = marginService.calculateMarginLevel(equity, usedMargin);
+        let marginLevel = marginService.calculateMarginLevel(
+            equity,
+            usedMargin
+        );
 
         this.logger.debug(
             {
@@ -553,13 +562,16 @@ class BarAdvancementService {
                 marginLevel,
                 equity,
                 usedMargin,
-                threshold: LIQUIDATION_THRESHOLD,
+                threshold: TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT,
             },
             "Checking margin level for liquidation"
         );
 
         // Check if liquidation is needed
-        if (marginLevel >= LIQUIDATION_THRESHOLD || marginLevel === 0) {
+        if (
+            marginLevel >= TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT ||
+            marginLevel === 0
+        ) {
             return {
                 liquidatedPositions: [],
                 marginLevelAfter: marginLevel,
@@ -571,7 +583,7 @@ class BarAdvancementService {
             {
                 sessionId: session.id,
                 marginLevel,
-                threshold: LIQUIDATION_THRESHOLD,
+                threshold: TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT,
                 openPositionCount: remainingPositions.length,
             },
             "Margin level below threshold, starting liquidation cascade"
@@ -581,19 +593,25 @@ class BarAdvancementService {
         const positionsWithPnL: PositionWithPnL[] = remainingPositions.map(
             (position) => ({
                 position,
-                unrealizedPnL: pnlCalculationService.calculatePositionUnrealizedPnL(
-                    position,
-                    currentPrice,
-                    contractSize
-                ),
+                unrealizedPnL:
+                    pnlCalculationService.calculatePositionUnrealizedPnL(
+                        position,
+                        currentPrice,
+                        contractSize
+                    ),
             })
         );
 
         positionsWithPnL.sort((a, b) => a.unrealizedPnL - b.unrealizedPnL);
 
         // Liquidate positions until margin level is restored or no positions remain
-        for (const { position, unrealizedPnL: positionPnL } of positionsWithPnL) {
-            if (marginLevel >= LIQUIDATION_THRESHOLD) {
+        for (const {
+            position,
+            unrealizedPnL: positionPnL,
+        } of positionsWithPnL) {
+            if (
+                marginLevel >= TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT
+            ) {
                 break;
             }
 
@@ -607,13 +625,14 @@ class BarAdvancementService {
             );
 
             try {
-                const closingResult = await positionClosingService.closePosition(
-                    position.id.toString(),
-                    currentPrice,
-                    closedAt,
-                    user,
-                    "LIQUIDATED"
-                );
+                const closingResult =
+                    await positionClosingService.closePosition(
+                        position.id.toString(),
+                        currentPrice,
+                        closedAt,
+                        user,
+                        "LIQUIDATED"
+                    );
 
                 liquidatedPositions.push({
                     positionId: position.id,
@@ -628,9 +647,8 @@ class BarAdvancementService {
                 );
 
                 // Refresh session data
-                const updatedSession = await sessionsRepo.getSessionWithInstrument(
-                    session.id
-                );
+                const updatedSession =
+                    await sessionsRepo.getSessionWithInstrument(session.id);
                 if (!updatedSession) {
                     throw new Error(
                         `Session ${session.id} not found after liquidation`
@@ -639,12 +657,13 @@ class BarAdvancementService {
                 currentSession = updatedSession;
 
                 // Recalculate margin level
-                currentBalance = Number(currentSession.current_balance);
-                unrealizedPnL = pnlCalculationService.calculateTotalUnrealizedPnL(
-                    remainingPositions,
-                    currentPrice,
-                    contractSize
-                );
+                currentBalance = toNumber(currentSession.current_balance);
+                unrealizedPnL =
+                    pnlCalculationService.calculateTotalUnrealizedPnL(
+                        remainingPositions,
+                        currentPrice,
+                        contractSize
+                    );
                 equity = currentBalance + unrealizedPnL;
                 usedMargin = marginService.calculateUsedMargin(
                     remainingPositions,
@@ -652,7 +671,10 @@ class BarAdvancementService {
                     currentSession.leverage,
                     contractSize
                 );
-                marginLevel = marginService.calculateMarginLevel(equity, usedMargin);
+                marginLevel = marginService.calculateMarginLevel(
+                    equity,
+                    usedMargin
+                );
 
                 this.logger.debug(
                     {
@@ -668,7 +690,10 @@ class BarAdvancementService {
                 this.logger.error(
                     {
                         positionId: position.id,
-                        error: error instanceof Error ? error.message : String(error),
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error),
                     },
                     "Failed to liquidate position"
                 );
@@ -676,13 +701,16 @@ class BarAdvancementService {
             }
         }
 
-        if (marginLevel < LIQUIDATION_THRESHOLD && remainingPositions.length > 0) {
+        if (
+            marginLevel < TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT &&
+            remainingPositions.length > 0
+        ) {
             this.logger.warn(
                 {
                     sessionId: session.id,
                     marginLevel,
                     remainingPositions: remainingPositions.length,
-                    threshold: LIQUIDATION_THRESHOLD,
+                    threshold: TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT,
                 },
                 "Liquidation cascade complete but margin level still below threshold"
             );
@@ -711,11 +739,12 @@ class BarAdvancementService {
         contractSize: number
     ): Promise<void> {
         for (const position of positions) {
-            const unrealizedPnL = pnlCalculationService.calculatePositionUnrealizedPnL(
-                position,
-                currentPrice,
-                contractSize
-            );
+            const unrealizedPnL =
+                pnlCalculationService.calculatePositionUnrealizedPnL(
+                    position,
+                    currentPrice,
+                    contractSize
+                );
 
             await positionsRepo.updatePosition(position.id.toString(), {
                 unrealized_pnl: unrealizedPnL,

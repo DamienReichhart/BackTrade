@@ -1,25 +1,21 @@
 import jwt from "jsonwebtoken";
 import { ENV } from "../../config/env";
-import { logger } from "../../libs/pino";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import {
     type JwtPayload,
     type JwtPayloadGeneration,
     JwtPayloadSchema,
 } from "@backtrade/types";
+import { BaseService } from "../base/base-service";
 
 /**
  * JWT Service
  *
  * Handles JWT token generation and verification for authentication.
  */
-class JwtService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class JwtService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "jwt-service",
-        });
+        super("jwt-service");
     }
 
     /**

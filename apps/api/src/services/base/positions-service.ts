@@ -10,12 +10,14 @@ import type {
     User,
 } from "@backtrade/types";
 import { positionsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
 import positionClosingService from "../trading/position-closing-service";
+import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination, filterByAccess } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid sortable fields for positions
@@ -35,19 +37,17 @@ const VALID_SORT_FIELDS = [
     "updated_at",
 ] as const;
 
+type PositionSortField = (typeof VALID_SORT_FIELDS)[number];
+
 /**
  * Positions Service
  *
  * Handles business logic for position operations including CRUD, validation, and caching.
  * Positions represent trading positions within a session.
  */
-class PositionsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class PositionsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "positions-service",
-        });
+        super("positions-service");
     }
 
     // ============================================================================
@@ -473,60 +473,6 @@ class PositionsService {
         this.logger.trace({ id: numericId }, "Position invalidated from cache");
     }
 
-    /**
-     * Filter positions by access rights
-     *
-     * Verifies access for each position in parallel and filters out
-     * inaccessible ones. Logs filtered positions for security auditing.
-     *
-     * @param positions - Array of positions to filter
-     * @param user - User entity making the request
-     * @returns Array of accessible positions
-     */
-    private async filterPositionsByAccess(
-        positions: Position[],
-        user: User
-    ): Promise<Position[]> {
-        if (positions.length === 0) {
-            return positions;
-        }
-
-        // Verify access for all positions in parallel
-        const accessResults = await Promise.all(
-            positions.map((position) =>
-                this.verifyPositionAccess(position, user)
-            )
-        );
-
-        // Filter positions based on access results
-        const accessiblePositions: Position[] = [];
-        let filteredCount = 0;
-
-        positions.forEach((position, index) => {
-            if (accessResults[index]) {
-                accessiblePositions.push(position);
-            } else {
-                filteredCount++;
-            }
-        });
-
-        // Log if any positions were filtered out
-        if (filteredCount > 0) {
-            this.logger.debug(
-                {
-                    userId: user.id,
-                    userRole: user.role,
-                    totalPositions: positions.length,
-                    filteredCount,
-                    accessibleCount: accessiblePositions.length,
-                },
-                "Positions filtered by access rights"
-            );
-        }
-
-        return accessiblePositions;
-    }
-
     // ============================================================================
     // QUERY BUILDING METHODS
     // ============================================================================
@@ -600,29 +546,6 @@ class PositionsService {
         };
     }
 
-    /**
-     * Build order by clause for position queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): PositionOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
-            return undefined;
-        }
-
-        return { [sort]: order } as PositionOrderBy;
-    }
-
     // ============================================================================
     // PUBLIC METHODS
     // ============================================================================
@@ -684,7 +607,13 @@ class PositionsService {
         user: User,
         query?: PositionQuery
     ): Promise<Position[]> {
-        const { status, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            status,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build session filter
         const sessionFilter = await this.buildSessionFilter(sessionId, user);
@@ -703,18 +632,33 @@ class PositionsService {
         // Combine filters
         const where = this.combineFilters(sessionFilter, statusFilter);
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<PositionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as PositionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         const positions = await positionsRepo.getAllPositions({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
 
-        return this.filterPositionsByAccess(positions, user);
+        // Filter by access using shared utility
+        const result = await filterByAccess(
+            positions,
+            (position) => this.verifyPositionAccess(position, user),
+            this.logger,
+            { userId: user.id, userRole: user.role, entityType: "Position" }
+        );
+
+        return result.accessible;
     }
 
     /**
@@ -775,7 +719,8 @@ class PositionsService {
         const isCurrentlyOpen = existing.position_status === "OPEN";
 
         const hasClosingData =
-            position.exit_price !== undefined && position.closed_at !== undefined;
+            position.exit_price !== undefined &&
+            position.closed_at !== undefined;
 
         return isStatusChangingToClosed && isCurrentlyOpen && hasClosingData;
     }

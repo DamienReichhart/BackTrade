@@ -6,13 +6,13 @@ import type {
     UserUpdateInput,
 } from "@backtrade/types";
 import { usersCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import AlreadyExistsError from "../../errors/web/already-exists-error";
 import UnAuthenticatedError from "../../errors/web/unauthenticated-error";
 import hashService from "../security/hash-service";
+import { BaseService } from "./base-service";
 
 /**
  * Valid user roles
@@ -35,13 +35,9 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * - Admins can access all user data
  * - Create/Update/Delete have specific permission rules
  */
-class UsersService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class UsersService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "users-service",
-        });
+        super("users-service");
     }
 
     // ============================================================================
@@ -216,13 +212,13 @@ class UsersService {
     /**
      * Get user from cache
      *
-     * @param id - User ID
+     * @param numericId - Numeric user ID
      * @returns Cached user or null if not found
      */
-    private async getCachedUser(id: number): Promise<User | null> {
-        const cachedUser = await usersCacheRepo.getCachedUser(id);
+    private async getCachedUser(numericId: number): Promise<User | null> {
+        const cachedUser = await usersCacheRepo.getCachedUser(numericId);
         if (cachedUser) {
-            this.logger.trace({ id }, "User found in cache");
+            this.logger.trace({ id: numericId }, "User found in cache");
         }
         return cachedUser;
     }
@@ -230,21 +226,21 @@ class UsersService {
     /**
      * Get user from cache with access verification
      *
-     * @param id - User ID
+     * @param numericId - Numeric user ID
      * @param requestingUser - User entity making the request
      * @returns Cached user or null if not found
      * @throws ForbiddenError if user doesn't have access
      */
     private async getCachedUserWithAccess(
-        id: number,
+        numericId: number,
         requestingUser: User
     ): Promise<User | null> {
-        const cachedUser = await this.getCachedUser(id);
+        const cachedUser = await this.getCachedUser(numericId);
         if (!cachedUser) {
             return null;
         }
 
-        this.ensureUserAccess(id, requestingUser);
+        this.ensureUserAccess(numericId, requestingUser);
         return cachedUser;
     }
 
@@ -300,26 +296,28 @@ class UsersService {
     /**
      * Get a user by ID with caching
      *
-     * @param id - User ID
+     * @param id - User ID (string from route params, converted internally)
      * @returns User entity
      * @throws NotFoundError if user doesn't exist
      */
-    async getUserById(id: number): Promise<User> {
+    async getUserById(id: string | number): Promise<User> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
         // Try to get from cache first
-        const cachedUser = await this.getCachedUser(id);
+        const cachedUser = await this.getCachedUser(numericId);
         if (cachedUser) {
             return cachedUser;
         }
 
         // Fetch from database
         this.logger.trace(
-            { id },
+            { id: numericId },
             "User not found in cache, fetching from database"
         );
-        const user = await usersRepo.getUserById(id);
+        const user = await usersRepo.getUserById(numericId);
         if (!user) {
             this.logger.debug(
-                { id },
+                { id: numericId },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
@@ -333,19 +331,21 @@ class UsersService {
     /**
      * Get a user by ID with access verification
      *
-     * @param id - User ID
+     * @param id - User ID (string from route params, converted internally)
      * @param requestingUser - User entity making the request
      * @returns User entity
      * @throws NotFoundError if user doesn't exist
      * @throws ForbiddenError if user doesn't have access
      */
     async getUserByIdWithAccess(
-        id: number,
+        id: string | number,
         requestingUser: User
     ): Promise<User> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
         // Try to get from cache first (includes access verification)
         const cachedUser = await this.getCachedUserWithAccess(
-            id,
+            numericId,
             requestingUser
         );
         if (cachedUser) {
@@ -354,20 +354,20 @@ class UsersService {
 
         // Fetch from database
         this.logger.trace(
-            { id },
+            { id: numericId },
             "User not found in cache, fetching from database"
         );
-        const user = await usersRepo.getUserById(id);
+        const user = await usersRepo.getUserById(numericId);
         if (!user) {
             this.logger.debug(
-                { id },
+                { id: numericId },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
         }
 
         // Verify access
-        this.ensureUserAccess(id, requestingUser);
+        this.ensureUserAccess(numericId, requestingUser);
 
         // Cache and return
         await this.cacheUser(user);
@@ -457,7 +457,7 @@ class UsersService {
      *
      * Users can update their own data. Admins can update any user.
      *
-     * @param id - User ID
+     * @param id - User ID (string from route params, converted internally)
      * @param data - User update data
      * @param requestingUser - User entity making the request
      * @returns Updated user entity
@@ -467,17 +467,19 @@ class UsersService {
      * @throws AlreadyExistsError if email is already in use
      */
     async updateUser(
-        id: number,
+        id: string | number,
         data: UserUpdateInput,
         requestingUser: User
     ): Promise<User> {
-        // Check access
-        this.ensureUserAccess(id, requestingUser);
+        const numericId = typeof id === "string" ? Number(id) : id;
 
-        const existingUser = await usersRepo.getUserById(id);
+        // Check access
+        this.ensureUserAccess(numericId, requestingUser);
+
+        const existingUser = await usersRepo.getUserById(numericId);
         if (!existingUser) {
             this.logger.debug(
-                { id },
+                { id: numericId },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
@@ -496,7 +498,7 @@ class UsersService {
             );
         }
 
-        const user = await usersRepo.updateUser(id, updateData);
+        const user = await usersRepo.updateUser(numericId, updateData);
         this.logger.debug({ id: user.id }, "User updated");
 
         await this.cacheUser(user);
@@ -509,7 +511,7 @@ class UsersService {
      * Users can change their own password by providing their current password.
      * Admins can change any user's password without providing the current password.
      *
-     * @param id - User ID whose password is being changed
+     * @param id - User ID whose password is being changed (string from route params, converted internally)
      * @param currentPassword - Current password (required for non-admin users)
      * @param newPassword - New password to set
      * @param requestingUser - User entity making the request
@@ -519,19 +521,21 @@ class UsersService {
      * @throws UnAuthenticatedError if current password verification fails (for non-admin users)
      */
     async changePassword(
-        id: number,
+        id: string | number,
         currentPassword: string,
         newPassword: string,
         requestingUser: User
     ): Promise<void> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
         // Check access - users can change their own password, admins can change any
-        this.ensureUserAccess(id, requestingUser);
+        this.ensureUserAccess(numericId, requestingUser);
 
         // Get the target user
-        const targetUser = await usersRepo.getUserById(id);
+        const targetUser = await usersRepo.getUserById(numericId);
         if (!targetUser) {
             this.logger.debug(
-                { id },
+                { id: numericId },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
@@ -548,7 +552,7 @@ class UsersService {
 
         // Verify current password (unless admin is changing another user's password)
         const isAdminChangingOtherUser =
-            requestingUser.role === "ADMIN" && requestingUser.id !== id;
+            requestingUser.role === "ADMIN" && requestingUser.id !== numericId;
         if (!isAdminChangingOtherUser) {
             // User is changing their own password - must verify current password
             if (!currentPassword) {
@@ -565,7 +569,7 @@ class UsersService {
                 // The user is already authenticated, so this is a validation error
                 if (error instanceof UnAuthenticatedError) {
                     this.logger.debug(
-                        { id, userId: requestingUser.id },
+                        { id: numericId, userId: requestingUser.id },
                         "Current password verification failed"
                     );
                     throw new BadRequestError("Current password is incorrect");
@@ -575,7 +579,7 @@ class UsersService {
         } else {
             // Admin is changing another user's password - current password not required
             this.logger.debug(
-                { id, adminId: requestingUser.id },
+                { id: numericId, adminId: requestingUser.id },
                 "Admin changing another user's password"
             );
         }
@@ -603,13 +607,13 @@ class UsersService {
         const hashedPassword = await this.hashPassword(newPassword);
 
         // Update the user's password
-        await usersRepo.updateUser(id, {
+        await usersRepo.updateUser(numericId, {
             password_hash: hashedPassword,
         });
 
         this.logger.debug(
             {
-                id,
+                id: numericId,
                 userId: requestingUser.id,
                 isAdmin: isAdminChangingOtherUser,
             },
@@ -617,7 +621,7 @@ class UsersService {
         );
 
         // Invalidate cache to force fresh fetch on next request
-        await this.invalidateCachedUser(id);
+        await this.invalidateCachedUser(numericId);
     }
 
     /**
@@ -625,28 +629,30 @@ class UsersService {
      *
      * Admin-only operation (users cannot delete themselves through this method).
      *
-     * @param id - User ID
+     * @param id - User ID (string from route params, converted internally)
      * @param requestingUser - User entity making the request
      * @throws NotFoundError if user doesn't exist
      * @throws ForbiddenError if user is not admin
      */
-    async deleteUser(id: number, requestingUser: User): Promise<void> {
+    async deleteUser(id: string | number, requestingUser: User): Promise<void> {
+        const numericId = typeof id === "string" ? Number(id) : id;
+
         // Check admin access
         this.ensureAdminAccess(requestingUser, "deleteUser");
 
-        const existingUser = await usersRepo.getUserById(id);
+        const existingUser = await usersRepo.getUserById(numericId);
         if (!existingUser) {
             this.logger.debug(
-                { id },
+                { id: numericId },
                 "User not found, throwing not found error"
             );
             throw new NotFoundError("User not found");
         }
 
-        await usersRepo.deleteUser(id);
-        this.logger.debug({ id }, "User deleted");
+        await usersRepo.deleteUser(numericId);
+        this.logger.debug({ id: numericId }, "User deleted");
 
-        await this.invalidateCachedUser(id);
+        await this.invalidateCachedUser(numericId);
     }
 }
 

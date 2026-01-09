@@ -3,6 +3,9 @@
  *
  * Handles position-related HTTP requests.
  * Orchestrates position service operations.
+ *
+ * Note: All methods assume req.user is set by authMiddleware.
+ * Routes using these methods must be protected by authMiddleware.
  */
 
 import type { Request, Response } from "express";
@@ -16,7 +19,6 @@ import {
 } from "@backtrade/types";
 import positionsService from "../services/base/positions-service";
 import BadRequestError from "../errors/web/bad-request-error";
-import UnAuthenticatedError from "../errors/web/unauthenticated-error";
 import { logger } from "../libs/pino";
 
 /**
@@ -48,19 +50,12 @@ class PositionsController {
      * - sort: Field to sort by (default: updated_at)
      * - order: Sort order - "asc" or "desc" (default: "desc")
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if query parameters are invalid
-     * @throws UnAuthenticatedError if user is not authenticated
      */
     async getAllPositions(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const sessionId = req.query.session_id as string | undefined;
 
         // Parse and validate query parameters
@@ -78,13 +73,13 @@ class PositionsController {
         // Fetch positions
         const positions = await positionsService.getAllPositions(
             sessionId,
-            req.user,
+            user,
             query
         );
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 sessionId,
                 count: positions.length,
                 query,
@@ -108,19 +103,12 @@ class PositionsController {
      * - sort: Field to sort by (default: updated_at)
      * - order: Sort order - "asc" or "desc" (default: "desc")
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if session ID is missing or query parameters are invalid
-     * @throws UnAuthenticatedError if user is not authenticated
      */
     async getPositionsBySession(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const { sessionId } = req.params;
         if (!sessionId) {
             throw new BadRequestError("Session ID is required");
@@ -141,13 +129,13 @@ class PositionsController {
         // Fetch positions for the session
         const positions = await positionsService.getAllPositions(
             sessionId,
-            req.user,
+            user,
             query
         );
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 sessionId,
                 count: positions.length,
                 query,
@@ -177,19 +165,12 @@ class PositionsController {
      *
      * Note: Positions must be created with status OPEN. To close a position, use the update operation.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if request body is invalid
      */
     async createPosition(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to create a position"
-            );
-        }
-
+        const user = req.user!;
         const requestData = req.body as CreatePositionRequest;
 
         // Transform request data to create input
@@ -209,7 +190,7 @@ class PositionsController {
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 session_id: requestData.session_id,
             },
             "Creating position for user"
@@ -217,11 +198,11 @@ class PositionsController {
 
         const position = await positionsService.createPosition(
             positionData,
-            req.user
+            user
         );
 
         this.logger.info(
-            { userId: req.user.id, positionId: position.id },
+            { userId: user.id, positionId: position.id },
             "Position created successfully"
         );
 
@@ -234,30 +215,23 @@ class PositionsController {
      * Returns a single position by its ID. Only returns positions belonging to sessions
      * owned by the authenticated user, unless the user is an admin.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if position ID is missing or invalid
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getPositionById(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Position ID is required");
         }
 
-        const position = await positionsService.getPositionById(id, req.user);
+        const position = await positionsService.getPositionById(id, user);
 
         this.logger.trace(
-            { id, userId: req.user.id },
+            { id, userId: user.id },
             "Position retrieved successfully"
         );
 
@@ -281,21 +255,14 @@ class PositionsController {
      * - tp_price: Optional take profit price
      * - sl_price: Optional stop loss price
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if position ID is missing or request body is invalid
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async updatePosition(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to update a position"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Position ID is required");
@@ -318,18 +285,18 @@ class PositionsController {
         };
 
         this.logger.trace(
-            { id, userId: req.user.id, updates: positionData },
+            { id, userId: user.id, updates: positionData },
             "Updating position"
         );
 
         const position = await positionsService.updatePosition(
             id,
             positionData,
-            req.user
+            user
         );
 
         this.logger.info(
-            { id, userId: req.user.id },
+            { id, userId: user.id },
             "Position updated successfully"
         );
 
@@ -342,32 +309,25 @@ class PositionsController {
      * Deletes a position by its ID. Only allows deletion of positions belonging to
      * sessions owned by the authenticated user, unless the user is an admin.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if position ID is missing
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async deletePosition(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to delete a position"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Position ID is required");
         }
 
-        this.logger.trace({ id, userId: req.user.id }, "Deleting position");
+        this.logger.trace({ id, userId: user.id }, "Deleting position");
 
-        await positionsService.deletePosition(id, req.user);
+        await positionsService.deletePosition(id, user);
 
         this.logger.info(
-            { id, userId: req.user.id },
+            { id, userId: user.id },
             "Position deleted successfully"
         );
 

@@ -2,71 +2,63 @@
  * Performance Metrics Service
  *
  * Pure calculation service for computing trading performance metrics
- * such as win rate, drawdown, and other statistics. This service contains
- * no database access - it receives data and returns calculations.
+ * such as win rate, drawdown, and other statistical measures.
+ * This service contains no database access - it receives data and returns calculations.
  */
 
 import type { Position } from "@backtrade/types";
-import { logger } from "../../libs/pino";
-
-/**
- * Position statuses that indicate a closed position
- */
-const CLOSED_STATUSES = ["CLOSED", "LIQUIDATED"] as const;
+import { BaseService } from "../base/base-service";
+import { toNumber } from "../../utils";
 
 /**
  * Performance Metrics Service
  *
- * Handles all performance-related calculations for trading sessions.
+ * Handles all performance metric calculations for trading sessions.
  * All methods are pure functions with no side effects.
  */
-class PerformanceMetricsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class PerformanceMetricsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "performance-metrics-service",
-        });
+        super("performance-metrics-service");
     }
 
     /**
      * Calculate win rate from closed positions
      *
-     * Win rate = (winning positions / total closed positions) * 100
+     * Win rate = (number of winning trades / total closed trades) × 100
      *
-     * A winning position is one with realized_pnl > 0
+     * A winning trade is one with realized_pnl > 0.
+     * Only considers closed positions (CLOSED or LIQUIDATED status).
      *
-     * @param positions - Array of all positions (will filter to closed only)
-     * @returns Win rate as a percentage (0-100), 0 if no closed positions
+     * @param positions - Array of all positions (including open)
+     * @returns Win rate as a percentage (0-100), or 0 if no closed positions
      */
     calculateWinRate(positions: Position[]): number {
-        // Filter to only closed positions
-        const closedPositions = positions.filter((p) =>
-            CLOSED_STATUSES.includes(
-                p.position_status as (typeof CLOSED_STATUSES)[number]
-            )
+        const closedPositions = positions.filter(
+            (p) =>
+                p.position_status === "CLOSED" ||
+                p.position_status === "LIQUIDATED"
         );
 
         if (closedPositions.length === 0) {
             this.logger.trace(
                 { totalPositions: positions.length },
-                "No closed positions, returning 0 win rate"
+                "No closed positions, win rate is 0"
             );
             return 0;
         }
 
-        // Count winning positions (realized_pnl > 0)
-        const winningPositions = closedPositions.filter(
-            (p) => (p.realized_pnl ?? 0) > 0
+        // Convert Prisma Decimal to number for comparison
+        const winningTrades = closedPositions.filter(
+            (p) => toNumber(p.realized_pnl) > 0
         );
 
-        const winRate = (winningPositions.length / closedPositions.length) * 100;
+        const winRate = (winningTrades.length / closedPositions.length) * 100;
 
         this.logger.trace(
             {
-                totalClosedPositions: closedPositions.length,
-                winningPositions: winningPositions.length,
-                losingPositions: closedPositions.length - winningPositions.length,
+                totalPositions: positions.length,
+                closedPositions: closedPositions.length,
+                winningTrades: winningTrades.length,
                 winRate,
             },
             "Calculated win rate"
@@ -76,32 +68,22 @@ class PerformanceMetricsService {
     }
 
     /**
-     * Calculate drawdown from peak balance to current equity
+     * Calculate maximum drawdown from peak balance
      *
-     * Drawdown = ((peakBalance - currentEquity) / peakBalance) * 100
+     * Drawdown = ((peak - current) / peak) × 100
      *
-     * Represents the percentage decline from the highest point.
-     * Always returns a non-negative value.
+     * Measures the decline from the highest point (peak) to the current value.
      *
-     * @param peakBalance - The highest balance achieved
-     * @param currentEquity - Current account equity
-     * @returns Drawdown as a percentage (0 = no drawdown, 100 = total loss)
+     * @param peakBalance - Highest balance achieved
+     * @param currentEquity - Current equity (balance + unrealized PnL)
+     * @returns Drawdown as a percentage (0-100), or 0 if current >= peak
      */
     calculateDrawdown(peakBalance: number, currentEquity: number): number {
-        // Prevent division by zero and handle edge cases
-        if (peakBalance <= 0) {
+        // No drawdown if we haven't declined from peak
+        if (currentEquity >= peakBalance || peakBalance <= 0) {
             this.logger.trace(
                 { peakBalance, currentEquity },
-                "Invalid peak balance, returning 0 drawdown"
-            );
-            return 0;
-        }
-
-        // If current equity is higher than peak, no drawdown
-        if (currentEquity >= peakBalance) {
-            this.logger.trace(
-                { peakBalance, currentEquity },
-                "Current equity >= peak balance, returning 0 drawdown"
+                "No drawdown, current >= peak or invalid peak"
             );
             return 0;
         }
@@ -121,24 +103,31 @@ class PerformanceMetricsService {
     }
 
     /**
-     * Calculate profit factor (gross profit / gross loss)
+     * Calculate profit factor
      *
-     * Profit factor > 1 indicates profitable trading
-     * Profit factor < 1 indicates losing trading
+     * Profit Factor = Gross Profit / Gross Loss
      *
-     * @param closedPositions - Array of closed positions
-     * @returns Profit factor (0 if no losses)
+     * A profit factor > 1 indicates overall profitability.
+     *
+     * @param positions - Array of all positions
+     * @returns Profit factor (null if no losses to divide by)
      */
-    calculateProfitFactor(closedPositions: Position[]): number {
+    calculateProfitFactor(positions: Position[]): number | null {
+        const closedPositions = positions.filter(
+            (p) =>
+                p.position_status === "CLOSED" ||
+                p.position_status === "LIQUIDATED"
+        );
+
         if (closedPositions.length === 0) {
-            return 0;
+            return null;
         }
 
         let grossProfit = 0;
         let grossLoss = 0;
 
         for (const position of closedPositions) {
-            const pnl = position.realized_pnl ?? 0;
+            const pnl = toNumber(position.realized_pnl);
             if (pnl > 0) {
                 grossProfit += pnl;
             } else {
@@ -148,14 +137,15 @@ class PerformanceMetricsService {
 
         // Avoid division by zero
         if (grossLoss === 0) {
-            return grossProfit > 0 ? Infinity : 0;
+            // All trades were profitable or breakeven
+            return grossProfit > 0 ? Infinity : null;
         }
 
         const profitFactor = grossProfit / grossLoss;
 
         this.logger.trace(
             {
-                closedPositionCount: closedPositions.length,
+                closedPositions: closedPositions.length,
                 grossProfit,
                 grossLoss,
                 profitFactor,
@@ -167,42 +157,39 @@ class PerformanceMetricsService {
     }
 
     /**
-     * Count positions by status
+     * Calculate average trade return
      *
      * @param positions - Array of all positions
-     * @returns Object with counts by status
+     * @returns Average realized PnL per trade, or 0 if no closed positions
      */
-    countPositionsByStatus(positions: Position[]): {
-        open: number;
-        closed: number;
-        liquidated: number;
-    } {
-        const counts = {
-            open: 0,
-            closed: 0,
-            liquidated: 0,
-        };
-
-        for (const position of positions) {
-            switch (position.position_status) {
-                case "OPEN":
-                    counts.open++;
-                    break;
-                case "CLOSED":
-                    counts.closed++;
-                    break;
-                case "LIQUIDATED":
-                    counts.liquidated++;
-                    break;
-            }
-        }
-
-        this.logger.trace(
-            { ...counts, total: positions.length },
-            "Counted positions by status"
+    calculateAverageTrade(positions: Position[]): number {
+        const closedPositions = positions.filter(
+            (p) =>
+                p.position_status === "CLOSED" ||
+                p.position_status === "LIQUIDATED"
         );
 
-        return counts;
+        if (closedPositions.length === 0) {
+            return 0;
+        }
+
+        const totalPnL = closedPositions.reduce(
+            (sum, p) => sum + toNumber(p.realized_pnl),
+            0
+        );
+
+        const averageTrade = totalPnL / closedPositions.length;
+
+        this.logger.trace(
+            {
+                closedPositions: closedPositions.length,
+                totalPnL,
+                averageTrade,
+            },
+            "Calculated average trade"
+        );
+
+        return averageTrade;
     }
 }
 

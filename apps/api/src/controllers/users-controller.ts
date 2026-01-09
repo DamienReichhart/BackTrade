@@ -3,12 +3,16 @@
  *
  * Handles user-related HTTP requests.
  * Orchestrates user service operations.
+ *
+ * Note: Methods that require authentication assume req.user is set by authMiddleware.
+ * Routes using those methods must be protected by authMiddleware.
  */
 
 import type { Request, Response } from "express";
 import usersService from "../services/base/users-service";
 import { logger } from "../libs/pino";
 import type { ChangeUserPasswordRequest } from "@backtrade/types";
+import BadRequestError from "../errors/web/bad-request-error";
 
 /**
  * Users Controller
@@ -30,10 +34,14 @@ class UsersController {
      *
      * @param req - Express request object
      * @param res - Express response object
+     * @throws BadRequestError if user ID is missing
      */
     async getUserById(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
-        const user = await usersService.getUserById(Number(id));
+        if (!id) {
+            throw new BadRequestError("User ID is required");
+        }
+        const user = await usersService.getUserById(id);
         res.status(200).json(user);
     }
 
@@ -43,26 +51,24 @@ class UsersController {
      * Users can change their own password by providing their current password.
      * Admins can change any user's password without providing the current password.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
+     * @throws BadRequestError if user ID is missing
      */
     async changePassword(req: Request, res: Response): Promise<void> {
-        if (!req.user) {
-            this.logger.error(
-                "changePassword called without authenticated user"
-            );
-            throw new Error("User not authenticated");
-        }
-
+        const user = req.user!;
         const { id } = req.params;
+        if (!id) {
+            throw new BadRequestError("User ID is required");
+        }
         const { currentPassword, newPassword } =
             req.body as ChangeUserPasswordRequest;
 
         await usersService.changePassword(
-            Number(id),
+            id,
             currentPassword ?? "",
             newPassword,
-            req.user
+            user
         );
 
         res.status(200).json({ message: "Password changed successfully" });

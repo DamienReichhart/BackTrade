@@ -9,11 +9,13 @@ import type {
     User,
 } from "@backtrade/types";
 import { sessionsCacheRepo } from "../../libs/cache";
-import { logger } from "../../libs/pino";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import barAdvancementService from "../trading/bar-advancement-service";
+import { BaseService } from "./base-service";
+import { buildOrderBy, buildPagination } from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid session statuses for search operations
@@ -40,19 +42,17 @@ const VALID_SORT_FIELDS = [
     "updated_at",
 ] as const;
 
+type SessionSortField = (typeof VALID_SORT_FIELDS)[number];
+
 /**
  * Sessions Service
  *
  * Handles business logic for session operations including CRUD, validation, and caching.
  * Sessions represent trading simulation instances owned by users.
  */
-class SessionsService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class SessionsService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "sessions-service",
-        });
+        super("sessions-service");
     }
 
     // ============================================================================
@@ -533,29 +533,6 @@ class SessionsService {
         return { OR: searchConditions };
     }
 
-    /**
-     * Build order by clause for session queries
-     *
-     * @param sort - Sort field name
-     * @param order - Sort order ("asc" or "desc")
-     * @returns Order by clause or undefined
-     */
-    private buildOrderBy(
-        sort: string | undefined,
-        order: "asc" | "desc"
-    ): SessionOrderBy | undefined {
-        if (
-            !sort ||
-            !VALID_SORT_FIELDS.includes(
-                sort as (typeof VALID_SORT_FIELDS)[number]
-            )
-        ) {
-            return undefined;
-        }
-
-        return { [sort]: order } as SessionOrderBy;
-    }
-
     // ============================================================================
     // PUBLIC METHODS
     // ============================================================================
@@ -614,7 +591,13 @@ class SessionsService {
         userId?: number,
         query?: SearchQuery
     ): Promise<Session[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const {
+            q,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
 
         // Build user filter
         const userFilter = this.buildUserFilter(userId);
@@ -628,14 +611,21 @@ class SessionsService {
             searchConditions
         );
 
-        // Build order by
-        const orderBy = this.buildOrderBy(sort, order);
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<SessionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as SessionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
 
         // Execute query
         return sessionsRepo.getAllSessions({
             where,
-            skip: (page - 1) * limit,
-            take: limit,
+            skip,
+            take,
             orderBy,
         });
     }
@@ -734,7 +724,8 @@ class SessionsService {
                         this.logger.debug(
                             {
                                 id,
-                                positionsClosedCount: result.positionsClosed.length,
+                                positionsClosedCount:
+                                    result.positionsClosed.length,
                                 marginLevelAfter: result.marginLevelAfter,
                                 equityAfter: result.equityAfter,
                             },

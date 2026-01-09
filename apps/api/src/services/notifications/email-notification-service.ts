@@ -7,12 +7,12 @@
  */
 
 import { ENV } from "../../config/env";
-import { logger } from "../../libs/pino";
 import {
     formatLoginDate,
     type DeviceInfo,
     maskEmailForLogging,
 } from "../../utils";
+import { BaseService } from "../base/base-service";
 import queueService from "../queue/queue-service";
 import { MailMessageDataSchema, QueueName } from "@backtrade/types";
 
@@ -23,13 +23,9 @@ import { MailMessageDataSchema, QueueName } from "@backtrade/types";
  * Messages are sent to RabbitMQ for processing by the worker.
  * Errors are thrown and must be handled by the caller.
  */
-class EmailNotificationService {
-    private readonly logger: ReturnType<typeof logger.child>;
-
+class EmailNotificationService extends BaseService {
     constructor() {
-        this.logger = logger.child({
-            service: "email-notification-service",
-        });
+        super("email-notification-service");
     }
 
     /**

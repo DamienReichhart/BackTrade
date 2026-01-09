@@ -3,6 +3,9 @@
  *
  * Handles instrument-related HTTP requests.
  * Orchestrates instrument service operations.
+ *
+ * Note: Methods that require authentication assume req.user is set by authMiddleware.
+ * Routes using those methods must be protected by authMiddleware.
  */
 
 import {
@@ -14,7 +17,6 @@ import {
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
 import BadRequestError from "../errors/web/bad-request-error";
-import UnAuthenticatedError from "../errors/web/unauthenticated-error";
 import { logger } from "../libs/pino";
 
 /**
@@ -79,21 +81,16 @@ class InstrumentsController {
      *
      * Admin-only operation.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws ForbiddenError if user is not admin
      */
     async createInstrument(req: Request, res: Response): Promise<void> {
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to create an instrument"
-            );
-        }
+        const user = req.user!;
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 symbol: (req.body as InstrumentCreateInput).symbol,
             },
             "Creating instrument"
@@ -101,11 +98,11 @@ class InstrumentsController {
 
         const instrument = await instrumentService.createInstrument(
             req.body as InstrumentCreateInput,
-            req.user
+            user
         );
 
         this.logger.info(
-            { userId: req.user.id, instrumentId: instrument.id },
+            { userId: user.id, instrumentId: instrument.id },
             "Instrument created successfully"
         );
 
@@ -117,37 +114,31 @@ class InstrumentsController {
      *
      * Admin-only operation.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if instrument ID is missing
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws ForbiddenError if user is not admin
      */
     async updateInstrument(req: Request, res: Response): Promise<void> {
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to update an instrument"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Instrument ID is required");
         }
 
         this.logger.trace(
-            { userId: req.user.id, instrumentId: id },
+            { userId: user.id, instrumentId: id },
             "Updating instrument"
         );
 
         const instrument = await instrumentService.updateInstrument(
             id,
             req.body as InstrumentUpdateInput,
-            req.user
+            user
         );
 
         this.logger.info(
-            { userId: req.user.id, instrumentId: instrument.id },
+            { userId: user.id, instrumentId: instrument.id },
             "Instrument updated successfully"
         );
 
@@ -159,33 +150,27 @@ class InstrumentsController {
      *
      * Admin-only operation.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if instrument ID is missing
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws ForbiddenError if user is not admin
      */
     async deleteInstrument(req: Request, res: Response): Promise<void> {
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to delete an instrument"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Instrument ID is required");
         }
 
         this.logger.trace(
-            { userId: req.user.id, instrumentId: id },
+            { userId: user.id, instrumentId: id },
             "Deleting instrument"
         );
 
-        await instrumentService.deleteInstrument(id, req.user);
+        await instrumentService.deleteInstrument(id, user);
 
         this.logger.info(
-            { userId: req.user.id, instrumentId: id },
+            { userId: user.id, instrumentId: id },
             "Instrument deleted successfully"
         );
 

@@ -3,6 +3,9 @@
  *
  * Handles transaction-related HTTP requests.
  * Orchestrates transaction service operations.
+ *
+ * Note: All methods assume req.user is set by authMiddleware.
+ * Routes using these methods must be protected by authMiddleware.
  */
 
 import type { Request, Response } from "express";
@@ -14,7 +17,6 @@ import {
 } from "@backtrade/types";
 import transactionsService from "../services/base/transactions-service";
 import BadRequestError from "../errors/web/bad-request-error";
-import UnAuthenticatedError from "../errors/web/unauthenticated-error";
 import { logger } from "../libs/pino";
 
 /**
@@ -47,19 +49,12 @@ class TransactionsController {
      * - sort: Field to sort by (default: created_at)
      * - order: Sort order - "asc" or "desc" (default: "desc")
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if query parameters are invalid
-     * @throws UnAuthenticatedError if user is not authenticated
      */
     async getAllTransactions(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const sessionId = req.query.session_id as string | undefined;
 
         // Parse and validate query parameters
@@ -77,13 +72,13 @@ class TransactionsController {
         // Fetch transactions
         const transactions = await transactionsService.getAllTransactions(
             sessionId,
-            req.user,
+            user,
             query
         );
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 sessionId,
                 count: transactions.length,
                 query,
@@ -107,19 +102,12 @@ class TransactionsController {
      * - sort: Field to sort by (default: created_at)
      * - order: Sort order - "asc" or "desc" (default: "desc")
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
      * @throws BadRequestError if session ID is missing or query parameters are invalid
-     * @throws UnAuthenticatedError if user is not authenticated
      */
     async getTransactionsBySession(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const { sessionId } = req.params;
         if (!sessionId) {
             throw new BadRequestError("Session ID is required");
@@ -140,13 +128,13 @@ class TransactionsController {
         // Fetch transactions for the session
         const transactions = await transactionsService.getAllTransactions(
             sessionId,
-            req.user,
+            user,
             query
         );
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 sessionId,
                 count: transactions.length,
                 query,
@@ -172,19 +160,12 @@ class TransactionsController {
      *
      * Note: Transactions are immutable financial records. Once created, they cannot be updated or deleted.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if request body is invalid
      */
     async createTransaction(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to create a transaction"
-            );
-        }
-
+        const user = req.user!;
         const requestData = req.body as CreateTransactionRequest;
 
         // Transform request data to create input
@@ -198,7 +179,7 @@ class TransactionsController {
 
         this.logger.trace(
             {
-                userId: req.user.id,
+                userId: user.id,
                 session_id: requestData.session_id,
                 transaction_type: requestData.transaction_type,
             },
@@ -207,11 +188,11 @@ class TransactionsController {
 
         const transaction = await transactionsService.createTransaction(
             transactionData,
-            req.user
+            user
         );
 
         this.logger.info(
-            { userId: req.user.id, transactionId: transaction.id },
+            { userId: user.id, transactionId: transaction.id },
             "Transaction created successfully"
         );
 
@@ -225,21 +206,14 @@ class TransactionsController {
      * owned by the authenticated user, or transactions without session_id (admin only),
      * unless the user is an admin.
      *
-     * @param req - Express request object (must have req.user set by authMiddleware)
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws UnAuthenticatedError if user is not authenticated
      * @throws BadRequestError if transaction ID is missing or invalid
      * @throws NotFoundError if transaction doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getTransactionById(req: Request, res: Response): Promise<void> {
-        // Ensure user is authenticated
-        if (!req.user) {
-            throw new UnAuthenticatedError(
-                "You must be authenticated to access this route"
-            );
-        }
-
+        const user = req.user!;
         const { id } = req.params;
         if (!id) {
             throw new BadRequestError("Transaction ID is required");
@@ -247,11 +221,11 @@ class TransactionsController {
 
         const transaction = await transactionsService.getTransactionById(
             id,
-            req.user
+            user
         );
 
         this.logger.trace(
-            { id, userId: req.user.id },
+            { id, userId: user.id },
             "Transaction retrieved successfully"
         );
 
