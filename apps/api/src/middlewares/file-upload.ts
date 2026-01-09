@@ -62,7 +62,7 @@ function fileFilter(
  * Multer configuration for dataset file uploads
  *
  * - Uses memory storage (files stored in buffer)
- * - Limits file size to 1GB
+ * - Limits file size to 2GB
  * - Only accepts CSV files
  */
 const datasetUpload = multer({

@@ -11,10 +11,10 @@ export function validateFile(file: File | null): ValidationResult {
         return { isValid: false, error: "Please select a file" };
     }
 
-    // Check file size (max 1000MB)
+    // Check file size (max 2GB)
     const maxSize = 1000 * 1024 * 1024 * 2;
     if (file.size > maxSize) {
-        return { isValid: false, error: "File size must not exceed 1000MB" };
+        return { isValid: false, error: "File size must not exceed 2GB" };
     }
 
     // Check file extension (CSV)
