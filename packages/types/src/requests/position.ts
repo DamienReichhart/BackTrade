@@ -1,6 +1,18 @@
 import { z } from "zod";
 import { PositionSchema } from "../entities";
 import { SideSchema, PositionStatusSchema } from "../enums";
+import { PaginationQuerySchema } from "./common";
+
+/**
+ * Query schema for fetching positions with optional status filter.
+ *
+ * Supports filtering by position status (OPEN, CLOSED, LIQUIDATED) and pagination.
+ */
+export const PositionQuerySchema = z.object({
+    status: PositionStatusSchema.optional(),
+    ...PaginationQuerySchema.shape,
+});
+export type PositionQuery = z.infer<typeof PositionQuerySchema>;
 
 /**
  * Schema for creating a new position.

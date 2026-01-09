@@ -5,7 +5,8 @@ import type {
     PositionCreateInput,
     PositionUpdateInput,
     PositionOrderBy,
-    SearchQuery,
+    PositionQuery,
+    PositionStatus,
     User,
 } from "@backtrade/types";
 import { positionsCacheRepo } from "../../libs/cache";
@@ -15,16 +16,6 @@ import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
 import sessionsService from "./sessions-service";
 import positionClosingService from "../trading/position-closing-service";
-
-/**
- * Valid position statuses for search operations
- */
-const VALID_POSITION_STATUSES = ["OPEN", "CLOSED", "LIQUIDATED"] as const;
-
-/**
- * Valid position sides for search operations
- */
-const VALID_SIDES = ["BUY", "SELL"] as const;
 
 /**
  * Valid sortable fields for positions
@@ -574,65 +565,39 @@ class PositionsService {
     }
 
     /**
-     * Build search conditions for position queries
+     * Build status filter for position queries
      *
-     * @param searchQuery - Search query string
-     * @returns Array of search conditions or empty array
+     * @param status - Optional position status to filter by
+     * @returns Where clause for status filtering or undefined
      */
-    private buildSearchConditions(searchQuery: string): PositionWhereInput[] {
-        const searchConditions: PositionWhereInput[] = [];
-        const upperQ = searchQuery.toUpperCase();
-
-        // Try to match position_status
-        if (
-            VALID_POSITION_STATUSES.includes(
-                upperQ as (typeof VALID_POSITION_STATUSES)[number]
-            )
-        ) {
-            searchConditions.push({
-                position_status: {
-                    equals: upperQ as (typeof VALID_POSITION_STATUSES)[number],
-                },
-            });
+    private buildStatusFilter(
+        status: PositionStatus | undefined
+    ): PositionWhereInput | undefined {
+        if (!status) {
+            return undefined;
         }
 
-        // Try to match side
-        if (VALID_SIDES.includes(upperQ as (typeof VALID_SIDES)[number])) {
-            searchConditions.push({
-                side: { equals: upperQ as (typeof VALID_SIDES)[number] },
-            });
-        }
-
-        return searchConditions;
+        return { position_status: { equals: status } };
     }
 
     /**
-     * Combine session filter with search conditions
+     * Combine session filter with status filter
      *
      * @param sessionFilter - Session filter where clause
-     * @param searchConditions - Search conditions array
+     * @param statusFilter - Optional status filter where clause
      * @returns Combined where clause
      */
-    private combineFiltersWithSearch(
+    private combineFilters(
         sessionFilter: PositionWhereInput,
-        searchConditions: PositionWhereInput[]
+        statusFilter: PositionWhereInput | undefined
     ): PositionWhereInput {
-        if (searchConditions.length === 0) {
+        if (!statusFilter) {
             return sessionFilter;
         }
 
-        const hasSessionFilter = sessionFilter.session_id !== undefined;
-
-        if (hasSessionFilter) {
-            return {
-                AND: [
-                    { session_id: sessionFilter.session_id },
-                    { OR: searchConditions },
-                ],
-            };
-        }
-
-        return { OR: searchConditions };
+        return {
+            AND: [sessionFilter, statusFilter],
+        };
     }
 
     /**
@@ -710,16 +675,16 @@ class PositionsService {
      *
      * @param sessionId - Optional session ID to filter positions by
      * @param user - User entity making the request (for authorization)
-     * @param query - Optional search query with pagination and sorting
+     * @param query - Optional query with status filter, pagination, and sorting
      * @returns Array of position entities
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getAllPositions(
         sessionId: string | undefined,
         user: User,
-        query?: SearchQuery
+        query?: PositionQuery
     ): Promise<Position[]> {
-        const { q, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
+        const { status, page = 1, limit = 20, sort, order = "desc" } = query ?? {};
 
         // Build session filter
         const sessionFilter = await this.buildSessionFilter(sessionId, user);
@@ -732,14 +697,11 @@ class PositionsService {
             }
         }
 
-        // Build search conditions
-        const searchConditions = q ? this.buildSearchConditions(q) : [];
+        // Build status filter
+        const statusFilter = this.buildStatusFilter(status);
 
         // Combine filters
-        const where = this.combineFiltersWithSearch(
-            sessionFilter,
-            searchConditions
-        );
+        const where = this.combineFilters(sessionFilter, statusFilter);
 
         // Build order by
         const orderBy = this.buildOrderBy(sort, order);

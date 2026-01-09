@@ -7,7 +7,8 @@ import {
     UpdatePositionRequestSchema,
     ClosePositionRequestSchema,
     EmptyResponseSchema,
-    type DateRangeQuery,
+    type PositionQuery,
+    type PositionStatus,
 } from "@backtrade/types";
 import { z } from "zod";
 
@@ -16,7 +17,7 @@ import { z } from "zod";
  * Schemas are defined once and automatically applied
  */
 
-export function usePositions(query?: DateRangeQuery) {
+export function usePositions(query?: PositionQuery) {
     const searchParams = new URLSearchParams();
     if (query) {
         Object.entries(query).forEach(([key, value]) => {
@@ -35,21 +36,25 @@ export function usePosition(id: string) {
     return useGet(`/positions/${id}`, PositionSchema, { enabled: !!id });
 }
 
+/**
+ * Fetch positions for a specific session with optional status filter.
+ *
+ * @param sessionId - The session ID to fetch positions for
+ * @param status - Optional position status filter (OPEN, CLOSED, LIQUIDATED)
+ * @returns Query result with positions array
+ */
 export function usePositionsBySession(
     sessionId: string,
-    query?: DateRangeQuery
+    status?: PositionStatus
 ) {
     const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
+    if (status) {
+        searchParams.append("status", status);
     }
 
-    const url = query
-        ? `/sessions/${sessionId}/positions?${searchParams.toString()}`
+    const queryString = searchParams.toString();
+    const url = queryString
+        ? `/sessions/${sessionId}/positions?${queryString}`
         : `/sessions/${sessionId}/positions`;
 
     return useGet(url, PositionListResponseSchema, { enabled: !!sessionId });

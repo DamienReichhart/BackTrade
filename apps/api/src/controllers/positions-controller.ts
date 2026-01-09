@@ -7,8 +7,8 @@
 
 import type { Request, Response } from "express";
 import {
-    SearchQuerySchema,
-    type SearchQuery,
+    PositionQuerySchema,
+    type PositionQuery,
     type CreatePositionRequest,
     type PositionCreateInput,
     type UpdatePositionRequest,
@@ -37,12 +37,12 @@ class PositionsController {
     /**
      * Get all positions for the currently authenticated user
      *
-     * Supports optional session_id filter, search query with pagination and sorting.
+     * Supports optional session_id filter, status filter, and pagination.
      * Only returns positions belonging to sessions owned by the authenticated user.
      *
      * Query parameters:
      * - session_id: Optional session ID to filter positions by
-     * - q: Optional search string (searches in position_status, side)
+     * - status: Optional position status filter (OPEN, CLOSED, LIQUIDATED)
      * - page: Page number (default: 1)
      * - limit: Items per page (default: 20, max: 100)
      * - sort: Field to sort by (default: updated_at)
@@ -64,9 +64,9 @@ class PositionsController {
         const sessionId = req.query.session_id as string | undefined;
 
         // Parse and validate query parameters
-        let query: SearchQuery | undefined;
+        let query: PositionQuery | undefined;
         try {
-            query = SearchQuerySchema.parse(req.query);
+            query = PositionQuerySchema.parse(req.query);
         } catch (error) {
             this.logger.debug(
                 { query: req.query, error },
@@ -102,7 +102,7 @@ class PositionsController {
      * Only returns positions if the user owns the session or is an admin.
      *
      * Query parameters:
-     * - q: Optional search string (searches in position_status, side)
+     * - status: Optional position status filter (OPEN, CLOSED, LIQUIDATED)
      * - page: Page number (default: 1)
      * - limit: Items per page (default: 20, max: 100)
      * - sort: Field to sort by (default: updated_at)
@@ -127,9 +127,9 @@ class PositionsController {
         }
 
         // Parse and validate query parameters
-        let query: SearchQuery | undefined;
+        let query: PositionQuery | undefined;
         try {
-            query = SearchQuerySchema.parse(req.query);
+            query = PositionQuerySchema.parse(req.query);
         } catch (error) {
             this.logger.debug(
                 { query: req.query, error },
