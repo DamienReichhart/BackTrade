@@ -9,6 +9,7 @@ import positionsRouter from "./positions/router";
 import transactionsRouter from "./transactions/router";
 import plansRouter from "./plans/router";
 import subscriptionsRouter from "./subscriptions/router";
+import stripeRouter from "./stripe/router";
 
 const apiV1Router = Router();
 
@@ -22,5 +23,6 @@ apiV1Router.use("/positions", positionsRouter);
 apiV1Router.use("/transactions", transactionsRouter);
 apiV1Router.use("/plans", plansRouter);
 apiV1Router.use("/subscriptions", subscriptionsRouter);
+apiV1Router.use("/stripe", stripeRouter);
 
 export default apiV1Router;

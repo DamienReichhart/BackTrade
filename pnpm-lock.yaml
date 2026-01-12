@@ -83,6 +83,9 @@ importers:
       pino-http:
         specifier: 11.0.0
         version: 11.0.0
+      stripe:
+        specifier: ^20.1.2
+        version: 20.1.2(@types/node@25.0.3)
       zod:
         specifier: 4.3.5
         version: 4.3.5
@@ -4723,6 +4726,15 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
+
+  stripe@20.1.2:
+    resolution: {integrity: sha512-qU+lQRRJnTxmyvglYBPE24/IepncmywsAg0GDTsTdP2pb+3e3RdREHJZjKgqCmv0phPxN/nmgNPnIPPH8w0P4A==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -10083,6 +10095,12 @@ snapshots:
   strip-json-comments@3.1.1: {}
 
   strip-json-comments@5.0.3: {}
+
+  stripe@20.1.2(@types/node@25.0.3):
+    dependencies:
+      qs: 6.14.1
+    optionalDependencies:
+      '@types/node': 25.0.3
 
   strnum@1.1.2: {}
 

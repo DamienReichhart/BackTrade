@@ -47,6 +47,9 @@ const EnvSchema = z.object({
     RABBITMQ_USER: z.string(),
     RABBITMQ_PASSWORD: z.string(),
     RABBITMQ_QUEUE_NAME: z.string(),
+    STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+    STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
+    STRIPE_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
 });
 
 export const ENV = EnvSchema.parse(process.env);

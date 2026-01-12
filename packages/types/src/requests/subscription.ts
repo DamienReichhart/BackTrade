@@ -10,7 +10,6 @@ export const CreateSubscriptionRequestSchema = z.object({
     current_period_end: z.iso.datetime(),
     status: SubscriptionStatusSchema.optional(),
     cancel_at_period_end: z.boolean().default(false),
-    trial_end: z.iso.datetime().optional(),
 });
 export type CreateSubscriptionRequest = z.infer<
     typeof CreateSubscriptionRequestSchema
@@ -19,8 +18,6 @@ export type CreateSubscriptionRequest = z.infer<
 export const UpdateSubscriptionRequestSchema = z.object({
     status: SubscriptionStatusSchema.optional(),
     cancel_at_period_end: z.boolean().optional(),
-    canceled_at: z.iso.datetime().optional(),
-    trial_end: z.iso.datetime().optional(),
 });
 export type UpdateSubscriptionRequest = z.infer<
     typeof UpdateSubscriptionRequestSchema

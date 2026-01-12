@@ -30,13 +30,13 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 /**
  * Valid subscription statuses
  */
-const VALID_STATUSES = ["active", "canceled", "trialing"] as const;
+const VALID_STATUSES = ["active", "canceled"] as const;
 
 /**
  * Statuses that represent an active subscription
  * A user can only have one subscription with these statuses at a time
  */
-const ACTIVE_STATUSES = ["active", "trialing"] as const;
+const ACTIVE_STATUSES = ["active"] as const;
 
 /**
  * Subscriptions Service
@@ -169,7 +169,7 @@ class SubscriptionsService extends BaseService {
     }
 
     /**
-     * Check if a status is considered "active" (active or trialing)
+     * Check if a status is considered "active"
      *
      * @param status - Status to check
      * @returns True if the status represents an active subscription
@@ -185,7 +185,7 @@ class SubscriptionsService extends BaseService {
     /**
      * Validate that user does not already have an active subscription
      *
-     * Each user can only have one active subscription (status: 'active' or 'trialing') at a time.
+     * Each user can only have one active subscription (status: 'active') at a time.
      * This validation prevents creating duplicate active subscriptions.
      *
      * @param userId - User ID to check
@@ -243,28 +243,6 @@ class SubscriptionsService extends BaseService {
     ): void {
         // Validate status if provided
         this.validateStatus(subscription.status);
-
-        // Validate canceled_at date format if provided
-        if (
-            subscription.canceled_at !== undefined &&
-            subscription.canceled_at !== null
-        ) {
-            const canceledDate = new Date(subscription.canceled_at);
-            if (isNaN(canceledDate.getTime())) {
-                throw new BadRequestError("Invalid canceled_at date");
-            }
-        }
-
-        // Validate trial_end date format if provided
-        if (
-            subscription.trial_end !== undefined &&
-            subscription.trial_end !== null
-        ) {
-            const trialEndDate = new Date(subscription.trial_end);
-            if (isNaN(trialEndDate.getTime())) {
-                throw new BadRequestError("Invalid trial_end date");
-            }
-        }
     }
 
     // ============================================================================

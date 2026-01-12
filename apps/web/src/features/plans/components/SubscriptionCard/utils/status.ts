@@ -12,8 +12,6 @@ export function getStatusColor(
     switch (status) {
         case "active":
             return styles.statusActive ?? "";
-        case "trialing":
-            return styles.statusTrialing ?? "";
         case "canceled":
             return styles.statusCanceled ?? "";
         default:

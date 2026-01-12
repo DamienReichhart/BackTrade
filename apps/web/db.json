@@ -63,9 +63,7 @@
             "status": "active",
             "current_period_start": "2025-06-01T00:00:00Z",
             "current_period_end": "2026-01-01T00:00:00Z",
-            "cancel_at_period_end": false,
-            "canceled_at": null,
-            "trial_end": null
+            "cancel_at_period_end": false
         },
         {
             "id": 2,
@@ -75,9 +73,7 @@
             "status": "canceled",
             "current_period_start": "2025-11-15T00:00:00Z",
             "current_period_end": "2025-12-15T00:00:00Z",
-            "cancel_at_period_end": false,
-            "canceled_at": null,
-            "trial_end": "2024-12-15T00:00:00Z"
+            "cancel_at_period_end": false
         },
         {
             "id": 3,
@@ -87,9 +83,7 @@
             "status": "canceled",
             "current_period_start": "2024-10-01T00:00:00Z",
             "current_period_end": "2024-11-01T00:00:00Z",
-            "cancel_at_period_end": true,
-            "canceled_at": "2024-10-15T10:30:00Z",
-            "trial_end": null
+            "cancel_at_period_end": true
         },
         {
             "id": 4,
@@ -99,9 +93,7 @@
             "status": "active",
             "current_period_start": "2024-09-01T00:00:00Z",
             "current_period_end": "2024-10-01T00:00:00Z",
-            "cancel_at_period_end": false,
-            "canceled_at": null,
-            "trial_end": null
+            "cancel_at_period_end": false
         },
         {
             "id": 5,
@@ -111,9 +103,7 @@
             "status": "canceled",
             "current_period_start": "2024-08-01T00:00:00Z",
             "current_period_end": "2024-09-01T00:00:00Z",
-            "cancel_at_period_end": false,
-            "canceled_at": "2024-08-15T10:30:00Z",
-            "trial_end": null
+            "cancel_at_period_end": false
         },
         {
             "user_id": 1,

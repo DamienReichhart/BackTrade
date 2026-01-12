@@ -43,13 +43,11 @@ export function useSubscriptionManagementModal(
     }, [plansData]);
 
     /**
-     * Find the active subscription (status: 'active' or 'trialing')
+     * Find the active subscription (status: 'active')
      * Users should only have one active subscription at a time
      */
     const activeSubscription = useMemo(() => {
-        return subscriptions.find(
-            (sub) => sub.status === "active" || sub.status === "trialing"
-        );
+        return subscriptions.find((sub) => sub.status === "active");
     }, [subscriptions]);
 
     /**
@@ -176,8 +174,6 @@ export function useSubscriptionManagementModal(
         setEditForm({
             status: subscription.status,
             cancel_at_period_end: subscription.cancel_at_period_end,
-            canceled_at: subscription.canceled_at ?? undefined,
-            trial_end: subscription.trial_end ?? undefined,
         });
     };
 

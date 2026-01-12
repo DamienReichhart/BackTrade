@@ -55,11 +55,6 @@
     color: var(--color-danger);
 }
 
-.status-trialing {
-    background-color: var(--color-info-bg);
-    color: var(--color-info);
-}
-
 .subscriptionActions {
     display: flex;
     gap: var(--spacing-sm);

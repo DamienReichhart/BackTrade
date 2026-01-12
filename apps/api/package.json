@@ -35,6 +35,7 @@
         "jsonwebtoken": "^9.0.3",
         "multer": "^2.0.2",
         "pino-http": "11.0.0",
+        "stripe": "^20.1.2",
         "zod": "4.3.5"
     },
     "devDependencies": {

@@ -47,12 +47,10 @@
 | Attribute              | Type     | Size | Constraints              | Description                                              | Domain                        |
 | ---------------------- | -------- | ---- | ------------------------ | -------------------------------------------------------- | ----------------------------- |
 | stripe_subscription_id | String   | -    | UNIQUE, NOT NULL         | Stripe subscription identifier                           | Stripe subscription ID format |
-| status                 | Enum     | -    | NOT NULL                 | Current status of the subscription                       | active, canceled, trialing    |
+| status                 | Enum     | -    | NOT NULL                 | Current status of the subscription                       | active, canceled              |
 | current_period_start   | DateTime | -    | NOT NULL                 | Start date of the current billing period                 | ISO 8601 datetime             |
 | current_period_end     | DateTime | -    | NOT NULL                 | End date of the current billing period                   | ISO 8601 datetime             |
 | cancel_at_period_end   | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if subscription will be canceled at period end | true, false                   |
-| canceled_at            | DateTime | -    | NULLABLE                 | Timestamp when the subscription was canceled             | ISO 8601 datetime or NULL     |
-| trial_end              | DateTime | -    | NULLABLE                 | End date of the trial period, if applicable              | ISO 8601 datetime or NULL     |
 | created_at             | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the subscription was created              | ISO 8601 datetime             |
 | updated_at             | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the subscription record was last modified | ISO 8601 datetime             |
 
@@ -246,7 +244,6 @@
 
 - **active**: Subscription is active and paid
 - **canceled**: Subscription has been canceled
-- **trialing**: Subscription is in trial period
 
 ---
 

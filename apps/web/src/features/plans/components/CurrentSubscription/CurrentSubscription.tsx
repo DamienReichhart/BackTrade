@@ -1,5 +1,4 @@
 import type { Subscription, Plan } from "@backtrade/types";
-import { formatDate } from "@backtrade/utils";
 import { formatPlanTitle } from "../../utils";
 import { usePlanLookup } from "./hooks";
 import { formatPeriod, getStatusColor } from "./utils";
@@ -13,7 +12,7 @@ interface CurrentSubscriptionProps {
 /**
  * Current subscription component
  *
- * Displays the user's active or trialing subscription
+ * Displays the user's active subscription
  */
 export function CurrentSubscription({
     subscription,
@@ -62,14 +61,6 @@ export function CurrentSubscription({
                             )}
                         </span>
                     </div>
-                    {subscription.trial_end && (
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Trial Ends:</span>
-                            <span className={styles.value}>
-                                {formatDate(subscription.trial_end)}
-                            </span>
-                        </div>
-                    )}
                     {subscription.cancel_at_period_end && (
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Cancellation:</span>

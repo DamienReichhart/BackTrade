@@ -71,7 +71,6 @@ enum TransactionType {
 enum SubscriptionStatus {
   active
   canceled
-  trialing
 }
 
 
@@ -144,8 +143,6 @@ model Subscription {
   current_period_start   DateTime
   current_period_end     DateTime
   cancel_at_period_end   Boolean            @default(false)
-  canceled_at            DateTime?
-  trial_end              DateTime?
   created_at             DateTime           @default(now())
   updated_at             DateTime           @updatedAt
 
