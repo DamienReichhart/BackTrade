@@ -18,6 +18,7 @@ import {
     type SearchQueryUser,
     PublicUserSchema,
     SearchQueryUserSchema,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 
@@ -84,12 +85,14 @@ class UsersController {
      *
      * @param req - Express request object
      * @param res - Express response object
-     * @throws BadRequestError if user ID is missing
+     * @throws BadRequestError if user ID is invalid or missing
      */
     async getUserById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid user ID");
         }
         const user = await usersService.getUserById(id);
 
@@ -106,15 +109,16 @@ class UsersController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if user ID is missing
+     * @throws BadRequestError if user ID is invalid or missing
      * @throws ForbiddenError if user doesn't have access
      */
     async getUserSubscriptions(req: Request, res: Response): Promise<void> {
         const requestingUser = req.user!;
-        const { id } = req.params;
-
-        if (!id) {
-            throw new BadRequestError("User ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid user ID");
         }
 
         // Get subscriptions for this user (access check is done in the service)
@@ -144,16 +148,18 @@ class UsersController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if user ID is missing or request body is invalid
+     * @throws BadRequestError if user ID is invalid or missing, or request body is invalid
      * @throws NotFoundError if user doesn't exist
      * @throws ForbiddenError if user doesn't have access
      * @throws AlreadyExistsError if email is already in use
      */
     async updateUser(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid user ID");
         }
 
         const requestData = req.body as UpdateUserRequest;
@@ -177,13 +183,15 @@ class UsersController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if user ID is missing
+     * @throws BadRequestError if user ID is invalid or missing
      */
     async changePassword(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid user ID");
         }
         const { currentPassword, newPassword } =
             req.body as ChangeUserPasswordRequest;
@@ -207,15 +215,17 @@ class UsersController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if user ID is missing
+     * @throws BadRequestError if user ID is invalid or missing
      * @throws NotFoundError if user doesn't exist
      * @throws ForbiddenError if user doesn't have permission to delete this account
      */
     async deleteUserAccount(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid user ID");
         }
 
         this.logger.trace({ id, userId: user.id }, "Deleting user account");

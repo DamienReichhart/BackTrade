@@ -16,6 +16,8 @@ import {
     type PositionCreateInput,
     type UpdatePositionRequest,
     type PositionUpdateInput,
+    IdParamsSchema,
+    SessionIdParamsSchema,
 } from "@backtrade/types";
 import positionsService from "../services/base/positions-service";
 import BadRequestError from "../errors/web/bad-request-error";
@@ -105,13 +107,15 @@ class PositionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or query parameters are invalid
+     * @throws BadRequestError if session ID is invalid or missing, or query parameters are invalid
      */
     async getPositionsBySession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = req.params;
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
+        let sessionId: string;
+        try {
+            ({ sessionId } = SessionIdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         // Parse and validate query parameters
@@ -217,15 +221,17 @@ class PositionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if position ID is missing or invalid
+     * @throws BadRequestError if position ID is invalid or missing
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getPositionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid position ID");
         }
 
         const position = await positionsService.getPositionById(id, user);
@@ -257,15 +263,17 @@ class PositionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if position ID is missing or request body is invalid
+     * @throws BadRequestError if position ID is invalid or missing, or request body is invalid
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async updatePosition(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid position ID");
         }
 
         const requestData = req.body as UpdatePositionRequest;
@@ -311,15 +319,17 @@ class PositionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if position ID is missing
+     * @throws BadRequestError if position ID is invalid or missing
      * @throws NotFoundError if position doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async deletePosition(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid position ID");
         }
 
         this.logger.trace({ id, userId: user.id }, "Deleting position");
@@ -346,18 +356,19 @@ class PositionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if closeAll query parameter is missing or invalid
+     * @throws BadRequestError if session ID is invalid or missing, or closeAll query parameter is missing or invalid
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async closeAllPositions(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = req.params;
-        const closeAll = req.query.closeAll as string | undefined;
-
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
+        let sessionId: string;
+        try {
+            ({ sessionId } = SessionIdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
+        const closeAll = req.query.closeAll as string | undefined;
 
         if (closeAll !== "true") {
             throw new BadRequestError(

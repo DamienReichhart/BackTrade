@@ -55,16 +55,6 @@
     color: var(--color-danger);
 }
 
-.status-trialing {
-    background-color: var(--color-info-bg);
-    color: var(--color-info);
-}
-
-.status-active_unpaid {
-    background-color: var(--color-warning-bg);
-    color: var(--color-warning);
-}
-
 .subscriptionActions {
     display: flex;
     gap: var(--spacing-sm);

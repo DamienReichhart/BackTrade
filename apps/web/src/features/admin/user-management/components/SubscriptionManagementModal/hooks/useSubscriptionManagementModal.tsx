@@ -42,6 +42,19 @@ export function useSubscriptionManagementModal(
         return plansData ?? [];
     }, [plansData]);
 
+    /**
+     * Find the active subscription (status: 'active')
+     * Users should only have one active subscription at a time
+     */
+    const activeSubscription = useMemo(() => {
+        return subscriptions.find((sub) => sub.status === "active");
+    }, [subscriptions]);
+
+    /**
+     * Whether the user has an active subscription
+     */
+    const hasActiveSubscription = activeSubscription !== undefined;
+
     // Form state for creating new subscription
     const [isCreating, setIsCreating] = useState(false);
     const [createForm, setCreateForm] = useState<
@@ -161,8 +174,6 @@ export function useSubscriptionManagementModal(
         setEditForm({
             status: subscription.status,
             cancel_at_period_end: subscription.cancel_at_period_end,
-            canceled_at: subscription.canceled_at ?? undefined,
-            trial_end: subscription.trial_end ?? undefined,
         });
     };
 
@@ -229,6 +240,8 @@ export function useSubscriptionManagementModal(
         subscriptions,
         plans,
         isLoading: isLoadingSubscriptions || isLoadingPlans,
+        activeSubscription,
+        hasActiveSubscription,
 
         // Create form state
         isCreating,

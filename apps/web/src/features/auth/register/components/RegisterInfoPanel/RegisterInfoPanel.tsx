@@ -14,7 +14,6 @@ export function RegisterInfoPanel() {
             benefits={{
                 title: "Start trading the past today",
                 items: [
-                    "Free plan with 1 active session",
                     "Launch sessions in minutes",
                     "Complete session analytics",
                     "Export data to JSON",

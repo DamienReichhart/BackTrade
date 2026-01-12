@@ -17,6 +17,7 @@ import {
     type SessionCreateInput,
     type UpdateSessionRequest,
     type SessionUpdateInput,
+    IdParamsSchema,
 } from "@backtrade/types";
 import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
@@ -160,15 +161,17 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or invalid
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         const session = await sessionsService.getSessionById(id, user);
@@ -193,15 +196,17 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing, timeframe is missing or invalid
+     * @throws BadRequestError if session ID is invalid or missing, timeframe is missing or invalid
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionCandles(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         // Validate timeframe query parameter
@@ -262,15 +267,17 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionInfo(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         // Get session info (includes authorization check)
@@ -292,22 +299,24 @@ class SessionsController {
      *
      * Request body can include:
      * - name: Optional session name
-     * - session_status: Optional status (RUNNING, PAUSED, ARCHIVED)
+     * - session_status: Optional session status (RUNNING, PAUSED, ARCHIVED)
      * - speed: Optional playback speed
      * - current_time: Optional current timestamp (must be >= start_time and <= end_time)
      * - end_time: Optional end timestamp (must be >= start_time and >= current_time)
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or request body is invalid
+     * @throws BadRequestError if session ID is invalid or missing, or request body is invalid
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async updateSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         const requestData = req.body as UpdateSessionRequest;
@@ -348,15 +357,17 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async deleteSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
         }
 
         this.logger.trace({ id, userId: user.id }, "Deleting session");

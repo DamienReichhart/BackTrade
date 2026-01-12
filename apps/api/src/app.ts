@@ -9,6 +9,7 @@ import { requestLogger } from "./middlewares/request-logger";
 import { notFoundHandler } from "./middlewares/not-found";
 import { errorHandler } from "./middlewares/error-handler";
 import { ENV } from "./config/env";
+import stripeController from "./controllers/stripe-controller";
 
 function createApp(): Express {
     const app: Express = express();
@@ -21,6 +22,15 @@ function createApp(): Express {
     app.use(helmet());
     app.use(cors({ origin: true, credentials: true }));
     app.use(compression());
+
+    // IMPORTANT: Stripe webhook must receive raw body for signature verification
+    // This route MUST be registered BEFORE the global express.json() middleware
+    app.post(
+        "/api/v1/stripe/webhook",
+        express.raw({ type: "application/json" }),
+        stripeController.handleWebhook.bind(stripeController)
+    );
+
     app.use(express.json());
     app.use(rateLimit({ windowMs: 60_000, max: 1200 }));
     app.use(requestId);

@@ -42,6 +42,18 @@ class PlansRepository extends BasePostgresRepository {
     }
 
     /**
+     * Get a plan by Stripe Price ID.
+     *
+     * @param stripePriceId - Stripe Price ID
+     * @returns Plan entity or null if not found
+     */
+    async getPlanByStripePriceId(stripePriceId: string): Promise<Plan | null> {
+        return this.prisma.plan.findFirst({
+            where: { stripe_price_id: stripePriceId },
+        }) as unknown as Plan | null;
+    }
+
+    /**
      * Create a new plan.
      *
      * @param data - Plan creation data

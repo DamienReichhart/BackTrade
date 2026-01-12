@@ -17,7 +17,9 @@ interface PlansListProps {
 /**
  * Plans list component
  *
- * Displays all available plans that users can subscribe to
+ * Displays all available plans that users can subscribe to.
+ * When user has an active subscription, all plan buttons are disabled
+ * to enforce single subscription policy.
  */
 export function PlansList({
     plans,
@@ -25,6 +27,9 @@ export function PlansList({
     isCreating = false,
     onChangeSubscription,
 }: PlansListProps) {
+    // User has an active subscription if currentSubscription exists
+    const hasActiveSubscription = currentSubscription !== undefined;
+
     if (plans.length === 0) {
         return (
             <div className={styles.empty}>
@@ -34,18 +39,29 @@ export function PlansList({
     }
 
     return (
-        <div className={styles.grid}>
-            {plans.map((plan) => (
-                <PlanCard
-                    key={plan.id}
-                    plan={plan}
-                    isCurrent={isCurrentPlan(currentSubscription, plan.id)}
-                    isCreating={isCreating}
-                    onChangeSubscription={(planId, planCode) =>
-                        onChangeSubscription(planId, planCode, plan)
-                    }
-                />
-            ))}
+        <div className={styles.container}>
+            {hasActiveSubscription && (
+                <div className={styles.activeSubscriptionNotice}>
+                    <p className={styles.noticeText}>
+                        You already have an active subscription. To change
+                        plans, please cancel your current subscription first.
+                    </p>
+                </div>
+            )}
+            <div className={styles.grid}>
+                {plans.map((plan) => (
+                    <PlanCard
+                        key={plan.id}
+                        plan={plan}
+                        isCurrent={isCurrentPlan(currentSubscription, plan.id)}
+                        isCreating={isCreating}
+                        hasActiveSubscription={hasActiveSubscription}
+                        onChangeSubscription={(planId, planCode) =>
+                            onChangeSubscription(planId, planCode, plan)
+                        }
+                    />
+                ))}
+            </div>
         </div>
     );
 }

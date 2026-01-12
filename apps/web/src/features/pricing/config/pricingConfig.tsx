@@ -1,8 +1,9 @@
 /**
  * Pricing configuration
  *
- * Defines pricing tiers, features, and comparison data
- * Merged with API data to display complete pricing information
+ * Defines pricing tiers, features, and comparison data.
+ * This is static configuration
+ * and does not exist in the database.
  */
 
 import { type PricingTier, type ComparisonRow } from "../types";

@@ -36,3 +36,13 @@ export type SearchQueryUser = z.infer<typeof SearchQueryUserSchema>;
  */
 export const EmptyResponseSchema = z.object({}).optional();
 export type EmptyResponse = z.infer<typeof EmptyResponseSchema>;
+
+export const IdParamsSchema = z.object({
+    id: z.string().min(1),
+});
+export type IdParams = z.infer<typeof IdParamsSchema>;
+
+export const SessionIdParamsSchema = z.object({
+    sessionId: z.string().min(1),
+});
+export type SessionIdParams = z.infer<typeof SessionIdParamsSchema>;

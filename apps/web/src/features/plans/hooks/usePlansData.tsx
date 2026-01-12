@@ -37,7 +37,7 @@ export function usePlansData() {
         return plansData ?? [];
     }, [plansData]);
 
-    // Find current subscription (active or trialing)
+    // Find current subscription (active)
     const currentSubscription = useMemo(() => {
         return findCurrentSubscription(subscriptions);
     }, [subscriptions]);

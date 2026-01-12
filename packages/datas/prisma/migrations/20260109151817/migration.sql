@@ -20,7 +20,7 @@ CREATE TYPE "Side" AS ENUM ('BUY', 'SELL');
 CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'COMMISSION', 'PNL', 'SLIPPAGE', 'SPREAD', 'ADJUSTMENT');
 
 -- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled', 'trialing', 'active_unpaid');
+CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled');
 
 -- CreateEnum
 CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING', 'QUEUE_FAILED', 'PERMANENTLY_FAILED');
@@ -78,8 +78,6 @@ CREATE TABLE "subscriptions" (
     "current_period_start" TIMESTAMP(3) NOT NULL,
     "current_period_end" TIMESTAMP(3) NOT NULL,
     "cancel_at_period_end" BOOLEAN NOT NULL DEFAULT false,
-    "canceled_at" TIMESTAMP(3),
-    "trial_end" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -296,3 +294,8 @@ ALTER TABLE "datasets" ADD CONSTRAINT "datasets_instrument_id_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "session_analytics" ADD CONSTRAINT "session_analytics_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- CreateIndex
+-- Partial unique index to ensure each user can have at most one active subscription
+CREATE UNIQUE INDEX "unique_active_subscription_per_user" ON "subscriptions" ("user_id") 
+WHERE "status" IN ('active');

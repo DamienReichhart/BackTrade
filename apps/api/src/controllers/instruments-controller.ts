@@ -13,6 +13,7 @@ import {
     type SearchQuery,
     type InstrumentCreateInput,
     type InstrumentUpdateInput,
+    IdParamsSchema,
 } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
@@ -45,12 +46,14 @@ class InstrumentsController {
      *
      * @param req - Express request object
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      */
     async getInstrumentById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
         }
         const instrument = await instrumentService.getInstrumentById(id);
         res.status(200).json(instrument);
@@ -116,14 +119,16 @@ class InstrumentsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async updateInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
         }
 
         this.logger.trace(
@@ -152,14 +157,16 @@ class InstrumentsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async deleteInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
         }
 
         this.logger.trace(

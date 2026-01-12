@@ -15,6 +15,7 @@ import {
     type DatasetCreateInput,
     type DatasetUpdateInput,
     type SearchQuery,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 import { logger } from "../libs/pino";
@@ -65,12 +66,14 @@ class DatasetsController {
      *
      * @param req - Express request object
      * @param res - Express response object
-     * @throws BadRequestError if dataset ID is missing
+     * @throws BadRequestError if dataset ID is invalid or missing
      */
     async getDatasetById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid dataset ID");
         }
         const dataset = await datasetsService.getDatasetById(id);
         res.status(200).json(dataset);
@@ -116,14 +119,16 @@ class DatasetsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if dataset ID is missing
+     * @throws BadRequestError if dataset ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async updateDataset(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid dataset ID");
         }
 
         this.logger.trace(
@@ -152,14 +157,16 @@ class DatasetsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if dataset ID is missing
+     * @throws BadRequestError if dataset ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async deleteDataset(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid dataset ID");
         }
 
         this.logger.trace(
@@ -184,14 +191,16 @@ class DatasetsController {
      *
      * @param req - Express request object with file from multer (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if dataset ID or file is missing
+     * @throws BadRequestError if dataset ID is invalid or missing, or file is missing
      * @throws ForbiddenError if user is not admin
      */
     async uploadFile(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid dataset ID");
         }
 
         const file = req.file;

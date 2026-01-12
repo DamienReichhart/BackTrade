@@ -148,22 +148,6 @@ export function SubscriptionCard({
                         <span className={styles.infoValue}>Yes</span>
                     </div>
                 )}
-                {subscription.canceled_at && (
-                    <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Canceled At:</span>
-                        <span className={styles.infoValue}>
-                            {formatDate(subscription.canceled_at)}
-                        </span>
-                    </div>
-                )}
-                {subscription.trial_end && (
-                    <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Trial End:</span>
-                        <span className={styles.infoValue}>
-                            {formatDate(subscription.trial_end)}
-                        </span>
-                    </div>
-                )}
             </div>
 
             <div className={styles.subscriptionActions}>

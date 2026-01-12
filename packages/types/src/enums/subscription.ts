@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-export const SubscriptionStatusSchema = z.enum([
-    "active",
-    "canceled",
-    "trialing",
-    "active_unpaid",
-]);
+export const SubscriptionStatusSchema = z.enum(["active", "canceled"]);
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 
 /**
@@ -15,8 +10,6 @@ export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 export const SUBSCRIPTION_STATUS_VALUES: SubscriptionStatus[] = [
     "active",
     "canceled",
-    "trialing",
-    "active_unpaid",
 ];
 
 /**
@@ -25,8 +18,6 @@ export const SUBSCRIPTION_STATUS_VALUES: SubscriptionStatus[] = [
 const SUBSCRIPTION_STATUS_DISPLAY_MAP: Record<SubscriptionStatus, string> = {
     active: "Active",
     canceled: "Canceled",
-    trialing: "Trialing",
-    active_unpaid: "Active Unpaid",
 };
 
 /**

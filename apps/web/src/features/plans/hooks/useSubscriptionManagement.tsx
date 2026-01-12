@@ -1,36 +1,76 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import { useAuthStore } from "../../../store/auth";
-import { useCreateSubscription } from "../../../api/hooks/requests/subscriptions";
+import {
+    useCreateCheckoutSession,
+    useCreatePortalSession,
+} from "../../../api/hooks/requests/stripe";
 import type { Plan } from "@backtrade/types";
 
 /**
  * Hook to handle subscription management operations
  *
- * @returns Subscription management handlers
+ * Uses Stripe Checkout for new subscriptions and Customer Portal for management.
+ *
+ * @returns Subscription management handlers and loading state
  */
 export function useSubscriptionManagement() {
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const { user } = useAuthStore();
-    const { execute: createSubscription, isLoading: isCreating } =
-        useCreateSubscription();
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    const { execute: createCheckoutSession, isLoading: isCreatingCheckout } =
+        useCreateCheckoutSession();
+    const { execute: createPortalSession, isLoading: isCreatingPortal } =
+        useCreatePortalSession();
+
+    /**
+     * Handle manage subscriptions action
+     *
+     * Creates a Stripe Customer Portal session and redirects to Stripe.
+     */
+    const handleManageSubscriptions = useCallback(async () => {
+        if (!user) {
+            // eslint-disable-next-line no-console
+            console.error("User must be authenticated to manage subscriptions");
+            return;
+        }
+
+        try {
+            setIsRedirecting(true);
+
+            // Create Stripe Customer Portal session
+            const session = await createPortalSession({});
+
+            // Redirect to Stripe Customer Portal
+            window.location.href = session.url;
+        } catch (err) {
+            setIsRedirecting(false);
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to open subscription management. Please try again.";
+            // eslint-disable-next-line no-console
+            console.error("Portal session error:", errorMessage);
+            throw err;
+        }
+    }, [user, createPortalSession]);
 
     /**
      * Handle subscription change (purchase a new plan)
      *
+     * Creates a Stripe Checkout session and redirects to Stripe.
+     * If user already has an active subscription, redirects to portal instead.
+     *
      * @param planId - Plan ID to subscribe to
-     * @param planCode - Plan code
-     * @param currentSubscriptionId - Current subscription ID (optional)
-     * @param plan - Plan object for success page (optional)
+     * @param _planCode - Plan code (unused, kept for API compatibility)
+     * @param currentSubscriptionId - Current subscription ID (if exists, redirects to portal)
+     * @param _plan - Plan object (unused, kept for API compatibility)
      */
     const handleChangeSubscription = useCallback(
         async (
             planId: number,
-            planCode: string,
+            _planCode: string,
             currentSubscriptionId?: number,
-            plan?: Plan
+            _plan?: Plan
         ) => {
             if (!user) {
                 // eslint-disable-next-line no-console
@@ -40,77 +80,37 @@ export function useSubscriptionManagement() {
                 return;
             }
 
+            // If user has active subscription, redirect to portal for changes
+            if (currentSubscriptionId !== undefined) {
+                await handleManageSubscriptions();
+                return;
+            }
+
             try {
-                // Calculate subscription period dates (monthly subscription)
-                const now = new Date();
-                const currentPeriodStart = now.toISOString();
-                const currentPeriodEnd = new Date(
-                    now.getTime() + 30 * 24 * 60 * 60 * 1000 // 30 days from now
-                ).toISOString();
+                setIsRedirecting(true);
 
-                // Generate a mock Stripe subscription ID for testing
-                // In production, this would come from Stripe checkout session
-                const stripeSubscriptionId = `sub_${Date.now()}_${Math.random()
-                    .toString(36)
-                    .substring(2, 9)}`;
+                // Create Stripe Checkout session
+                const session = await createCheckoutSession({ planId });
 
-                // Create the subscription
-                await createSubscription({
-                    user_id: user.id,
-                    plan_id: planId,
-                    status: "active",
-                    stripe_subscription_id: stripeSubscriptionId,
-                    current_period_start: currentPeriodStart,
-                    current_period_end: currentPeriodEnd,
-                    cancel_at_period_end: false,
-                });
-
-                // Invalidate subscriptions queries to refresh the UI
-                queryClient.invalidateQueries({
-                    queryKey: ["GET", "/subscriptions"],
-                });
-                queryClient.invalidateQueries({
-                    queryKey: ["GET", `/users/${user.id}/subscriptions`],
-                });
-
-                // Navigate to purchase success page with plan information
-                // If plan object is not provided, we'll still navigate but the success page
-                // will show minimal information
-                navigate("/dashboard/plans/purchase-success", {
-                    state: { plan: plan ?? undefined },
-                });
+                // Redirect to Stripe Checkout
+                window.location.href = session.url;
             } catch (err) {
-                // Handle error
+                setIsRedirecting(false);
                 const errorMessage =
                     err instanceof Error
                         ? err.message
-                        : "Failed to create subscription. Please try again.";
+                        : "Failed to create checkout session. Please try again.";
                 // eslint-disable-next-line no-console
-                console.error("Subscription creation error:", errorMessage);
-                // In a real app, you might want to show a toast notification here
+                console.error("Checkout session error:", errorMessage);
                 throw err;
             }
         },
-        [user, createSubscription, queryClient, navigate]
+        [user, createCheckoutSession, handleManageSubscriptions]
     );
-
-    /**
-     * Handle manage subscriptions action
-     *
-     * This could redirect to Stripe customer portal or show a management modal
-     */
-    const handleManageSubscriptions = useCallback(() => {
-        // TODO: Implement subscription management logic
-        // This should:
-        // 1. Redirect to Stripe customer portal, or
-        // 2. Show a modal with subscription management options
-        // eslint-disable-next-line no-console
-        console.log("Manage subscriptions");
-    }, []);
 
     return {
         handleChangeSubscription,
         handleManageSubscriptions,
-        isCreating,
+        isCreating: isCreatingCheckout || isCreatingPortal || isRedirecting,
     };
 }

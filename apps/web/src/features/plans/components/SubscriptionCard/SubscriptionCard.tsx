@@ -1,5 +1,4 @@
 import type { Subscription, Plan } from "@backtrade/types";
-import { formatDate } from "@backtrade/utils";
 import { formatPlanTitle } from "../../utils";
 import { usePlanLookup } from "./hooks";
 import { formatPeriod, getStatusColor } from "./utils";
@@ -71,27 +70,11 @@ export function SubscriptionCard({
                             )}
                         </span>
                     </div>
-                    {subscription.trial_end && (
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Trial Ends:</span>
-                            <span className={styles.value}>
-                                {formatDate(subscription.trial_end)}
-                            </span>
-                        </div>
-                    )}
                     {subscription.cancel_at_period_end && (
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Cancellation:</span>
                             <span className={styles.value}>
                                 Will cancel at period end
-                            </span>
-                        </div>
-                    )}
-                    {subscription.canceled_at && (
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Canceled At:</span>
-                            <span className={styles.value}>
-                                {formatDate(subscription.canceled_at)}
                             </span>
                         </div>
                     )}

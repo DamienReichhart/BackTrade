@@ -39,6 +39,7 @@ export function SubscriptionManagementModal({
         // Data
         subscriptions,
         isLoading,
+        hasActiveSubscription,
 
         // Create form state
         isCreating,
@@ -106,6 +107,7 @@ export function SubscriptionManagementModal({
                             onFormChange={setCreateForm}
                             planOptions={planOptions}
                             isLoading={createSubscriptionMutation.isLoading}
+                            hasActiveSubscription={hasActiveSubscription}
                             onStartCreate={handleStartCreate}
                             onCancelCreate={handleCancelCreate}
                             onSubmit={handleCreate}

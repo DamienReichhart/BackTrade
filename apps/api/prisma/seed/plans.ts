@@ -10,30 +10,22 @@ export interface SeedPlan {
 /**
  * Returns the list of subscription plans to seed in the database.
  */
-export async function getPlans(): SeedPlan[] {
+export async function getPlans(): Promise<SeedPlan[]> {
     return [
         {
             id: 1,
-            code: "FREE",
-            stripe_product_id: "prod_basic",
-            stripe_price_id: "price_free_monthly",
-            currency: "EUR",
-            price: 0,
-        },
-        {
-            id: 2,
             code: "TRADER",
-            stripe_product_id: "prod_pro",
-            stripe_price_id: "price_trader_monthly",
-            currency: "EUR",
+            stripe_product_id: "prod_Tm1WYezRpCShtb",
+            stripe_price_id: "price_1SoTTAI0H7dj41TROUvmOeyy",
+            currency: "USD",
             price: 19,
         },
         {
-            id: 3,
+            id: 2,
             code: "EXPERT",
-            stripe_product_id: "prod_enterprise",
-            stripe_price_id: "price_expert_monthly",
-            currency: "EUR",
+            stripe_product_id: "prod_Tm1W4IrS1CdDBM",
+            stripe_price_id: "price_1SoTTlI0H7dj41TRig7QlRUr",
+            currency: "USD",
             price: 49,
         },
     ];
