@@ -1,28 +1,21 @@
-import { useMemo } from "react";
-import { usePlans } from "../../../api/hooks/requests/plans";
 import { useAuthStore } from "../../../store/auth";
 import { pricingTiers, comparisonData } from "../config/pricingConfig";
-import { mergePlanData } from "../utils/plans";
 
 /**
  * Hook to manage pricing page data and state
  *
- * @returns Pricing data, loading state, and merged tiers
+ * Uses static configuration only - no API calls.
+ * The FREE plan is displayed only on this page as a static tier.
+ *
+ * @returns Pricing data and authentication state
  */
 export function usePricing() {
-    const { data: apiPlans, isLoading } = usePlans();
     const { user } = useAuthStore();
     const isLoggedIn = !!user;
 
-    // Merge API data with local configuration
-    const mergedTiers = useMemo(() => {
-        return mergePlanData(pricingTiers, apiPlans);
-    }, [apiPlans]);
-
     return {
-        mergedTiers,
+        tiers: pricingTiers,
         comparisonData,
-        isLoading,
         isLoggedIn,
     };
 }

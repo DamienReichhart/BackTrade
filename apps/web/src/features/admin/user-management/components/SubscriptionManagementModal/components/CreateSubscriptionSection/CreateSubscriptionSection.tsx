@@ -33,6 +33,11 @@ interface CreateSubscriptionSectionProps {
     isLoading: boolean;
 
     /**
+     * Whether the user already has an active subscription
+     */
+    hasActiveSubscription: boolean;
+
+    /**
      * Handler to start creating
      */
     onStartCreate: () => void;
@@ -51,7 +56,8 @@ interface CreateSubscriptionSectionProps {
 /**
  * Create Subscription Section component
  *
- * Section containing the create subscription button and form
+ * Section containing the create subscription button and form.
+ * Shows a warning when user already has an active subscription.
  */
 export function CreateSubscriptionSection({
     isCreating,
@@ -59,6 +65,7 @@ export function CreateSubscriptionSection({
     onFormChange,
     planOptions,
     isLoading,
+    hasActiveSubscription,
     onStartCreate,
     onCancelCreate,
     onSubmit,
@@ -68,15 +75,34 @@ export function CreateSubscriptionSection({
             <div className={styles.sectionHeader}>
                 <h3 className={styles.sectionTitle}>Create New Subscription</h3>
                 {!isCreating && (
-                    <Button
-                        variant="primary"
-                        size="small"
-                        onClick={onStartCreate}
-                    >
-                        New Subscription
-                    </Button>
+                    <div className={styles.headerActions}>
+                        {hasActiveSubscription && (
+                            <span className={styles.warningBadge}>
+                                User has active subscription
+                            </span>
+                        )}
+                        <Button
+                            variant="primary"
+                            size="small"
+                            onClick={onStartCreate}
+                        >
+                            New Subscription
+                        </Button>
+                    </div>
                 )}
             </div>
+
+            {hasActiveSubscription && isCreating && (
+                <div className={styles.warningNotice}>
+                    <p className={styles.warningText}>
+                        <strong>Warning:</strong> This user already has an
+                        active subscription. Creating a new active subscription
+                        will be blocked by the system. You may only create a
+                        subscription with "canceled" status, or cancel the
+                        existing subscription first.
+                    </p>
+                </div>
+            )}
 
             {isCreating && (
                 <CreateSubscriptionForm

@@ -22,6 +22,7 @@ import type {
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import ForbiddenError from "../../errors/web/forbidden-error";
+import AlreadyExistsError from "../../errors/web/already-exists-error";
 import { BaseService } from "./base-service";
 import { buildPagination } from "../../utils";
 import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
@@ -29,12 +30,13 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 /**
  * Valid subscription statuses
  */
-const VALID_STATUSES = [
-    "active",
-    "canceled",
-    "trialing",
-    "active_unpaid",
-] as const;
+const VALID_STATUSES = ["active", "canceled", "trialing"] as const;
+
+/**
+ * Statuses that represent an active subscription
+ * A user can only have one subscription with these statuses at a time
+ */
+const ACTIVE_STATUSES = ["active", "trialing"] as const;
 
 /**
  * Subscriptions Service
@@ -163,6 +165,50 @@ class SubscriptionsService extends BaseService {
                     `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`
                 );
             }
+        }
+    }
+
+    /**
+     * Check if a status is considered "active" (active or trialing)
+     *
+     * @param status - Status to check
+     * @returns True if the status represents an active subscription
+     */
+    private isActiveStatus(status: string | undefined | null): boolean {
+        return (
+            status !== undefined &&
+            status !== null &&
+            ACTIVE_STATUSES.includes(status as (typeof ACTIVE_STATUSES)[number])
+        );
+    }
+
+    /**
+     * Validate that user does not already have an active subscription
+     *
+     * Each user can only have one active subscription (status: 'active' or 'trialing') at a time.
+     * This validation prevents creating duplicate active subscriptions.
+     *
+     * @param userId - User ID to check
+     * @param excludeSubscriptionId - Optional subscription ID to exclude (used during updates to allow same subscription changes)
+     * @throws AlreadyExistsError if user already has an active subscription
+     */
+    private async validateNoActiveSubscription(
+        userId: number,
+        excludeSubscriptionId?: number
+    ): Promise<void> {
+        const hasActive = await subscriptionsRepo.hasActiveSubscription(
+            userId,
+            excludeSubscriptionId
+        );
+
+        if (hasActive) {
+            this.logger.debug(
+                { userId, excludeSubscriptionId },
+                "User already has an active subscription"
+            );
+            throw new AlreadyExistsError(
+                "User already has an active subscription. Please cancel the existing subscription before creating a new one."
+            );
         }
     }
 
@@ -457,6 +503,7 @@ class SubscriptionsService extends BaseService {
      * Create a new subscription
      *
      * Admin-only operation.
+     * Enforces single active subscription per user constraint.
      *
      * @param subscription - Subscription creation data
      * @param user - User entity making the request (for authorization)
@@ -464,6 +511,7 @@ class SubscriptionsService extends BaseService {
      * @throws ForbiddenError if user is not admin
      * @throws BadRequestError if validation fails
      * @throws NotFoundError if user or plan doesn't exist
+     * @throws AlreadyExistsError if user already has an active subscription
      */
     async createSubscription(
         subscription: SubscriptionCreateInput,
@@ -480,6 +528,11 @@ class SubscriptionsService extends BaseService {
             ...subscription,
             status: subscription.status ?? "active",
         };
+
+        // If creating an active subscription, verify user doesn't already have one
+        if (this.isActiveStatus(subscriptionData.status)) {
+            await this.validateNoActiveSubscription(subscription.user_id!);
+        }
 
         this.logger.trace(
             {
@@ -501,6 +554,7 @@ class SubscriptionsService extends BaseService {
      * Update an existing subscription
      *
      * Admin-only operation.
+     * Enforces single active subscription per user constraint when changing to active status.
      *
      * @param id - Subscription ID
      * @param subscription - Subscription update data
@@ -509,6 +563,7 @@ class SubscriptionsService extends BaseService {
      * @throws NotFoundError if subscription doesn't exist
      * @throws ForbiddenError if user is not admin
      * @throws BadRequestError if validation fails
+     * @throws AlreadyExistsError if changing to active status and user already has another active subscription
      */
     async updateSubscription(
         id: string | number,
@@ -532,6 +587,19 @@ class SubscriptionsService extends BaseService {
 
         // Validate business rules
         this.validateSubscriptionUpdate(subscription);
+
+        // If changing to an active status (and not already active), verify user doesn't have another active subscription
+        const isChangingToActive =
+            this.isActiveStatus(subscription.status) &&
+            !this.isActiveStatus(existing.status);
+
+        if (isChangingToActive) {
+            // Exclude current subscription from the check since we're updating it
+            await this.validateNoActiveSubscription(
+                existing.user_id,
+                numericId
+            );
+        }
 
         const updated = await subscriptionsRepo.updateSubscription(
             numericId,

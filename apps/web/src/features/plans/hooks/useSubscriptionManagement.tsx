@@ -20,10 +20,14 @@ export function useSubscriptionManagement() {
     /**
      * Handle subscription change (purchase a new plan)
      *
+     * Enforces single active subscription policy - will reject if user
+     * already has an active subscription (currentSubscriptionId provided).
+     *
      * @param planId - Plan ID to subscribe to
      * @param planCode - Plan code
-     * @param currentSubscriptionId - Current subscription ID (optional)
+     * @param currentSubscriptionId - Current subscription ID (if exists, blocks creation)
      * @param plan - Plan object for success page (optional)
+     * @throws Error if user already has an active subscription
      */
     const handleChangeSubscription = useCallback(
         async (
@@ -38,6 +42,16 @@ export function useSubscriptionManagement() {
                     "User must be authenticated to create a subscription"
                 );
                 return;
+            }
+
+            // Guard: Prevent creating new subscription when user already has one
+            if (currentSubscriptionId !== undefined) {
+                const error = new Error(
+                    "You already have an active subscription. Please cancel your current subscription before subscribing to a new plan."
+                );
+                // eslint-disable-next-line no-console
+                console.error("Subscription creation blocked:", error.message);
+                throw error;
             }
 
             try {

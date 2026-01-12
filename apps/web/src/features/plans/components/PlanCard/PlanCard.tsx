@@ -7,6 +7,7 @@ interface PlanCardProps {
     plan: Plan;
     isCurrent?: boolean;
     isCreating?: boolean;
+    hasActiveSubscription?: boolean;
     onChangeSubscription: (planId: number, planCode: string) => void;
 }
 
@@ -19,11 +20,19 @@ export function PlanCard({
     plan,
     isCurrent = false,
     isCreating = false,
+    hasActiveSubscription = false,
     onChangeSubscription,
 }: PlanCardProps) {
     const handleSelectPlan = () => {
         onChangeSubscription(plan.id, plan.code);
     };
+
+    // Button is disabled if:
+    // - This is the current plan (already subscribed)
+    // - A subscription is being created
+    // - User has an active subscription and this is not their current plan
+    const isButtonDisabled =
+        isCurrent || isCreating || (hasActiveSubscription && !isCurrent);
 
     return (
         <div className={`${styles.card} ${isCurrent ? styles.current : ""}`}>
@@ -59,7 +68,7 @@ export function PlanCard({
                         variant={isCurrent ? "outline" : "primary"}
                         size="medium"
                         onClick={handleSelectPlan}
-                        disabled={isCurrent || isCreating}
+                        disabled={isButtonDisabled}
                     >
                         {isCreating
                             ? "Processing..."

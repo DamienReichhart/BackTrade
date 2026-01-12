@@ -16,8 +16,6 @@ export function getStatusColor(
             return styles.statusTrialing ?? "";
         case "canceled":
             return styles.statusCanceled ?? "";
-        case "active_unpaid":
-            return styles.statusActiveUnpaid ?? "";
         default:
             return "";
     }

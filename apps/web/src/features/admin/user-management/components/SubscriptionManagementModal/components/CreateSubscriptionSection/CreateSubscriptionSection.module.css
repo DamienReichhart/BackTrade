@@ -20,3 +20,40 @@
     color: var(--color-text-primary);
     margin: 0;
 }
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Warning badge next to create button */
+.warningBadge {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-warning-text, #ca8a04);
+    background: var(--color-warning-subtle, rgba(234, 179, 8, 0.1));
+    border: 1px solid var(--color-warning, #eab308);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+/* Warning notice above form */
+.warningNotice {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-warning-subtle, rgba(234, 179, 8, 0.1));
+    border: 1px solid var(--color-warning, #eab308);
+    border-radius: var(--radius-md);
+}
+
+.warningText {
+    font-size: var(--font-size-sm);
+    color: var(--color-warning-text, #ca8a04);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.warningText strong {
+    font-weight: var(--font-weight-semibold);
+}

@@ -72,7 +72,6 @@ enum SubscriptionStatus {
   active
   canceled
   trialing
-  active_unpaid
 }
 
 

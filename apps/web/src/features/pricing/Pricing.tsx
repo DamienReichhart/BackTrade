@@ -10,27 +10,12 @@ import styles from "./Pricing.module.css";
 /**
  * Pricing page component
  *
- * Displays pricing plans with features, comparison table, and call-to-action
- * Fetches plan data from API and merges with local configuration
+ * Displays pricing plans with features, comparison table, and call-to-action.
+ * Uses static configuration only - the FREE plan is displayed here as a static tier.
  */
 export default function Pricing() {
-    const { mergedTiers, comparisonData, isLoading, isLoggedIn } = usePricing();
+    const { tiers, comparisonData, isLoggedIn } = usePricing();
     const { handleSelectPlan } = usePlanSelection(isLoggedIn);
-
-    // Show loading state
-    if (isLoading) {
-        return (
-            <div className={styles.pricing}>
-                <Header />
-                <main className={styles.main}>
-                    <div className={styles.loading}>
-                        <p>Loading pricing information...</p>
-                    </div>
-                </main>
-                <Footer />
-            </div>
-        );
-    }
 
     return (
         <div className={styles.pricing}>
@@ -38,10 +23,7 @@ export default function Pricing() {
 
             <main className={styles.main}>
                 <PricingHero />
-                <PricingCards
-                    tiers={mergedTiers}
-                    onSelectPlan={handleSelectPlan}
-                />
+                <PricingCards tiers={tiers} onSelectPlan={handleSelectPlan} />
                 <ComparisonTable data={comparisonData} />
                 <PricingCTA />
             </main>

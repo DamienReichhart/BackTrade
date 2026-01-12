@@ -4,7 +4,6 @@ export const SubscriptionStatusSchema = z.enum([
     "active",
     "canceled",
     "trialing",
-    "active_unpaid",
 ]);
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 
@@ -16,7 +15,6 @@ export const SUBSCRIPTION_STATUS_VALUES: SubscriptionStatus[] = [
     "active",
     "canceled",
     "trialing",
-    "active_unpaid",
 ];
 
 /**
@@ -26,7 +24,6 @@ const SUBSCRIPTION_STATUS_DISPLAY_MAP: Record<SubscriptionStatus, string> = {
     active: "Active",
     canceled: "Canceled",
     trialing: "Trialing",
-    active_unpaid: "Active Unpaid",
 };
 
 /**

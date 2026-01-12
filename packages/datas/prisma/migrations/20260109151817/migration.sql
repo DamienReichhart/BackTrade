@@ -296,3 +296,9 @@ ALTER TABLE "datasets" ADD CONSTRAINT "datasets_instrument_id_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "session_analytics" ADD CONSTRAINT "session_analytics_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- CreateIndex
+-- Partial unique index to ensure each user can have at most one active subscription
+-- This covers both 'active' and 'trialing' statuses as they represent active subscriptions
+CREATE UNIQUE INDEX "unique_active_subscription_per_user" ON "subscriptions" ("user_id") 
+WHERE "status" IN ('active', 'trialing');

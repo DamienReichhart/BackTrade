@@ -14,17 +14,3 @@
     display: flex;
     flex-direction: column;
 }
-
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    padding: var(--spacing-3xl);
-}
-
-.loading p {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
-    margin: 0;
-}

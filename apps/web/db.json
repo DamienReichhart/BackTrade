@@ -96,7 +96,7 @@
             "user_id": 1,
             "plan_id": 2,
             "stripe_subscription_id": "sub_4d5e6f7g8h9i0j1k",
-            "status": "active_unpaid",
+            "status": "active",
             "current_period_start": "2024-09-01T00:00:00Z",
             "current_period_end": "2024-10-01T00:00:00Z",
             "cancel_at_period_end": false,

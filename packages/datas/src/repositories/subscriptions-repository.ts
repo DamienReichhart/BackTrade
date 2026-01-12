@@ -87,6 +87,52 @@ class SubscriptionsRepository extends BasePostgresRepository {
             where: { id: this.toNumericId(id) },
         }) as unknown as Subscription;
     }
+
+    /**
+     * Check if a user has an active subscription.
+     *
+     * Active subscriptions are those with status 'active' or 'trialing'.
+     * Uses an efficient count query for existence check.
+     *
+     * @param userId - User ID to check
+     * @param excludeSubscriptionId - Optional subscription ID to exclude from check (useful for updates)
+     * @returns True if user has an active subscription
+     */
+    async hasActiveSubscription(
+        userId: number,
+        excludeSubscriptionId?: number
+    ): Promise<boolean> {
+        const count = await this.prisma.subscription.count({
+            where: {
+                user_id: userId,
+                status: { in: ["active", "trialing"] },
+                ...(excludeSubscriptionId !== undefined && {
+                    id: { not: excludeSubscriptionId },
+                }),
+            },
+        });
+        return count > 0;
+    }
+
+    /**
+     * Get the active subscription for a user.
+     *
+     * Active subscriptions are those with status 'active' or 'trialing'.
+     * Returns the first active subscription found (there should be at most one).
+     *
+     * @param userId - User ID to get subscription for
+     * @returns Active subscription or null if none exists
+     */
+    async getActiveSubscriptionByUserId(
+        userId: number
+    ): Promise<Subscription | null> {
+        return this.prisma.subscription.findFirst({
+            where: {
+                user_id: userId,
+                status: { in: ["active", "trialing"] },
+            },
+        }) as unknown as Subscription | null;
+    }
 }
 
 const subscriptionsRepo = new SubscriptionsRepository();
