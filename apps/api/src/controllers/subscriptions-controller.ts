@@ -75,13 +75,18 @@ class SubscriptionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if subscription ID is missing
+     * @throws BadRequestError if subscription ID is invalid or missing
      * @throws NotFoundError if subscription doesn't exist
      * @throws ForbiddenError if user doesn't have access
      */
     async getSubscriptionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid subscription ID");
+        }
 
         const subscription = await subscriptionsService.getSubscriptionById(
             id,
@@ -134,13 +139,18 @@ class SubscriptionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if subscription ID is missing
+     * @throws BadRequestError if subscription ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      * @throws NotFoundError if subscription doesn't exist
      */
     async updateSubscription(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid subscription ID");
+        }
 
         const subscriptionData = req.body as UpdateSubscriptionRequest;
 
@@ -170,13 +180,18 @@ class SubscriptionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if subscription ID is missing
+     * @throws BadRequestError if subscription ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      * @throws NotFoundError if subscription doesn't exist
      */
     async deleteSubscription(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid subscription ID");
+        }
 
         this.logger.trace(
             { adminId: user.id, subscriptionId: id },

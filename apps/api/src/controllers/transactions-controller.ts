@@ -106,11 +106,16 @@ class TransactionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or query parameters are invalid
+     * @throws BadRequestError if session ID is invalid or missing, or query parameters are invalid
      */
     async getTransactionsBySession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = SessionIdParamsSchema.parse(req.params);
+        let sessionId: string;
+        try {
+            ({ sessionId } = SessionIdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         // Parse and validate query parameters
         let query: SearchQuery | undefined;
@@ -207,13 +212,18 @@ class TransactionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if transaction ID is missing or invalid
+     * @throws BadRequestError if transaction ID is invalid or missing
      * @throws NotFoundError if transaction doesn't exist
      * @throws ForbiddenError if user doesn't own the session and isn't admin
      */
     async getTransactionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid transaction ID");
+        }
 
         const transaction = await transactionsService.getTransactionById(
             id,

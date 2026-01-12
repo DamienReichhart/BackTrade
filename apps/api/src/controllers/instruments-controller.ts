@@ -46,10 +46,15 @@ class InstrumentsController {
      *
      * @param req - Express request object
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      */
     async getInstrumentById(req: Request, res: Response): Promise<void> {
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
+        }
         const instrument = await instrumentService.getInstrumentById(id);
         res.status(200).json(instrument);
     }
@@ -114,12 +119,17 @@ class InstrumentsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async updateInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
+        }
 
         this.logger.trace(
             { userId: user.id, instrumentId: id },
@@ -147,12 +157,17 @@ class InstrumentsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if instrument ID is missing
+     * @throws BadRequestError if instrument ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      */
     async deleteInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid instrument ID");
+        }
 
         this.logger.trace(
             { userId: user.id, instrumentId: id },

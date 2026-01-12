@@ -161,13 +161,18 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or invalid
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         const session = await sessionsService.getSessionById(id, user);
 
@@ -191,13 +196,18 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing, timeframe is missing or invalid
+     * @throws BadRequestError if session ID is invalid or missing, timeframe is missing or invalid
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionCandles(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         // Validate timeframe query parameter
         let timeframe: string;
@@ -257,13 +267,18 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async getSessionInfo(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         // Get session info (includes authorization check)
         const sessionInfo = await sessionInfoService.getSessionInfo(id, user);
@@ -291,13 +306,18 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing or request body is invalid
+     * @throws BadRequestError if session ID is invalid or missing, or request body is invalid
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async updateSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         const requestData = req.body as UpdateSessionRequest;
 
@@ -337,13 +357,18 @@ class SessionsController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if session ID is missing
+     * @throws BadRequestError if session ID is invalid or missing
      * @throws NotFoundError if session doesn't exist
      * @throws ForbiddenError if user doesn't own session and isn't admin
      */
     async deleteSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         this.logger.trace({ id, userId: user.id }, "Deleting session");
 

@@ -67,11 +67,16 @@ class PlansController {
      *
      * @param req - Express request object
      * @param res - Express response object
-     * @throws BadRequestError if plan ID is missing
+     * @throws BadRequestError if plan ID is invalid or missing
      * @throws NotFoundError if plan doesn't exist
      */
     async getPlanById(req: Request, res: Response): Promise<void> {
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid plan ID");
+        }
 
         const plan = await plansService.getPlanById(id);
         res.status(200).json(plan);
@@ -116,13 +121,18 @@ class PlansController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if plan ID is missing
+     * @throws BadRequestError if plan ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      * @throws NotFoundError if plan doesn't exist
      */
     async updatePlan(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid plan ID");
+        }
 
         const planData = req.body as UpdatePlanRequest;
 
@@ -145,13 +155,18 @@ class PlansController {
      *
      * @param req - Express request object (req.user guaranteed by authMiddleware)
      * @param res - Express response object
-     * @throws BadRequestError if plan ID is missing
+     * @throws BadRequestError if plan ID is invalid or missing
      * @throws ForbiddenError if user is not admin
      * @throws NotFoundError if plan doesn't exist
      */
     async deletePlan(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = IdParamsSchema.parse(req.params);
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid plan ID");
+        }
 
         this.logger.trace({ userId: user.id, planId: id }, "Deleting plan");
 

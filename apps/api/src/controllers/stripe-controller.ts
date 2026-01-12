@@ -88,10 +88,15 @@ class StripeController {
      *
      * @param req - Express request (req.user guaranteed by authMiddleware)
      * @param res - Express response
-     * @throws BadRequestError if sessionId is missing
+     * @throws BadRequestError if sessionId is invalid or missing
      */
     async getCheckoutSession(req: Request, res: Response): Promise<void> {
-        const { sessionId } = SessionIdParamsSchema.parse(req.params);
+        let sessionId: string;
+        try {
+            ({ sessionId } = SessionIdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
 
         this.logger.trace({ sessionId }, "Retrieving checkout session");
 
