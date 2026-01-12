@@ -84,7 +84,7 @@ model User {
   password_hash      String
   role               Role     @default(USER)
   is_banned          Boolean  @default(false)
-  stripe_customer_id String?
+  stripe_customer_id String?  @unique
   password_reset_code String?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
