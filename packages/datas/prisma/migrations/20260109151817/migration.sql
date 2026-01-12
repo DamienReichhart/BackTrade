@@ -20,7 +20,7 @@ CREATE TYPE "Side" AS ENUM ('BUY', 'SELL');
 CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'COMMISSION', 'PNL', 'SLIPPAGE', 'SPREAD', 'ADJUSTMENT');
 
 -- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled', 'trialing');
+CREATE TYPE "SubscriptionStatus" AS ENUM ('active', 'canceled');
 
 -- CreateEnum
 CREATE TYPE "JobStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRYING', 'QUEUE_FAILED', 'PERMANENTLY_FAILED');
@@ -297,6 +297,5 @@ ALTER TABLE "session_analytics" ADD CONSTRAINT "session_analytics_session_id_fke
 
 -- CreateIndex
 -- Partial unique index to ensure each user can have at most one active subscription
--- This covers both 'active' and 'trialing' statuses as they represent active subscriptions
 CREATE UNIQUE INDEX "unique_active_subscription_per_user" ON "subscriptions" ("user_id") 
-WHERE "status" IN ('active', 'trialing');
+WHERE "status" IN ('active');
