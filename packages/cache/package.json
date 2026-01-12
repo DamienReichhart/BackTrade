@@ -28,7 +28,7 @@
         "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/types": "workspace:*",
-        "ioredis": "^5.9.0",
+        "ioredis": "^5.9.1",
         "zod": "4.3.5"
     },
     "devDependencies": {
