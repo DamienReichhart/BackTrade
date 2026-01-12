@@ -12,7 +12,6 @@ services:
             - ./apps:/app/apps
             - ./packages:/app/packages
             - ./assets:/app/assets
-            - ./docker/config/minio/certs:/app/docker/config/minio/certs:ro
             # Exclude node_modules from volume mounts to preserve installed dependencies
             - /app/node_modules
             - /app/apps/api/node_modules
