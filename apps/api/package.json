@@ -49,7 +49,7 @@
         "@types/mjml": "^4.7.4",
         "@types/multer": "^2.0.0",
         "@types/node": "25.0.3",
-        "@types/nodemailer": "^7.0.4",
+        "@types/nodemailer": "^7.0.5",
         "esbuild": "0.27.2",
         "eslint": "^9.39.2",
         "globals": "^17.0.0",
