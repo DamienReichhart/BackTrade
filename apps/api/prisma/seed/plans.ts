@@ -17,7 +17,7 @@ export async function getPlans(): Promise<SeedPlan[]> {
             code: "FREE",
             stripe_product_id: "prod_Tm1VW3GVHN4TPd",
             stripe_price_id: "price_1SoTSiI0H7dj41TRF5OOOMyq",
-            currency: "EUR",
+            currency: "USD",
             price: 0,
         },
         {
@@ -25,7 +25,7 @@ export async function getPlans(): Promise<SeedPlan[]> {
             code: "TRADER",
             stripe_product_id: "prod_Tm1WYezRpCShtb",
             stripe_price_id: "price_1SoTTAI0H7dj41TROUvmOeyy",
-            currency: "EUR",
+            currency: "USD",
             price: 19,
         },
         {
@@ -33,7 +33,7 @@ export async function getPlans(): Promise<SeedPlan[]> {
             code: "EXPERT",
             stripe_product_id: "prod_Tm1W4IrS1CdDBM",
             stripe_price_id: "price_1SoTTlI0H7dj41TRig7QlRUr",
-            currency: "EUR",
+            currency: "USD",
             price: 49,
         },
     ];
