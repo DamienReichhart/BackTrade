@@ -15,6 +15,7 @@ import {
     type DatasetCreateInput,
     type DatasetUpdateInput,
     type SearchQuery,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 import { logger } from "../libs/pino";
@@ -68,10 +69,7 @@ class DatasetsController {
      * @throws BadRequestError if dataset ID is missing
      */
     async getDatasetById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
         const dataset = await datasetsService.getDatasetById(id);
         res.status(200).json(dataset);
     }
@@ -121,10 +119,7 @@ class DatasetsController {
      */
     async updateDataset(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace(
             { userId: user.id, datasetId: id },
@@ -157,10 +152,7 @@ class DatasetsController {
      */
     async deleteDataset(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace(
             { userId: user.id, datasetId: id },
@@ -189,10 +181,7 @@ class DatasetsController {
      */
     async uploadFile(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Dataset ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const file = req.file;
         if (!file) {

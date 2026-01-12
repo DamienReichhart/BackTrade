@@ -14,6 +14,8 @@ import {
     type SearchQuery,
     type CreateTransactionRequest,
     type TransactionCreateInput,
+    IdParamsSchema,
+    SessionIdParamsSchema,
 } from "@backtrade/types";
 import transactionsService from "../services/base/transactions-service";
 import BadRequestError from "../errors/web/bad-request-error";
@@ -108,10 +110,7 @@ class TransactionsController {
      */
     async getTransactionsBySession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = req.params;
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { sessionId } = SessionIdParamsSchema.parse(req.params);
 
         // Parse and validate query parameters
         let query: SearchQuery | undefined;
@@ -214,10 +213,7 @@ class TransactionsController {
      */
     async getTransactionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Transaction ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const transaction = await transactionsService.getTransactionById(
             id,

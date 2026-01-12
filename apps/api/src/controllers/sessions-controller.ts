@@ -17,6 +17,7 @@ import {
     type SessionCreateInput,
     type UpdateSessionRequest,
     type SessionUpdateInput,
+    IdParamsSchema,
 } from "@backtrade/types";
 import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
@@ -166,10 +167,7 @@ class SessionsController {
      */
     async getSessionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const session = await sessionsService.getSessionById(id, user);
 
@@ -199,10 +197,7 @@ class SessionsController {
      */
     async getSessionCandles(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         // Validate timeframe query parameter
         let timeframe: string;
@@ -268,10 +263,7 @@ class SessionsController {
      */
     async getSessionInfo(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         // Get session info (includes authorization check)
         const sessionInfo = await sessionInfoService.getSessionInfo(id, user);
@@ -292,7 +284,7 @@ class SessionsController {
      *
      * Request body can include:
      * - name: Optional session name
-     * - session_status: Optional status (RUNNING, PAUSED, ARCHIVED)
+     * - session_status: Optional session status (RUNNING, PAUSED, ARCHIVED)
      * - speed: Optional playback speed
      * - current_time: Optional current timestamp (must be >= start_time and <= end_time)
      * - end_time: Optional end timestamp (must be >= start_time and >= current_time)
@@ -305,10 +297,7 @@ class SessionsController {
      */
     async updateSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const requestData = req.body as UpdateSessionRequest;
 
@@ -354,10 +343,7 @@ class SessionsController {
      */
     async deleteSession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace({ id, userId: user.id }, "Deleting session");
 

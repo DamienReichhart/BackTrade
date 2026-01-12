@@ -9,6 +9,7 @@ import type { Request, Response } from "express";
 import { stripeService, webhookService } from "../services/stripe";
 import { logger } from "../libs/pino";
 import BadRequestError from "../errors/web/bad-request-error";
+import { SessionIdParamsSchema } from "@backtrade/types";
 
 /**
  * Stripe Controller
@@ -90,11 +91,7 @@ class StripeController {
      * @throws BadRequestError if sessionId is missing
      */
     async getCheckoutSession(req: Request, res: Response): Promise<void> {
-        const { sessionId } = req.params;
-
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { sessionId } = SessionIdParamsSchema.parse(req.params);
 
         this.logger.trace({ sessionId }, "Retrieving checkout session");
 

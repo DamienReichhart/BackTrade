@@ -18,6 +18,7 @@ import {
     type SearchQueryUser,
     PublicUserSchema,
     SearchQueryUserSchema,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 
@@ -87,10 +88,7 @@ class UsersController {
      * @throws BadRequestError if user ID is missing
      */
     async getUserById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
         const user = await usersService.getUserById(id);
 
         // Transform to PublicUser (exclude sensitive fields)
@@ -111,11 +109,7 @@ class UsersController {
      */
     async getUserSubscriptions(req: Request, res: Response): Promise<void> {
         const requestingUser = req.user!;
-        const { id } = req.params;
-
-        if (!id) {
-            throw new BadRequestError("User ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         // Get subscriptions for this user (access check is done in the service)
         const subscriptions = await subscriptionsService.getSubscriptionsByUser(
@@ -151,10 +145,7 @@ class UsersController {
      */
     async updateUser(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const requestData = req.body as UpdateUserRequest;
         const updatedUser = await usersService.updateUser(
@@ -181,10 +172,7 @@ class UsersController {
      */
     async changePassword(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
         const { currentPassword, newPassword } =
             req.body as ChangeUserPasswordRequest;
 
@@ -213,10 +201,7 @@ class UsersController {
      */
     async deleteUserAccount(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("User ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace({ id, userId: user.id }, "Deleting user account");
 

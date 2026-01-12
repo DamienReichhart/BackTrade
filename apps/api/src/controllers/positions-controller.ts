@@ -16,6 +16,8 @@ import {
     type PositionCreateInput,
     type UpdatePositionRequest,
     type PositionUpdateInput,
+    IdParamsSchema,
+    SessionIdParamsSchema,
 } from "@backtrade/types";
 import positionsService from "../services/base/positions-service";
 import BadRequestError from "../errors/web/bad-request-error";
@@ -109,10 +111,7 @@ class PositionsController {
      */
     async getPositionsBySession(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = req.params;
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
-        }
+        const { sessionId } = SessionIdParamsSchema.parse(req.params);
 
         // Parse and validate query parameters
         let query: PositionQuery | undefined;
@@ -223,10 +222,7 @@ class PositionsController {
      */
     async getPositionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const position = await positionsService.getPositionById(id, user);
 
@@ -263,10 +259,7 @@ class PositionsController {
      */
     async updatePosition(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const requestData = req.body as UpdatePositionRequest;
 
@@ -317,10 +310,7 @@ class PositionsController {
      */
     async deletePosition(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Position ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace({ id, userId: user.id }, "Deleting position");
 
@@ -352,12 +342,8 @@ class PositionsController {
      */
     async closeAllPositions(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { sessionId } = req.params;
+        const { sessionId } = SessionIdParamsSchema.parse(req.params);
         const closeAll = req.query.closeAll as string | undefined;
-
-        if (!sessionId) {
-            throw new BadRequestError("Session ID is required");
-        }
 
         if (closeAll !== "true") {
             throw new BadRequestError(

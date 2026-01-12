@@ -21,6 +21,7 @@ import {
     type UpdateSubscriptionRequest,
     type DateRangeQuery,
     DateRangeQuerySchema,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 
@@ -80,11 +81,7 @@ class SubscriptionsController {
      */
     async getSubscriptionById(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-
-        if (!id) {
-            throw new BadRequestError("Subscription ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const subscription = await subscriptionsService.getSubscriptionById(
             id,
@@ -143,11 +140,7 @@ class SubscriptionsController {
      */
     async updateSubscription(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-
-        if (!id) {
-            throw new BadRequestError("Subscription ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const subscriptionData = req.body as UpdateSubscriptionRequest;
 
@@ -183,11 +176,7 @@ class SubscriptionsController {
      */
     async deleteSubscription(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-
-        if (!id) {
-            throw new BadRequestError("Subscription ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace(
             { adminId: user.id, subscriptionId: id },

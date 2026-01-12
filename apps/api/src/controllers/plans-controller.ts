@@ -20,6 +20,7 @@ import {
     type UpdatePlanRequest,
     type SearchQuery,
     SearchQuerySchema,
+    IdParamsSchema,
 } from "@backtrade/types";
 import BadRequestError from "../errors/web/bad-request-error";
 
@@ -70,10 +71,7 @@ class PlansController {
      * @throws NotFoundError if plan doesn't exist
      */
     async getPlanById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Plan ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const plan = await plansService.getPlanById(id);
         res.status(200).json(plan);
@@ -124,10 +122,7 @@ class PlansController {
      */
     async updatePlan(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Plan ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         const planData = req.body as UpdatePlanRequest;
 
@@ -156,10 +151,7 @@ class PlansController {
      */
     async deletePlan(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Plan ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace({ userId: user.id, planId: id }, "Deleting plan");
 

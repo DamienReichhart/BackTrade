@@ -13,6 +13,7 @@ import {
     type SearchQuery,
     type InstrumentCreateInput,
     type InstrumentUpdateInput,
+    IdParamsSchema,
 } from "@backtrade/types";
 import type { Request, Response } from "express";
 import instrumentService from "../services/base/instruments-service";
@@ -48,10 +49,7 @@ class InstrumentsController {
      * @throws BadRequestError if instrument ID is missing
      */
     async getInstrumentById(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
         const instrument = await instrumentService.getInstrumentById(id);
         res.status(200).json(instrument);
     }
@@ -121,10 +119,7 @@ class InstrumentsController {
      */
     async updateInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace(
             { userId: user.id, instrumentId: id },
@@ -157,10 +152,7 @@ class InstrumentsController {
      */
     async deleteInstrument(req: Request, res: Response): Promise<void> {
         const user = req.user!;
-        const { id } = req.params;
-        if (!id) {
-            throw new BadRequestError("Instrument ID is required");
-        }
+        const { id } = IdParamsSchema.parse(req.params);
 
         this.logger.trace(
             { userId: user.id, instrumentId: id },
