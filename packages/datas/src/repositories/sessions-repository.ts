@@ -110,6 +110,26 @@ class SessionsRepository extends BasePostgresRepository {
             where: { id: this.toNumericId(id) },
         }) as unknown as Session;
     }
+
+    /**
+     * Count active sessions for a user.
+     *
+     * Active sessions are those with session_status not equal to ARCHIVED
+     * (i.e., RUNNING or PAUSED).
+     *
+     * @param userId - User ID to count sessions for
+     * @returns Number of active sessions
+     */
+    async countActiveSessionsByUserId(userId: number): Promise<number> {
+        return this.prisma.session.count({
+            where: {
+                user_id: userId,
+                session_status: {
+                    not: "ARCHIVED",
+                },
+            },
+        });
+    }
 }
 
 const sessionsRepo = new SessionsRepository();

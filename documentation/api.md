@@ -118,9 +118,9 @@ The token is not automatically renewable or Refresh token
 | **Session**                   | `{ id: number, user_id: number, instrument_id: number, name?: string, session_status: SessionStatus, speed: Speed, start_time: string, current_time: string, end_time?: string, initial_balance: number, leverage: Leverage, spread_pts: number, slippage_pts: number, commission_per_fill: number, created_at: string, updated_at: string }`                                                   | Trading session entity                                                           |
 | **CreateSessionRequest**      | `{ instrument_id: number, name?: string, speed: Speed, start_time: string, current_time: string, end_time?: string, initial_balance: number, leverage: Leverage, spread_pts: number, slippage_pts: number, commission_per_fill: number, user_id: number, session_status: SessionStatus, created_at: string, updated_at: string }`                                                               | Payload to create a session                                                      |
 | **UpdateSessionRequest**      | `{ name?: string, session_status?: SessionStatus, speed?: Speed, current_time?: string, end_time?: string }`                                                                                                                                                                                                                                                                                    | Payload to update a session                                                      |
-| **Plan**                      | `{ id: number, code: string, stripe_product_id: string, stripe_price_id: string, currency: string, price: number }`                                                                                                                                                                                                                                                                             | Subscription plan entity                                                         |
-| **CreatePlanRequest**         | `{ code: string, stripe_product_id: string, stripe_price_id: string, currency: string, price: number }`                                                                                                                                                                                                                                                                                         | Payload to create a plan                                                         |
-| **UpdatePlanRequest**         | `{ code?: string, stripe_product_id?: string, stripe_price_id?: string, currency?: string, price?: number }`                                                                                                                                                                                                                                                                                    | Payload to update a plan                                                         |
+| **Plan**                      | `{ id: number, code: string, stripe_product_id: string, stripe_price_id: string, currency: string, price: number, max_active_sessions: number }`                                                                                                                                                                                                                                                | Subscription plan entity                                                         |
+| **CreatePlanRequest**         | `{ code: string, stripe_product_id: string, stripe_price_id: string, currency: string, price: number, max_active_sessions: number }`                                                                                                                                                                                                                                                            | Payload to create a plan                                                         |
+| **UpdatePlanRequest**         | `{ code?: string, stripe_product_id?: string, stripe_price_id?: string, currency?: string, price?: number, max_active_sessions?: number }`                                                                                                                                                                                                                                                      | Payload to update a plan                                                         |
 | **Subscription**              | `{ id: number, user_id: number, plan_id: number, stripe_subscription_id: string, status: SubscriptionStatus, current_period_start: string, current_period_end: string, cancel_at_period_end: boolean }`                                                                                                                                                                                         | User subscription entity                                                         |
 | **CreateSubscriptionRequest** | `{ user_id: number, plan_id: number, stripe_subscription_id: string, current_period_start: string, current_period_end: string, status?: SubscriptionStatus, cancel_at_period_end: boolean }`                                                                                                                                                                                                    | Payload to create a subscription                                                 |
 | **UpdateSubscriptionRequest** | `{ status?: SubscriptionStatus, cancel_at_period_end?: boolean }`                                                                                                                                                                                                                                                                                                                               | Payload to update a subscription                                                 |
@@ -259,5 +259,28 @@ admin :
 - All /subscriptions routes
 - GET/PATCH/DELETE /users/:id
 
-**Version :** 1.1.0  
+### Session Limits
+
+Session creation is subject to active session limits based on the user's subscription plan:
+
+- **Free users (no subscription)**: 1 active session
+- **TRADER plan**: 10 active sessions
+- **EXPERT plan**: 30 active sessions
+- **Admin users**: Unlimited (bypass all limits)
+
+An active session is defined as a session with `session_status` not equal to `ARCHIVED` (i.e., `RUNNING` or `PAUSED`).
+
+When attempting to create a session that would exceed the limit, the API returns a `400 Bad Request` error with a detailed message:
+
+```json
+{
+    "error": {
+        "message": "You have reached your maximum active sessions limit (X sessions for [PLAN_NAME] plan)"
+    }
+}
+```
+
+**Note**: Archiving a session (setting `session_status` to `ARCHIVED`) frees up a slot for creating new sessions.
+
+**Version :** 1.2.0  
 **Date :** 15 January 2026

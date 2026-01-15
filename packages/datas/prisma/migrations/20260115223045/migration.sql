@@ -63,6 +63,7 @@ CREATE TABLE "plans" (
     "stripe_price_id" TEXT NOT NULL,
     "currency" CHAR(3) NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
+    "max_active_sessions" INTEGER NOT NULL DEFAULT 1,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

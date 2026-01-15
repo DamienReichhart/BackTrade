@@ -31,15 +31,16 @@
 
 ## PLAN
 
-| Attribute         | Type     | Size | Constraints              | Description                                        | Domain                                  |
-| ----------------- | -------- | ---- | ------------------------ | -------------------------------------------------- | --------------------------------------- |
-| code              | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan | Alphanumeric code                       |
-| stripe_product_id | String   | -    | NOT NULL                 | Stripe product identifier                          | Stripe product ID format                |
-| stripe_price_id   | String   | -    | NOT NULL                 | Stripe price identifier                            | Stripe price ID format                  |
-| currency          | String   | 3    | NOT NULL                 | Currency code for the plan price                   | ISO 4217 currency code (e.g., USD, EUR) |
-| price             | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                     | Positive decimal number                 |
-| created_at        | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                | ISO 8601 datetime                       |
-| updated_at        | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified   | ISO 8601 datetime                       |
+| Attribute           | Type     | Size | Constraints              | Description                                                            | Domain                                  |
+| ------------------- | -------- | ---- | ------------------------ | ---------------------------------------------------------------------- | --------------------------------------- |
+| code                | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan                     | Alphanumeric code                       |
+| stripe_product_id   | String   | -    | NOT NULL                 | Stripe product identifier                                              | Stripe product ID format                |
+| stripe_price_id     | String   | -    | NOT NULL                 | Stripe price identifier                                                | Stripe price ID format                  |
+| currency            | String   | 3    | NOT NULL                 | Currency code for the plan price                                       | ISO 4217 currency code (e.g., USD, EUR) |
+| price               | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                                         | Positive decimal number                 |
+| max_active_sessions | Integer  | -    | NOT NULL, DEFAULT: 1     | Maximum number of active (non-archived) sessions allowed for this plan | Positive integer                        |
+| created_at          | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                                    | ISO 8601 datetime                       |
+| updated_at          | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified                       | ISO 8601 datetime                       |
 
 ---
 

@@ -120,14 +120,15 @@ model UserSession {
 // ============================================================================
 
 model Plan {
-  id                Int      @id @default(autoincrement())
-  code              String   @unique
-  stripe_product_id String
-  stripe_price_id   String
-  currency          String   @db.Char(3)
-  price             Decimal  @db.Decimal(10, 2)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id                 Int      @id @default(autoincrement())
+  code               String   @unique
+  stripe_product_id  String
+  stripe_price_id    String
+  currency           String   @db.Char(3)
+  price              Decimal  @db.Decimal(10, 2)
+  max_active_sessions Int      @default(1)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   // Relations
   subscriptions Subscription[]
