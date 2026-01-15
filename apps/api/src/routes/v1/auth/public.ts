@@ -4,6 +4,8 @@ import {
     LoginRequestSchema,
     RefreshTokenRequestSchema,
     RegisterRequestSchema,
+    ForgotPasswordRequestSchema,
+    ResetPasswordRequestSchema,
 } from "@backtrade/types";
 import authController from "../../../controllers/auth-controller";
 
@@ -25,6 +27,18 @@ authPublicRouter.post(
     "/register",
     inputValidations(RegisterRequestSchema),
     authController.register
+);
+
+authPublicRouter.post(
+    "/users/requester/password",
+    inputValidations(ForgotPasswordRequestSchema),
+    authController.forgotPassword
+);
+
+authPublicRouter.post(
+    "/users/resetter/password",
+    inputValidations(ResetPasswordRequestSchema),
+    authController.resetPassword
 );
 
 export default authPublicRouter;

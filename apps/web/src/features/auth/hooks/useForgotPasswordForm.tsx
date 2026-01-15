@@ -196,6 +196,7 @@ export function useForgotPasswordForm() {
 
         try {
             await resetPassword({
+                email: formState.email,
                 code: formState.code,
                 newPassword: formState.newPassword,
             });

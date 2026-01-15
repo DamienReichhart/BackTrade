@@ -12,6 +12,7 @@ export const UserSchema = z.object({
     is_banned: z.boolean().default(false),
     stripe_customer_id: z.string().optional().nullable(),
     password_reset_code: z.string().optional().nullable(),
+    password_reset_expires_at: z.coerce.date().optional().nullable(),
     created_at: z.coerce.date(),
     updated_at: z.coerce.date(),
 });
@@ -20,6 +21,7 @@ export type User = z.infer<typeof UserSchema>;
 export const PublicUserSchema = UserSchema.omit({
     password_hash: true,
     password_reset_code: true,
+    password_reset_expires_at: true,
 });
 export type PublicUser = z.infer<typeof PublicUserSchema>;
 

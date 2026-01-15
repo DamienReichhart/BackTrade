@@ -7,11 +7,14 @@
 
 import type { Request, Response } from "express";
 import authService from "../services/security/auth-service";
+import passwordResetService from "../services/security/password-reset-service";
 import emailNotificationService from "../services/notifications/email-notification-service";
 import { getDeviceInfo } from "../utils/request-context";
 import {
     type LoginRequest,
     type RegisterRequest,
+    type ForgotPasswordRequest,
+    type ResetPasswordRequest,
     PublicUserSchema,
     type RefreshTokenRequest,
 } from "@backtrade/types";
@@ -106,6 +109,45 @@ class AuthController {
         const user = req.user;
         const publicUser = PublicUserSchema.parse(user);
         res.status(200).json(publicUser);
+    }
+
+    /**
+     * Handle forgot password request
+     *
+     * Initiates password reset flow by sending a verification code to the user's email.
+     * Returns 200 regardless of whether the email exists (security measure).
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     */
+    async forgotPassword(req: Request, res: Response): Promise<void> {
+        const request = req.body as ForgotPasswordRequest;
+
+        await passwordResetService.requestPasswordReset(request);
+
+        // Always return 200 to prevent email enumeration attacks
+        res.status(200).json({
+            message:
+                "If an account exists with this email, a reset code has been sent.",
+        });
+    }
+
+    /**
+     * Handle password reset with verification code
+     *
+     * Validates the reset code and updates the user's password.
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     */
+    async resetPassword(req: Request, res: Response): Promise<void> {
+        const request = req.body as ResetPasswordRequest;
+
+        await passwordResetService.resetPassword(request);
+
+        res.status(200).json({
+            message: "Password has been reset successfully.",
+        });
     }
 }
 

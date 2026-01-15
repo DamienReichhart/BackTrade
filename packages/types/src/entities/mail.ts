@@ -47,6 +47,7 @@ export const MailTemplateTypeSchema = z.enum([
     "welcome",
     "login-notification",
     "account-deleted",
+    "password-reset",
 ]);
 export type MailTemplateType = z.infer<typeof MailTemplateTypeSchema>;
 
@@ -97,12 +98,25 @@ const AccountDeletedEmailDataSchema = BaseEmailDataSchema.extend({
 });
 
 /**
+ * Password reset email data schema
+ */
+const PasswordResetEmailDataSchema = BaseEmailDataSchema.extend({
+    /** User's display name or email */
+    username: z.string().min(1),
+    /** Password reset verification code */
+    resetCode: z.string().min(1),
+    /** Code expiration time in minutes */
+    expirationMinutes: z.number().int().positive(),
+});
+
+/**
  * Union schema for all email data types (without template discriminator)
  */
 export const EmailDataSchema = z.union([
     WelcomeEmailDataSchema,
     LoginNotificationEmailDataSchema,
     AccountDeletedEmailDataSchema,
+    PasswordResetEmailDataSchema,
 ]);
 
 /**
@@ -142,4 +156,11 @@ export type LoginNotificationEmailData = z.infer<
  */
 export type AccountDeletedEmailData = z.infer<
     typeof AccountDeletedEmailDataSchema
+>;
+
+/**
+ * Password reset email data type
+ */
+export type PasswordResetEmailData = z.infer<
+    typeof PasswordResetEmailDataSchema
 >;

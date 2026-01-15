@@ -34,6 +34,7 @@ CREATE TABLE "users" (
     "is_banned" BOOLEAN NOT NULL DEFAULT false,
     "stripe_customer_id" TEXT,
     "password_reset_code" TEXT,
+    "password_reset_expires_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -207,6 +208,9 @@ CREATE TABLE "queue_jobs" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_stripe_customer_id_key" ON "users"("stripe_customer_id");
+
+-- CreateIndex
 CREATE INDEX "user_sessions_user_id_idx" ON "user_sessions"("user_id");
 
 -- CreateIndex
@@ -277,8 +281,3 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_session_id_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "datasets" ADD CONSTRAINT "datasets_instrument_id_fkey" FOREIGN KEY ("instrument_id") REFERENCES "instruments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- CreateIndex
--- Partial unique index to ensure each user can have at most one active subscription
-CREATE UNIQUE INDEX "unique_active_subscription_per_user" ON "subscriptions" ("user_id") 
-WHERE "status" IN ('active');

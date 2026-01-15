@@ -16,6 +16,7 @@ import {
     type WelcomeEmailData,
     type LoginNotificationEmailData,
     type AccountDeletedEmailData,
+    type PasswordResetEmailData,
 } from "@backtrade/types";
 import { maskEmailForLogging } from "@backtrade/utils";
 
@@ -73,6 +74,11 @@ class EmailService {
             case "account-deleted": {
                 const emailData = mailData.emailData as AccountDeletedEmailData;
                 await this.sendAccountDeletedEmail(emailData);
+                break;
+            }
+            case "password-reset": {
+                const emailData = mailData.emailData as PasswordResetEmailData;
+                await this.sendPasswordResetEmail(emailData);
                 break;
             }
             default: {
@@ -185,6 +191,42 @@ class EmailService {
         this.logger.debug(
             { to: maskEmailForLogging(data.to) },
             "Sending account deletion confirmation email"
+        );
+
+        await mailerService.sendEmail({
+            to: data.to,
+            subject: data.subject,
+            html,
+        });
+    }
+
+    /**
+     * Send password reset email
+     *
+     * @param data - Password reset email data
+     */
+    private async sendPasswordResetEmail(
+        data: PasswordResetEmailData
+    ): Promise<void> {
+        this.logger.debug(
+            {
+                to: maskEmailForLogging(data.to),
+                username: data.username,
+            },
+            "Rendering password reset email template"
+        );
+
+        const html = await templateRenderer.renderPasswordReset({
+            username: data.username,
+            resetCode: data.resetCode,
+            expirationMinutes: data.expirationMinutes,
+            to: data.to,
+            subject: data.subject,
+        });
+
+        this.logger.debug(
+            { to: maskEmailForLogging(data.to) },
+            "Sending password reset email"
         );
 
         await mailerService.sendEmail({

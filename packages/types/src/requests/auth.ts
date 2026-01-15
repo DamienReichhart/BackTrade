@@ -71,15 +71,13 @@ export type ChangeUserPasswordRequest = z.infer<
 >;
 
 export const ForgotPasswordRequestSchema = z.object({
-    email: z
-        .string()
-        .email()
-        .transform((email) => email.toLowerCase()),
+    email: z.email().transform((email) => email.toLowerCase()),
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
 export const ResetPasswordRequestSchema = z.object({
-    code: z.string(),
+    email: z.email().transform((email) => email.toLowerCase()),
+    code: z.string().min(1),
     newPassword: z.string().min(8),
 });
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
