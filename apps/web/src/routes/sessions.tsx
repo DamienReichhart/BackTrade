@@ -3,6 +3,7 @@ import { SessionRunning } from "../features/session";
 import { PositionsList } from "../features/session/positions-list";
 import { TransactionsList } from "../features/session/transactions-list";
 import { SessionAdd } from "../features/session-add";
+import { AnalyticsPage } from "../features/analytics";
 
 export const sessionsRoutes = [
     {
@@ -34,6 +35,14 @@ export const sessionsRoutes = [
         element: (
             <AuthenticatedLayout>
                 <TransactionsList />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/sessions/:id/analytics",
+        element: (
+            <AuthenticatedLayout>
+                <AnalyticsPage />
             </AuthenticatedLayout>
         ),
     },

@@ -155,14 +155,6 @@ erDiagram
       datetime updated_at
     }
 
-    SESSION_ANALYTICS {
-      string id PK
-      string session_id FK
-      string file_name
-      datetime created_at
-      datetime updated_at
-    }
-
 
 
     USER ||--o{ SESSION : "owns"
@@ -176,4 +168,3 @@ erDiagram
     USER ||--o{ USER_SESSION : "login"
     POSITION ||--o| CANDLE : "entry_candle"
     POSITION ||--o| CANDLE : "exit_candle"
-    SESSION ||--o| SESSION_ANALYTICS : "has"

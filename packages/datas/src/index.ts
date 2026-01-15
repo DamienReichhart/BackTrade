@@ -22,7 +22,6 @@ export {
     transactionsRepo,
     datasetsRepo,
     candlesRepo,
-    sessionsAnalyticsRepo,
     queueJobsRepo,
 } from "./repositories";
 
@@ -43,7 +42,6 @@ export type {
     Transaction,
     Dataset,
     Candle,
-    SessionAnalytics,
     QueueJob,
     // Query types
     UserWhereInput,
@@ -89,10 +87,6 @@ export type {
     CandleWhereInput,
     CandleCreateInput,
     CandleOrderBy,
-    SessionAnalyticsWhereInput,
-    SessionAnalyticsCreateInput,
-    SessionAnalyticsUpdateInput,
-    SessionAnalyticsOrderBy,
     QueueJobWhereInput,
     QueueJobCreateInput,
     QueueJobUpdateInput,

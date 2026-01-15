@@ -25,7 +25,8 @@ export function useSessionPositions(): UseSessionPositionsResult {
 
     const { data: positionsData, isLoading } = usePositionsBySession(
         sessionId,
-        "OPEN"
+        "OPEN",
+        10000
     );
 
     const positions = useMemo<Position[]>(() => {

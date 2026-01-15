@@ -29,7 +29,7 @@ export function usePositionsList() {
 
     const { data: session } = useSession(id);
     const { data: positionsData, isLoading: isLoadingPositions } =
-        usePositionsBySession(id);
+        usePositionsBySession(id, undefined, 10000);
 
     // Normalize positions data
     const positions: Position[] = useMemo(() => {

@@ -212,7 +212,6 @@ model Session {
   instrument        Instrument         @relation(fields: [instrument_id], references: [id])
   positions         Position[]
   transactions      Transaction[]
-  session_analytics SessionAnalytics[]
 
   @@index([user_id])
   @@index([instrument_id])
@@ -288,24 +287,6 @@ model Dataset {
 // NOTE: Candle model has been moved to ClickHouse for better time-series performance.
 // The candles table is now managed in ClickHouse, not PostgreSQL.
 // See: packages/datas/clickhouse/migrations/001_create_candles_table.sql
-
-// ============================================================================
-// ANALYTICS MODELS
-// ============================================================================
-
-model SessionAnalytics {
-  id          Int      @id @default(autoincrement())
-  session_id  Int
-  file_name   String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  // Relations
-  session Session @relation(fields: [session_id], references: [id], onDelete: Cascade)
-
-  @@index([session_id])
-  @@map("session_analytics")
-}
 
 // ============================================================================
 // QUEUEJOB MODELS

@@ -15,3 +15,14 @@ export function formatNumber(
 ): string {
     return new Intl.NumberFormat(undefined, options).format(value);
 }
+
+/**
+ * Format a number as percentage
+ *
+ * @param value - Value to format (e.g. 5.5 for 5.5%)
+ * @param decimals - Number of decimal places (default: 2)
+ * @returns Formatted percentage string
+ */
+export function formatPercent(value: number, decimals: number = 2): string {
+    return `${value.toFixed(decimals)}%`;
+}
