@@ -1,6 +1,7 @@
 import { ENV } from "./config/env";
 import { createApp } from "./app";
 import { logger } from "./libs/pino";
+import { cleanupWebSocket } from "./websocket";
 
 const { server, wss } = createApp();
 
@@ -14,16 +15,12 @@ server.listen(ENV.API_PORT, ENV.API_HOST, () => {
 function gracefulShutdown(signal: string): void {
     logger.info(`${signal} received, shutting down gracefully`);
 
-    wss.clients.forEach((client) => {
-        client.close(1001, "Server shutting down");
-    });
+    // Cleanup WebSocket connections using the proper cleanup function
+    cleanupWebSocket(wss);
 
-    wss.close(() => {
-        logger.info("WebSocket server closed");
-        server.close(() => {
-            logger.info("HTTP server closed");
-            process.exit(0);
-        });
+    server.close(() => {
+        logger.info("HTTP server closed");
+        process.exit(0);
     });
 
     // Force exit if graceful shutdown takes too long
