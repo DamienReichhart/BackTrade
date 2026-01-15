@@ -1,4 +1,5 @@
-import { type ReactNode } from "react";
+import { useEffect } from "react";
+import { useForm, Controller, type Path } from "react-hook-form";
 import { Input } from "../../../../../../../../components/Input";
 import { Select } from "../../../../../../../../components/Select";
 import { Toggle } from "../../../../../../../../components/Toggle";
@@ -17,42 +18,73 @@ interface IndicatorFormProps {
 }
 
 /**
- * Dynamic form for configuring indicator parameters
+ * Type for dynamic indicator form values.
+ * Uses Record to allow any indicator-specific fields.
+ */
+type IndicatorFormValues = Record<string, unknown>;
+
+/**
+ * Dynamic form for configuring indicator parameters.
+ * Uses a generic Record type since indicator configs are determined at runtime.
  */
 export function IndicatorForm({
     indicator,
     definition,
     onChange,
 }: IndicatorFormProps) {
+    const { control, register, watch, reset } = useForm<IndicatorFormValues>({
+        defaultValues: indicator as unknown as IndicatorFormValues,
+        mode: "onChange",
+    });
+
+    // Reset form when indicator changes (selection changes)
+    useEffect(() => {
+        reset(indicator as unknown as IndicatorFormValues);
+    }, [indicator, reset]);
+
+    // Watch for changes and propagate to parent
+    useEffect(() => {
+        const subscription = watch((value, { name }) => {
+            if (name) {
+                onChange({
+                    [name]: value[name],
+                } as Partial<IndicatorConfig>);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, onChange]);
+
     const renderField = (field: IndicatorFieldDefinition) => {
-        const value = indicator[field.key as keyof IndicatorConfig];
-        let content: ReactNode = null;
+        const fieldName = field.key as Path<IndicatorFormValues>;
 
         if (field.input === "number") {
-            content = (
-                <>
-                    <Input
-                        label={field.label}
-                        type="number"
-                        value={String(value ?? "")}
-                        min={field.min}
-                        max={field.max}
-                        step={field.step}
-                        onChange={(event) =>
-                            handleFieldChange(
-                                field.key,
-                                Number(event.target.value)
-                            )
-                        }
-                    />
-                    {field.helperText && (
-                        <p className={styles.helper}>{field.helperText}</p>
-                    )}
-                </>
-            );
             return (
                 <div key={field.key} className={styles.field}>
-                    {content}
+                    <Controller
+                        name={fieldName}
+                        control={control}
+                        render={({ field: { onChange, value, ...rest } }) => (
+                            <>
+                                <Input
+                                    label={field.label}
+                                    type="number"
+                                    value={String(value ?? "")}
+                                    min={field.min}
+                                    max={field.max}
+                                    step={field.step}
+                                    onChange={(e) =>
+                                        onChange(Number(e.target.value))
+                                    }
+                                    {...rest}
+                                />
+                                {field.helperText && (
+                                    <p className={styles.helper}>
+                                        {field.helperText}
+                                    </p>
+                                )}
+                            </>
+                        )}
+                    />
                 </div>
             );
         }
@@ -64,59 +96,52 @@ export function IndicatorForm({
                     value: option.value,
                 })) ?? [];
 
-            content = (
-                <>
-                    <label className={styles.label}>{field.label}</label>
-                    <Select
-                        value={String(value ?? "")}
-                        options={options}
-                        onChange={(optionValue) =>
-                            handleFieldChange(field.key, optionValue)
-                        }
-                    />
-                </>
-            );
             return (
                 <div key={field.key} className={styles.field}>
-                    {content}
+                    <label className={styles.label}>{field.label}</label>
+                    <Controller
+                        name={fieldName}
+                        control={control}
+                        render={({ field: { onChange, value, ...rest } }) => (
+                            <Select
+                                value={String(value ?? "")}
+                                options={options}
+                                onChange={onChange}
+                                {...rest}
+                            />
+                        )}
+                    />
                 </div>
             );
         }
 
         if (field.input === "color") {
-            content = (
-                <>
+            return (
+                <div key={field.key} className={styles.field}>
                     <label className={styles.label}>{field.label}</label>
                     <input
                         type="color"
-                        value={String(value ?? "#ffffff")}
-                        onChange={(event) =>
-                            handleFieldChange(field.key, event.target.value)
-                        }
                         className={styles.colorInput}
+                        {...register(fieldName)}
                     />
-                </>
-            );
-            return (
-                <div key={field.key} className={styles.field}>
-                    {content}
                 </div>
             );
         }
 
         if (field.input === "switch") {
-            content = (
-                <Toggle
-                    label={field.label}
-                    checked={Boolean(value)}
-                    onChange={(checked) =>
-                        handleFieldChange(field.key, checked)
-                    }
-                />
-            );
             return (
                 <div key={field.key} className={styles.field}>
-                    {content}
+                    <Controller
+                        name={fieldName}
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <Toggle
+                                label={field.label}
+                                checked={Boolean(value)}
+                                onChange={onChange}
+                            />
+                        )}
+                    />
                 </div>
             );
         }
@@ -124,12 +149,8 @@ export function IndicatorForm({
         return null;
     };
 
-    const handleFieldChange = (key: string, value: unknown) => {
-        onChange({ [key]: value } as Partial<IndicatorConfig>);
-    };
-
     return (
-        <div className={styles.form}>
+        <form className={styles.form}>
             <div className={styles.header}>
                 <p className={styles.type}>{definition.shortLabel}</p>
                 <h3 className={styles.title}>{definition.title}</h3>
@@ -138,10 +159,7 @@ export function IndicatorForm({
             <div className={styles.nameField}>
                 <Input
                     label="Display name"
-                    value={indicator.name}
-                    onChange={(event) =>
-                        handleFieldChange("name", event.target.value)
-                    }
+                    {...register("name" as Path<IndicatorFormValues>)}
                 />
             </div>
             <div className={styles.grid}>
@@ -151,6 +169,6 @@ export function IndicatorForm({
                     )
                 )}
             </div>
-        </div>
+        </form>
     );
 }

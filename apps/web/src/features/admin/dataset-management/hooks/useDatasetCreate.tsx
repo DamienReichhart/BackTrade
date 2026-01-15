@@ -1,130 +1,87 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateDataset } from "../../../../api/hooks/requests/datasets";
-import type { Timeframe } from "@backtrade/types";
-import { validateTimeframe, validateInstrumentId } from "@backtrade/utils";
-
-/**
- * Form state for dataset creation
- */
-export interface DatasetFormState {
-    instrument_id: string;
-    timeframe: Timeframe | "";
-}
+import { type Timeframe } from "@backtrade/types";
+import {
+    CreateDatasetFormSchema,
+    type DatasetFormState,
+} from "../../../../types/forms";
 
 /**
  * Hook for managing dataset creation form state and logic
  *
  * This hook handles:
- * - Form state management
- * - Validation
+ * - Form state management via react-hook-form
+ * - Validation via zod
  * - Dataset creation API call
  *
  * @returns Object containing form state, handlers, and mutation
  */
 export function useDatasetCreate() {
-    const [formState, setFormState] = useState<DatasetFormState>({
-        instrument_id: "",
-        timeframe: "",
-    });
+    const { error: apiError, isLoading, execute } = useCreateDataset();
+    const [lastCreatedData, setLastCreatedData] = useState<Awaited<
+        ReturnType<typeof execute>
+    > | null>(null);
 
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const { data, error: apiError, isLoading, execute } = useCreateDataset();
-
-    /**
-     * Handle form field change
-     */
-    const handleChange = useCallback(
-        (field: keyof DatasetFormState, value: string) => {
-            setFormState((prev) => ({ ...prev, [field]: value }));
-            // Clear error when user starts typing
-            if (errors[field]) {
-                setErrors((prev) => {
-                    const newErrors = { ...prev };
-                    delete newErrors[field];
-                    return newErrors;
-                });
-            }
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<DatasetFormState>({
+        resolver: zodResolver(CreateDatasetFormSchema),
+        defaultValues: {
+            instrument_id: "",
+            timeframe: "",
         },
-        [errors]
-    );
-
-    /**
-     * Validate form data
-     */
-    const validate = useCallback((): boolean => {
-        const newErrors: Record<string, string> = {};
-
-        // Validate instrument_id
-        const instrumentIdValidation = validateInstrumentId(
-            formState.instrument_id
-        );
-        if (!instrumentIdValidation.isValid) {
-            newErrors.instrument_id =
-                instrumentIdValidation.error ?? "Invalid instrument";
-        }
-
-        // Validate timeframe
-        const timeframeValidation = validateTimeframe(formState.timeframe);
-        if (!timeframeValidation.isValid) {
-            newErrors.timeframe =
-                timeframeValidation.error ?? "Invalid timeframe";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    }, [formState]);
+    });
 
     /**
      * Handle form submission
      */
-    const handleSubmit = useCallback(async () => {
-        if (!validate()) {
-            return null;
-        }
+    const onSubmit = useCallback(
+        async (data: DatasetFormState) => {
+            try {
+                const result = await execute({
+                    instrument_id: Number(data.instrument_id),
+                    timeframe: data.timeframe as Timeframe,
+                });
 
-        try {
-            const result = await execute({
-                instrument_id: Number(formState.instrument_id),
-                timeframe: formState.timeframe as Timeframe,
-            });
-
-            // Reset form on success
-            setFormState({
-                instrument_id: "",
-                timeframe: "",
-            });
-            setErrors({});
-
-            return result;
-        } catch {
-            return null;
-        }
-    }, [formState, validate, execute]);
+                setLastCreatedData(result);
+                return result;
+            } catch {
+                setLastCreatedData(null);
+                return null;
+            }
+        },
+        [execute]
+    );
 
     /**
      * Reset form to initial state
      */
     const resetForm = useCallback(() => {
-        setFormState({
+        reset({
             instrument_id: "",
             timeframe: "",
         });
-        setErrors({});
-    }, []);
+        setLastCreatedData(null);
+    }, [reset]);
 
     return {
-        // Form state
-        formState,
+        // Form methods
+        control,
         errors,
+        handleSubmit: handleSubmit(onSubmit),
+        resetForm,
 
         // API state
-        data,
+        data: lastCreatedData,
         apiError,
         isLoading,
 
-        // Handlers
-        handleChange,
-        handleSubmit,
-        resetForm,
+        // Export Controller for usage
+        Controller,
     };
 }

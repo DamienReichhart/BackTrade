@@ -5,22 +5,16 @@ import {
     useCurrentPriceStore,
     useCurrentSessionStore,
 } from "../../../../store/session";
-import type { OrderFormActions } from "./useOrderForm";
-
-/**
- * Validation error messages
- */
-export interface ValidationError {
-    message: string;
-}
+import type { OrderFormReturn } from "./useOrderForm";
+import type { OrderFormState } from "../../../../types/forms";
 
 /**
  * Hook to handle position creation logic
  *
- * @param formActions - Order form actions for error handling
+ * @param form - Order form handle
  * @returns Position creation function and loading state
  */
-export function usePositionCreation(formActions: OrderFormActions) {
+export function usePositionCreation(form: OrderFormReturn) {
     const queryClient = useQueryClient();
     const { currentPrice } = useCurrentPriceStore();
     const { currentSession } = useCurrentSessionStore();
@@ -28,51 +22,35 @@ export function usePositionCreation(formActions: OrderFormActions) {
         useCreatePosition();
 
     /**
-     * Validate position creation inputs
-     */
-    const validatePosition = (
-        qty: number
-    ): { isValid: boolean; error?: string } => {
-        if (!currentSession?.id) {
-            return { isValid: false, error: "Session is required" };
-        }
-
-        if (!currentPrice) {
-            return { isValid: false, error: "Current price is not available" };
-        }
-
-        if (!qty || qty <= 0) {
-            return { isValid: false, error: "Quantity must be greater than 0" };
-        }
-
-        if (!currentSession.current_time) {
-            return {
-                isValid: false,
-                error: "Session timestamp is not available",
-            };
-        }
-
-        return { isValid: true };
-    };
-
-    /**
      * Create a position with the given side
      */
     const createPositionWithSide = async (
         side: "BUY" | "SELL",
-        qty: number,
-        tp: number | undefined,
-        sl: number | undefined
+        data: OrderFormState
     ): Promise<void> => {
-        formActions.setError(null);
+        form.clearErrors("root");
 
-        const validation = validatePosition(qty);
-        if (!validation.isValid) {
-            formActions.setError(validation.error ?? "Validation failed");
+        if (!currentSession?.id) {
+            form.setError("root", {
+                type: "manual",
+                message: "Session is required",
+            });
             return;
         }
 
-        if (!currentSession || !currentPrice) {
+        if (!currentPrice) {
+            form.setError("root", {
+                type: "manual",
+                message: "Current price is not available",
+            });
+            return;
+        }
+
+        if (!currentSession.current_time) {
+            form.setError("root", {
+                type: "manual",
+                message: "Session timestamp is not available",
+            });
             return;
         }
 
@@ -81,11 +59,15 @@ export function usePositionCreation(formActions: OrderFormActions) {
                 session_id: currentSession.id,
                 side,
                 entry_price: currentPrice,
-                quantity_lots: qty,
+                quantity_lots: data.qty,
                 position_status: "OPEN",
                 opened_at: currentSession.current_time,
-                ...(tp !== undefined && tp > 0 ? { tp_price: tp } : {}),
-                ...(sl !== undefined && sl > 0 ? { sl_price: sl } : {}),
+                ...(data.tp !== undefined && data.tp > 0
+                    ? { tp_price: data.tp }
+                    : {}),
+                ...(data.sl !== undefined && data.sl > 0
+                    ? { sl_price: data.sl }
+                    : {}),
             };
 
             await createPosition(request);
@@ -101,12 +83,15 @@ export function usePositionCreation(formActions: OrderFormActions) {
             queryClient.invalidateQueries({
                 queryKey: ["GET", `/sessions/${sessionId}`],
             });
+
+            // Optionally reset form but keep quantity? Or just keep as is.
+            // form.reset();
         } catch (err) {
             const errorMessage =
                 err instanceof Error
                     ? err.message
                     : "Failed to create position";
-            formActions.setError(errorMessage);
+            form.setError("root", { type: "manual", message: errorMessage });
         }
     };
 

@@ -11,54 +11,54 @@ import styles from "./SessionAddForm.module.css";
  */
 export function SessionAddForm() {
     const {
-        formState,
+        register,
+        control,
         errors,
         isLoading,
-        isFormValid,
+        isValid,
         instrumentOptions,
         isLoadingInstruments,
         speedOptions,
         leverageOptions,
-        handleInstrumentChange,
-        handleNameChange,
-        handleSpeedChange,
-        handleStartTsChange,
-        handleEndTsChange,
-        handleInitialBalanceChange,
-        handleLeverageChange,
-        handleSpreadPtsChange,
-        handleSlippagePtsChange,
-        handleCommissionPerFillChange,
         handleSubmit,
         handleCancel,
+        Controller,
     } = useSessionAddForm();
 
     return (
         <div className={styles.formContainer}>
             <form onSubmit={handleSubmit} className={styles.form}>
+                {/* General Error */}
+                {errors.root && (
+                    <div className={styles.errorBanner}>
+                        {errors.root.message}
+                    </div>
+                )}
+
                 {/* Instrument Selection */}
                 <div className={styles.field}>
                     <label className={styles.label}>
                         Instrument <span className={styles.required}>*</span>
                     </label>
-                    <Select
-                        value={
-                            formState.instrument_id
-                                ? String(formState.instrument_id)
-                                : ""
-                        }
-                        options={instrumentOptions}
-                        onChange={handleInstrumentChange}
-                        placeholder={
-                            isLoadingInstruments
-                                ? "Loading instruments..."
-                                : "Select instrument"
-                        }
-                        disabled={isLoadingInstruments}
+                    <Controller
+                        name="instrument_id"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                {...field}
+                                options={instrumentOptions}
+                                placeholder={
+                                    isLoadingInstruments
+                                        ? "Loading instruments..."
+                                        : "Select instrument"
+                                }
+                                disabled={isLoadingInstruments}
+                            />
+                        )}
                     />
                     {errors.instrument_id && (
                         <span className={styles.error}>
-                            {errors.instrument_id}
+                            {errors.instrument_id.message}
                         </span>
                     )}
                 </div>
@@ -69,10 +69,9 @@ export function SessionAddForm() {
                         label="Session Name (Optional)"
                         type="text"
                         placeholder="My Trading Session"
-                        value={formState.name || ""}
-                        onChange={(e) => handleNameChange(e.target.value)}
-                        error={errors.name}
+                        error={errors.name?.message}
                         hasError={!!errors.name}
+                        {...register("name")}
                     />
                 </div>
 
@@ -81,14 +80,21 @@ export function SessionAddForm() {
                     <label className={styles.label}>
                         Speed <span className={styles.required}>*</span>
                     </label>
-                    <Select
-                        value={formState.speed || ""}
-                        options={speedOptions}
-                        onChange={handleSpeedChange}
-                        placeholder="Select speed"
+                    <Controller
+                        name="speed"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                {...field}
+                                options={speedOptions}
+                                placeholder="Select speed"
+                            />
+                        )}
                     />
                     {errors.speed && (
-                        <span className={styles.error}>{errors.speed}</span>
+                        <span className={styles.error}>
+                            {errors.speed.message}
+                        </span>
                     )}
                 </div>
 
@@ -97,11 +103,10 @@ export function SessionAddForm() {
                     <Input
                         label="Start Time *"
                         type="datetime-local"
-                        value={formState.start_time || ""}
-                        onChange={(e) => handleStartTsChange(e.target.value)}
-                        error={errors.start_time}
+                        error={errors.start_time?.message}
                         hasError={!!errors.start_time}
                         required
+                        {...register("start_time")}
                     />
                 </div>
 
@@ -110,10 +115,9 @@ export function SessionAddForm() {
                     <Input
                         label="End Time (Optional)"
                         type="datetime-local"
-                        value={formState.end_time || ""}
-                        onChange={(e) => handleEndTsChange(e.target.value)}
-                        error={errors.end_time}
+                        error={errors.end_time?.message}
                         hasError={!!errors.end_time}
+                        {...register("end_time")}
                     />
                 </div>
 
@@ -125,13 +129,10 @@ export function SessionAddForm() {
                         step="0.01"
                         min="0.01"
                         placeholder="10000.00"
-                        value={formState.initial_balance || ""}
-                        onChange={(e) =>
-                            handleInitialBalanceChange(e.target.value)
-                        }
-                        error={errors.initial_balance}
+                        error={errors.initial_balance?.message}
                         hasError={!!errors.initial_balance}
                         required
+                        {...register("initial_balance")}
                     />
                 </div>
 
@@ -140,16 +141,21 @@ export function SessionAddForm() {
                     <label className={styles.label}>
                         Leverage <span className={styles.required}>*</span>
                     </label>
-                    <Select
-                        value={
-                            formState.leverage ? String(formState.leverage) : ""
-                        }
-                        options={leverageOptions}
-                        onChange={handleLeverageChange}
-                        placeholder="Select leverage"
+                    <Controller
+                        name="leverage"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                {...field}
+                                options={leverageOptions}
+                                placeholder="Select leverage"
+                            />
+                        )}
                     />
                     {errors.leverage && (
-                        <span className={styles.error}>{errors.leverage}</span>
+                        <span className={styles.error}>
+                            {errors.leverage.message}
+                        </span>
                     )}
                 </div>
 
@@ -161,11 +167,10 @@ export function SessionAddForm() {
                         step="1"
                         min="0"
                         placeholder="0"
-                        value={formState.spread_pts || ""}
-                        onChange={(e) => handleSpreadPtsChange(e.target.value)}
-                        error={errors.spread_pts}
+                        error={errors.spread_pts?.message}
                         hasError={!!errors.spread_pts}
                         required
+                        {...register("spread_pts")}
                     />
                 </div>
 
@@ -177,13 +182,10 @@ export function SessionAddForm() {
                         step="1"
                         min="0"
                         placeholder="0"
-                        value={formState.slippage_pts || ""}
-                        onChange={(e) =>
-                            handleSlippagePtsChange(e.target.value)
-                        }
-                        error={errors.slippage_pts}
+                        error={errors.slippage_pts?.message}
                         hasError={!!errors.slippage_pts}
                         required
+                        {...register("slippage_pts")}
                     />
                 </div>
 
@@ -195,13 +197,10 @@ export function SessionAddForm() {
                         step="0.01"
                         min="0"
                         placeholder="0.00"
-                        value={formState.commission_per_fill || ""}
-                        onChange={(e) =>
-                            handleCommissionPerFillChange(e.target.value)
-                        }
-                        error={errors.commission_per_fill}
+                        error={errors.commission_per_fill?.message}
                         hasError={!!errors.commission_per_fill}
                         required
+                        {...register("commission_per_fill")}
                     />
                 </div>
 
@@ -218,7 +217,7 @@ export function SessionAddForm() {
                     <Button
                         type="submit"
                         variant="primary"
-                        disabled={!isFormValid || isLoading}
+                        disabled={!isValid || isLoading}
                     >
                         {isLoading ? "Creating..." : "Create Session"}
                     </Button>

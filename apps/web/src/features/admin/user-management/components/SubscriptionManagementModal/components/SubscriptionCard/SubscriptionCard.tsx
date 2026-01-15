@@ -28,16 +28,6 @@ interface SubscriptionCardProps {
     isEditing: boolean;
 
     /**
-     * Edit form data
-     */
-    editForm: Partial<UpdateSubscriptionRequest>;
-
-    /**
-     * Edit form update handler
-     */
-    onEditFormChange: (form: Partial<UpdateSubscriptionRequest>) => void;
-
-    /**
      * Whether the update is loading
      */
     isUpdating: boolean;
@@ -55,7 +45,7 @@ interface SubscriptionCardProps {
     /**
      * Handler to save changes
      */
-    onSave: () => void;
+    onSave: (data: UpdateSubscriptionRequest) => void;
 
     /**
      * Handler to delete subscription
@@ -72,8 +62,6 @@ export function SubscriptionCard({
     subscription,
     plan,
     isEditing,
-    editForm,
-    onEditFormChange,
     isUpdating,
     onStartEdit,
     onCancelEdit,
@@ -85,8 +73,6 @@ export function SubscriptionCard({
             <div className={styles.card}>
                 <SubscriptionEditForm
                     subscription={subscription}
-                    form={editForm}
-                    onFormChange={onEditFormChange}
                     isLoading={isUpdating}
                     onCancel={onCancelEdit}
                     onSave={onSave}

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import type { PublicUser } from "@backtrade/types";
 import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
@@ -44,25 +43,11 @@ export function UserEditModal({
     onClose,
     onSuccess,
 }: UserEditModalProps) {
-    // Use a key based on user.id and isOpen to reset form state
-    const formKey = useMemo(() => `${user.id}-${isOpen}`, [user.id, isOpen]);
+    // Use a key based on user.id and isOpen to reset form state is handled in hook effect
+    // but react-hook-form reset handles this cleaner.
 
-    const {
-        // Form state
-        email,
-        setEmail,
-        role,
-        setRole,
-        isBanned,
-        setIsBanned,
-        errors,
-
-        // Mutation state
-        isLoading,
-
-        // Handlers
-        handleSubmit,
-    } = useUserEditModal(user, isOpen, onClose, onSuccess);
+    const { register, control, errors, isLoading, handleSubmit, Controller } =
+        useUserEditModal(user, isOpen, onClose, onSuccess);
 
     if (!isOpen) return null;
 
@@ -89,53 +74,62 @@ export function UserEditModal({
                     </button>
                 </div>
 
-                <form
-                    key={formKey}
-                    onSubmit={handleSubmit}
-                    className={styles.form}
-                >
+                <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.content}>
                         <Input
                             label="Email"
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            error={errors.email}
+                            error={errors.email?.message}
                             hasError={!!errors.email}
                             disabled={isLoading}
                             required
+                            {...register("email")}
                         />
 
                         <div className={styles.field}>
                             <label htmlFor="role" className={styles.label}>
                                 Role
                             </label>
-                            <Select
-                                value={role}
-                                onChange={setRole}
-                                options={ROLE_OPTIONS}
-                                placeholder="Select role"
-                                disabled={isLoading}
+                            <Controller
+                                name="role"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        options={ROLE_OPTIONS}
+                                        placeholder="Select role"
+                                        disabled={isLoading}
+                                    />
+                                )}
                             />
                             {errors.role && (
                                 <span className={styles.error}>
-                                    {errors.role}
+                                    {errors.role.message}
                                 </span>
                             )}
                         </div>
 
                         <div className={styles.field}>
-                            <Checkbox
-                                label="Banned"
-                                checked={isBanned}
-                                onChange={(e) => setIsBanned(e.target.checked)}
-                                disabled={isLoading}
+                            <Controller
+                                name="is_banned"
+                                control={control}
+                                render={({ field }) => (
+                                    <Checkbox
+                                        label="Banned"
+                                        checked={field.value}
+                                        onChange={(e) =>
+                                            field.onChange(e.target.checked)
+                                        }
+                                        disabled={isLoading}
+                                    />
+                                )}
                             />
                         </div>
 
-                        {errors.submit && (
+                        {errors.root && (
                             <div className={styles.submitError}>
-                                {errors.submit}
+                                {errors.root.message}
                             </div>
                         )}
                     </div>

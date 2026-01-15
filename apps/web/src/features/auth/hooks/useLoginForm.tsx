@@ -1,25 +1,9 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin } from "../../../api/hooks/requests/auth";
 import { useAuthStore } from "../../../store/auth";
-import { validateEmail, validatePassword } from "@backtrade/utils";
-
-/**
- * Login form state
- */
-export interface LoginFormState {
-    email: string;
-    password: string;
-    rememberDevice: boolean;
-}
-
-/**
- * Login form errors
- */
-export interface LoginFormErrors {
-    email?: string;
-    password?: string;
-}
+import { LoginFormSchema, type LoginFormState } from "../../../types/forms";
 
 /**
  * Hook to manage login form state and submission
@@ -31,81 +15,28 @@ export function useLoginForm() {
     const { login } = useAuthStore();
     const { execute, isLoading } = useLogin();
 
-    const [formState, setFormState] = useState<LoginFormState>({
-        email: "",
-        password: "",
-        rememberDevice: false,
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<LoginFormState>({
+        resolver: zodResolver(LoginFormSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+            rememberDevice: false,
+        },
     });
-
-    const [errors, setErrors] = useState<LoginFormErrors>({
-        email: "Enter a valid email.",
-        password: "Minimum 8 characters.",
-    });
-
-    /**
-     * Handle email input change
-     */
-    const handleEmailChange = (value: string) => {
-        setFormState((prev) => ({ ...prev, email: value }));
-
-        const validation = validateEmail(value);
-        setErrors((prev) => ({
-            ...prev,
-            email: validation.isValid ? undefined : validation.error,
-        }));
-    };
-
-    /**
-     * Handle password input change
-     */
-    const handlePasswordChange = (value: string) => {
-        setFormState((prev) => ({ ...prev, password: value }));
-
-        const validation = validatePassword(value);
-        setErrors((prev) => ({
-            ...prev,
-            password: validation.isValid ? undefined : validation.error,
-        }));
-    };
-
-    /**
-     * Handle remember device toggle
-     */
-    const handleRememberDeviceChange = (checked: boolean) => {
-        setFormState((prev) => ({ ...prev, rememberDevice: checked }));
-    };
-
-    /**
-     * Check if form is valid
-     */
-    const isFormValid =
-        !errors.email &&
-        !errors.password &&
-        formState.email &&
-        formState.password;
 
     /**
      * Handle form submission
      */
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Validate all fields
-        const emailValidation = validateEmail(formState.email);
-        const passwordValidation = validatePassword(formState.password);
-
-        if (!emailValidation.isValid || !passwordValidation.isValid) {
-            setErrors({
-                email: emailValidation.error,
-                password: passwordValidation.error,
-            });
-            return;
-        }
-
+    const onSubmit = async (data: LoginFormState) => {
         try {
             const response = await execute({
-                email: formState.email,
-                password: formState.password,
+                email: data.email,
+                password: data.password,
             });
 
             // Login successful - store tokens and user
@@ -118,9 +49,9 @@ export function useLoginForm() {
                 navigate("/dashboard");
             } else {
                 // Unexpected response format
-                setErrors({
-                    email: "Invalid response from server. Please try again.",
-                    password: undefined,
+                setError("email", {
+                    type: "manual",
+                    message: "Invalid response from server. Please try again.",
                 });
             }
         } catch (err) {
@@ -146,21 +77,17 @@ export function useLoginForm() {
                 return;
             }
 
-            setErrors({
-                email: errorMessage,
-                password: undefined,
+            setError("email", {
+                type: "manual",
+                message: errorMessage,
             });
         }
     };
 
     return {
-        formState,
+        register,
         errors,
         isLoading,
-        isFormValid,
-        handleEmailChange,
-        handlePasswordChange,
-        handleRememberDeviceChange,
-        handleSubmit,
+        handleSubmit: handleSubmit(onSubmit),
     };
 }

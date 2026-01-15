@@ -14,14 +14,9 @@ import styles from "./ForgotPasswordFormPanel.module.css";
 export function ForgotPasswordFormPanel() {
     const {
         step,
-        formState,
-        errors,
+        step1Form,
+        step2Form,
         isLoading,
-        isStep1Valid,
-        isStep2Valid,
-        handleEmailChange,
-        handleCodeChange,
-        handleNewPasswordChange,
         handleStep1Submit,
         handleStep2Submit,
         handleBackToStep1,
@@ -48,18 +43,10 @@ export function ForgotPasswordFormPanel() {
                             label="Email"
                             type="email"
                             placeholder="you@domain.com"
-                            value={formState.email}
-                            onChange={(e) => handleEmailChange(e.target.value)}
-                            error={errors.email}
-                            hasError={!!errors.email}
+                            error={step1Form.formState.errors.email?.message}
+                            hasError={!!step1Form.formState.errors.email}
+                            {...step1Form.register("email")}
                         />
-
-                        {/* General Error */}
-                        {errors.general && (
-                            <div className={styles.errorMessage}>
-                                {errors.general}
-                            </div>
-                        )}
 
                         {/* Submit Button */}
                         <Button
@@ -68,7 +55,7 @@ export function ForgotPasswordFormPanel() {
                             size="large"
                             fullWidth
                             className={styles.submitButton}
-                            disabled={isLoading || !isStep1Valid}
+                            disabled={isLoading}
                         >
                             {isLoading ? "Sending..." : "Send Code"}
                         </Button>
@@ -85,8 +72,9 @@ export function ForgotPasswordFormPanel() {
                 {step === 2 && (
                     <form onSubmit={handleStep2Submit} className={styles.form}>
                         <p className={styles.description}>
-                            We've sent a verification code to {formState.email}.
-                            Enter the code and your new password below.
+                            We've sent a verification code to{" "}
+                            {step1Form.getValues("email")}. Enter the code and
+                            your new password below.
                         </p>
 
                         {/* Code Input */}
@@ -94,10 +82,9 @@ export function ForgotPasswordFormPanel() {
                             label="Verification Code"
                             type="text"
                             placeholder="Enter code"
-                            value={formState.code}
-                            onChange={(e) => handleCodeChange(e.target.value)}
-                            error={errors.code}
-                            hasError={!!errors.code}
+                            error={step2Form.formState.errors.code?.message}
+                            hasError={!!step2Form.formState.errors.code}
+                            {...step2Form.register("code")}
                         />
 
                         {/* New Password Input */}
@@ -105,18 +92,17 @@ export function ForgotPasswordFormPanel() {
                             label="New Password"
                             type="password"
                             placeholder="Enter new password"
-                            value={formState.newPassword}
-                            onChange={(e) =>
-                                handleNewPasswordChange(e.target.value)
+                            error={
+                                step2Form.formState.errors.newPassword?.message
                             }
-                            error={errors.newPassword}
-                            hasError={!!errors.newPassword}
+                            hasError={!!step2Form.formState.errors.newPassword}
+                            {...step2Form.register("newPassword")}
                         />
 
                         {/* General Error */}
-                        {errors.general && (
+                        {step2Form.formState.errors.root && (
                             <div className={styles.errorMessage}>
-                                {errors.general}
+                                {step2Form.formState.errors.root.message}
                             </div>
                         )}
 
@@ -139,7 +125,7 @@ export function ForgotPasswordFormPanel() {
                             size="large"
                             fullWidth
                             className={styles.submitButton}
-                            disabled={isLoading || !isStep2Valid}
+                            disabled={isLoading}
                         >
                             {isLoading ? "Resetting..." : "Reset Password"}
                         </Button>

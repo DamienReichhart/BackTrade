@@ -55,32 +55,11 @@ export function useSubscriptionManagementModal(
      */
     const hasActiveSubscription = activeSubscription !== undefined;
 
-    // Form state for creating new subscription
+    // View state
     const [isCreating, setIsCreating] = useState(false);
-    const [createForm, setCreateForm] = useState<
-        Partial<CreateSubscriptionRequest>
-    >(() => {
-        const now = Date.now();
-        return {
-            user_id: user.id,
-            plan_id: undefined,
-            stripe_subscription_id: "",
-            current_period_start: new Date(now).toISOString(),
-            current_period_end: new Date(
-                now + 30 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-            status: "active",
-            cancel_at_period_end: false,
-        };
-    });
-
-    // Form state for editing subscription
     const [editingSubscriptionId, setEditingSubscriptionId] = useState<
         number | null
     >(null);
-    const [editForm, setEditForm] = useState<
-        Partial<UpdateSubscriptionRequest>
-    >({});
 
     // Delete confirmation state
     const [subscriptionToDelete, setSubscriptionToDelete] =
@@ -114,37 +93,12 @@ export function useSubscriptionManagementModal(
     }, [plans]);
 
     /**
-     * Reset create form to initial state
-     */
-    const resetCreateForm = () => {
-        const now = Date.now();
-        setCreateForm({
-            user_id: user.id,
-            plan_id: undefined,
-            stripe_subscription_id: "",
-            current_period_start: new Date(now).toISOString(),
-            current_period_end: new Date(
-                now + 30 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-            status: "active",
-            cancel_at_period_end: false,
-        });
-    };
-
-    /**
      * Handle create subscription
      */
-    const handleCreate = async () => {
-        if (!createForm.plan_id || !createForm.stripe_subscription_id) {
-            return;
-        }
-
+    const handleCreate = async (data: CreateSubscriptionRequest) => {
         try {
-            await createSubscriptionMutation.execute(
-                createForm as CreateSubscriptionRequest
-            );
+            await createSubscriptionMutation.execute(data);
             setIsCreating(false);
-            resetCreateForm();
             await refetchSubscriptions();
         } catch {
             // Error handling is done by the mutation hook
@@ -163,7 +117,6 @@ export function useSubscriptionManagementModal(
      */
     const handleCancelCreate = () => {
         setIsCreating(false);
-        resetCreateForm();
     };
 
     /**
@@ -171,10 +124,6 @@ export function useSubscriptionManagementModal(
      */
     const handleStartEdit = (subscription: Subscription) => {
         setEditingSubscriptionId(subscription.id);
-        setEditForm({
-            status: subscription.status,
-            cancel_at_period_end: subscription.cancel_at_period_end,
-        });
     };
 
     /**
@@ -182,21 +131,17 @@ export function useSubscriptionManagementModal(
      */
     const handleCancelEdit = () => {
         setEditingSubscriptionId(null);
-        setEditForm({});
     };
 
     /**
      * Handle update subscription
      */
-    const handleUpdate = async () => {
+    const handleUpdate = async (data: UpdateSubscriptionRequest) => {
         if (!editingSubscriptionId) return;
 
         try {
-            await updateSubscriptionMutation.execute(
-                editForm as UpdateSubscriptionRequest
-            );
+            await updateSubscriptionMutation.execute(data);
             setEditingSubscriptionId(null);
-            setEditForm({});
             await refetchSubscriptions();
         } catch {
             // Error handling is done by the mutation hook
@@ -243,15 +188,9 @@ export function useSubscriptionManagementModal(
         activeSubscription,
         hasActiveSubscription,
 
-        // Create form state
+        // View state
         isCreating,
-        createForm,
-        setCreateForm,
-
-        // Edit form state
         editingSubscriptionId,
-        editForm,
-        setEditForm,
 
         // Delete state
         subscriptionToDelete,

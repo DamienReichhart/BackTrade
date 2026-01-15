@@ -12,4 +12,7 @@ export { useTransactionsTable } from "./useTransactionsTable";
 export { useUpdatePositionTpSl } from "./useUpdatePositionTpSl";
 
 export type { ChartRefs } from "./useChart";
-export type { OrderFormState, OrderFormActions } from "./useOrderForm";
+export type { OrderFormReturn } from "./useOrderForm";
+
+// Re-export form types from centralized location
+export type { OrderFormState } from "../../../../types/forms";

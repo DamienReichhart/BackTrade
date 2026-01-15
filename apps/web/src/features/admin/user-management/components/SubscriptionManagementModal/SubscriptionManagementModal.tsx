@@ -43,13 +43,9 @@ export function SubscriptionManagementModal({
 
         // Create form state
         isCreating,
-        createForm,
-        setCreateForm,
 
         // Edit form state
         editingSubscriptionId,
-        editForm,
-        setEditForm,
 
         // Delete state
         subscriptionToDelete,
@@ -103,22 +99,19 @@ export function SubscriptionManagementModal({
                     <div className={styles.content}>
                         <CreateSubscriptionSection
                             isCreating={isCreating}
-                            createForm={createForm}
-                            onFormChange={setCreateForm}
                             planOptions={planOptions}
                             isLoading={createSubscriptionMutation.isLoading}
                             hasActiveSubscription={hasActiveSubscription}
                             onStartCreate={handleStartCreate}
                             onCancelCreate={handleCancelCreate}
                             onSubmit={handleCreate}
+                            userId={user.id}
                         />
 
                         <SubscriptionListView
                             subscriptions={subscriptions}
                             isLoading={isLoading}
                             editingSubscriptionId={editingSubscriptionId}
-                            editForm={editForm}
-                            onEditFormChange={setEditForm}
                             isUpdating={updateSubscriptionMutation.isLoading}
                             getPlanById={getPlanById}
                             onStartEdit={handleStartEdit}

@@ -26,16 +26,6 @@ interface SubscriptionListViewProps {
     editingSubscriptionId: number | null;
 
     /**
-     * Edit form data
-     */
-    editForm: Partial<UpdateSubscriptionRequest>;
-
-    /**
-     * Edit form update handler
-     */
-    onEditFormChange: (form: Partial<UpdateSubscriptionRequest>) => void;
-
-    /**
      * Whether update is loading
      */
     isUpdating: boolean;
@@ -58,7 +48,7 @@ interface SubscriptionListViewProps {
     /**
      * Handler to save changes
      */
-    onSave: () => void;
+    onSave: (data: UpdateSubscriptionRequest) => void;
 
     /**
      * Handler to delete a subscription
@@ -75,8 +65,6 @@ export function SubscriptionListView({
     subscriptions,
     isLoading,
     editingSubscriptionId,
-    editForm,
-    onEditFormChange,
     isUpdating,
     getPlanById,
     onStartEdit,
@@ -116,8 +104,6 @@ export function SubscriptionListView({
                             subscription={subscription}
                             plan={plan}
                             isEditing={isEditing}
-                            editForm={editForm}
-                            onEditFormChange={onEditFormChange}
                             isUpdating={isUpdating}
                             onStartEdit={() => onStartEdit(subscription)}
                             onCancelEdit={onCancelEdit}
