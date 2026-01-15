@@ -35,6 +35,14 @@ export function AdminChoices() {
                             Data Management
                         </span>
                     </button>
+                    <button
+                        className={styles.menuItem}
+                        onClick={() => handleMenuClick("instrument-management")}
+                    >
+                        <span className={styles.menuItemLabel}>
+                            Instrument Management
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>

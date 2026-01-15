@@ -1,8 +1,10 @@
-import { useGet } from "..";
+import { useDelete, useGet, usePatch, usePost } from "..";
 import {
+    CreateInstrumentRequestSchema,
     InstrumentSchema,
     InstrumentListResponseSchema,
     type SearchQuery,
+    UpdateInstrumentRequestSchema,
 } from "@backtrade/types";
 
 /**
@@ -34,4 +36,24 @@ export function useInstrument(id: string) {
     return useGet(`/instruments/${id}`, InstrumentSchema, {
         enabled: isValidId,
     });
+}
+
+export function useCreateInstrument() {
+    return usePost(
+        "/instruments",
+        CreateInstrumentRequestSchema,
+        InstrumentSchema
+    );
+}
+
+export function useUpdateInstrument(id: string) {
+    return usePatch(
+        `/instruments/${id}`,
+        UpdateInstrumentRequestSchema,
+        InstrumentSchema
+    );
+}
+
+export function useDeleteInstrument(id: string) {
+    return useDelete(`/instruments/${id}`);
 }
