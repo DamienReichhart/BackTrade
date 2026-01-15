@@ -8,11 +8,22 @@ import { requestId } from "./middlewares/request-id";
 import { requestLogger } from "./middlewares/request-logger";
 import { notFoundHandler } from "./middlewares/not-found";
 import { errorHandler } from "./middlewares/error-handler";
+import { WebSocketServer } from "ws";
+import http from "http";
 import { ENV } from "./config/env";
 import stripeController from "./controllers/stripe-controller";
+import { setupWebSocket } from "./websocket";
 
-function createApp(): Express {
+interface AppContext {
+    server: http.Server;
+    wss: WebSocketServer;
+}
+
+function createApp(): AppContext {
     const app: Express = express();
+    const server = http.createServer(app);
+    const wss = new WebSocketServer({ server });
+
     app.disable("x-powered-by");
 
     if (ENV.NODE_ENV === "production") {
@@ -42,7 +53,9 @@ function createApp(): Express {
 
     app.use(errorHandler);
 
-    return app;
+    setupWebSocket(wss);
+
+    return { server, wss };
 }
 
-export { createApp };
+export { createApp, type AppContext };
