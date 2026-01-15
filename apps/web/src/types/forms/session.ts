@@ -37,19 +37,27 @@ export const SessionAddFormSchema = z
 export type SessionAddFormState = z.infer<typeof SessionAddFormSchema>;
 
 /**
+ * Helper to convert NaN to undefined for optional numeric fields.
+ * HTML inputs with valueAsNumber return NaN for empty values.
+ */
+const nanToUndefined = (val: unknown) =>
+    typeof val === "number" && Number.isNaN(val) ? undefined : val;
+
+/**
  * Order form input schema - what the form fields accept.
  * Uses number type directly since we set numeric defaultValues.
+ * NaN values (from empty inputs with valueAsNumber) are converted to undefined.
  */
 export const OrderFormSchema = z.object({
     qty: z.number().positive({ message: "Quantity must be greater than 0" }),
-    tp: z
-        .number()
-        .positive({ message: "TP must be greater than 0" })
-        .optional(),
-    sl: z
-        .number()
-        .positive({ message: "SL must be greater than 0" })
-        .optional(),
+    tp: z.preprocess(
+        nanToUndefined,
+        z.number().positive({ message: "TP must be greater than 0" }).optional()
+    ),
+    sl: z.preprocess(
+        nanToUndefined,
+        z.number().positive({ message: "SL must be greater than 0" }).optional()
+    ),
 });
 
 export type OrderFormState = z.infer<typeof OrderFormSchema>;

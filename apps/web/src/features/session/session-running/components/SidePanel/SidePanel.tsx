@@ -69,7 +69,7 @@ export function SidePanel() {
                             type="number"
                             min={0}
                             step={0.01}
-                            {...register("qty")}
+                            {...register("qty", { valueAsNumber: true })}
                         />
                         {errors.qty && (
                             <span className={styles.fieldError}>
@@ -89,7 +89,7 @@ export function SidePanel() {
                                     ? currentPrice.toString()
                                     : ""
                             }
-                            {...register("tp")}
+                            {...register("tp", { valueAsNumber: true })}
                         />
                         {errors.tp && (
                             <span className={styles.fieldError}>
@@ -109,7 +109,7 @@ export function SidePanel() {
                                     ? currentPrice.toString()
                                     : ""
                             }
-                            {...register("sl")}
+                            {...register("sl", { valueAsNumber: true })}
                         />
                         {errors.sl && (
                             <span className={styles.fieldError}>
