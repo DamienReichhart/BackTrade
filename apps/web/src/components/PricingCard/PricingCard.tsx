@@ -1,3 +1,4 @@
+import type { ButtonVariant } from "@backtrade/types";
 import { Button } from "../Button";
 import styles from "./PricingCard.module.css";
 
@@ -21,7 +22,7 @@ interface PricingCardProps {
     badge?: string;
     features: PlanFeature[];
     ctaText: string;
-    ctaVariant?: "outline" | "primary" | "secondary";
+    ctaVariant?: ButtonVariant;
     highlighted?: boolean;
     planId?: number;
     onSelect?: () => void;

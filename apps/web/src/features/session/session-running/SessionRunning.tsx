@@ -5,6 +5,7 @@ import { TransactionsTable } from "./components/TransactionsTable";
 import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData } from "./hooks";
+import { SESSION_STATUS } from "@backtrade/types";
 import styles from "./SessionRunning.module.css";
 import { redirectToSessionAnalytics } from "../../../utils";
 import { useEffect } from "react";
@@ -20,7 +21,7 @@ export function SessionRunning() {
     const { session, isLoading } = useSessionData();
 
     useEffect(() => {
-        if (session?.session_status == "ARCHIVED") {
+        if (session?.session_status === SESSION_STATUS.ARCHIVED) {
             redirectToSessionAnalytics(String(session.id));
         }
     }, [session]);

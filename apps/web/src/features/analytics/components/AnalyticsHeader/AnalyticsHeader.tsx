@@ -1,4 +1,4 @@
-import type { Session } from "@backtrade/types";
+import { type Session, SESSION_STATUS } from "@backtrade/types";
 import styles from "./AnalyticsHeader.module.css";
 
 /**
@@ -38,7 +38,7 @@ export function AnalyticsHeader({
     onExportCsv,
 }: AnalyticsHeaderProps) {
     const sessionName = session?.name ?? "Session Report";
-    const status = session?.session_status ?? "ARCHIVED";
+    const status = session?.session_status ?? SESSION_STATUS.ARCHIVED;
 
     return (
         <header className={styles.header}>
@@ -54,7 +54,9 @@ export function AnalyticsHeader({
                 </div>
                 <div className={styles.badges}>
                     <span className={`${styles.badge} ${styles.statusBadge}`}>
-                        {status === "ARCHIVED" ? "Completed" : status}
+                        {status === SESSION_STATUS.ARCHIVED
+                            ? "Completed"
+                            : status}
                     </span>
                     <span className={styles.badge}>Deterministic</span>
                 </div>

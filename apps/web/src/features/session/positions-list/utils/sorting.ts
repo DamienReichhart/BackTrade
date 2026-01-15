@@ -1,4 +1,6 @@
-import type { Position } from "@backtrade/types";
+import type { Position, SortOrder } from "@backtrade/types";
+
+export type { SortOrder };
 
 /**
  * Sortable field types for positions
@@ -15,11 +17,6 @@ export type PositionSortField =
     | "position_status"
     | "opened_at"
     | "closed_at";
-
-/**
- * Sort order
- */
-export type SortOrder = "asc" | "desc";
 
 /**
  * Get the sortable value for a position field

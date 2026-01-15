@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDatasets } from "../../../../api/hooks/requests/datasets";
-import type { Dataset } from "@backtrade/types";
+import type { Dataset, SortOrder } from "@backtrade/types";
 
 export type SortField =
     | "id"
@@ -14,7 +14,6 @@ export type SortField =
     | "end_time"
     | "created_at"
     | "updated_at";
-export type SortOrder = "asc" | "desc";
 
 /**
  * Hook for managing dataset management page state and logic

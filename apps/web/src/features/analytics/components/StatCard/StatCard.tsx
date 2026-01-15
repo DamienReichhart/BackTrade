@@ -1,14 +1,5 @@
+import type { StatCardVariant, ValueColor } from "@backtrade/types";
 import styles from "./StatCard.module.css";
-
-/**
- * StatCard variant types
- */
-type StatCardVariant = "default" | "highlight" | "large";
-
-/**
- * Value color type
- */
-type ValueColor = "default" | "positive" | "negative";
 
 /**
  * StatCard props interface

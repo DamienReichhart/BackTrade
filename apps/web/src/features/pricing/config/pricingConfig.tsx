@@ -7,13 +7,18 @@
  */
 
 import { type PricingTier, type ComparisonRow } from "../types";
+import type {
+    PricingTierCode,
+    ButtonVariant,
+    BadgeVariant,
+} from "@backtrade/types";
 
 /**
  * Pricing tiers configuration
  */
 export const pricingTiers: PricingTier[] = [
     {
-        code: "FREE",
+        code: "FREE" as PricingTierCode,
         name: "Free",
         price: 0,
         currency: "€",
@@ -27,17 +32,17 @@ export const pricingTiers: PricingTier[] = [
             { text: "Session analytics + JSON export", included: true },
         ],
         ctaText: "Create account",
-        ctaVariant: "outline",
+        ctaVariant: "outline" as ButtonVariant,
     },
     {
-        code: "TRADER",
+        code: "TRADER" as PricingTierCode,
         name: "Trader",
         price: 19,
         currency: "€",
         period: "/month",
         description: "Scale",
         badge: "Most popular",
-        badgeVariant: "popular",
+        badgeVariant: "popular" as BadgeVariant,
         features: [
             { text: "10 active sessions", included: true },
             { text: "All Free features", included: true },
@@ -45,11 +50,11 @@ export const pricingTiers: PricingTier[] = [
             { text: "Export equity curve and trades table", included: true },
         ],
         ctaText: "Choose Trader",
-        ctaVariant: "primary",
+        ctaVariant: "primary" as ButtonVariant,
         highlighted: true,
     },
     {
-        code: "EXPERT",
+        code: "EXPERT" as PricingTierCode,
         name: "Expert",
         price: 49,
         currency: "€",
@@ -61,7 +66,7 @@ export const pricingTiers: PricingTier[] = [
             { text: "Highest parallelism within quota", included: true },
         ],
         ctaText: "Choose Expert",
-        ctaVariant: "primary",
+        ctaVariant: "primary" as ButtonVariant,
     },
 ];
 
@@ -110,6 +115,8 @@ export const comparisonData: ComparisonRow[] = [
 /**
  * Get pricing tier by code
  */
-export function getPricingTierByCode(code: string): PricingTier | undefined {
+export function getPricingTierByCode(
+    code: PricingTierCode
+): PricingTier | undefined {
     return pricingTiers.find((tier) => tier.code === code);
 }

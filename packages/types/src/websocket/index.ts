@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+    WebSocketCloseCode,
+    WsConnectionState,
+    type WsConnectionState as WsConnectionStateType,
+} from "../enums/websocket";
 
 /**
  * WebSocket Message Types
@@ -7,40 +12,9 @@ import { z } from "zod";
  * Using discriminated unions for type-safe message handling.
  */
 
-// ============================================================================
-// WEBSOCKET CLOSE CODES
-// ============================================================================
-
-/**
- * WebSocket close codes following RFC 6455 with custom application codes
- *
- * Standard codes (1000-1015): RFC 6455
- * Application codes (4000-4999): Custom application-specific codes
- */
-export const WebSocketCloseCode = {
-    // Standard codes
-    NORMAL_CLOSURE: 1000,
-    GOING_AWAY: 1001,
-    PROTOCOL_ERROR: 1002,
-    UNSUPPORTED_DATA: 1003,
-    INVALID_PAYLOAD: 1007,
-    POLICY_VIOLATION: 1008,
-    MESSAGE_TOO_BIG: 1009,
-    INTERNAL_ERROR: 1011,
-
-    // Application-specific codes (4000-4999)
-    AUTHENTICATION_FAILED: 4001,
-    AUTHENTICATION_TIMEOUT: 4002,
-    AUTHENTICATION_REQUIRED: 4003,
-    TOKEN_EXPIRED: 4004,
-    USER_BANNED: 4005,
-    INVALID_MESSAGE_FORMAT: 4006,
-    RATE_LIMITED: 4007,
-    SERVER_SHUTDOWN: 4008,
-} as const;
-
-export type WebSocketCloseCode =
-    (typeof WebSocketCloseCode)[keyof typeof WebSocketCloseCode];
+// Re-export WebSocket enums for convenience
+export { WebSocketCloseCode, WsConnectionState };
+export type { WsConnectionStateType };
 
 // ============================================================================
 // CLIENT MESSAGE TYPES (Client -> Server)
@@ -236,20 +210,7 @@ export type WsServerMessage = z.infer<typeof WsServerMessageSchema>;
 // CONNECTION STATE
 // ============================================================================
 
-/**
- * Possible states of a WebSocket connection
- */
-export const WsConnectionState = {
-    CONNECTING: "connecting",
-    CONNECTED: "connected",
-    AUTHENTICATING: "authenticating",
-    AUTHENTICATED: "authenticated",
-    DISCONNECTING: "disconnecting",
-    DISCONNECTED: "disconnected",
-} as const;
-
-export type WsConnectionState =
-    (typeof WsConnectionState)[keyof typeof WsConnectionState];
+// Connection state types are exported from enums/websocket.ts
 
 /**
  * Authenticated client connection information

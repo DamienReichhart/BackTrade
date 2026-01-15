@@ -536,6 +536,9 @@ importers:
 
   packages/logger:
     dependencies:
+      '@backtrade/types':
+        specifier: workspace:*
+        version: link:../types
       pino:
         specifier: ^10.1.1
         version: 10.1.1

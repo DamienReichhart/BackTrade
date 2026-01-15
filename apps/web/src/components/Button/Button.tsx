@@ -1,15 +1,6 @@
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import type { ButtonVariant, ButtonSize } from "@backtrade/types";
 import styles from "./Button.module.css";
-
-/**
- * Button component variants
- */
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-
-/**
- * Button component sizes
- */
-type ButtonSize = "small" | "medium" | "large";
 
 /**
  * Button component props

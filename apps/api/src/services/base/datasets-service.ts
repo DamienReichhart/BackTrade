@@ -1,6 +1,7 @@
 import { datasetsRepo, instrumentsRepo } from "@backtrade/data";
 import {
     QueueName,
+    TIMEFRAME_VALUES,
     type Dataset,
     type DatasetWhereInput,
     type DatasetCreateInput,
@@ -9,6 +10,7 @@ import {
     type SearchQuery,
     type DatasetFileSplitPayload,
     type User,
+    type Timeframe,
 } from "@backtrade/types";
 import { datasetsCacheRepo } from "../../libs/cache";
 import { storageService } from "../../libs/storage";
@@ -23,19 +25,9 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid timeframes for datasets
+ * Uses enum values from @backtrade/types for consistency
  */
-const VALID_TIMEFRAMES = [
-    "M1",
-    "M5",
-    "M10",
-    "M15",
-    "M30",
-    "H1",
-    "H2",
-    "H4",
-    "D1",
-    "W1",
-] as const;
+const VALID_TIMEFRAMES = TIMEFRAME_VALUES;
 
 /**
  * Valid sortable fields for datasets
@@ -98,11 +90,7 @@ class DatasetsService extends BaseService {
         if (!timeframe) {
             throw new BadRequestError("timeframe is required");
         }
-        if (
-            !VALID_TIMEFRAMES.includes(
-                timeframe as (typeof VALID_TIMEFRAMES)[number]
-            )
-        ) {
+        if (!VALID_TIMEFRAMES.includes(timeframe as Timeframe)) {
             throw new BadRequestError(
                 `Invalid timeframe. Must be one of: ${VALID_TIMEFRAMES.join(", ")}`
             );
@@ -307,14 +295,10 @@ class DatasetsService extends BaseService {
 
         // Check if search query matches a valid timeframe
         const upperQ = searchQuery.toUpperCase();
-        if (
-            VALID_TIMEFRAMES.includes(
-                upperQ as (typeof VALID_TIMEFRAMES)[number]
-            )
-        ) {
+        if (VALID_TIMEFRAMES.includes(upperQ as Timeframe)) {
             searchConditions.push({
                 timeframe: {
-                    equals: upperQ as (typeof VALID_TIMEFRAMES)[number],
+                    equals: upperQ as Timeframe,
                 },
             });
         }

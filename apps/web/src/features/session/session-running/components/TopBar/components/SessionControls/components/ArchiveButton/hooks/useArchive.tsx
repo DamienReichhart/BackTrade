@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { SESSION_STATUS } from "@backtrade/types";
 import { useArchiveSession } from "../../../../../../../../../../api/hooks/requests/sessions";
 import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,14 +33,14 @@ export function useArchive(
         }
 
         // Prevent archiving if already archived
-        if (currentSession?.session_status === "ARCHIVED") {
+        if (currentSession?.session_status === SESSION_STATUS.ARCHIVED) {
             onError?.("Session is already archived");
             return;
         }
 
         try {
             const updatedSession = await archiveSession({
-                session_status: "ARCHIVED",
+                session_status: SESSION_STATUS.ARCHIVED,
                 end_time: currentSession?.end_time
                     ? formatLocalDateTimeToISO(currentSession.end_time)
                     : undefined,
@@ -82,7 +83,9 @@ export function useArchive(
     return {
         isArchiving,
         isDisabled:
-            !id || isArchiving || currentSession?.session_status === "ARCHIVED",
+            !id ||
+            isArchiving ||
+            currentSession?.session_status === SESSION_STATUS.ARCHIVED,
         handleArchive,
     };
 }

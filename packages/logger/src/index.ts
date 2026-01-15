@@ -6,13 +6,7 @@
  */
 
 export { createLogger } from "./logger";
-export type {
-    Logger,
-    LoggerConfig,
-    LogLevel,
-    NodeEnv,
-    ChildLoggerContext,
-} from "./types";
+export type { Logger, LoggerConfig, ChildLoggerContext } from "./types";
 export { defaultSerializers, errorSerializer } from "./serializers";
 export {
     expressSerializers,

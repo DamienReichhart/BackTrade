@@ -1,12 +1,14 @@
 import { sessionsRepo, instrumentsRepo } from "@backtrade/data";
-import type {
-    Session,
-    SessionWhereInput,
-    SessionCreateInput,
-    SessionUpdateInput,
-    SessionOrderBy,
-    SearchQuery,
-    User,
+import {
+    SESSION_STATUS_VALUES,
+    type Session,
+    type SessionWhereInput,
+    type SessionCreateInput,
+    type SessionUpdateInput,
+    type SessionOrderBy,
+    type SearchQuery,
+    type User,
+    type SessionStatus,
 } from "@backtrade/types";
 import { sessionsCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -19,8 +21,9 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid session statuses for search operations
+ * Uses enum values from @backtrade/types for consistency
  */
-const VALID_SESSION_STATUSES = ["RUNNING", "PAUSED", "ARCHIVED"] as const;
+const VALID_SESSION_STATUSES = SESSION_STATUS_VALUES;
 
 /**
  * Valid sortable fields for sessions
@@ -489,14 +492,10 @@ class SessionsService extends BaseService {
 
         // Search by session_status if it matches
         const upperQ = searchQuery.toUpperCase();
-        if (
-            VALID_SESSION_STATUSES.includes(
-                upperQ as (typeof VALID_SESSION_STATUSES)[number]
-            )
-        ) {
+        if (VALID_SESSION_STATUSES.includes(upperQ as SessionStatus)) {
             searchConditions.push({
                 session_status: {
-                    equals: upperQ as (typeof VALID_SESSION_STATUSES)[number],
+                    equals: upperQ as SessionStatus,
                 },
             });
         }

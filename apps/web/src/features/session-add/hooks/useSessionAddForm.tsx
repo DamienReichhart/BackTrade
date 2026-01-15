@@ -6,6 +6,7 @@ import {
     type CreateSessionRequest,
     type Speed,
     type Leverage,
+    SESSION_STATUS,
     getSpeedOptions,
     getLeverageOptions,
 } from "@backtrade/types";
@@ -96,7 +97,7 @@ export function useSessionAddForm() {
                 spread_pts: parseInt(data.spread_pts, 10),
                 slippage_pts: parseInt(data.slippage_pts, 10),
                 commission_per_fill: parseFloat(data.commission_per_fill),
-                session_status: "PAUSED",
+                session_status: SESSION_STATUS.PAUSED,
             };
 
             const result = await execute(request);

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { Position, DailyPnL } from "@backtrade/types";
+import type { Position, DailyPnL, TradesView } from "@backtrade/types";
 import { DataTable } from "../DataTable";
 import {
     formatPnL,
@@ -8,11 +8,6 @@ import {
     formatTableDate,
 } from "../../utils";
 import styles from "./TradesSection.module.css";
-
-/**
- * Trades view type
- */
-type TradesView = "winners" | "losers" | "daily";
 
 /**
  * TradesSection props interface
