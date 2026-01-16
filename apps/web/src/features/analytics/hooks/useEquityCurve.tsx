@@ -30,10 +30,34 @@ export function useEquityCurve(
     const chartData = useMemo(() => {
         if (!equityCurve || equityCurve.length === 0) return [];
 
-        return equityCurve.map((point) => ({
-            time: (new Date(point.time).getTime() / 1000) as number,
+        // Convert to chart format and sort by time
+        const mapped = equityCurve.map((point) => ({
+            time: new Date(point.time).getTime() / 1000,
             value: point.equity,
         }));
+
+        // Sort by time to ensure ascending order
+        mapped.sort((a, b) => a.time - b.time);
+
+        // Handle duplicate timestamps by keeping the last value for each timestamp
+        // This ensures strict ascending order required by lightweight-charts
+        const deduplicated: typeof mapped = [];
+        let lastTime = -Infinity;
+
+        for (const point of mapped) {
+            if (point.time > lastTime) {
+                // New timestamp, add it
+                deduplicated.push(point);
+                lastTime = point.time;
+            } else if (point.time === lastTime) {
+                // Duplicate timestamp, replace the last entry with this one
+                // (keeping the most recent equity value for this timestamp)
+                deduplicated[deduplicated.length - 1] = point;
+            }
+            // If point.time < lastTime, it shouldn't happen after sorting, but skip it if it does
+        }
+
+        return deduplicated;
     }, [equityCurve]);
 
     // Initialize and update chart
