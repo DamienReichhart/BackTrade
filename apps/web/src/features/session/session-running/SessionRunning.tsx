@@ -4,7 +4,7 @@ import { PositionsTable } from "./components/PositionsTable";
 import { TransactionsTable } from "./components/TransactionsTable";
 import { SessionInfo } from "./components/SessionInfo";
 import { RunningSessionChart } from "./components/RunningSessionChart";
-import { useSessionData } from "./hooks";
+import { useSessionData, useAutoAdvanceTime } from "./hooks";
 import { SESSION_STATUS } from "@backtrade/types";
 import styles from "./SessionRunning.module.css";
 import { redirectToSessionAnalytics } from "../../../utils";
@@ -19,6 +19,9 @@ import { LoadingState } from "../../dashboard/components";
  */
 export function SessionRunning() {
     const { session, isLoading } = useSessionData();
+
+    // Automatically advance time when session is RUNNING
+    useAutoAdvanceTime();
 
     useEffect(() => {
         if (session?.session_status === SESSION_STATUS.ARCHIVED) {

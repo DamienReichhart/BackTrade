@@ -10,6 +10,7 @@ export { usePositionsTable } from "./usePositionsTable";
 export { usePositionMarkers } from "./usePositionMarkers";
 export { useTransactionsTable } from "./useTransactionsTable";
 export { useUpdatePositionTpSl } from "./useUpdatePositionTpSl";
+export { useAutoAdvanceTime } from "./useAutoAdvanceTime";
 
 export type { ChartRefs } from "./useChart";
 export type { OrderFormReturn } from "./useOrderForm";
