@@ -39,6 +39,7 @@ export function useAutoAdvanceTime() {
     const queryClient = useQueryClient();
     const { execute: updateSession } = useUpdateSession(sessionId ?? "");
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const isUpdatingRef = useRef(false);
 
     // Calculate speed multiplier from current session speed
     const speedMultiplier = useMemo(() => {
@@ -70,9 +71,27 @@ export function useAutoAdvanceTime() {
             return;
         }
 
+        const currentTime = new Date(currentSession.current_time);
+        if (currentSession.end_time) {
+            const endTs = new Date(currentSession.end_time);
+            if (currentTime.getTime() >= endTs.getTime()) {
+                // Stop the interval if we've reached the end time
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
+                return;
+            }
+        }
+
+        // Prevent overlapping mutations
+        if (isUpdatingRef.current) {
+            return;
+        }
+        isUpdatingRef.current = true;
+
         try {
             // Calculate new current_time by adding 1 minute (60000 ms)
-            const currentTime = new Date(currentSession.current_time);
             const oneMinuteMs = 60 * 1000; // 1 minute in milliseconds
             let newTime = new Date(currentTime.getTime() + oneMinuteMs);
 
@@ -100,6 +119,8 @@ export function useAutoAdvanceTime() {
         } catch {
             // Silently handle errors to avoid disrupting the interval
             // The interval will continue and retry on the next cycle
+        } finally {
+            isUpdatingRef.current = false;
         }
     }, [sessionId, currentSession, updateSession, queryClient]);
 
