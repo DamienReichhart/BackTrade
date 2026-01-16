@@ -11,6 +11,7 @@ export const PlanSchema = z.object({
     stripe_price_id: z.string(),
     currency: z.string().length(3),
     price: numberCoerce.nonnegative(),
+    max_active_sessions: z.number().int().positive(),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
 });

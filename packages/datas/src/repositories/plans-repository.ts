@@ -54,6 +54,18 @@ class PlansRepository extends BasePostgresRepository {
     }
 
     /**
+     * Get a plan by code.
+     *
+     * @param code - Plan code identifier
+     * @returns Plan entity or null if not found
+     */
+    async getPlanByCode(code: string): Promise<Plan | null> {
+        return this.prisma.plan.findUnique({
+            where: { code },
+        }) as unknown as Plan | null;
+    }
+
+    /**
      * Create a new plan.
      *
      * @param data - Plan creation data

@@ -38,12 +38,13 @@ export function CreateDatasetModal({
     onSuccess,
 }: CreateDatasetModalProps) {
     const {
-        formState,
+        control,
         errors,
+        isValid,
         isLoading,
-        handleChange,
         handleSubmit,
         resetForm,
+        Controller,
     } = useDatasetCreate();
 
     // Fetch instruments
@@ -75,10 +76,12 @@ export function CreateDatasetModal({
 
     if (!isOpen) return null;
 
-    const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const result = await handleSubmit();
-        if (result) {
+    const onFormSubmit = async (e?: React.BaseSyntheticEvent) => {
+        e?.preventDefault();
+        // handleSubmit returns undefined if validation fails, or the result of onSubmit if it succeeds
+        const result = await handleSubmit(e);
+        // Only proceed if validation passed (result is not undefined) and API call succeeded (result is not null)
+        if (result !== undefined && result !== null) {
             onSuccess?.();
             resetForm();
             onClose();
@@ -113,7 +116,7 @@ export function CreateDatasetModal({
                     </button>
                 </div>
 
-                <form onSubmit={handleFormSubmit} className={styles.form}>
+                <form onSubmit={onFormSubmit} className={styles.form}>
                     <div className={styles.content}>
                         <div className={styles.field}>
                             <label
@@ -122,22 +125,27 @@ export function CreateDatasetModal({
                             >
                                 Instrument *
                             </label>
-                            <Select
-                                value={formState.instrument_id}
-                                options={instrumentOptions}
-                                onChange={(value) =>
-                                    handleChange("instrument_id", value)
-                                }
-                                placeholder={
-                                    isLoadingInstruments
-                                        ? "Loading instruments..."
-                                        : "Select an instrument"
-                                }
-                                disabled={isLoading || isLoadingInstruments}
+                            <Controller
+                                name="instrument_id"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={instrumentOptions}
+                                        placeholder={
+                                            isLoadingInstruments
+                                                ? "Loading instruments..."
+                                                : "Select an instrument"
+                                        }
+                                        disabled={
+                                            isLoading || isLoadingInstruments
+                                        }
+                                    />
+                                )}
                             />
                             {errors.instrument_id && (
                                 <span className={styles.error}>
-                                    {errors.instrument_id}
+                                    {errors.instrument_id.message}
                                 </span>
                             )}
                         </div>
@@ -146,18 +154,21 @@ export function CreateDatasetModal({
                             <label htmlFor="timeframe" className={styles.label}>
                                 Timeframe *
                             </label>
-                            <Select
-                                value={formState.timeframe}
-                                options={timeframeOptions}
-                                onChange={(value) =>
-                                    handleChange("timeframe", value)
-                                }
-                                placeholder="Select timeframe"
-                                disabled={isLoading}
+                            <Controller
+                                name="timeframe"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={timeframeOptions}
+                                        placeholder="Select timeframe"
+                                        disabled={isLoading}
+                                    />
+                                )}
                             />
                             {errors.timeframe && (
                                 <span className={styles.error}>
-                                    {errors.timeframe}
+                                    {errors.timeframe.message}
                                 </span>
                             )}
                         </div>
@@ -177,7 +188,7 @@ export function CreateDatasetModal({
                             variant="primary"
                             size="medium"
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isValid}
                         >
                             {isLoading ? "Creating..." : "Create Dataset"}
                         </Button>

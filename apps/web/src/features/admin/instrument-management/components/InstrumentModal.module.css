@@ -1,0 +1,120 @@
+/**
+ * Instrument Modal Styles
+ */
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-index-modal);
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background-color: var(--color-surface-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn var(--transition-normal);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    line-height: 1;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.closeButton:hover {
+    background-color: var(--color-surface-tertiary);
+    color: var(--color-text-primary);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content {
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.error {
+    font-size: var(--font-size-xs);
+    color: var(--color-danger);
+}
+
+.submitError {
+    padding: var(--spacing-md);
+    background-color: var(--color-danger-bg-20);
+    color: var(--color-danger);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--color-border-primary);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    background-color: var(--color-surface-secondary);
+}

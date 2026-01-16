@@ -2,9 +2,11 @@ export { useLoginForm } from "./useLoginForm";
 export { useRegisterForm } from "./useRegisterForm";
 export { useForgotPasswordForm } from "./useForgotPasswordForm";
 
-export type { LoginFormState, LoginFormErrors } from "./useLoginForm";
-export type { RegisterFormState, RegisterFormErrors } from "./useRegisterForm";
+// Re-export form types from centralized location
 export type {
+    LoginFormState,
+    RegisterFormState,
     ForgotPasswordFormState,
-    ForgotPasswordFormErrors,
-} from "./useForgotPasswordForm";
+    ResetPasswordFormState,
+    ChangePasswordFormState,
+} from "../../../types/forms";

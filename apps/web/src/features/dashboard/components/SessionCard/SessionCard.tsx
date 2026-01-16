@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { Session } from "@backtrade/types";
+import { type Session, SESSION_STATUS } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
 import { useSessionCard } from "../../hooks/useSessionCard";
 import { getSessionStatusColorClass } from "../../utils/sessions";
@@ -25,7 +25,7 @@ export function SessionCard({ session }: SessionCardProps) {
     };
 
     const linkRoute =
-        session.session_status === "ARCHIVED"
+        session.session_status === SESSION_STATUS.ARCHIVED
             ? getSessionAnalyticsUrl(String(session.id))
             : `/dashboard/sessions/${session.id}`;
 

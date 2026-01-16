@@ -96,6 +96,19 @@ class TransactionsRepository extends BasePostgresRepository {
             where: { id: this.toNumericId(id) },
         }) as unknown as Transaction;
     }
+    /**
+     * Get all transactions for a specific session.
+     *
+     * @param sessionId - Session ID as number or string
+     * @returns Array of transactions belonging to the session
+     */
+    async getTransactionsBySessionId(
+        sessionId: number | string
+    ): Promise<Transaction[]> {
+        return this.prisma.transaction.findMany({
+            where: { session_id: this.toNumericId(sessionId) },
+        }) as unknown as Transaction[];
+    }
 }
 
 const transactionsRepo = new TransactionsRepository();

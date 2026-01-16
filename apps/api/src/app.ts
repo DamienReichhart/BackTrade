@@ -8,11 +8,18 @@ import { requestId } from "./middlewares/request-id";
 import { requestLogger } from "./middlewares/request-logger";
 import { notFoundHandler } from "./middlewares/not-found";
 import { errorHandler } from "./middlewares/error-handler";
+import http from "http";
 import { ENV } from "./config/env";
 import stripeController from "./controllers/stripe-controller";
 
-function createApp(): Express {
+interface AppContext {
+    server: http.Server;
+}
+
+function createApp(): AppContext {
     const app: Express = express();
+    const server = http.createServer(app);
+
     app.disable("x-powered-by");
 
     if (ENV.NODE_ENV === "production") {
@@ -42,7 +49,7 @@ function createApp(): Express {
 
     app.use(errorHandler);
 
-    return app;
+    return { server };
 }
 
-export { createApp };
+export { createApp, type AppContext };

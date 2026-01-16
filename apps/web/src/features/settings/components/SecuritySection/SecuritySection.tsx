@@ -9,12 +9,11 @@ import styles from "./SecuritySection.module.css";
  */
 export function SecuritySection() {
     const {
-        passwords,
-        error,
+        register,
+        errors,
         success,
         isLoading,
         isUpdateDisabled,
-        handlePasswordChange,
         handleUpdatePassword,
         handleClearPasswords,
     } = useSecuritySection();
@@ -30,41 +29,35 @@ export function SecuritySection() {
 
             <div className={styles.content}>
                 {/* Change Password Subsection */}
-                <div className={styles.subsection}>
+                <form
+                    onSubmit={handleUpdatePassword}
+                    className={styles.subsection}
+                >
                     <h3 className={styles.subtitle}>Change password</h3>
                     <div className={styles.row}>
                         <div className={styles.column}>
                             <Input
                                 label="Current password"
                                 type="password"
-                                value={passwords.current}
-                                onChange={(e) =>
-                                    handlePasswordChange(
-                                        "current",
-                                        e.target.value
-                                    )
-                                }
+                                error={errors.currentPassword?.message}
+                                hasError={!!errors.currentPassword}
+                                {...register("currentPassword")}
                             />
                             <Input
                                 label="Confirm new password"
                                 type="password"
-                                value={passwords.confirm}
-                                onChange={(e) =>
-                                    handlePasswordChange(
-                                        "confirm",
-                                        e.target.value
-                                    )
-                                }
+                                error={errors.confirmPassword?.message}
+                                hasError={!!errors.confirmPassword}
+                                {...register("confirmPassword")}
                             />
                         </div>
                         <div className={styles.column}>
                             <Input
                                 label="New password"
                                 type="password"
-                                value={passwords.new}
-                                onChange={(e) =>
-                                    handlePasswordChange("new", e.target.value)
-                                }
+                                error={errors.newPassword?.message}
+                                hasError={!!errors.newPassword}
+                                {...register("newPassword")}
                             />
                         </div>
                     </div>
@@ -72,7 +65,11 @@ export function SecuritySection() {
                         Minimum 8 characters. Include letters and numbers. Avoid
                         reused passwords.
                     </p>
-                    {error && <p className={styles.errorMessage}>{error}</p>}
+                    {errors.root && (
+                        <p className={styles.errorMessage}>
+                            {errors.root.message}
+                        </p>
+                    )}
                     {success && (
                         <p className={styles.successMessage}>
                             Password updated successfully!
@@ -82,7 +79,7 @@ export function SecuritySection() {
                         <Button
                             variant="primary"
                             size="medium"
-                            onClick={handleUpdatePassword}
+                            type="submit"
                             disabled={isUpdateDisabled}
                         >
                             {isLoading ? "Updating..." : "Update password"}
@@ -90,13 +87,14 @@ export function SecuritySection() {
                         <Button
                             variant="outline"
                             size="medium"
+                            type="button"
                             onClick={handleClearPasswords}
                             disabled={isLoading}
                         >
                             Clear
                         </Button>
                     </div>
-                </div>
+                </form>
             </div>
         </section>
     );

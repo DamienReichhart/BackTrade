@@ -1,4 +1,23 @@
 /**
+ * Format currency
+ *
+ * Formats a number as EUR currency by default
+ *
+ * @param value - Value to format
+ * @param currency - Currency code (default: EUR)
+ * @returns Formatted currency string
+ */
+export function formatCurrency(
+    value: number,
+    currency: string = "EUR"
+): string {
+    return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: currency,
+    }).format(value);
+}
+
+/**
  * Format price with currency
  *
  * Supports both ISO currency codes (e.g., "EUR", "USD") and currency symbols (e.g., "€", "$").

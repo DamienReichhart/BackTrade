@@ -31,13 +31,15 @@ BackTrade provides a deterministic historical trading environment where users ca
 
 ## 2. User Roles and Subscription Tiers
 
-| Role          | Active Sessions | Pricing              |
-| ------------- | --------------- | -------------------- |
-| **Anonymous** | 0               | Free                 |
-| **User**      | Up to 3         | Free                 |
-| **Trader**    | Up to 10        | Monthly subscription |
-| **Expert**    | Up to 30        | Monthly subscription |
-| **Admin**     | Unlimited       | Internal             |
+| Role          | Active Sessions | Pricing                |
+| ------------- | --------------- | ---------------------- |
+| **Anonymous** | 0               | Free                   |
+| **User**      | 1               | Free (no subscription) |
+| **Trader**    | 10              | Monthly subscription   |
+| **Expert**    | 30              | Monthly subscription   |
+| **Admin**     | Unlimited       | Internal               |
+
+**Note**: Active sessions are defined as sessions with status `RUNNING` or `PAUSED` (not `ARCHIVED`). Archiving a session frees up a slot for creating new sessions.
 
 ---
 

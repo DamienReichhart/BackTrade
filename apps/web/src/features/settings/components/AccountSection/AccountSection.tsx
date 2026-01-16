@@ -13,11 +13,11 @@ interface AccountSectionProps {
  */
 export function AccountSection({ accountId }: AccountSectionProps) {
     const {
-        email,
+        register,
+        errors,
         isEditing,
-        error,
         isLoading,
-        handleEmailChange,
+        isValid,
         handleSave,
         handleCancel,
         handleEdit,
@@ -35,14 +35,17 @@ export function AccountSection({ accountId }: AccountSectionProps) {
                     <Input
                         label="Email"
                         type="email"
-                        value={email}
-                        onChange={(e) => handleEmailChange(e.target.value)}
                         disabled={!isEditing}
-                        hasError={!!error}
-                        error={error ?? undefined}
+                        hasError={!!errors.email}
+                        error={errors.email?.message}
+                        {...register("email")}
                     />
                 </div>
-                {error && <p className={styles.errorMessage}>{error}</p>}
+                {/* General errors can be displayed here if needed */}
+                {errors.root && (
+                    <p className={styles.errorMessage}>{errors.root.message}</p>
+                )}
+
                 <div className={styles.actions}>
                     {isEditing ? (
                         <>
@@ -50,7 +53,7 @@ export function AccountSection({ accountId }: AccountSectionProps) {
                                 variant="primary"
                                 size="medium"
                                 onClick={handleSave}
-                                disabled={isLoading}
+                                disabled={isLoading || !isValid}
                             >
                                 {isLoading ? "Saving..." : "Save"}
                             </Button>

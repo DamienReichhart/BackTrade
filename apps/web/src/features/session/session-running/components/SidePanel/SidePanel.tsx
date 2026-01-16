@@ -6,6 +6,7 @@ import {
 import { useOrderForm, usePositionCreation } from "../../hooks";
 import { isOrderFormDisabled } from "./utils";
 import { SessionControls } from "../TopBar/components/SessionControls/SessionControls";
+import type { OrderFormState } from "../../../../../types/forms";
 
 /**
  * Right-side panel with order ticket and session controls.
@@ -22,24 +23,33 @@ export function SidePanel() {
     const { createPositionWithSide, isCreatingPosition } =
         usePositionCreation(form);
 
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = form;
+
+    const qty = watch("qty");
+
     // Cost/estimates from session
     const spreadPts = currentSession?.spread_pts ?? 0;
     const slippagePts = currentSession?.slippage_pts ?? 0;
     const commission = currentSession?.commission_per_fill ?? 0;
 
-    const handleBuy = () => {
-        createPositionWithSide("BUY", form.qty, form.tp, form.sl);
+    const onBuy = (data: OrderFormState) => {
+        createPositionWithSide("BUY", data);
     };
 
-    const handleSell = () => {
-        createPositionWithSide("SELL", form.qty, form.tp, form.sl);
+    const onSell = (data: OrderFormState) => {
+        createPositionWithSide("SELL", data);
     };
 
     const isDisabled = isOrderFormDisabled(
         !!currentSession?.id,
         !!currentPrice,
         isCreatingPosition,
-        form.qty
+        qty
     );
 
     return (
@@ -53,42 +63,60 @@ export function SidePanel() {
                     </div>
 
                     <label className={styles.label}>Qty (lots)</label>
-                    <input
-                        className={styles.input}
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={form.qty}
-                        onChange={(e) => form.setQty(Number(e.target.value))}
-                    />
+                    <div className={styles.inputWrapper}>
+                        <input
+                            className={styles.input}
+                            type="number"
+                            min={0}
+                            step={0.01}
+                            {...register("qty", { valueAsNumber: true })}
+                        />
+                        {errors.qty && (
+                            <span className={styles.fieldError}>
+                                {errors.qty.message}
+                            </span>
+                        )}
+                    </div>
 
                     <label className={styles.label}>TP</label>
-                    <input
-                        className={styles.input}
-                        type="number"
-                        step={pipSize}
-                        value={form.tp ?? ""}
-                        onChange={(e) => form.setTp(Number(e.target.value))}
-                        placeholder={
-                            currentPrice !== undefined
-                                ? currentPrice.toString()
-                                : ""
-                        }
-                    />
+                    <div className={styles.inputWrapper}>
+                        <input
+                            className={styles.input}
+                            type="number"
+                            step={pipSize}
+                            placeholder={
+                                currentPrice !== undefined
+                                    ? currentPrice.toString()
+                                    : ""
+                            }
+                            {...register("tp", { valueAsNumber: true })}
+                        />
+                        {errors.tp && (
+                            <span className={styles.fieldError}>
+                                {errors.tp.message}
+                            </span>
+                        )}
+                    </div>
 
                     <label className={styles.label}>SL</label>
-                    <input
-                        className={styles.input}
-                        type="number"
-                        step={pipSize}
-                        value={form.sl ?? ""}
-                        onChange={(e) => form.setSl(Number(e.target.value))}
-                        placeholder={
-                            currentPrice !== undefined
-                                ? currentPrice.toString()
-                                : ""
-                        }
-                    />
+                    <div className={styles.inputWrapper}>
+                        <input
+                            className={styles.input}
+                            type="number"
+                            step={pipSize}
+                            placeholder={
+                                currentPrice !== undefined
+                                    ? currentPrice.toString()
+                                    : ""
+                            }
+                            {...register("sl", { valueAsNumber: true })}
+                        />
+                        {errors.sl && (
+                            <span className={styles.fieldError}>
+                                {errors.sl.message}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.inlineInfo}>
@@ -100,19 +128,21 @@ export function SidePanel() {
                     </span>
                 </div>
 
-                {form.error && <div className={styles.error}>{form.error}</div>}
+                {errors.root && (
+                    <div className={styles.error}>{errors.root.message}</div>
+                )}
 
                 <div className={styles.actions}>
                     <button
                         className={`${styles.btn} ${styles.buy}`}
-                        onClick={handleBuy}
+                        onClick={handleSubmit(onBuy)}
                         disabled={isDisabled}
                     >
                         {isCreatingPosition ? "Creating..." : "Buy Market"}
                     </button>
                     <button
                         className={`${styles.btn} ${styles.sell}`}
-                        onClick={handleSell}
+                        onClick={handleSubmit(onSell)}
                         disabled={isDisabled}
                     >
                         {isCreatingPosition ? "Creating..." : "Sell Market"}

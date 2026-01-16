@@ -11,13 +11,15 @@
  */
 
 import { subscriptionsRepo, usersRepo, plansRepo } from "@backtrade/data";
-import type {
-    Subscription,
-    SubscriptionWhereInput,
-    SubscriptionCreateInput,
-    SubscriptionUpdateInput,
-    User,
-    DateRangeQuery,
+import {
+    SUBSCRIPTION_STATUS_VALUES,
+    type Subscription,
+    type SubscriptionWhereInput,
+    type SubscriptionCreateInput,
+    type SubscriptionUpdateInput,
+    type User,
+    type DateRangeQuery,
+    type SubscriptionStatus,
 } from "@backtrade/types";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
@@ -29,14 +31,17 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid subscription statuses
+ * Uses enum values from @backtrade/types for consistency
  */
-const VALID_STATUSES = ["active", "canceled"] as const;
+const VALID_STATUSES = SUBSCRIPTION_STATUS_VALUES;
 
 /**
  * Statuses that represent an active subscription
  * A user can only have one subscription with these statuses at a time
  */
-const ACTIVE_STATUSES = ["active"] as const;
+const ACTIVE_STATUSES: readonly SubscriptionStatus[] = [
+    "active",
+] as const satisfies readonly SubscriptionStatus[];
 
 /**
  * Subscriptions Service
@@ -156,11 +161,7 @@ class SubscriptionsService extends BaseService {
      */
     private validateStatus(status: string | undefined | null): void {
         if (status !== undefined && status !== null) {
-            if (
-                !VALID_STATUSES.includes(
-                    status as (typeof VALID_STATUSES)[number]
-                )
-            ) {
+            if (!VALID_STATUSES.includes(status as SubscriptionStatus)) {
                 throw new BadRequestError(
                     `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`
                 );
@@ -178,7 +179,7 @@ class SubscriptionsService extends BaseService {
         return (
             status !== undefined &&
             status !== null &&
-            ACTIVE_STATUSES.includes(status as (typeof ACTIVE_STATUSES)[number])
+            ACTIVE_STATUSES.includes(status as SubscriptionStatus)
         );
     }
 

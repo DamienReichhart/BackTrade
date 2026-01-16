@@ -2,4 +2,5 @@ export { useAccountSection } from "./useAccountSection";
 export { useSecuritySection } from "./useSecuritySection";
 export { useDataPrivacySection } from "./useDataPrivacySection";
 
-export type { PasswordFormState } from "./useSecuritySection";
+// Re-export form types from centralized location
+export type { ChangePasswordFormState } from "../../../types/forms";

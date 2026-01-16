@@ -1,13 +1,14 @@
 import { transactionsRepo } from "@backtrade/data";
-import type {
-    Transaction,
-    TransactionWhereInput,
-    TransactionCreateInput,
-    TransactionOrderBy,
-    SearchQuery,
-    User,
-    TransactionType,
-    SessionUpdateInput,
+import {
+    TRANSACTION_TYPE_VALUES,
+    type Transaction,
+    type TransactionWhereInput,
+    type TransactionCreateInput,
+    type TransactionOrderBy,
+    type SearchQuery,
+    type User,
+    type TransactionType,
+    type SessionUpdateInput,
 } from "@backtrade/types";
 import { transactionsCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -20,16 +21,9 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid transaction types for search operations
+ * Uses enum values from @backtrade/types for consistency
  */
-const VALID_TRANSACTION_TYPES = [
-    "DEPOSIT",
-    "WITHDRAWAL",
-    "COMMISSION",
-    "PNL",
-    "SLIPPAGE",
-    "SPREAD",
-    "ADJUSTMENT",
-] as const;
+const VALID_TRANSACTION_TYPES = TRANSACTION_TYPE_VALUES;
 
 /**
  * Valid sortable fields for transactions
@@ -366,14 +360,10 @@ class TransactionsService extends BaseService {
         const searchConditions: TransactionWhereInput[] = [];
         const upperQ = searchQuery.toUpperCase();
 
-        if (
-            VALID_TRANSACTION_TYPES.includes(
-                upperQ as (typeof VALID_TRANSACTION_TYPES)[number]
-            )
-        ) {
+        if (VALID_TRANSACTION_TYPES.includes(upperQ as TransactionType)) {
             searchConditions.push({
                 transaction_type: {
-                    equals: upperQ as (typeof VALID_TRANSACTION_TYPES)[number],
+                    equals: upperQ as TransactionType,
                 },
             });
         }

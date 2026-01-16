@@ -10,6 +10,7 @@ import type {
     RegisterEmailData,
     LoginEmailData,
     AccountDeletedEmailData,
+    PasswordResetEmailData,
 } from "@backtrade/types";
 
 /**
@@ -75,5 +76,24 @@ export class TemplateRenderer {
      */
     async renderAccountDeleted(data: AccountDeletedEmailData): Promise<string> {
         return this.compiler.renderTemplate("account-deleted", data);
+    }
+
+    /**
+     * Render the password reset email
+     *
+     * @param data - Password reset email data
+     * @returns Rendered HTML string
+     *
+     * @example
+     * ```ts
+     * const html = await renderer.renderPasswordReset({
+     *   username: "john.doe",
+     *   resetCode: "123456",
+     *   expirationMinutes: 15
+     * });
+     * ```
+     */
+    async renderPasswordReset(data: PasswordResetEmailData): Promise<string> {
+        return this.compiler.renderTemplate("password-reset", data);
     }
 }

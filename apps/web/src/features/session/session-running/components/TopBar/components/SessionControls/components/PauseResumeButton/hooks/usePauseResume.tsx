@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { SESSION_STATUS } from "@backtrade/types";
 import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
 import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 
@@ -23,8 +24,8 @@ export function usePauseResume(
         sessionId ?? ""
     );
 
-    const isSessionPaused = sessionStatus === "PAUSED";
-    const isSessionRunning = sessionStatus === "RUNNING";
+    const isSessionPaused = sessionStatus === SESSION_STATUS.PAUSED;
+    const isSessionRunning = sessionStatus === SESSION_STATUS.RUNNING;
 
     const canToggle = useMemo(
         () =>
@@ -53,7 +54,9 @@ export function usePauseResume(
         }
 
         try {
-            const newStatus = isSessionPaused ? "RUNNING" : "PAUSED";
+            const newStatus = isSessionPaused
+                ? SESSION_STATUS.RUNNING
+                : SESSION_STATUS.PAUSED;
             const updatedSession = await updateSession({
                 session_status: newStatus,
             });

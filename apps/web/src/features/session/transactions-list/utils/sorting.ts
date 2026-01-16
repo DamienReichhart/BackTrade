@@ -1,4 +1,6 @@
-import type { Transaction } from "@backtrade/types";
+import type { Transaction, SortOrder } from "@backtrade/types";
+
+export type { SortOrder };
 
 /**
  * Sortable field types for transactions
@@ -9,11 +11,6 @@ export type TransactionSortField =
     | "amount"
     | "balance_after"
     | "created_at";
-
-/**
- * Sort order
- */
-export type SortOrder = "asc" | "desc";
 
 /**
  * Get the sortable value for a transaction field

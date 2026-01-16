@@ -3,6 +3,24 @@ import { z } from "zod";
 export const SessionStatusSchema = z.enum(["RUNNING", "PAUSED", "ARCHIVED"]);
 export type SessionStatus = z.infer<typeof SessionStatusSchema>;
 
+/**
+ * SessionStatus enum values as const object for easy access
+ */
+export const SESSION_STATUS = {
+    RUNNING: "RUNNING",
+    PAUSED: "PAUSED",
+    ARCHIVED: "ARCHIVED",
+} as const;
+
+/**
+ * Get all SessionStatus enum values as an array
+ */
+export const SESSION_STATUS_VALUES: SessionStatus[] = [
+    SESSION_STATUS.RUNNING,
+    SESSION_STATUS.PAUSED,
+    SESSION_STATUS.ARCHIVED,
+];
+
 export const TimeframeSchema = z.enum([
     "M1",
     "M5",

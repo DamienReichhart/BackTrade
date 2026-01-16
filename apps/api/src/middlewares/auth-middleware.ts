@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import usersService from "../services/base/users-service";
 import UnAuthenticatedError from "../errors/web/unauthenticated-error";
+import ForbiddenError from "../errors/web/forbidden-error";
 import jwtService from "../services/security/jwt-service";
 
 /**
@@ -26,6 +27,11 @@ export async function authMiddleware(
     const decoded = await jwtService.verifyAccessToken(token);
     const userId = decoded.sub;
     const user = await usersService.getUserById(userId);
+
+    if (user.is_banned) {
+        throw new ForbiddenError("Your account has been banned.");
+    }
+
     req.user = user;
     next();
 }

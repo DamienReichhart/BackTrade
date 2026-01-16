@@ -1,6 +1,6 @@
 import path from "node:path";
 import type { TransportTargetOptions } from "pino";
-import type { LogLevel, NodeEnv } from "./types";
+import type { LogLevel, NodeEnv } from "@backtrade/types";
 
 /**
  * Configuration for creating transport targets

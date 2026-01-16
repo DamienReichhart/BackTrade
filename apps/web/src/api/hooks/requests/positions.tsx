@@ -41,15 +41,20 @@ export function usePosition(id: string) {
  *
  * @param sessionId - The session ID to fetch positions for
  * @param status - Optional position status filter (OPEN, CLOSED, LIQUIDATED)
+ * @param limit - Optional limit for pagination (defaults to 20, max 10000)
  * @returns Query result with positions array
  */
 export function usePositionsBySession(
     sessionId: string,
-    status?: PositionStatus
+    status?: PositionStatus,
+    limit?: number
 ) {
     const searchParams = new URLSearchParams();
     if (status) {
         searchParams.append("status", status);
+    }
+    if (limit) {
+        searchParams.append("limit", String(limit));
     }
 
     const queryString = searchParams.toString();

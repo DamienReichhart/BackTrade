@@ -1,21 +1,5 @@
 import type { Logger as PinoLogger, SerializerFn } from "pino";
-
-/**
- * Log levels supported by the logger
- */
-export type LogLevel =
-    | "fatal"
-    | "error"
-    | "warn"
-    | "info"
-    | "debug"
-    | "trace"
-    | "silent";
-
-/**
- * Node environment types
- */
-export type NodeEnv = "development" | "production" | "test";
+import type { LogLevel, NodeEnv } from "@backtrade/types";
 
 /**
  * Configuration for creating a logger instance

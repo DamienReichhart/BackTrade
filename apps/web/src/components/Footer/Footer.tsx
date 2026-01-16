@@ -19,6 +19,7 @@ const footerLinks: FooterLink[] = [
     { label: "Interface", href: "/#interface" },
     { label: "Terms", href: "/terms" },
     { label: "Privacy", href: "/privacy" },
+    { label: "Legal Mentions", href: "/legal-mentions" },
 ];
 
 /**

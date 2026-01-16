@@ -12,15 +12,7 @@ import styles from "./LoginFormPanel.module.css";
  * Displays the login form on the right side with email/password inputs,
  */
 export function LoginFormPanel() {
-    const {
-        formState,
-        errors,
-        isLoading,
-        handleEmailChange,
-        handlePasswordChange,
-        handleRememberDeviceChange,
-        handleSubmit,
-    } = useLoginForm();
+    const { register, errors, isLoading, handleSubmit } = useLoginForm();
 
     return (
         <div className={styles.panel}>
@@ -35,30 +27,25 @@ export function LoginFormPanel() {
                         label="Email"
                         type="email"
                         placeholder="you@domain.com"
-                        value={formState.email}
-                        onChange={(e) => handleEmailChange(e.target.value)}
-                        error={errors.email}
+                        error={errors.email?.message}
                         hasError={!!errors.email}
+                        {...register("email")}
                     />
 
                     {/* Password Input */}
                     <Input
                         label="Password"
                         type="password"
-                        value={formState.password}
-                        onChange={(e) => handlePasswordChange(e.target.value)}
-                        error={errors.password}
+                        error={errors.password?.message}
                         hasError={!!errors.password}
+                        {...register("password")}
                     />
 
                     {/* Remember Device & Forgot Password */}
                     <div className={styles.formOptions}>
                         <Checkbox
                             label="Remember this device"
-                            checked={formState.rememberDevice}
-                            onChange={(e) =>
-                                handleRememberDeviceChange(e.target.checked)
-                            }
+                            {...register("rememberDevice")}
                         />
                         <Link
                             to="/forgot-password"

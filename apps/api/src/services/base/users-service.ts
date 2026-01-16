@@ -1,11 +1,12 @@
 import { usersRepo } from "@backtrade/data";
-import type {
-    User,
-    UserWhereInput,
-    UserCreateInput,
-    UserUpdateInput,
-    UserOrderBy,
-    SearchQueryUser,
+import {
+    type User,
+    type UserWhereInput,
+    type UserCreateInput,
+    type UserUpdateInput,
+    type UserOrderBy,
+    type SearchQueryUser,
+    type Role,
 } from "@backtrade/types";
 import { usersCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -21,9 +22,12 @@ import { buildOrderBy, buildPagination } from "../../utils";
 import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
- * Valid user roles
+ * Valid user roles for user management (excludes ANONYMOUS)
+ * Uses enum values from @backtrade/types for consistency
+ * Note: Excludes ANONYMOUS as it's not a valid role for user management
  */
-const VALID_ROLES = ["USER", "ADMIN"] as const;
+type ValidRole = Exclude<Role, "ANONYMOUS">;
+const VALID_ROLES: readonly ValidRole[] = ["USER", "ADMIN"] as const;
 
 /**
  * Email validation regex pattern
@@ -113,6 +117,16 @@ class UsersService extends BaseService {
     }
 
     /**
+     * Type guard to check if a role is a valid role for user management
+     *
+     * @param role - Role to check
+     * @returns True if role is a valid role (USER or ADMIN)
+     */
+    private isValidRole(role: string): role is ValidRole {
+        return VALID_ROLES.includes(role as ValidRole);
+    }
+
+    /**
      * Validate role is valid if provided
      *
      * @param role - Role to validate
@@ -120,7 +134,7 @@ class UsersService extends BaseService {
      */
     private validateRole(role: string | undefined | null): void {
         if (role !== undefined && role !== null) {
-            if (!VALID_ROLES.includes(role as (typeof VALID_ROLES)[number])) {
+            if (!this.isValidRole(role)) {
                 throw new BadRequestError(
                     `Invalid role. Must be one of: ${VALID_ROLES.join(", ")}`
                 );

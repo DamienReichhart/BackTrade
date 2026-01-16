@@ -85,8 +85,9 @@ model User {
   role               Role     @default(USER)
   is_banned          Boolean  @default(false)
   stripe_customer_id String?  @unique
-  password_reset_code String?
-  created_at         DateTime @default(now())
+  password_reset_code       String?
+  password_reset_expires_at DateTime?
+  created_at                DateTime  @default(now())
   updated_at         DateTime @updatedAt
 
   // Relations
@@ -119,14 +120,15 @@ model UserSession {
 // ============================================================================
 
 model Plan {
-  id                Int      @id @default(autoincrement())
-  code              String   @unique
-  stripe_product_id String
-  stripe_price_id   String
-  currency          String   @db.Char(3)
-  price             Decimal  @db.Decimal(10, 2)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id                 Int      @id @default(autoincrement())
+  code               String   @unique
+  stripe_product_id  String
+  stripe_price_id    String
+  currency           String   @db.Char(3)
+  price              Decimal  @db.Decimal(10, 2)
+  max_active_sessions Int      @default(1)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   // Relations
   subscriptions Subscription[]
@@ -212,7 +214,6 @@ model Session {
   instrument        Instrument         @relation(fields: [instrument_id], references: [id])
   positions         Position[]
   transactions      Transaction[]
-  session_analytics SessionAnalytics[]
 
   @@index([user_id])
   @@index([instrument_id])
@@ -288,24 +289,6 @@ model Dataset {
 // NOTE: Candle model has been moved to ClickHouse for better time-series performance.
 // The candles table is now managed in ClickHouse, not PostgreSQL.
 // See: packages/datas/clickhouse/migrations/001_create_candles_table.sql
-
-// ============================================================================
-// ANALYTICS MODELS
-// ============================================================================
-
-model SessionAnalytics {
-  id          Int      @id @default(autoincrement())
-  session_id  Int
-  file_name   String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  // Relations
-  session Session @relation(fields: [session_id], references: [id], onDelete: Cascade)
-
-  @@index([session_id])
-  @@map("session_analytics")
-}
 
 // ============================================================================
 // QUEUEJOB MODELS

@@ -36,6 +36,11 @@ sessionsPrivateRouter.get(
 );
 
 sessionsPrivateRouter.get(
+    "/:id/analytics",
+    sessionsController.getSessionAnalytics.bind(sessionsController)
+);
+
+sessionsPrivateRouter.get(
     "/",
     sessionsController.getAllSessions.bind(sessionsController)
 );

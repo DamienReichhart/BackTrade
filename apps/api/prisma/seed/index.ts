@@ -36,6 +36,7 @@ async function seed() {
                 stripe_price_id: plan.stripe_price_id,
                 currency: plan.currency,
                 price: plan.price,
+                max_active_sessions: plan.max_active_sessions,
             },
             create: {
                 id: plan.id,
@@ -44,6 +45,7 @@ async function seed() {
                 stripe_price_id: plan.stripe_price_id,
                 currency: plan.currency,
                 price: plan.price,
+                max_active_sessions: plan.max_active_sessions,
             },
         });
         console.log(`  ✓ Upserted plan: ${plan.code}`);

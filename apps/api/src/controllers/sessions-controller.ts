@@ -22,6 +22,7 @@ import {
 import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
 import sessionInfoService from "../services/trading/session-info-service";
+import analyticsService from "../services/analytics/analytics-service";
 import BadRequestError from "../errors/web/bad-request-error";
 import { logger } from "../libs/pino";
 import { TRADING_CONSTANTS } from "../config/trading-constants";
@@ -289,6 +290,39 @@ class SessionsController {
         );
 
         res.status(200).json(sessionInfo);
+    }
+
+    /**
+     * Get session analytics
+     *
+     * Returns detailed analytics for a session including:
+     * - Performance summary
+     * - Equity curve
+     * - Trade breakdowns
+     * - Costs analysis
+     * - Top winners/losers
+     * - Daily PnL
+     *
+     * @param req - Express request object
+     * @param res - Express response object
+     */
+    async getSessionAnalytics(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
+
+        const analytics = await analyticsService.getSessionAnalytics(id, user);
+
+        this.logger.trace(
+            { id, userId: user.id },
+            "Session analytics retrieved successfully"
+        );
+
+        res.status(200).json(analytics);
     }
 
     /**

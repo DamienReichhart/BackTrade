@@ -1,3 +1,8 @@
+import type {
+    BadgeVariant,
+    ButtonVariant,
+    PricingTierCode,
+} from "@backtrade/types";
 import { type PlanFeature } from "./plan";
 
 /**
@@ -5,17 +10,17 @@ import { type PlanFeature } from "./plan";
  */
 export interface PricingTier {
     id?: number;
-    code: string;
+    code: PricingTierCode;
     name: string;
     price: number;
     currency: string;
     period: string;
     description: string;
     badge?: string;
-    badgeVariant?: "default" | "popular" | "premium";
+    badgeVariant?: BadgeVariant;
     features: PlanFeature[];
     ctaText: string;
-    ctaVariant: "outline" | "primary" | "secondary";
+    ctaVariant: ButtonVariant;
     highlighted?: boolean;
     stripeProductId?: string;
     stripePriceId?: string;

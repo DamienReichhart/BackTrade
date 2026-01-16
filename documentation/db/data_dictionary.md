@@ -2,16 +2,17 @@
 
 ## USER
 
-| Attribute           | Type     | Size | Constraints              | Description                                        | Domain                    |
-| ------------------- | -------- | ---- | ------------------------ | -------------------------------------------------- | ------------------------- |
-| email               | String   | -    | UNIQUE, NOT NULL         | Email address of the user, used for authentication | Valid email format        |
-| password_hash       | String   | -    | NOT NULL                 | Hashed password for user authentication            | Encrypted string          |
-| role                | Enum     | -    | NOT NULL, DEFAULT: USER  | User role defining access level                    | ANONYMOUS, USER, ADMIN    |
-| is_banned           | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if the user account is banned            | true, false               |
-| stripe_customer_id  | String   | -    | NULLABLE, UNIQUE         | Stripe customer identifier for billing             | Stripe customer ID format |
-| password_reset_code | String   | -    | NULLABLE                 | Temporary code for password reset functionality    | Alphanumeric string       |
-| created_at          | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the user account was created        | ISO 8601 datetime         |
-| updated_at          | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the user record was last modified   | ISO 8601 datetime         |
+| Attribute                 | Type     | Size | Constraints              | Description                                             | Domain                    |
+| ------------------------- | -------- | ---- | ------------------------ | ------------------------------------------------------- | ------------------------- |
+| email                     | String   | -    | UNIQUE, NOT NULL         | Email address of the user, used for authentication      | Valid email format        |
+| password_hash             | String   | -    | NOT NULL                 | Hashed password for user authentication                 | Encrypted string          |
+| role                      | Enum     | -    | NOT NULL, DEFAULT: USER  | User role defining access level                         | ANONYMOUS, USER, ADMIN    |
+| is_banned                 | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if the user account is banned                 | true, false               |
+| stripe_customer_id        | String   | -    | NULLABLE, UNIQUE         | Stripe customer identifier for billing                  | Stripe customer ID format |
+| password_reset_code       | String   | -    | NULLABLE                 | Temporary 6-digit code for password reset functionality | Numeric string (6 digits) |
+| password_reset_expires_at | DateTime | -    | NULLABLE                 | Expiration timestamp for the password reset code        | ISO 8601 datetime or NULL |
+| created_at                | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the user account was created             | ISO 8601 datetime         |
+| updated_at                | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the user record was last modified        | ISO 8601 datetime         |
 
 ---
 
@@ -30,15 +31,16 @@
 
 ## PLAN
 
-| Attribute         | Type     | Size | Constraints              | Description                                        | Domain                                  |
-| ----------------- | -------- | ---- | ------------------------ | -------------------------------------------------- | --------------------------------------- |
-| code              | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan | Alphanumeric code                       |
-| stripe_product_id | String   | -    | NOT NULL                 | Stripe product identifier                          | Stripe product ID format                |
-| stripe_price_id   | String   | -    | NOT NULL                 | Stripe price identifier                            | Stripe price ID format                  |
-| currency          | String   | 3    | NOT NULL                 | Currency code for the plan price                   | ISO 4217 currency code (e.g., USD, EUR) |
-| price             | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                     | Positive decimal number                 |
-| created_at        | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                | ISO 8601 datetime                       |
-| updated_at        | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified   | ISO 8601 datetime                       |
+| Attribute           | Type     | Size | Constraints              | Description                                                            | Domain                                  |
+| ------------------- | -------- | ---- | ------------------------ | ---------------------------------------------------------------------- | --------------------------------------- |
+| code                | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan                     | Alphanumeric code                       |
+| stripe_product_id   | String   | -    | NOT NULL                 | Stripe product identifier                                              | Stripe product ID format                |
+| stripe_price_id     | String   | -    | NOT NULL                 | Stripe price identifier                                                | Stripe price ID format                  |
+| currency            | String   | 3    | NOT NULL                 | Currency code for the plan price                                       | ISO 4217 currency code (e.g., USD, EUR) |
+| price               | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                                         | Positive decimal number                 |
+| max_active_sessions | Integer  | -    | NOT NULL, DEFAULT: 1     | Maximum number of active (non-archived) sessions allowed for this plan | Positive integer                        |
+| created_at          | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                                    | ISO 8601 datetime                       |
+| updated_at          | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified                       | ISO 8601 datetime                       |
 
 ---
 

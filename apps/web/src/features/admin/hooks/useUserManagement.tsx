@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsers, useDeleteUser } from "../../../api/hooks/requests/users";
-import type { PublicUser, Role, SearchQueryUser } from "@backtrade/types";
+import type {
+    PublicUser,
+    Role,
+    SearchQueryUser,
+    SortOrder,
+} from "@backtrade/types";
 import { useModal } from "../../../hooks/useModal";
 
 export type SortField =
@@ -11,7 +16,6 @@ export type SortField =
     | "is_banned"
     | "created_at"
     | "updated_at";
-export type SortOrder = "asc" | "desc";
 
 /**
  * Hook for managing user management page state and logic

@@ -13,17 +13,8 @@ import styles from "./RegisterFormPanel.module.css";
  * and terms acceptance fields
  */
 export function RegisterFormPanel() {
-    const {
-        formState,
-        errors,
-        isLoading,
-        isFormValid,
-        handleEmailChange,
-        handlePasswordChange,
-        handleConfirmPasswordChange,
-        handleAcceptTermsChange,
-        handleSubmit,
-    } = useRegisterForm();
+    const { register, errors, isLoading, isValid, handleSubmit } =
+        useRegisterForm();
 
     return (
         <div className={styles.panel}>
@@ -38,32 +29,27 @@ export function RegisterFormPanel() {
                         label="Email"
                         type="email"
                         placeholder="you@domain.com"
-                        value={formState.email}
-                        onChange={(e) => handleEmailChange(e.target.value)}
-                        error={errors.email}
+                        error={errors.email?.message}
                         hasError={!!errors.email}
+                        {...register("email")}
                     />
 
                     {/* Password Input */}
                     <Input
                         label="Password"
                         type="password"
-                        value={formState.password}
-                        onChange={(e) => handlePasswordChange(e.target.value)}
-                        error={errors.password}
+                        error={errors.password?.message}
                         hasError={!!errors.password}
+                        {...register("password")}
                     />
 
                     {/* Confirm Password Input */}
                     <Input
                         label="Confirm Password"
                         type="password"
-                        value={formState.confirmPassword}
-                        onChange={(e) =>
-                            handleConfirmPasswordChange(e.target.value)
-                        }
-                        error={errors.confirmPassword}
+                        error={errors.confirmPassword?.message}
                         hasError={!!errors.confirmPassword}
+                        {...register("confirmPassword")}
                     />
 
                     {/* Terms Acceptance */}
@@ -91,11 +77,13 @@ export function RegisterFormPanel() {
                                     </Link>
                                 </>
                             }
-                            checked={formState.acceptTerms}
-                            onChange={(e) =>
-                                handleAcceptTermsChange(e.target.checked)
-                            }
+                            {...register("acceptTerms")}
                         />
+                        {errors.acceptTerms && (
+                            <div className={styles.errorText}>
+                                {errors.acceptTerms.message}
+                            </div>
+                        )}
                     </div>
 
                     {/* Submit Button */}
@@ -105,7 +93,7 @@ export function RegisterFormPanel() {
                         size="large"
                         fullWidth
                         className={styles.submitButton}
-                        disabled={!isFormValid || isLoading}
+                        disabled={!isValid || isLoading}
                     >
                         {isLoading ? "Creating account..." : "Create account"}
                     </Button>

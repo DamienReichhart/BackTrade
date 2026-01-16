@@ -8,6 +8,7 @@ import userService from "../base/users-service";
 import hashService from "./hash-service";
 import jwtService from "./jwt-service";
 import { BaseService } from "../base/base-service";
+import ForbiddenError from "../../errors/web/forbidden-error";
 
 /**
  * Auth Service
@@ -27,6 +28,17 @@ class AuthService extends BaseService {
      */
     async login(loginRequest: LoginRequest): Promise<AuthResponse> {
         const user = await userService.getUserByEmail(loginRequest.email);
+
+        if (user.is_banned) {
+            this.logger.warn(
+                { userId: user.id },
+                "Banned user attempted to login"
+            );
+            throw new ForbiddenError(
+                "Your account has been banned. Please contact support."
+            );
+        }
+
         this.logger.trace(
             { userId: user.id },
             "User found, trying to verify password"
@@ -72,6 +84,17 @@ class AuthService extends BaseService {
             "Refresh token verified, trying to get user"
         );
         const user = await userService.getUserById(payload.sub);
+
+        if (user.is_banned) {
+            this.logger.warn(
+                { userId: user.id },
+                "Banned user attempted to refresh token"
+            );
+            throw new ForbiddenError(
+                "Your account has been banned. Please contact support."
+            );
+        }
+
         this.logger.trace(
             { userId: user.id },
             "User found, generating new tokens"

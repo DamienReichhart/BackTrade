@@ -5,6 +5,7 @@ export interface SeedPlan {
     stripe_price_id: string;
     currency: string;
     price: number;
+    max_active_sessions: number;
 }
 
 /**
@@ -19,6 +20,7 @@ export async function getPlans(): Promise<SeedPlan[]> {
             stripe_price_id: "price_1SoTTAI0H7dj41TROUvmOeyy",
             currency: "USD",
             price: 19,
+            max_active_sessions: 10,
         },
         {
             id: 2,
@@ -27,6 +29,7 @@ export async function getPlans(): Promise<SeedPlan[]> {
             stripe_price_id: "price_1SoTTlI0H7dj41TRig7QlRUr",
             currency: "USD",
             price: 49,
+            max_active_sessions: 30,
         },
     ];
 }

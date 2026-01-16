@@ -1,12 +1,13 @@
-import { useState } from "react";
-import {
-    RoleSchema,
-    type PublicUser,
-    type UpdateUserRequest,
-} from "@backtrade/types";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type PublicUser, type UpdateUserRequest } from "@backtrade/types";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
 import { useModalBehavior } from "../../../hooks/useModalBehavior";
-import { validateEmail, validateRole } from "@backtrade/utils";
+import {
+    UserEditFormSchema,
+    type UserEditFormState,
+} from "../../../types/forms";
 
 /**
  * Hook for managing user edit modal state and logic
@@ -17,64 +18,55 @@ export function useUserEditModal(
     onClose: () => void,
     onSuccess: () => void
 ) {
-    const [email, setEmail] = useState<string>(user.email);
-    const [role, setRole] = useState<string>(user.role);
-    const [isBanned, setIsBanned] = useState<boolean>(user.is_banned);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-
     const updateUserMutation = useUpdateUser(user.id.toString());
 
     // Handle modal behavior (Escape key, body scroll)
     useModalBehavior(isOpen, onClose);
 
-    /**
-     * Validate form
-     */
-    const validate = (): boolean => {
-        const newErrors: Record<string, string> = {};
+    const {
+        register,
+        control,
+        handleSubmit,
+        reset,
+        formState: { errors, isDirty },
+        setError,
+    } = useForm<UserEditFormState>({
+        resolver: zodResolver(UserEditFormSchema),
+        defaultValues: {
+            email: user.email,
+            role: user.role,
+            is_banned: user.is_banned,
+        },
+    });
 
-        const emailValidation = validateEmail(email);
-        if (!emailValidation.isValid) {
-            newErrors.email = emailValidation.error ?? "Invalid email";
+    // Reset form when user changes or modal opens
+    useEffect(() => {
+        if (isOpen) {
+            reset({
+                email: user.email,
+                role: user.role,
+                is_banned: user.is_banned,
+            });
         }
-
-        const roleValidation = validateRole(role);
-        if (!roleValidation.isValid) {
-            newErrors.role = roleValidation.error ?? "Invalid role";
-        } else {
-            // Validate role against schema
-            if (!RoleSchema.safeParse(role).success) {
-                newErrors.role = "Invalid role";
-            }
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    }, [user, isOpen, reset]);
 
     /**
      * Handle form submission
      */
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!validate()) {
-            return;
-        }
-
+    const onSubmit = async (data: UserEditFormState) => {
         try {
             const updateData: UpdateUserRequest = {};
 
-            if (email !== user.email) {
-                updateData.email = email;
+            if (data.email !== user.email) {
+                updateData.email = data.email;
             }
 
-            if (role !== user.role) {
-                updateData.role = RoleSchema.parse(role);
+            if (data.role !== user.role) {
+                updateData.role = data.role;
             }
 
-            if (isBanned !== user.is_banned) {
-                updateData.is_banned = isBanned;
+            if (data.is_banned !== user.is_banned) {
+                updateData.is_banned = data.is_banned;
             }
 
             // Only update if there are changes
@@ -85,8 +77,9 @@ export function useUserEditModal(
                 onClose();
             }
         } catch (error) {
-            setErrors({
-                submit:
+            setError("root", {
+                type: "manual",
+                message:
                     error instanceof Error
                         ? error.message
                         : "Failed to update user",
@@ -95,19 +88,12 @@ export function useUserEditModal(
     };
 
     return {
-        // Form state
-        email,
-        setEmail,
-        role,
-        setRole,
-        isBanned,
-        setIsBanned,
+        register,
+        control,
         errors,
-
-        // Mutation state
+        isDirty,
         isLoading: updateUserMutation.isLoading,
-
-        // Handlers
-        handleSubmit,
+        handleSubmit: handleSubmit(onSubmit),
+        Controller,
     };
 }

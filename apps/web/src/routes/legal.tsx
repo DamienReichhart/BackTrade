@@ -1,4 +1,5 @@
 import { Terms, Privacy } from "../features/legal";
+import { LegalMentions } from "../features/legal/LegalMentions";
 
 export const legalRoutes = [
     {
@@ -8,5 +9,9 @@ export const legalRoutes = [
     {
         path: "/privacy",
         element: <Privacy />,
+    },
+    {
+        path: "/legal-mentions",
+        element: <LegalMentions />,
     },
 ];

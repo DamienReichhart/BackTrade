@@ -1,0 +1,92 @@
+/**
+ * DataTable Component Styles
+ */
+
+.tableWrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.table th,
+.table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--color-border-secondary);
+    white-space: nowrap;
+    text-align: left;
+}
+
+.table th {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--color-surface-secondary);
+    position: sticky;
+    top: 0;
+}
+
+.table td {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+}
+
+/* Alignment */
+.left {
+    text-align: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+/* Empty state */
+.empty {
+    text-align: center;
+    color: var(--color-text-tertiary);
+    padding: var(--spacing-xl) !important;
+    font-family: var(--font-sans);
+}
+
+/* Clickable rows */
+.clickable {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.clickable:hover {
+    background-color: var(--color-surface-elevated);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .table th,
+    .table td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    .table th {
+        font-size: 10px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .table th,
+    .table td {
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+}

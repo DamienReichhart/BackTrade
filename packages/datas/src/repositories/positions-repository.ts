@@ -94,6 +94,19 @@ class PositionsRepository extends BasePostgresRepository {
             where: { id: this.toNumericId(id) },
         }) as unknown as Position;
     }
+    /**
+     * Get all positions for a specific session.
+     *
+     * @param sessionId - Session ID as number or string
+     * @returns Array of positions belonging to the session
+     */
+    async getPositionsBySessionId(
+        sessionId: number | string
+    ): Promise<Position[]> {
+        return this.prisma.position.findMany({
+            where: { session_id: this.toNumericId(sessionId) },
+        }) as unknown as Position[];
+    }
 }
 
 const positionsRepo = new PositionsRepository();

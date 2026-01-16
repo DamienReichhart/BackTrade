@@ -1,5 +1,5 @@
 import { useState, useMemo, type ChangeEvent } from "react";
-import type { Session, SearchQuery } from "@backtrade/types";
+import type { Session, SearchQuery, SortOrder } from "@backtrade/types";
 import { useSessions } from "../../../api/hooks/requests/sessions";
 
 export type SortField =
@@ -11,8 +11,6 @@ export type SortField =
     | "initial_balance"
     | "leverage"
     | "start_time";
-
-export type SortOrder = "asc" | "desc";
 
 /**
  * Hook to manage session list data and state with search, sorting, and pagination

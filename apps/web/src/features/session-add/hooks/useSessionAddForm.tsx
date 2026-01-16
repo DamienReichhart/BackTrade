@@ -1,9 +1,12 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
     type CreateSessionRequest,
     type Speed,
     type Leverage,
+    SESSION_STATUS,
     getSpeedOptions,
     getLeverageOptions,
 } from "@backtrade/types";
@@ -11,23 +14,14 @@ import { useCreateSession } from "../../../api/hooks/requests/sessions";
 import { useInstruments } from "../../../api/hooks/requests/instruments";
 import { useAuthStore } from "../../../store/auth";
 import type { SelectOption } from "../../../types/ui";
+import { formatLocalDateTimeToISO } from "../utils/validation";
 import {
-    validateInstrument,
-    validateSpeed,
-    validateInitialBalance,
-    validateLeverage,
-    validateNumericField,
-    validateDateTimeField,
-    formatLocalDateTimeToISO,
-    validateStartTsVsEndTs,
-} from "../utils/validation";
+    SessionAddFormSchema,
+    type SessionAddFormState,
+} from "../../../types/forms";
 
 /**
  * Hook to manage session add form state and submission
- *
- * Each field has its own separate state for better isolation and control
- *
- * @returns Form state, handlers, and submission logic
  */
 export function useSessionAddForm() {
     const navigate = useNavigate();
@@ -40,44 +34,28 @@ export function useSessionAddForm() {
             order: "asc",
         });
 
-    // Separate state for each field
-    const [instrumentId, setInstrumentId] = useState<number | null>(null);
-    const [name, setName] = useState<string>("");
-    const [speed, setSpeed] = useState<string>("");
-    const [startTs, setStartTs] = useState<string>("");
-    // current_time is automatically set to start_time, not visible to user
-    const [endTs, setEndTs] = useState<string>("");
-    const [initialBalance, setInitialBalance] = useState<string>("");
-    const [leverage, setLeverage] = useState<number | null>(null);
-    const [spreadPts, setSpreadPts] = useState<string>("0");
-    const [slippagePts, setSlippagePts] = useState<string>("0");
-    const [commissionPerFill, setCommissionPerFill] = useState<string>("0");
-
-    // Separate error state for each field
-    const [instrumentIdError, setInstrumentIdError] = useState<
-        string | undefined
-    >(undefined);
-    const [nameError, setNameError] = useState<string | undefined>(undefined);
-    const [speedError, setSpeedError] = useState<string | undefined>(undefined);
-    const [startTsError, setStartTsError] = useState<string | undefined>(
-        undefined
-    );
-    const [endTsError, setEndTsError] = useState<string | undefined>(undefined);
-    const [initialBalanceError, setInitialBalanceError] = useState<
-        string | undefined
-    >(undefined);
-    const [leverageError, setLeverageError] = useState<string | undefined>(
-        undefined
-    );
-    const [spreadPtsError, setSpreadPtsError] = useState<string | undefined>(
-        undefined
-    );
-    const [slippagePtsError, setSlippagePtsError] = useState<
-        string | undefined
-    >(undefined);
-    const [commissionPerFillError, setCommissionPerFillError] = useState<
-        string | undefined
-    >(undefined);
+    const {
+        register,
+        control,
+        handleSubmit,
+        formState: { errors, isValid },
+        setError,
+    } = useForm<SessionAddFormState>({
+        resolver: zodResolver(SessionAddFormSchema),
+        mode: "onChange",
+        defaultValues: {
+            instrument_id: "",
+            name: "",
+            speed: "",
+            start_time: "",
+            end_time: undefined,
+            initial_balance: "",
+            leverage: "",
+            spread_pts: "0",
+            slippage_pts: "0",
+            commission_per_fill: "0",
+        },
+    });
 
     /**
      * Convert instruments to select options
@@ -91,242 +69,35 @@ export function useSessionAddForm() {
     }, [instruments]);
 
     /**
-     * Check if form is valid
-     */
-    const isFormValid = useMemo(() => {
-        const hasRequiredFields =
-            instrumentId !== null &&
-            speed !== "" &&
-            startTs !== "" &&
-            initialBalance !== "" &&
-            leverage !== null &&
-            spreadPts !== "" &&
-            slippagePts !== "" &&
-            commissionPerFill !== "";
-
-        const hasNoErrors =
-            !instrumentIdError &&
-            !speedError &&
-            !startTsError &&
-            !initialBalanceError &&
-            !leverageError &&
-            !spreadPtsError &&
-            !slippagePtsError &&
-            !commissionPerFillError;
-
-        return hasRequiredFields && hasNoErrors;
-    }, [
-        instrumentId,
-        speed,
-        startTs,
-        initialBalance,
-        leverage,
-        spreadPts,
-        slippagePts,
-        commissionPerFill,
-        instrumentIdError,
-        speedError,
-        startTsError,
-        initialBalanceError,
-        leverageError,
-        spreadPtsError,
-        slippagePtsError,
-        commissionPerFillError,
-    ]);
-
-    /**
-     * Handle instrument change
-     */
-    const handleInstrumentChange = (value: string) => {
-        const id = value ? parseInt(value, 10) : null;
-        setInstrumentId(id);
-        const error = validateInstrument(id);
-        setInstrumentIdError(error);
-    };
-
-    /**
-     * Handle name change
-     */
-    const handleNameChange = (value: string) => {
-        setName(value);
-        setNameError(undefined);
-    };
-
-    /**
-     * Handle speed change
-     */
-    const handleSpeedChange = (value: string) => {
-        setSpeed(value);
-        const error = validateSpeed(value);
-        setSpeedError(error);
-    };
-
-    /**
-     * Handle start timestamp change
-     * current_time is automatically set to start_time
-     */
-    const handleStartTsChange = (value: string) => {
-        setStartTs(value);
-        const error = validateDateTimeField(value, "Start time");
-        setStartTsError(error);
-
-        // Validate end_time against start_time if end_time is set
-        if (endTs && !error) {
-            const startDate = new Date(formatLocalDateTimeToISO(value));
-            const endDate = new Date(formatLocalDateTimeToISO(endTs));
-            if (endDate < startDate) {
-                setEndTsError("End time must be after or equal to start time.");
-            } else {
-                setEndTsError(undefined);
-            }
-        }
-    };
-
-    /**
-     * Handle end timestamp change
-     * Validates against start_time (since current_time = start_time)
-     */
-    const handleEndTsChange = (value: string) => {
-        setEndTs(value);
-        const error = validateDateTimeField(value, "End time", false);
-        setEndTsError(error);
-
-        // Validate against start_time if both are set (since current_time = start_time)
-        if (startTs && value && !error) {
-            const endDate = new Date(formatLocalDateTimeToISO(value));
-            const startDate = new Date(formatLocalDateTimeToISO(startTs));
-            if (endDate < startDate) {
-                setEndTsError("End time must be after or equal to start time.");
-            } else {
-                setEndTsError(undefined);
-            }
-        }
-    };
-
-    /**
-     * Handle initial balance change
-     */
-    const handleInitialBalanceChange = (value: string) => {
-        setInitialBalance(value);
-        const error = validateInitialBalance(value);
-        setInitialBalanceError(error);
-    };
-
-    /**
-     * Handle leverage change
-     */
-    const handleLeverageChange = (value: string) => {
-        const lev = value ? parseInt(value, 10) : null;
-        setLeverage(lev);
-        const error = validateLeverage(lev);
-        setLeverageError(error);
-    };
-
-    /**
-     * Handle spread points change
-     */
-    const handleSpreadPtsChange = (value: string) => {
-        setSpreadPts(value);
-        const error = validateNumericField(value, "Spread points");
-        setSpreadPtsError(error);
-    };
-
-    /**
-     * Handle slippage points change
-     */
-    const handleSlippagePtsChange = (value: string) => {
-        setSlippagePts(value);
-        const error = validateNumericField(value, "Slippage points");
-        setSlippagePtsError(error);
-    };
-
-    /**
-     * Handle commission per fill change
-     */
-    const handleCommissionPerFillChange = (value: string) => {
-        setCommissionPerFill(value);
-        const error = validateNumericField(value, "Commission per fill");
-        setCommissionPerFillError(error);
-    };
-
-    /**
      * Handle form submission
-     * Sets current_time = start_time automatically
-     * Includes user_id from auth context
-     * Sets session_status to PAUSED
      */
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const onSubmit = async (data: SessionAddFormState) => {
         // Check if user is authenticated
         if (!user?.id) {
-            setInstrumentIdError("You must be logged in to create a session.");
-            return;
-        }
-
-        // Validate all fields
-        const instrumentErr = validateInstrument(instrumentId);
-        const speedErr = validateSpeed(speed);
-        const startTsErr = validateDateTimeField(startTs, "Start time");
-        const endTsErr = validateDateTimeField(endTs, "End time", false);
-        const initialBalanceErr = validateInitialBalance(initialBalance);
-        const leverageErr = validateLeverage(leverage);
-        const spreadPtsErr = validateNumericField(spreadPts, "Spread points");
-        const slippagePtsErr = validateNumericField(
-            slippagePts,
-            "Slippage points"
-        );
-        const commissionErr = validateNumericField(
-            commissionPerFill,
-            "Commission per fill"
-        );
-        const startTsVsEndTsErr = validateStartTsVsEndTs(startTs, endTs);
-        // Set all errors
-        setInstrumentIdError(instrumentErr);
-        setSpeedError(speedErr);
-        setStartTsError(startTsErr);
-        setEndTsError(endTsErr);
-        setInitialBalanceError(initialBalanceErr);
-        setLeverageError(leverageErr);
-        setSpreadPtsError(spreadPtsErr);
-        setSlippagePtsError(slippagePtsErr);
-        setCommissionPerFillError(commissionErr);
-
-        // Check if there are any errors
-        if (
-            instrumentErr ||
-            speedErr ||
-            startTsErr ||
-            initialBalanceErr ||
-            leverageErr ||
-            spreadPtsErr ||
-            slippagePtsErr ||
-            commissionErr ||
-            startTsVsEndTsErr
-        ) {
+            setError("instrument_id", {
+                type: "manual",
+                message: "You must be logged in to create a session.",
+            });
             return;
         }
 
         try {
-            // current_time is automatically set to start_time
-            const currentTsValue = startTs;
-
             // Build request payload
-            // user_id, created_at, and updated_at are handled by the backend
             const request: CreateSessionRequest = {
-                instrument_id: instrumentId!,
-                name: name || undefined,
-                speed: speed as Speed,
-                start_time: formatLocalDateTimeToISO(startTs),
-                current_time: formatLocalDateTimeToISO(currentTsValue),
-                end_time: endTs ? formatLocalDateTimeToISO(endTs) : undefined,
-                initial_balance: parseFloat(initialBalance),
-                leverage: leverage! as Leverage,
-                spread_pts: parseInt(spreadPts, 10),
-                slippage_pts: parseInt(slippagePts, 10),
-                commission_per_fill: parseFloat(commissionPerFill),
-                // session_status defaults to PAUSED in the backend if not provided
-                session_status: "PAUSED",
+                instrument_id: parseInt(data.instrument_id, 10),
+                name: data.name ?? undefined,
+                speed: data.speed as Speed,
+                start_time: formatLocalDateTimeToISO(data.start_time),
+                current_time: formatLocalDateTimeToISO(data.start_time), // Set current_time = start_time
+                end_time: data.end_time
+                    ? formatLocalDateTimeToISO(data.end_time)
+                    : undefined,
+                initial_balance: parseFloat(data.initial_balance),
+                leverage: parseInt(data.leverage, 10) as Leverage,
+                spread_pts: parseInt(data.spread_pts, 10),
+                slippage_pts: parseInt(data.slippage_pts, 10),
+                commission_per_fill: parseFloat(data.commission_per_fill),
+                session_status: SESSION_STATUS.PAUSED,
             };
 
             const result = await execute(request);
@@ -336,12 +107,17 @@ export function useSessionAddForm() {
                 navigate(`/dashboard/sessions/${result.id}`);
             }
         } catch (err) {
-            // Handle error
             const errorMessage =
                 err instanceof Error
                     ? err.message
                     : "Failed to create session. Please try again.";
-            setInstrumentIdError(errorMessage);
+
+            // Set a root error or attach to a specific field if applicable
+            // For now, attaching to instrument_id as a general error location or using a dedicated error state
+            setError("root", {
+                type: "manual",
+                message: errorMessage,
+            });
         }
     };
 
@@ -353,49 +129,17 @@ export function useSessionAddForm() {
     };
 
     return {
-        // Form state (current_time is not exposed, it's auto-set to start_time)
-        formState: {
-            instrument_id: instrumentId,
-            name,
-            speed,
-            start_time: startTs,
-            end_time: endTs,
-            initial_balance: initialBalance,
-            leverage,
-            spread_pts: spreadPts,
-            slippage_pts: slippagePts,
-            commission_per_fill: commissionPerFill,
-        },
-        // Errors
-        errors: {
-            instrument_id: instrumentIdError,
-            name: nameError,
-            speed: speedError,
-            start_time: startTsError,
-            end_time: endTsError,
-            initial_balance: initialBalanceError,
-            leverage: leverageError,
-            spread_pts: spreadPtsError,
-            slippage_pts: slippagePtsError,
-            commission_per_fill: commissionPerFillError,
-        },
+        register,
+        control,
+        errors,
         isLoading,
-        isFormValid,
+        isValid,
         instrumentOptions,
         isLoadingInstruments,
         speedOptions: getSpeedOptions(),
         leverageOptions: getLeverageOptions(),
-        handleInstrumentChange,
-        handleNameChange,
-        handleSpeedChange,
-        handleStartTsChange,
-        handleEndTsChange,
-        handleInitialBalanceChange,
-        handleLeverageChange,
-        handleSpreadPtsChange,
-        handleSlippagePtsChange,
-        handleCommissionPerFillChange,
-        handleSubmit,
+        handleSubmit: handleSubmit(onSubmit),
         handleCancel,
+        Controller, // Export Controller for use in the component
     };
 }

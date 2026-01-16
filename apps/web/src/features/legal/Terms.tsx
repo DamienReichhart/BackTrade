@@ -14,7 +14,7 @@ export function Terms() {
 
             <LegalPageLayout
                 title="Terms of Service"
-                lastUpdated="October 28, 2025"
+                lastUpdated="January 15, 2026"
             >
                 <h2>1. Acceptance of Terms</h2>
                 <p>
@@ -26,13 +26,59 @@ export function Terms() {
 
                 <h2>2. Description of Service</h2>
                 <p>
-                    BackTrade is a comprehensive trading platform that provides:
+                    BackTrade is a{" "}
+                    <strong>simulation and backtesting platform</strong>{" "}
+                    designed for educational and testing purposes. The platform
+                    provides:
                 </p>
                 <ul>
-                    <li>Real-time market data and analysis tools</li>
-                    <li>Trading simulation and backtesting capabilities</li>
-                    <li>Portfolio management and tracking features</li>
-                    <li>Educational resources and market insights</li>
+                    <li>
+                        Historical trading simulation with synthetic, coherent
+                        market data
+                    </li>
+                    <li>
+                        Backtesting capabilities for testing trading strategies
+                        in a simulated environment
+                    </li>
+                    <li>
+                        Portfolio management and tracking features within
+                        simulated trading sessions
+                    </li>
+                    <li>Performance analytics and session management tools</li>
+                </ul>
+                <p>
+                    <strong>IMPORTANT DISCLAIMERS:</strong>
+                </p>
+                <ul>
+                    <li>
+                        <strong>
+                            BackTrade is NOT a financial institution
+                        </strong>{" "}
+                        and does not provide any financial services, brokerage
+                        services, or real trading capabilities.
+                    </li>
+                    <li>
+                        <strong>NO real trading occurs</strong> on this
+                        platform. All trading activities are simulated and occur
+                        in a virtual environment only.
+                    </li>
+                    <li>
+                        <strong>NO financial advice is provided</strong> by
+                        BackTrade. The platform is for educational and testing
+                        purposes only.
+                    </li>
+                    <li>
+                        <strong>Market data is synthetic and coherent</strong>,
+                        not real market data. The data used for simulations is
+                        generated or processed to be coherent but does not
+                        represent actual market conditions or real-time market
+                        data.
+                    </li>
+                    <li>
+                        Results from simulations are for educational purposes
+                        only and should not be used as a basis for real trading
+                        decisions.
+                    </li>
                 </ul>
 
                 <h2>3. User Accounts</h2>
@@ -157,12 +203,39 @@ export function Terms() {
                         connection with your use of this Service
                     </li>
                     <li>
-                        Does not guarantee the accuracy, completeness, or
-                        timeliness of market data
+                        <strong>
+                            Is NOT a financial institution, broker, or financial
+                            advisor
+                        </strong>
                     </li>
                     <li>
-                        Is not responsible for trading losses or investment
-                        decisions made based on our data
+                        <strong>
+                            Does NOT provide financial advice, investment
+                            recommendations, or trading signals
+                        </strong>
+                    </li>
+                    <li>
+                        <strong>
+                            Does NOT facilitate real trading or handle real
+                            money or financial instruments
+                        </strong>
+                    </li>
+                    <li>
+                        Does not guarantee the accuracy, completeness, or
+                        timeliness of the synthetic data used in simulations
+                    </li>
+                    <li>
+                        The synthetic data provided is coherent but does not
+                        represent real market conditions or actual market data
+                    </li>
+                    <li>
+                        Is not responsible for any decisions made based on
+                        simulation results, as these results are for educational
+                        and testing purposes only
+                    </li>
+                    <li>
+                        Simulation results do not guarantee future performance
+                        in real trading environments
                     </li>
                 </ul>
 
@@ -174,6 +247,18 @@ export function Terms() {
                     punitive damages, including without limitation, loss of
                     profits, data, use, goodwill, or other intangible losses,
                     resulting from your use of the Service.
+                </p>
+                <p>
+                    <strong>
+                        You acknowledge and agree that BackTrade is a simulation
+                        platform only and that any losses, damages, or
+                        consequences resulting from the use of simulation
+                        results in real trading activities are solely your
+                        responsibility. BackTrade shall not be liable for any
+                        financial losses incurred from real trading decisions
+                        made based on or influenced by simulation results from
+                        this platform.
+                    </strong>
                 </p>
 
                 <h2>10. Indemnification</h2>
@@ -188,8 +273,8 @@ export function Terms() {
 
                 <h2>11. Termination</h2>
                 <p>
-                    We may terminate or suspend your account and bar access to
-                    the Service immediately, without prior notice or liability,
+                    We may terminate or suspend your account access to the
+                    Service immediately, without prior notice or liability,
                     under our sole discretion, for any reason whatsoever and
                     without limitation, including but not limited to a breach of
                     the Terms.
@@ -218,11 +303,10 @@ export function Terms() {
                 </p>
                 <ul>
                     <li>Email: contact@damien-reichhart.fr</li>
-                    <li>Address: fakeaddress</li>
                 </ul>
 
                 <p>
-                    <strong>Effective Date:</strong> October 28, 2025
+                    <strong>Effective Date:</strong> January 15, 2026
                 </p>
             </LegalPageLayout>
 

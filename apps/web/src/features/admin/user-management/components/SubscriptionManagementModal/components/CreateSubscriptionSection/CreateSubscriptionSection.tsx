@@ -13,16 +13,6 @@ interface CreateSubscriptionSectionProps {
     isCreating: boolean;
 
     /**
-     * Create form data
-     */
-    createForm: Partial<CreateSubscriptionRequest>;
-
-    /**
-     * Create form update handler
-     */
-    onFormChange: (form: Partial<CreateSubscriptionRequest>) => void;
-
-    /**
      * Plan options for select
      */
     planOptions: Array<{ value: string; label: string }>;
@@ -50,7 +40,12 @@ interface CreateSubscriptionSectionProps {
     /**
      * Handler to submit the form
      */
-    onSubmit: () => void;
+    onSubmit: (data: CreateSubscriptionRequest) => void;
+
+    /**
+     * User ID for the form
+     */
+    userId: number;
 }
 
 /**
@@ -61,14 +56,13 @@ interface CreateSubscriptionSectionProps {
  */
 export function CreateSubscriptionSection({
     isCreating,
-    createForm,
-    onFormChange,
     planOptions,
     isLoading,
     hasActiveSubscription,
     onStartCreate,
     onCancelCreate,
     onSubmit,
+    userId,
 }: CreateSubscriptionSectionProps) {
     return (
         <div className={styles.section}>
@@ -106,12 +100,11 @@ export function CreateSubscriptionSection({
 
             {isCreating && (
                 <CreateSubscriptionForm
-                    form={createForm}
-                    onFormChange={onFormChange}
                     planOptions={planOptions}
                     isLoading={isLoading}
                     onSubmit={onSubmit}
                     onCancel={onCancelCreate}
+                    userId={userId}
                 />
             )}
         </div>

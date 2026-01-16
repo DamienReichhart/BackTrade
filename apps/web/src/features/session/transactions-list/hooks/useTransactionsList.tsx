@@ -30,7 +30,11 @@ export function useTransactionsList() {
 
     const { data: session } = useSession(id);
     const { data: transactionsData, isLoading: isLoadingTransactions } =
-        useTransactionsBySession(id);
+        useTransactionsBySession(id, {
+            page: 1,
+            limit: 10000,
+            order: "desc",
+        });
 
     // Normalize transactions data
     const transactions: Transaction[] = useMemo(() => {

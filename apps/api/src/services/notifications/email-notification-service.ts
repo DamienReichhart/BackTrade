@@ -212,6 +212,70 @@ class EmailNotificationService extends BaseService {
             "Account deletion confirmation email message queued successfully"
         );
     }
+
+    /**
+     * Queue password reset email with verification code
+     *
+     * Queues the email message to RabbitMQ for processing by the worker.
+     * Throws an error if queuing fails.
+     *
+     * @param email - Recipient email address
+     * @param username - User's display name or email
+     * @param resetCode - Password reset verification code
+     * @param expirationMinutes - Code expiration time in minutes
+     * @throws Error if message validation or queuing fails
+     *
+     * @example
+     * ```ts
+     * try {
+     *   await emailNotificationService.sendPasswordResetEmail(
+     *     "user@example.com",
+     *     "John",
+     *     "123456",
+     *     15
+     *   );
+     * } catch (error) {
+     *   // Handle error
+     * }
+     * ```
+     */
+    async sendPasswordResetEmail(
+        email: string,
+        username: string,
+        resetCode: string,
+        expirationMinutes: number
+    ): Promise<void> {
+        this.logger.debug(
+            { email: maskEmailForLogging(email), username },
+            "Preparing password reset email message"
+        );
+
+        const mailMessage = {
+            template: "password-reset" as const,
+            emailData: {
+                to: email,
+                subject: "Reset Your BackTrade Password",
+                username,
+                resetCode,
+                expirationMinutes,
+            },
+        };
+
+        // Validate the mail message
+        const validatedData = MailMessageDataSchema.parse(mailMessage);
+
+        this.logger.debug(
+            { email: maskEmailForLogging(email) },
+            "Queueing password reset email message"
+        );
+
+        await queueService.queueMessage(QueueName.mail, validatedData);
+
+        this.logger.info(
+            { email: maskEmailForLogging(email), username },
+            "Password reset email message queued successfully"
+        );
+    }
 }
 
 export default new EmailNotificationService();

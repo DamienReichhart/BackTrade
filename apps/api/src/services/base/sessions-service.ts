@@ -1,12 +1,20 @@
-import { sessionsRepo, instrumentsRepo } from "@backtrade/data";
-import type {
-    Session,
-    SessionWhereInput,
-    SessionCreateInput,
-    SessionUpdateInput,
-    SessionOrderBy,
-    SearchQuery,
-    User,
+import {
+    sessionsRepo,
+    instrumentsRepo,
+    subscriptionsRepo,
+    plansRepo,
+    usersRepo,
+} from "@backtrade/data";
+import {
+    SESSION_STATUS_VALUES,
+    type Session,
+    type SessionWhereInput,
+    type SessionCreateInput,
+    type SessionUpdateInput,
+    type SessionOrderBy,
+    type SearchQuery,
+    type User,
+    type SessionStatus,
 } from "@backtrade/types";
 import { sessionsCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -19,8 +27,9 @@ import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
 
 /**
  * Valid session statuses for search operations
+ * Uses enum values from @backtrade/types for consistency
  */
-const VALID_SESSION_STATUSES = ["RUNNING", "PAUSED", "ARCHIVED"] as const;
+const VALID_SESSION_STATUSES = SESSION_STATUS_VALUES;
 
 /**
  * Valid sortable fields for sessions
@@ -222,8 +231,16 @@ class SessionsService extends BaseService {
     /**
      * Validate all business rules for session creation
      *
+     * Validates:
+     * - Instrument exists
+     * - User has not exceeded their active session limit based on subscription plan
+     *   - Users without subscription: 1 active session
+     *   - TRADER plan: 10 active sessions
+     *   - EXPERT plan: 30 active sessions
+     * - Admin users bypass session limits
+     *
      * @param session - Session creation data
-     * @throws BadRequestError if validation fails
+     * @throws BadRequestError if validation fails or session limit reached
      * @throws NotFoundError if instrument doesn't exist
      */
     private async validateSessionCreation(
@@ -233,6 +250,105 @@ class SessionsService extends BaseService {
         this.validateUserId(session.user_id);
         // instrument_id is guaranteed to be defined after validateInstrumentId
         await this.validateInstrumentExists(session.instrument_id as number);
+
+        // Validate session limit based on user's subscription plan
+        await this.validateSessionLimit(session.user_id as number);
+    }
+
+    /**
+     * Validate that user has not exceeded their active session limit
+     *
+     * Active sessions are those with session_status not equal to ARCHIVED.
+     * Admin users bypass this limit check.
+     *
+     * @param userId - User ID to validate
+     * @throws BadRequestError if user has reached their session limit
+     */
+    private async validateSessionLimit(userId: number): Promise<void> {
+        // Get user to check if admin (admins bypass limits)
+        const user = await usersRepo.getUserById(userId);
+        if (!user) {
+            this.logger.debug(
+                { userId },
+                "User not found during session limit validation"
+            );
+            throw new BadRequestError("User not found");
+        }
+
+        // Admin users bypass session limits
+        if (user.role === "ADMIN") {
+            this.logger.trace(
+                { userId },
+                "Admin user bypassing session limit check"
+            );
+            return;
+        }
+
+        // Get user's active subscription
+        const subscription =
+            await subscriptionsRepo.getActiveSubscriptionByUserId(userId);
+
+        // Determine max active sessions limit
+        let maxActiveSessions: number;
+        let planName: string;
+
+        if (subscription) {
+            // User has active subscription - get plan details
+            const plan = await plansRepo.getPlanById(subscription.plan_id);
+            if (!plan) {
+                this.logger.warn(
+                    {
+                        userId,
+                        subscriptionId: subscription.id,
+                        planId: subscription.plan_id,
+                    },
+                    "Plan not found for active subscription"
+                );
+                // Fallback to default limit if plan not found
+                maxActiveSessions = 1;
+                planName = "free";
+            } else {
+                maxActiveSessions = plan.max_active_sessions;
+                planName = plan.code;
+            }
+        } else {
+            // User has no active subscription - use default limit
+            maxActiveSessions = 1;
+            planName = "free";
+        }
+
+        // Count user's current active sessions
+        const activeSessionCount =
+            await sessionsRepo.countActiveSessionsByUserId(userId);
+
+        // Check if limit is reached
+        if (activeSessionCount >= maxActiveSessions) {
+            this.logger.debug(
+                {
+                    userId,
+                    activeSessionCount,
+                    maxActiveSessions,
+                    planName,
+                },
+                "User has reached active session limit"
+            );
+
+            const sessionWord =
+                maxActiveSessions === 1 ? "session" : "sessions";
+            throw new BadRequestError(
+                `You have reached your maximum active sessions limit (${maxActiveSessions} ${sessionWord} for ${planName} plan)`
+            );
+        }
+
+        this.logger.trace(
+            {
+                userId,
+                activeSessionCount,
+                maxActiveSessions,
+                planName,
+            },
+            "Session limit validation passed"
+        );
     }
 
     /**
@@ -489,14 +605,10 @@ class SessionsService extends BaseService {
 
         // Search by session_status if it matches
         const upperQ = searchQuery.toUpperCase();
-        if (
-            VALID_SESSION_STATUSES.includes(
-                upperQ as (typeof VALID_SESSION_STATUSES)[number]
-            )
-        ) {
+        if (VALID_SESSION_STATUSES.includes(upperQ as SessionStatus)) {
             searchConditions.push({
                 session_status: {
-                    equals: upperQ as (typeof VALID_SESSION_STATUSES)[number],
+                    equals: upperQ as SessionStatus,
                 },
             });
         }

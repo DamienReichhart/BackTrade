@@ -1,15 +1,13 @@
-import type { Candle } from "@backtrade/types";
+import type {
+    Candle,
+    IndicatorType,
+    IndicatorSource,
+    IndicatorFieldInputType,
+} from "@backtrade/types";
 import type { IChartApi } from "lightweight-charts";
 
-/**
- * Available indicator identifiers
- */
-export type IndicatorType = "sma" | "ema" | "bollingerBands" | "rsi";
-
-/**
- * Possible candle value sources for indicator calculations
- */
-export type IndicatorSource = "open" | "high" | "low" | "close";
+// Re-export types for convenience
+export type { IndicatorType, IndicatorSource };
 
 /**
  * Base configuration shared by all indicators
@@ -72,11 +70,6 @@ export type IndicatorConfig =
     | EmaIndicatorConfig
     | BollingerBandsIndicatorConfig
     | RsiIndicatorConfig;
-
-/**
- * Field definition used to dynamically render indicator configuration forms
- */
-export type IndicatorFieldInputType = "number" | "select" | "color" | "switch";
 
 export interface IndicatorFieldSelectOption {
     label: string;

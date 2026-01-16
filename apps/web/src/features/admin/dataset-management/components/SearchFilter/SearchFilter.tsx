@@ -6,52 +6,17 @@ import type { SelectOption } from "../../../../../types/ui";
 import { getTimeframeOptions } from "@backtrade/types";
 import styles from "./SearchFilter.module.css";
 
-/**
- * SearchFilter component props
- */
 interface SearchFilterProps {
-    /**
-     * Current search query
-     */
     searchQuery: string;
-
-    /**
-     * Callback when search query changes
-     */
     onSearchChange: (query: string) => void;
-
-    /**
-     * Current timeframe filter
-     */
     timeframeFilter: string;
-
-    /**
-     * Callback when timeframe filter changes
-     */
     onTimeframeChange: (timeframe: string) => void;
-
-    /**
-     * Current status filter
-     */
     statusFilter: string;
-
-    /**
-     * Callback when status filter changes
-     */
     onStatusChange: (status: string) => void;
-
-    /**
-     * Callback to clear all filters
-     */
     onClearFilters: () => void;
-
-    /**
-     * Whether any filters are active
-     */
     hasActiveFilters: boolean;
 }
 
-// Timeframe options with "All" option for filtering
 const timeframeOptions: SelectOption[] = [
     { value: "", label: "All Timeframes" },
     ...getTimeframeOptions().map((opt) => ({
