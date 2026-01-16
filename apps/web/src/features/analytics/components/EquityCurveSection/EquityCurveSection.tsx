@@ -22,11 +22,6 @@ interface EquityCurveSectionProps {
      * @default "EUR"
      */
     currency?: string;
-
-    /**
-     * Win/lose streak values
-     */
-    streaks?: { winStreak: number; loseStreak: number };
 }
 
 /**
@@ -38,7 +33,6 @@ export function EquityCurveSection({
     equityCurve,
     summary,
     currency = "EUR",
-    streaks,
 }: EquityCurveSectionProps) {
     const { chartRef } = useEquityCurve(equityCurve);
 
@@ -87,20 +81,18 @@ export function EquityCurveSection({
                         {formatPercentage(summary.max_drawdown, 1)}
                     </span>
                 </div>
-                {streaks && (
-                    <div className={styles.stat}>
-                        <span className={styles.statLabel}>Streak</span>
-                        <span className={styles.statValue}>
-                            <span className={styles.winStreak}>
-                                +{streaks.winStreak}
-                            </span>
-                            {" / "}
-                            <span className={styles.loseStreak}>
-                                -{streaks.loseStreak}
-                            </span>
+                <div className={styles.stat}>
+                    <span className={styles.statLabel}>Streak</span>
+                    <span className={styles.statValue}>
+                        <span className={styles.winStreak}>
+                            +{summary.win_streak}
                         </span>
-                    </div>
-                )}
+                        {" / "}
+                        <span className={styles.loseStreak}>
+                            -{summary.lose_streak}
+                        </span>
+                    </span>
+                </div>
             </div>
         </section>
     );

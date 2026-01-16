@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useAnalyticsPage } from "./hooks";
 import {
     AnalyticsHeader,
@@ -8,7 +7,6 @@ import {
     BreakdownsSection,
     TradesSection,
 } from "./components";
-import { calculateStreaks } from "./utils";
 import styles from "./AnalyticsPage.module.css";
 
 /**
@@ -66,16 +64,6 @@ export default function AnalyticsPage() {
         handleExportCsv,
     } = useAnalyticsPage();
 
-    // Calculate streaks from all positions
-    const streaks = useMemo(() => {
-        if (!analytics) return undefined;
-        const allPositions = [
-            ...analytics.top_winners,
-            ...analytics.worst_losers,
-        ];
-        return calculateStreaks(allPositions);
-    }, [analytics]);
-
     // Loading state
     if (isLoading) {
         return <LoadingSkeleton />;
@@ -115,7 +103,6 @@ export default function AnalyticsPage() {
                         <EquityCurveSection
                             equityCurve={analytics.equity_curve}
                             summary={analytics.summary}
-                            streaks={streaks}
                         />
                     </div>
 

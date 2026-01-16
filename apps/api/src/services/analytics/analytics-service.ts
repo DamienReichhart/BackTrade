@@ -167,6 +167,37 @@ class AnalyticsService {
             };
         };
 
+        // Calculate streaks from all closed positions in chronological order
+        const sortedByCloseTime = [...closedPositions].sort((a, b) => {
+            // Sort by closed_at if available, otherwise fall back to opened_at
+            const aTime = a.closed_at
+                ? new Date(a.closed_at).getTime()
+                : new Date(a.opened_at).getTime();
+            const bTime = b.closed_at
+                ? new Date(b.closed_at).getTime()
+                : new Date(b.opened_at).getTime();
+            return aTime - bTime;
+        });
+
+        let currentWin = 0;
+        let currentLose = 0;
+        let maxWin = 0;
+        let maxLose = 0;
+
+        for (const pos of sortedByCloseTime) {
+            const pnl = new Decimal(pos.realized_pnl ?? 0);
+            if (pnl.greaterThan(0)) {
+                currentWin++;
+                currentLose = 0;
+                maxWin = Math.max(maxWin, currentWin);
+            } else if (pnl.lessThan(0)) {
+                currentLose++;
+                currentWin = 0;
+                maxLose = Math.max(maxLose, currentLose);
+            }
+            // Note: positions with realized_pnl === 0 reset both streaks
+        }
+
         // Top/Worst
         const sortedByPnL = [...closedPositions].sort((a, b) =>
             new Decimal(b.realized_pnl ?? 0)
@@ -276,6 +307,8 @@ class AnalyticsService {
                 sharpe_ratio: 0, // Complex calculation, skip for now or implement later
                 sortino_ratio: 0, // Complex calculation
                 max_drawdown: maxDrawdown.toNumber(),
+                win_streak: maxWin,
+                lose_streak: maxLose,
             },
             equity_curve: equityCurve,
             breakdowns: {

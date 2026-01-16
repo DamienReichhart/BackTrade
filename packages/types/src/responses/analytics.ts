@@ -14,6 +14,8 @@ export const AnalyticsSummarySchema = z.object({
     sharpe_ratio: z.number(),
     sortino_ratio: z.number(),
     max_drawdown: z.number(),
+    win_streak: z.number(),
+    lose_streak: z.number(),
 });
 
 export const EquityCurvePointSchema = z.object({
