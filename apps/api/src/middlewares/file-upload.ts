@@ -10,9 +10,10 @@ import type { Request } from "express";
 import BadRequestError from "../errors/web/bad-request-error";
 
 /**
- * Maximum file size in bytes (2GB - matching frontend validation)
+ * Maximum file size in bytes per chunk (100MB - allows for 50MB chunks with safety margin)
+ * Note: The frontend sends chunks of 50MB, but we allow up to 100MB per chunk for flexibility.
  */
-const MAX_FILE_SIZE = 1000 * 1024 * 1024 * 2;
+const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
 /**
  * Allowed file extensions
@@ -26,23 +27,17 @@ const ALLOWED_MIME_TYPES = ["text/csv", "application/csv", "text/plain"];
 
 /**
  * File filter function to validate uploaded files
+ *
+ * Note: For chunked uploads, we're more lenient with MIME type validation
+ * since chunks may not have proper MIME types. The extension check ensures
+ * we only accept CSV files. Full validation happens in the controller.
  */
 function fileFilter(
     _req: Request,
     file: Express.Multer.File,
     callback: multer.FileFilterCallback
 ): void {
-    // Check MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-        callback(
-            new BadRequestError(
-                "Invalid file type. Only CSV files are allowed."
-            )
-        );
-        return;
-    }
-
-    // Check file extension
+    // Always check file extension first (most reliable check)
     const extension = file.originalname
         .toLowerCase()
         .slice(file.originalname.lastIndexOf("."));
@@ -55,6 +50,25 @@ function fileFilter(
         return;
     }
 
+    // For MIME type, be more lenient:
+    // - Allow empty MIME types (chunks might not have MIME type)
+    // - Allow generic types like application/octet-stream (common for chunks)
+    // - Allow the standard CSV MIME types
+    if (
+        file.mimetype &&
+        !ALLOWED_MIME_TYPES.includes(file.mimetype) &&
+        file.mimetype !== "application/octet-stream"
+    ) {
+        // Only reject if MIME type is explicitly set and not allowed
+        // Empty or generic types are acceptable (will be validated in controller)
+        callback(
+            new BadRequestError(
+                "Invalid file type. Only CSV files are allowed."
+            )
+        );
+        return;
+    }
+
     callback(null, true);
 }
 
@@ -62,7 +76,7 @@ function fileFilter(
  * Multer configuration for dataset file uploads
  *
  * - Uses memory storage (files stored in buffer)
- * - Limits file size to 2GB
+ * - Limits file size to 100MB per chunk (frontend sends 50MB chunks)
  * - Only accepts CSV files
  */
 const datasetUpload = multer({

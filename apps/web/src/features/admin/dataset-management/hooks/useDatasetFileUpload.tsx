@@ -63,12 +63,21 @@ export function useDatasetFileUpload(datasetId: number) {
                     for (let i = 0; i < totalChunks; i++) {
                         const start = i * CHUNK_SIZE;
                         const end = Math.min(fileSize, start + CHUNK_SIZE);
-                        const chunk = fileToUpload!.slice(start, end);
+                        const chunkBlob = fileToUpload!.slice(start, end);
+
+                        // Create a File object from the Blob with the correct MIME type
+                        // This ensures the backend recognizes it as a CSV file
+                        const chunkFile = new File(
+                            [chunkBlob],
+                            fileToUpload!.name,
+                            {
+                                type: fileToUpload!.type || "text/csv",
+                                lastModified: fileToUpload!.lastModified,
+                            }
+                        );
 
                         const formData = new FormData();
-                        // Append original filename to maintain identity if needed by backend,
-                        // though backend might rely on filename in Content-Disposition
-                        formData.append("file", chunk, fileToUpload!.name);
+                        formData.append("file", chunkFile);
                         formData.append("chunkIndex", String(i));
                         formData.append("totalChunks", String(totalChunks));
 

@@ -208,29 +208,83 @@ class DatasetsController {
             throw new BadRequestError("File is required");
         }
 
-        this.logger.info(
-            {
-                datasetId: id,
-                fileName: file.originalname,
-                fileSize: file.size,
-                userId: user.id,
-            },
-            "Processing dataset file upload"
-        );
+        // Check if this is a chunked upload
+        const chunkIndex = req.body.chunkIndex
+            ? parseInt(req.body.chunkIndex, 10)
+            : undefined;
+        const totalChunks = req.body.totalChunks
+            ? parseInt(req.body.totalChunks, 10)
+            : undefined;
 
-        await datasetsService.uploadDatasetFile(
-            id,
-            file.buffer,
-            file.originalname,
-            user
-        );
+        if (chunkIndex !== undefined && totalChunks !== undefined) {
+            // Chunked upload
+            this.logger.info(
+                {
+                    datasetId: id,
+                    fileName: file.originalname,
+                    chunkIndex,
+                    totalChunks,
+                    chunkSize: file.size,
+                    userId: user.id,
+                },
+                "Processing dataset file chunk upload"
+            );
 
-        this.logger.info(
-            { userId: user.id, datasetId: id },
-            "Dataset file uploaded successfully"
-        );
+            const result = await datasetsService.uploadDatasetFileChunk(
+                id,
+                file.buffer,
+                file.originalname,
+                chunkIndex,
+                totalChunks,
+                user
+            );
 
-        res.status(204).send();
+            if (result.complete) {
+                this.logger.info(
+                    { userId: user.id, datasetId: id },
+                    "Dataset file uploaded successfully (all chunks received)"
+                );
+            } else {
+                this.logger.debug(
+                    {
+                        datasetId: id,
+                        receivedChunks: result.receivedChunks,
+                        totalChunks,
+                        userId: user.id,
+                    },
+                    "Chunk received, waiting for more chunks"
+                );
+            }
+
+            // Always return 204 - frontend doesn't need to track partial completion
+            // The backend handles chunk reassembly internally
+            res.status(204).send();
+        } else {
+            // Single file upload (non-chunked)
+            this.logger.info(
+                {
+                    datasetId: id,
+                    fileName: file.originalname,
+                    fileSize: file.size,
+                    userId: user.id,
+                },
+                "Processing dataset file upload"
+            );
+
+            await datasetsService.uploadDatasetFile(
+                id,
+                file.buffer,
+                file.originalname,
+                user
+            );
+
+            this.logger.info(
+                { userId: user.id, datasetId: id },
+                "Dataset file uploaded successfully"
+            );
+
+            res.status(204).send();
+        }
     }
 }
 

@@ -10,7 +10,7 @@ metadata:
         # Nginx Ingress Controller (adjust if using different controller)
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+        nginx.ingress.kubernetes.io/proxy-body-size: "100m"
         nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
         nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
         nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
