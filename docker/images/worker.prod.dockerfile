@@ -32,9 +32,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Copy workspace packages (including generated Prisma client)
 COPY --from=builder /app/packages/ ./packages/
 
-# Copy the built API
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/package.json ./apps/api/
+# Copy the built worker
+COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
+COPY --from=builder /app/apps/worker/package.json ./apps/worker/
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
@@ -45,6 +45,6 @@ RUN chown -R nodeuser:nodeuser /app
 # Switch to non-root user
 USER nodeuser
 
-# Set working directory to the API
-WORKDIR /app/apps/api
-CMD ["node", "dist/server.js"]
+# Set working directory to the worker
+WORKDIR /app/apps/worker
+CMD ["node", "dist/worker.js"]

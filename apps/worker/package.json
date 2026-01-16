@@ -24,6 +24,7 @@
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
         "dotenv": "^17.2.3",
+        "mjml": "^4.18.0",
         "zod": "4.3.5"
     },
     "devDependencies": {

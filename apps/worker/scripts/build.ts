@@ -42,7 +42,7 @@ async function main() {
                 __dirname: "import.meta.url",
                 __filename: "import.meta.url",
             },
-            external: [],
+            external: ["mjml", "mjml-core", "html-minifier", "uglify-js"],
         });
 
         // Copy email templates from mailer package to dist folder

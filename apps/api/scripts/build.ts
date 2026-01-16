@@ -24,6 +24,7 @@ async function main() {
                 "uglify-js",
                 "@prisma/client",
                 "@prisma/adapter-pg",
+                "pg",
             ],
         });
 
