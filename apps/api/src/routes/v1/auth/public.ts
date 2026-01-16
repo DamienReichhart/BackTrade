@@ -1,6 +1,10 @@
 import { Router } from "express";
 import inputValidations from "../../../middlewares/input-validations";
 import {
+    loginRateLimiter,
+    passwordResetRateLimiter,
+} from "../../../middlewares/rate-limiters";
+import {
     LoginRequestSchema,
     RefreshTokenRequestSchema,
     RegisterRequestSchema,
@@ -13,6 +17,7 @@ const authPublicRouter = Router();
 
 authPublicRouter.post(
     "/login",
+    loginRateLimiter,
     inputValidations(LoginRequestSchema),
     authController.login
 );
@@ -37,6 +42,7 @@ authPublicRouter.post(
 
 authPublicRouter.post(
     "/users/resetter/password",
+    passwordResetRateLimiter,
     inputValidations(ResetPasswordRequestSchema),
     authController.resetPassword
 );
