@@ -6,7 +6,7 @@
  * brute-force attacks.
  */
 
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { ENV } from "../config/env";
 
 /**
@@ -26,7 +26,8 @@ export const loginRateLimiter = rateLimit({
     // Use IP address for tracking (works behind proxy in production)
     keyGenerator: (req) => {
         // In production, trust proxy is enabled, so req.ip will be the client IP
-        return req.ip ?? req.socket.remoteAddress ?? "unknown";
+        const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
+        return ip === "unknown" ? ip : ipKeyGenerator(ip);
     },
     // Skip rate limiting in test environment
     skip: () => ENV.NODE_ENV === "test",
@@ -51,7 +52,8 @@ export const passwordResetRateLimiter = rateLimit({
     // Use IP address for tracking (works behind proxy in production)
     keyGenerator: (req) => {
         // In production, trust proxy is enabled, so req.ip will be the client IP
-        return req.ip ?? req.socket.remoteAddress ?? "unknown";
+        const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
+        return ip === "unknown" ? ip : ipKeyGenerator(ip);
     },
     // Skip rate limiting in test environment
     skip: () => ENV.NODE_ENV === "test",
