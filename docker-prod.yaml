@@ -61,6 +61,68 @@ services:
                 max-file: "3"
 
     # =========================================================================
+    # Database Migration Service
+    # =========================================================================
+    migrate:
+        build:
+            context: .
+            dockerfile: docker/images/migrate.prod.dockerfile
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            DATABASE_URL: ${DATABASE_URL}
+            CLICKHOUSE_HOST: ${CLICKHOUSE_HOST}
+            CLICKHOUSE_PORT: ${CLICKHOUSE_PORT}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+            API_HOST: ${API_HOST}
+            API_PORT: ${API_PORT}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            API_LOG_LEVEL: ${API_LOG_LEVEL}
+            API_LOG_DIR: ${API_LOG_DIR}
+            ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+            REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+            ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
+            REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASSWORD: ${SMTP_PASSWORD}
+            SMTP_FROM: ${SMTP_FROM}
+            FRONTEND_URL: ${FRONTEND_URL}
+            NEUTRALIZE_EMAIL: ${NEUTRALIZE_EMAIL}
+            MINIO_HOST: ${MINIO_HOST}
+            MINIO_PORT: ${MINIO_PORT}
+            MINIO_USER: ${MINIO_USER}
+            MINIO_PASSWORD: ${MINIO_PASSWORD}
+            RABBITMQ_HOST: ${RABBITMQ_HOST}
+            RABBITMQ_PORT: ${RABBITMQ_PORT}
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+            STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+            STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+            STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.10
+        depends_on:
+            postgres:
+                condition: service_healthy
+            clickhouse:
+                condition: service_healthy
+        restart: "no"
+        # Migration service runs once and exits
+        # Exit code 0 = success, non-zero = failure
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # =========================================================================
     # Backend API Service
     # =========================================================================
     backend:
@@ -111,6 +173,8 @@ services:
             backtrade:
                 ipv4_address: 192.168.250.11
         depends_on:
+            migrate:
+                condition: service_completed_successfully
             postgres:
                 condition: service_healthy
             redis:
@@ -213,6 +277,12 @@ services:
             backtrade:
                 ipv4_address: 192.168.250.13
         depends_on:
+            migrate:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+            clickhouse:
+                condition: service_healthy
             rabbitmq:
                 condition: service_healthy
             minio:
@@ -265,7 +335,11 @@ services:
             backtrade:
                 ipv4_address: 192.168.250.14
         depends_on:
+            migrate:
+                condition: service_completed_successfully
             postgres:
+                condition: service_healthy
+            clickhouse:
                 condition: service_healthy
             rabbitmq:
                 condition: service_healthy

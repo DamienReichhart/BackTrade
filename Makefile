@@ -123,7 +123,7 @@ db-studio: ## Open Prisma Studio (database GUI)
 .PHONY: db-reset
 db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "⚠️  WARNING: This will delete all database data!"
-	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset"
+	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset
 
 # =============================================================================
 # Dependencies
