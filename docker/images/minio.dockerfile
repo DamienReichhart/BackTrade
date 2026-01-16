@@ -1,5 +1,3 @@
-FROM quay.io/minio/aistor/minio:latest
+FROM minio/minio:latest
 
-ENV MINIO_CONFIG_ENV_FILE="/mnt/minio/config"
-
-CMD ["minio", "server"]
+CMD ["minio", "server", "/data", "--console-address", ":9001"]
