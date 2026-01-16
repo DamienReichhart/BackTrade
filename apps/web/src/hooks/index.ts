@@ -6,5 +6,3 @@
 
 export { useModal } from "./useModal";
 export { useModalBehavior } from "./useModalBehavior";
-export { useWebSocket } from "./useWebSocket";
-export type { UseWebSocketOptions, UseWebSocketReturn } from "./useWebSocket";

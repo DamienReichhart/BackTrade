@@ -6,7 +6,6 @@ export * from "./entities";
 export * from "./requests";
 export * from "./queries";
 export * from "./responses";
-export * from "./websocket";
 
 export const SingleServiceHealthStatusSchema = z.enum(["ok", "error"]);
 export type SingleServiceHealthStatus = z.infer<

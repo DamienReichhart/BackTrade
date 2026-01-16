@@ -16,7 +16,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       prettier:
         specifier: ^3.7.4
-        version: 3.7.4
+        version: 3.8.0
       turbo:
         specifier: ^2.7.4
         version: 2.7.4
@@ -89,9 +89,6 @@ importers:
       stripe:
         specifier: ^20.1.2
         version: 20.1.2(@types/node@25.0.6)
-      ws:
-        specifier: ^8.19.0
-        version: 8.19.0
       zod:
         specifier: 4.3.5
         version: 4.3.5
@@ -132,9 +129,6 @@ importers:
       '@types/nodemailer':
         specifier: ^7.0.5
         version: 7.0.5
-      '@types/ws':
-        specifier: ^8.18.1
-        version: 8.18.1
       esbuild:
         specifier: 0.27.2
         version: 0.27.2
@@ -2159,9 +2153,6 @@ packages:
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
-
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -4342,8 +4333,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@3.7.4:
-    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+  prettier@3.8.0:
+    resolution: {integrity: sha512-yEPsovQfpxYfgWNhCfECjG5AQaO+K3dp6XERmOepyPDVqcJm+bjyCVO3pmU+nAPe0N5dDvekfGezt/EIiRe1TA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7057,10 +7048,6 @@ snapshots:
 
   '@types/tough-cookie@4.0.5': {}
 
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 25.0.6
-
   '@types/yargs-parser@21.0.3': {}
 
   '@types/yargs@17.0.35':
@@ -9721,7 +9708,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier@3.7.4: {}
+  prettier@3.8.0: {}
 
   pretty-format@27.5.1:
     dependencies:

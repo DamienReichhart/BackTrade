@@ -1,22 +1,15 @@
 import { ENV } from "./config/env";
 import { createApp } from "./app";
 import { logger } from "./libs/pino";
-import { cleanupWebSocket } from "./websocket";
 
-const { server, wss } = createApp();
+const { server } = createApp();
 
 server.listen(ENV.API_PORT, ENV.API_HOST, () => {
     logger.info(`API listening on http://${ENV.API_HOST}:${ENV.API_PORT}`);
-    logger.info(
-        `WebSocket server ready on ws://${ENV.API_HOST}:${ENV.API_PORT}`
-    );
 });
 
 function gracefulShutdown(signal: string): void {
     logger.info(`${signal} received, shutting down gracefully`);
-
-    // Cleanup WebSocket connections using the proper cleanup function
-    cleanupWebSocket(wss);
 
     server.close(() => {
         logger.info("HTTP server closed");

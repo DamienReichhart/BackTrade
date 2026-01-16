@@ -37,7 +37,6 @@
         "multer": "^2.0.2",
         "pino-http": "11.0.0",
         "stripe": "^20.1.2",
-        "ws": "^8.19.0",
         "zod": "4.3.5"
     },
     "devDependencies": {
@@ -53,7 +52,6 @@
         "@types/multer": "^2.0.0",
         "@types/node": "25.0.6",
         "@types/nodemailer": "^7.0.5",
-        "@types/ws": "^8.18.1",
         "esbuild": "0.27.2",
         "eslint": "^9.39.2",
         "globals": "^17.0.0",

@@ -9,4 +9,3 @@ export * from "./common";
 export * from "./pricing";
 export * from "./analytics";
 export * from "./indicator";
-export * from "./websocket";
