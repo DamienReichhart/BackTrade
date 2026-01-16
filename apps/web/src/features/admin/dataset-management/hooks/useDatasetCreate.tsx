@@ -28,9 +28,10 @@ export function useDatasetCreate() {
         control,
         handleSubmit,
         reset,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm<DatasetFormState>({
         resolver: zodResolver(CreateDatasetFormSchema),
+        mode: "onChange", // Validate on change to enable real-time validation
         defaultValues: {
             instrument_id: "",
             timeframe: "",
@@ -73,6 +74,7 @@ export function useDatasetCreate() {
         // Form methods
         control,
         errors,
+        isValid,
         handleSubmit: handleSubmit(onSubmit),
         resetForm,
 

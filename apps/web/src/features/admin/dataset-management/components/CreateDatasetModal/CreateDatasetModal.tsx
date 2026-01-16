@@ -37,8 +37,15 @@ export function CreateDatasetModal({
     onClose,
     onSuccess,
 }: CreateDatasetModalProps) {
-    const { control, errors, isLoading, handleSubmit, resetForm, Controller } =
-        useDatasetCreate();
+    const {
+        control,
+        errors,
+        isValid,
+        isLoading,
+        handleSubmit,
+        resetForm,
+        Controller,
+    } = useDatasetCreate();
 
     // Fetch instruments
     const { data: instruments, isLoading: isLoadingInstruments } =
@@ -70,10 +77,15 @@ export function CreateDatasetModal({
     if (!isOpen) return null;
 
     const onFormSubmit = async (e?: React.BaseSyntheticEvent) => {
-        await handleSubmit(e);
-        onSuccess?.();
-        resetForm();
-        onClose();
+        e?.preventDefault();
+        // handleSubmit returns undefined if validation fails, or the result of onSubmit if it succeeds
+        const result = await handleSubmit(e);
+        // Only proceed if validation passed (result is not undefined) and API call succeeded (result is not null)
+        if (result !== undefined && result !== null) {
+            onSuccess?.();
+            resetForm();
+            onClose();
+        }
     };
 
     const handleCancel = () => {
@@ -176,7 +188,7 @@ export function CreateDatasetModal({
                             variant="primary"
                             size="medium"
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isValid}
                         >
                             {isLoading ? "Creating..." : "Create Dataset"}
                         </Button>
