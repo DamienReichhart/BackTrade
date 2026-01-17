@@ -1,7 +1,15 @@
 import { useEffect, useRef, useCallback, useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUpdateSession } from "../../../../api/hooks/requests/sessions";
-import { useCurrentSessionStore } from "../../../../store/session";
+import { useSkipSession } from "../../../../api/hooks/requests/sessions";
+import {
+    useCurrentSessionStore,
+    useCurrentSessionCandlesStore,
+} from "../../../../store/session";
+import { useChartSettingsStore } from "../../../../store/chart";
+import {
+    fuse2Candles,
+    calculateTimeframePeriodStart,
+} from "../../../../utils/data/candles";
+import { formatDateTime } from "@backtrade/utils";
 import { SESSION_STATUS, type Speed } from "@backtrade/types";
 
 /**
@@ -26,18 +34,27 @@ function speedToMultiplier(speed: Speed): number {
  * Hook to automatically advance session time based on session speed
  * when the session is in RUNNING status.
  *
- * This hook sets up an interval that runs every (1 minute / speed) of real time
- * and advances the session time by 1 minute each interval.
+ * This hook uses the same skip endpoint as the skip bar button, which:
+ * - Finds the next candle for the configured timeframe
+ * - Advances session time to the next candle timestamp
+ * - Processes bar advancement (TP/SL checks, liquidations)
+ * - Returns the updated session and the new candle
+ * - Appends only the last candle to the chart instead of refetching all candles
+ *
+ * The hook sets up an interval that runs every (1 minute / speed) of real time
+ * and calls the skip endpoint each interval.
  * For example:
- * - SPEED_1X: advances 1 minute of session time every 1 minute of real time
- * - SPEED_2X: advances 1 minute of session time every 30 seconds of real time
- * - SPEED_15X: advances 1 minute of session time every 4 seconds of real time
+ * - SPEED_1X: skips to next candle every 1 minute of real time
+ * - SPEED_2X: skips to next candle every 30 seconds of real time
+ * - SPEED_15X: skips to next candle every 4 seconds of real time
  */
 export function useAutoAdvanceTime() {
     const { currentSession } = useCurrentSessionStore();
+    const { appendCandle, getLastCandle, updateLastCandle } =
+        useCurrentSessionCandlesStore();
+    const timeframe = useChartSettingsStore((state) => state.timeframe);
     const sessionId = currentSession?.id?.toString();
-    const queryClient = useQueryClient();
-    const { execute: updateSession } = useUpdateSession(sessionId ?? "");
+    const { execute: skipSession } = useSkipSession(sessionId ?? "", "M1");
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const isUpdatingRef = useRef(false);
 
@@ -55,7 +72,13 @@ export function useAutoAdvanceTime() {
     }, [speedMultiplier]);
 
     /**
-     * Advance time by 1 minute (60000 ms)
+     * Advance time by skipping to the next candle (same logic as skip bar button)
+     * This uses the skip endpoint which:
+     * - Finds the next candle for the timeframe
+     * - Advances session time
+     * - Processes bar advancement (TP/SL checks, liquidations)
+     * - Returns the updated session and new candle
+     * - Appends only the last candle to the chart
      */
     const advanceTime = useCallback(async () => {
         if (!sessionId) {
@@ -91,38 +114,40 @@ export function useAutoAdvanceTime() {
         isUpdatingRef.current = true;
 
         try {
-            // Calculate new current_time by adding 1 minute (60000 ms)
-            const oneMinuteMs = 60 * 1000; // 1 minute in milliseconds
-            let newTime = new Date(currentTime.getTime() + oneMinuteMs);
+            // Call the skip endpoint which handles:
+            // - Finding the next candle for the timeframe
+            // - Advancing session time
+            // - Processing bar advancement
+            // - Returning the updated session and new candle
+            // Note: skipSession mutation requires an empty object as request body
+            const result = await skipSession({});
 
-            // Validate against session end_time boundary
-            if (currentSession.end_time) {
-                const endTs = new Date(currentSession.end_time);
-                if (newTime.getTime() > endTs.getTime()) {
-                    // Clamp to end_time if new time exceeds session boundary
-                    newTime = endTs;
-                }
+            if (!result) {
+                // Skip returned no result, might be at the end
+                return;
             }
 
-            // Format as ISO datetime string (YYYY-MM-DDTHH:mm:ssZ)
-            const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";
-
-            const updatedSession = await updateSession({
-                current_time: newCurrentTs,
-            });
-
-            // Update the session query cache with the mutation result
-            queryClient.setQueryData(
-                ["GET", `/sessions/${sessionId}`],
-                updatedSession
-            );
+            // Append the new candle to the store (which will trigger chart update)
+            if (
+                formatDateTime(
+                    calculateTimeframePeriodStart(timeframe, result.candle.ts)
+                ) === formatDateTime(result.candle.ts)
+            ) {
+                appendCandle(result.candle);
+            } else {
+                const lastCandle = getLastCandle();
+                if (lastCandle) {
+                    const fusedCandle = fuse2Candles(lastCandle, result.candle);
+                    updateLastCandle(fusedCandle);
+                }
+            }
         } catch {
             // Silently handle errors to avoid disrupting the interval
             // The interval will continue and retry on the next cycle
         } finally {
             isUpdatingRef.current = false;
         }
-    }, [sessionId, currentSession, updateSession, queryClient]);
+    }, [sessionId, currentSession, timeframe, skipSession, appendCandle]);
 
     // Set up interval when session is RUNNING
     useEffect(() => {
@@ -157,6 +182,7 @@ export function useAutoAdvanceTime() {
         currentSession?.current_time,
         currentSession?.speed,
         sessionId,
+        timeframe,
         intervalDuration,
         advanceTime,
     ]);

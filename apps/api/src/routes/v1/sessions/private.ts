@@ -68,6 +68,11 @@ sessionsPrivateRouter.patch(
     sessionsController.updateSession.bind(sessionsController)
 );
 
+sessionsPrivateRouter.patch(
+    "/:id/skip",
+    sessionsController.skipSession.bind(sessionsController)
+);
+
 sessionsPrivateRouter.delete(
     "/:id",
     sessionsController.deleteSession.bind(sessionsController)

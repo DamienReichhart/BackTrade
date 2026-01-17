@@ -11,7 +11,8 @@ import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 export function usePatch<TInput, TOutput>(
     url: string,
     inputSchema: z.ZodSchema<TInput>,
-    outputSchema: z.ZodSchema<TOutput>
+    outputSchema: z.ZodSchema<TOutput>,
+    queriesToInvalidate: (string | [string, string])[] | null = null
 ) {
     const queryClient = useQueryClient();
     const { login, logout } = useAuthStore();
@@ -101,7 +102,13 @@ export function usePatch<TInput, TOutput>(
     const mutation = useMutation({
         mutationFn: mutationFn,
         onSuccess: () => {
-            queryClient.invalidateQueries();
+            if (queriesToInvalidate === null) {
+                queryClient.invalidateQueries();
+            } else {
+                queriesToInvalidate.forEach((query) => {
+                    queryClient.invalidateQueries({ queryKey: [query] });
+                });
+            }
         },
     });
 

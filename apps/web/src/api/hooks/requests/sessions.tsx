@@ -6,9 +6,11 @@ import {
     UpdateSessionRequestSchema,
     SessionInfoResponseSchema,
     SessionAnalyticsResponseSchema,
+    SessionSkipResponseSchema,
     type DateRangeQuery,
     type SearchQuery,
 } from "@backtrade/types";
+import { z } from "zod";
 
 /**
  * Session Management API Hooks
@@ -68,4 +70,32 @@ export function useSessionAnalytics(id: string) {
     return useGet(`/sessions/${id}/analytics`, SessionAnalyticsResponseSchema, {
         enabled: !!id,
     });
+}
+
+/**
+ * Skip to the next candle for a session
+ *
+ * @param id - Session ID
+ * @param timeframe - Timeframe to skip to (M1, M5, H1, etc.)
+ * @returns Mutation hook for skipping to next candle
+ */
+export function useSkipSession(id: string, timeframe: string) {
+    const queriesToInvalidateWithoutGet: string[] = [
+        `/sessions/${id}`,
+        `/sessions/${id}/info`,
+        `/sessions/${id}/positions`,
+        `/sessions/${id}/transactions`,
+    ];
+    const queriesToInvalidateWithGet: [string, string][] =
+        queriesToInvalidateWithoutGet.map((query) => [`GET`, query]);
+    const queriesToInvalidate = [
+        ...queriesToInvalidateWithoutGet,
+        ...queriesToInvalidateWithGet,
+    ];
+    return usePatch(
+        `/sessions/${id}/skip?timeframe=${timeframe}`,
+        z.object({}),
+        SessionSkipResponseSchema,
+        queriesToInvalidate
+    );
 }

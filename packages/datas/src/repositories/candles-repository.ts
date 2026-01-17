@@ -423,6 +423,84 @@ class CandlesRepository extends BaseClickHouseRepository {
             );
         }
     }
+
+    /**
+     * Get the next candle after a specific timestamp for a given instrument and timeframe.
+     *
+     * Returns the first candle with ts > afterTime, ordered chronologically.
+     * Returns null if no candle exists after the specified time.
+     *
+     * @param instrument_id - Instrument identifier
+     * @param timeframe - Timeframe of the candle
+     * @param afterTime - Timestamp to search after (exclusive)
+     * @returns The next candle or null if none exists
+     */
+    async getNextCandleByInstrumentAndTimeframe(
+        instrument_id: number,
+        timeframe: string,
+        afterTime: string
+    ): Promise<Candle | null> {
+        // Convert afterTime to ClickHouse DateTime format
+        const clickHouseAfterTime = toClickHouseDateTime(afterTime);
+
+        // Use FINAL to get deduplicated results from ReplacingMergeTree
+        // Get the first candle with ts > afterTime, ordered by ts ASC
+        const query = `
+            SELECT 
+                instrument_id,
+                timeframe,
+                ts,
+                open,
+                high,
+                low,
+                close,
+                volume,
+                created_at,
+                updated_at
+            FROM candles FINAL
+            WHERE instrument_id = {instrument_id:UInt32}
+              AND timeframe = {timeframe:String}
+              AND ts > {afterTime:DateTime}
+            ORDER BY ts ASC
+            LIMIT 1
+        `.trim();
+
+        try {
+            const resultSet = await this.clickhouse.query({
+                query,
+                query_params: {
+                    instrument_id,
+                    timeframe,
+                    afterTime: clickHouseAfterTime,
+                },
+                format: "JSONEachRow",
+            });
+
+            const data = (await resultSet.json()) as Candle[];
+            if (data.length === 0) {
+                return null;
+            }
+
+            const candle = data[0]!;
+            const ts = toISODateTime(candle.ts);
+            if (ts === null) {
+                throw new Error(
+                    `Candle has null timestamp (ts) - data integrity issue: instrument_id=${candle.instrument_id}, timeframe=${candle.timeframe}`
+                );
+            }
+
+            return {
+                ...candle,
+                ts,
+                created_at: toISODateTime(candle.created_at) ?? undefined,
+                updated_at: toISODateTime(candle.updated_at) ?? undefined,
+            };
+        } catch (error) {
+            throw new Error(
+                `Failed to fetch next candle from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
 }
 
 const candlesRepo = new CandlesRepository();
