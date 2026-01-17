@@ -3,20 +3,24 @@ import { PositionDetailsModal } from "../session-running/components/PositionDeta
 import { usePositionsList } from "./hooks/usePositionsList";
 import { formatDateTime } from "@backtrade/utils";
 import { getDisplayPnL } from "../session-running/components/PositionsTable/utils";
+import { Button } from "../../../components/Button/Button";
 import styles from "./PositionsList.module.css";
 
 /**
  * Positions List page for a session
  *
- * Displays all positions for a session with sorting capabilities.
+ * Displays all positions for a session with server-side sorting and pagination.
  * Users can sort by any column by clicking on the column header.
  */
 export function PositionsList() {
     const { id = "" } = useParams<{ id: string }>();
     const {
         session,
-        sortedPositions,
+        positions,
         isLoadingPositions,
+        page,
+        limit,
+        setPage,
         isModalOpen,
         selectedPosition,
         handleSort,
@@ -24,6 +28,9 @@ export function PositionsList() {
         handleRowClick,
         closeModal,
     } = usePositionsList();
+
+    const hasResults = positions.length > 0;
+    const hasMore = positions.length === limit;
 
     return (
         <div className={styles.page}>
@@ -43,7 +50,7 @@ export function PositionsList() {
                     <span className={styles.badge}>
                         {isLoadingPositions
                             ? "Loading..."
-                            : `${sortedPositions.length} position${sortedPositions.length !== 1 ? "s" : ""}`}
+                            : `Page ${page}${hasResults ? ` (${positions.length} shown)` : ""}`}
                     </span>
                 </div>
             </div>
@@ -125,19 +132,15 @@ export function PositionsList() {
                                     </td>
                                 </tr>
                             )}
+                            {!isLoadingPositions && positions.length === 0 && (
+                                <tr>
+                                    <td className={styles.empty} colSpan={10}>
+                                        No positions found
+                                    </td>
+                                </tr>
+                            )}
                             {!isLoadingPositions &&
-                                sortedPositions.length === 0 && (
-                                    <tr>
-                                        <td
-                                            className={styles.empty}
-                                            colSpan={10}
-                                        >
-                                            No positions found
-                                        </td>
-                                    </tr>
-                                )}
-                            {!isLoadingPositions &&
-                                sortedPositions.map((position) => (
+                                positions.map((position) => (
                                     <tr
                                         key={position.id}
                                         className={styles.clickableRow}
@@ -199,6 +202,29 @@ export function PositionsList() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {hasResults && (
+                    <div className={styles.pagination}>
+                        <Button
+                            variant="outline"
+                            size="small"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1 || isLoadingPositions}
+                        >
+                            Previous
+                        </Button>
+                        <span className={styles.pageInfo}>Page {page}</span>
+                        <Button
+                            variant="outline"
+                            size="small"
+                            onClick={() => setPage((p) => p + 1)}
+                            disabled={!hasMore || isLoadingPositions}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <PositionDetailsModal

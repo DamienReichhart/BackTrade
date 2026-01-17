@@ -4,6 +4,7 @@ import {
     subscriptionsRepo,
     plansRepo,
     usersRepo,
+    candlesRepo,
 } from "@backtrade/data";
 import {
     SESSION_STATUS_VALUES,
@@ -15,6 +16,8 @@ import {
     type SearchQuery,
     type User,
     type SessionStatus,
+    type Timeframe,
+    type Candle,
 } from "@backtrade/types";
 import { sessionsCacheRepo } from "../../libs/cache";
 import NotFoundError from "../../errors/web/not-found-error";
@@ -734,7 +737,7 @@ class SessionsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        return sessionsRepo.getAllSessions({
+        return sessionsRepo.findSessions({
             where,
             skip,
             take,
@@ -895,6 +898,148 @@ class SessionsService extends BaseService {
         this.logger.debug({ id }, "Session deleted");
 
         await this.invalidateCachedSession(Number(id));
+    }
+
+    /**
+     * Skip to the next candle for a session
+     *
+     * Advances the session's current_time to the next candle timestamp for the specified timeframe,
+     * processes bar advancement (TP/SL checks, liquidations), and returns the updated session
+     * along with the new candle data.
+     *
+     * @param id - Session ID
+     * @param timeframe - Timeframe to skip to (M1, M5, H1, etc.)
+     * @param user - User entity making the request (for authorization)
+     * @returns Object containing the updated session and the new candle
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     * @throws BadRequestError if timeframe is invalid or no next candle exists
+     */
+    async skipToNextCandle(
+        id: string,
+        timeframe: Timeframe,
+        user: User
+    ): Promise<{ session: Session; candle: Candle }> {
+        const existing = await sessionsRepo.getSessionById(id);
+        if (!existing) {
+            this.logger.debug(
+                { id },
+                "Session not found, throwing not found error"
+            );
+            throw new NotFoundError("Session not found");
+        }
+
+        // Check authorization
+        this.ensureSessionOwnershipOrAdmin(existing, user);
+
+        // Get session with instrument for candle fetching
+        const sessionWithInstrument =
+            await sessionsRepo.getSessionWithInstrument(id);
+        if (!sessionWithInstrument) {
+            throw new NotFoundError("Session with instrument not found");
+        }
+
+        // Calculate the next candle timestamp based on timeframe
+        // We need to find the next candle that starts after the current_time
+        const currentTime = new Date(existing.current_time);
+
+        // Find the next candle for the specified timeframe
+        const nextCandle =
+            await candlesRepo.getNextCandleByInstrumentAndTimeframe(
+                sessionWithInstrument.instrument_id,
+                timeframe,
+                existing.current_time
+            );
+
+        if (!nextCandle) {
+            // Check if we've reached the end_time
+            if (existing.end_time) {
+                const endTime = new Date(existing.end_time);
+                if (currentTime.getTime() >= endTime.getTime()) {
+                    throw new BadRequestError(
+                        "Session has already reached its end time"
+                    );
+                }
+            }
+            throw new BadRequestError(
+                `No next candle available for timeframe ${timeframe}`
+            );
+        }
+
+        // Use the next candle's timestamp as the new current_time
+        const newCurrentTime = nextCandle.ts;
+
+        // Validate against session end_time boundary
+        if (existing.end_time) {
+            const endTime = new Date(existing.end_time);
+            const nextCandleTime = new Date(newCurrentTime);
+            if (nextCandleTime.getTime() > endTime.getTime()) {
+                throw new BadRequestError(
+                    "Next candle exceeds session end time"
+                );
+            }
+        }
+
+        this.logger.debug(
+            {
+                id,
+                oldTime: existing.current_time,
+                newTime: newCurrentTime,
+                timeframe,
+            },
+            "Skipping to next candle"
+        );
+
+        // Process bar advancement if time is moving forward
+        const oldTime = existing.current_time;
+        if (new Date(newCurrentTime) > new Date(oldTime)) {
+            try {
+                const result =
+                    await barAdvancementService.processBarAdvancement(
+                        sessionWithInstrument,
+                        oldTime,
+                        newCurrentTime,
+                        user
+                    );
+
+                this.logger.debug(
+                    {
+                        id,
+                        positionsClosedCount: result.positionsClosed.length,
+                        marginLevelAfter: result.marginLevelAfter,
+                        equityAfter: result.equityAfter,
+                    },
+                    "Bar advancement processing complete"
+                );
+            } catch (error) {
+                this.logger.error(
+                    {
+                        id,
+                        oldTime,
+                        newTime: newCurrentTime,
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error),
+                    },
+                    "Bar advancement processing failed"
+                );
+                throw error;
+            }
+        }
+
+        // Update session with new current_time
+        const updated = await sessionsRepo.updateSession(id, {
+            current_time: newCurrentTime,
+        });
+        this.logger.debug({ id: updated.id }, "Session updated after skip");
+
+        await this.cacheSession(updated);
+
+        return {
+            session: updated,
+            candle: nextCandle,
+        };
     }
 }
 

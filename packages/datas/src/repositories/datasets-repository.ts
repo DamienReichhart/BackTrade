@@ -26,12 +26,12 @@ export interface FindAllOptions {
  */
 class DatasetsRepository extends BasePostgresRepository {
     /**
-     * Get all datasets matching optional filter, pagination, and sorting.
+     * Find datasets with optional filtering, pagination, and sorting.
      *
      * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching datasets
      */
-    async getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
+    async findDatasets(options?: FindAllOptions): Promise<Dataset[]> {
         return this.prisma.dataset.findMany({
             where: options?.where as Prisma.DatasetWhereInput | undefined,
             skip: options?.skip,
@@ -40,6 +40,17 @@ class DatasetsRepository extends BasePostgresRepository {
                 | Prisma.DatasetOrderByWithRelationInput
                 | undefined,
         }) as unknown as Dataset[];
+    }
+
+    /**
+     * Get all datasets matching optional filter, pagination, and sorting.
+     *
+     * @deprecated Use findDatasets instead
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching datasets
+     */
+    async getAllDatasets(options?: FindAllOptions): Promise<Dataset[]> {
+        return this.findDatasets(options);
     }
 
     /**

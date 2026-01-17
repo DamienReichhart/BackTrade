@@ -24,6 +24,7 @@
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
         "dotenv": "^17.2.3",
+        "mjml": "^4.18.0",
         "zod": "4.3.5"
     },
     "devDependencies": {
@@ -31,7 +32,7 @@
         "@backtrade/tsconfig": "workspace:*",
         "@eslint/js": "^9.39.2",
         "@types/jest": "30.0.0",
-        "@types/node": "25.0.6",
+        "@types/node": "25.0.9",
         "esbuild": "0.27.2",
         "eslint": "^9.39.2",
         "globals": "^17.0.0",

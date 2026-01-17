@@ -8,6 +8,7 @@ export { useOrderForm } from "./useOrderForm";
 export { usePositionCreation } from "./usePositionCreation";
 export { usePositionsTable } from "./usePositionsTable";
 export { usePositionMarkers } from "./usePositionMarkers";
+export { usePositionPriceLines } from "./usePositionPriceLines";
 export { useTransactionsTable } from "./useTransactionsTable";
 export { useUpdatePositionTpSl } from "./useUpdatePositionTpSl";
 export { useAutoAdvanceTime } from "./useAutoAdvanceTime";

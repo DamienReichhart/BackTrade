@@ -123,7 +123,7 @@ db-studio: ## Open Prisma Studio (database GUI)
 .PHONY: db-reset
 db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "⚠️  WARNING: This will delete all database data!"
-	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset"
+	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset
 
 # =============================================================================
 # Dependencies
@@ -133,6 +133,10 @@ db-reset: ## Reset database (WARNING: deletes all data)
 install: ## Install all dependencies
 	@echo "Installing dependencies..."
 	$(PNPM) install
+	cp .env.example .env
+	cp .env.example apps/api/.env
+	cp .env.example apps/worker/.env
+	cp .env.example apps/scheduler/.env
 
 .PHONY: install-dev
 install-dev: dev ## Install dependencies and start dev environment

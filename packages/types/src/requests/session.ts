@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { SessionSchema } from "../entities";
 import { SpeedSchema, SessionStatusSchema, LeverageSchema } from "../enums";
+import { CandleSchema } from "../entities/candle";
 
 export const CreateSessionRequestSchema = z
     .object({
@@ -63,3 +64,9 @@ export const SessionInfoResponseSchema = z.object({
     margin_level: z.number().nonnegative(),
 });
 export type SessionInfoResponse = z.infer<typeof SessionInfoResponseSchema>;
+
+export const SessionSkipResponseSchema = z.object({
+    session: SessionSchema,
+    candle: CandleSchema,
+});
+export type SessionSkipResponse = z.infer<typeof SessionSkipResponseSchema>;

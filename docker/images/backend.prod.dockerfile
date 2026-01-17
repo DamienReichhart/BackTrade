@@ -29,8 +29,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy workspace packages
-COPY packages/ ./packages/
+# Copy workspace packages (including generated Prisma client)
+COPY --from=builder /app/packages/ ./packages/
 
 # Copy the built API
 COPY --from=builder /app/apps/api/dist ./apps/api/dist

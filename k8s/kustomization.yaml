@@ -39,6 +39,7 @@ resources:
 
     # Ingress
     - ingress/ingress.yaml
+    - ingress/stripe-webhook-ingress.yaml
 
     # Autoscaling
     - hpa/backend-hpa.yaml

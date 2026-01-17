@@ -1,0 +1,65 @@
+graph TB
+  subgraph Zustand_Stores["Zustand Stores"]
+    direction TB
+
+    AuthStore["Auth Store<br/>accessToken: string<br/>refreshToken: string<br/>user: User \\| null<br/>isInitialized: boolean<br/>login(), logout(), setUser()"]
+
+    SessionStore["Current Session Store<br/>session: Session \\| null<br/>setSession(), clearSession()"]
+
+    CandlesStore["Current Session Candles Store<br/>candles: Candle[]<br/>setCandles(), addCandle()"]
+
+    PriceStore["Current Price Store<br/>currentPrice: number<br/>setCurrentPrice()"]
+
+    ChartStore["Chart Settings Store<br/>settings: ChartSettings<br/>updateSettings()"]
+  end
+
+  subgraph React_Query_Cache["React Query Cache"]
+    direction TB
+
+    QueryCache["Query Cache<br/>Server State"]
+    SessionsQuery["Sessions Query<br/>GET /sessions"]
+    PositionsQuery["Positions Query<br/>GET /positions"]
+    CandlesQuery["Candles Query<br/>GET /candles"]
+    UserQuery["User Query<br/>GET /auth/me"]
+    PlansQuery["Plans Query<br/>GET /plans"]
+  end
+
+  subgraph State_Flow["State Flow"]
+    direction LR
+
+    UserAction["User Action<br/>Click, Form Submit"]
+    ComponentUpdate["Component Update"]
+    StoreUpdate["Store Update"]
+    QueryInvalidation["Query Invalidation"]
+    Refetch["Refetch Data"]
+  end
+
+  subgraph State_Synchronization["State Synchronization"]
+    direction TB
+
+    Sync1["Auth Store ↔ API Hooks<br/>Token Management"]
+    Sync2["Session Store ↔ React Query<br/>Session Data"]
+    Sync3["Chart Store ↔ Chart Component<br/>Settings Persistence"]
+    Sync4["React Query ↔ Server<br/>Data Synchronization"]
+  end
+
+  AuthStore --> Sync1
+  SessionStore --> Sync2
+  ChartStore --> Sync3
+  QueryCache --> Sync4
+
+  UserAction --> ComponentUpdate
+  ComponentUpdate --> StoreUpdate
+  StoreUpdate --> QueryInvalidation
+  QueryInvalidation --> Refetch
+
+  SessionsQuery --> QueryCache
+  PositionsQuery --> QueryCache
+  CandlesQuery --> QueryCache
+  UserQuery --> QueryCache
+  PlansQuery --> QueryCache
+
+  style AuthStore fill:#ff6b6b
+  style SessionStore fill:#4a90e2
+  style ChartStore fill:#61dafb
+  style QueryCache fill:#ffa500

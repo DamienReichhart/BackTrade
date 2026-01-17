@@ -47,16 +47,49 @@ export function useDatasetFileUpload(datasetId: number) {
             }
 
             try {
-                const formData = new FormData();
-                formData.append("file", fileToUpload as File);
+                const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB
+                const fileSize = fileToUpload!.size;
+                const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
 
-                const result = await execute(formData);
+                let lastResult = null;
+
+                if (totalChunks <= 1) {
+                    // Single file upload
+                    const formData = new FormData();
+                    formData.append("file", fileToUpload as File);
+                    lastResult = await execute(formData);
+                } else {
+                    // Chunked upload
+                    for (let i = 0; i < totalChunks; i++) {
+                        const start = i * CHUNK_SIZE;
+                        const end = Math.min(fileSize, start + CHUNK_SIZE);
+                        const chunkBlob = fileToUpload!.slice(start, end);
+
+                        // Create a File object from the Blob with the correct MIME type
+                        // This ensures the backend recognizes it as a CSV file
+                        const chunkFile = new File(
+                            [chunkBlob],
+                            fileToUpload!.name,
+                            {
+                                type: fileToUpload!.type || "text/csv",
+                                lastModified: fileToUpload!.lastModified,
+                            }
+                        );
+
+                        const formData = new FormData();
+                        formData.append("file", chunkFile);
+                        formData.append("chunkIndex", String(i));
+                        formData.append("totalChunks", String(totalChunks));
+
+                        lastResult = await execute(formData);
+                    }
+                }
 
                 // Clear selected file on success
                 setSelectedFile(null);
                 setError(null);
 
-                return result;
+                return lastResult;
             } catch {
                 setError("Failed to upload file");
                 return null;

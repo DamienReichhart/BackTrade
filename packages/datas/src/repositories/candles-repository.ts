@@ -72,6 +72,9 @@ class CandlesRepository extends BaseClickHouseRepository {
     /**
      * Bulk insert candles for better performance.
      *
+     * Groups candles by partition (year-month) to avoid ClickHouse's partition limit
+     * (max_partitions_per_insert_block = 100). Inserts each partition group separately.
+     *
      * @param data - Array of candle creation data
      * @returns Number of inserted candles
      */
@@ -99,29 +102,49 @@ class CandlesRepository extends BaseClickHouseRepository {
 
         const clickHouseNow = toClickHouseDateTime(now);
 
-        try {
-            await this.clickhouse.insert({
-                table: "candles",
-                values: candles.map((candle) => ({
-                    instrument_id: candle.instrument_id,
-                    timeframe: candle.timeframe,
-                    ts: toClickHouseDateTime(candle.ts),
-                    open: Number(candle.open),
-                    high: Number(candle.high),
-                    low: Number(candle.low),
-                    close: Number(candle.close),
-                    volume: Number(candle.volume),
-                    created_at: candle.created_at
-                        ? toClickHouseDateTime(candle.created_at)
-                        : clickHouseNow,
-                    updated_at: candle.updated_at
-                        ? toClickHouseDateTime(candle.updated_at)
-                        : clickHouseNow,
-                })),
-                format: "JSONEachRow",
-            });
+        // Group candles by partition (year-month) to avoid partition limit
+        // Partition key is toYYYYMM(ts), which returns YYYYMM as integer
+        const partitionGroups = new Map<string, Candle[]>();
+        for (const candle of candles) {
+            const date = new Date(candle.ts);
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+            const partitionKey = `${year}${month}`; // YYYYMM format
 
-            return candles.length;
+            if (!partitionGroups.has(partitionKey)) {
+                partitionGroups.set(partitionKey, []);
+            }
+            partitionGroups.get(partitionKey)!.push(candle);
+        }
+
+        // Insert each partition group separately
+        let totalInserted = 0;
+        try {
+            for (const partitionCandles of partitionGroups.values()) {
+                await this.clickhouse.insert({
+                    table: "candles",
+                    values: partitionCandles.map((candle) => ({
+                        instrument_id: candle.instrument_id,
+                        timeframe: candle.timeframe,
+                        ts: toClickHouseDateTime(candle.ts),
+                        open: Number(candle.open),
+                        high: Number(candle.high),
+                        low: Number(candle.low),
+                        close: Number(candle.close),
+                        volume: Number(candle.volume),
+                        created_at: candle.created_at
+                            ? toClickHouseDateTime(candle.created_at)
+                            : clickHouseNow,
+                        updated_at: candle.updated_at
+                            ? toClickHouseDateTime(candle.updated_at)
+                            : clickHouseNow,
+                    })),
+                    format: "JSONEachRow",
+                });
+                totalInserted += partitionCandles.length;
+            }
+
+            return totalInserted;
         } catch (error) {
             throw new Error(
                 `Failed to bulk insert candles in ClickHouse: ${error instanceof Error ? error.message : String(error)}`
@@ -420,6 +443,84 @@ class CandlesRepository extends BaseClickHouseRepository {
         } catch (error) {
             throw new Error(
                 `Failed to fetch last candles from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
+
+    /**
+     * Get the next candle after a specific timestamp for a given instrument and timeframe.
+     *
+     * Returns the first candle with ts > afterTime, ordered chronologically.
+     * Returns null if no candle exists after the specified time.
+     *
+     * @param instrument_id - Instrument identifier
+     * @param timeframe - Timeframe of the candle
+     * @param afterTime - Timestamp to search after (exclusive)
+     * @returns The next candle or null if none exists
+     */
+    async getNextCandleByInstrumentAndTimeframe(
+        instrument_id: number,
+        timeframe: string,
+        afterTime: string
+    ): Promise<Candle | null> {
+        // Convert afterTime to ClickHouse DateTime format
+        const clickHouseAfterTime = toClickHouseDateTime(afterTime);
+
+        // Use FINAL to get deduplicated results from ReplacingMergeTree
+        // Get the first candle with ts > afterTime, ordered by ts ASC
+        const query = `
+            SELECT 
+                instrument_id,
+                timeframe,
+                ts,
+                open,
+                high,
+                low,
+                close,
+                volume,
+                created_at,
+                updated_at
+            FROM candles FINAL
+            WHERE instrument_id = {instrument_id:UInt32}
+              AND timeframe = {timeframe:String}
+              AND ts > {afterTime:DateTime}
+            ORDER BY ts ASC
+            LIMIT 1
+        `.trim();
+
+        try {
+            const resultSet = await this.clickhouse.query({
+                query,
+                query_params: {
+                    instrument_id,
+                    timeframe,
+                    afterTime: clickHouseAfterTime,
+                },
+                format: "JSONEachRow",
+            });
+
+            const data = (await resultSet.json()) as Candle[];
+            if (data.length === 0) {
+                return null;
+            }
+
+            const candle = data[0]!;
+            const ts = toISODateTime(candle.ts);
+            if (ts === null) {
+                throw new Error(
+                    `Candle has null timestamp (ts) - data integrity issue: instrument_id=${candle.instrument_id}, timeframe=${candle.timeframe}`
+                );
+            }
+
+            return {
+                ...candle,
+                ts,
+                created_at: toISODateTime(candle.created_at) ?? undefined,
+                updated_at: toISODateTime(candle.updated_at) ?? undefined,
+            };
+        } catch (error) {
+            throw new Error(
+                `Failed to fetch next candle from ClickHouse: ${error instanceof Error ? error.message : String(error)}`
             );
         }
     }

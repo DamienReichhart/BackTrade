@@ -1,5 +1,17 @@
 {
     "cSpell.words": [
-        "backtrade"
+        "addgroup",
+        "backtrade",
+        "CLICKHOUSE",
+        "cloudflared",
+        "cpus",
+        "datas",
+        "distroless",
+        "healthcheck",
+        "isready",
+        "mjml",
+        "nodeuser",
+        "pgdata",
+        "rabbitmq"
     ]
 }

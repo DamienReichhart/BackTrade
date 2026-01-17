@@ -20,8 +20,11 @@
         "@backtrade/logger": "workspace:*",
         "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
+        "@prisma/adapter-pg": "^7.2.0",
+        "@prisma/client": "^7.2.0",
         "dotenv": "^17.2.3",
         "node-cron": "^4.2.1",
+        "pg": "^8.17.1",
         "zod": "4.3.5"
     },
     "devDependencies": {
@@ -29,7 +32,7 @@
         "@backtrade/tsconfig": "workspace:*",
         "@eslint/js": "^9.39.2",
         "@types/jest": "30.0.0",
-        "@types/node": "25.0.6",
+        "@types/node": "25.0.9",
         "@types/node-cron": "^3.0.11",
         "esbuild": "0.27.2",
         "eslint": "^9.39.2",

@@ -8,9 +8,9 @@ import {
     ClosePositionRequestSchema,
     EmptyResponseSchema,
     type PositionQuery,
-    type PositionStatus,
 } from "@backtrade/types";
 import { z } from "zod";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Position Management API Hooks
@@ -18,17 +18,7 @@ import { z } from "zod";
  */
 
 export function usePositions(query?: PositionQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/positions?${searchParams.toString()}` : "/positions";
-
+    const url = buildUrlWithParams("/positions", query);
     return useGet(url, PositionListResponseSchema);
 }
 
@@ -37,31 +27,17 @@ export function usePosition(id: string) {
 }
 
 /**
- * Fetch positions for a specific session with optional status filter.
+ * Fetch positions for a specific session with optional status filter, pagination, and sorting.
  *
  * @param sessionId - The session ID to fetch positions for
- * @param status - Optional position status filter (OPEN, CLOSED, LIQUIDATED)
- * @param limit - Optional limit for pagination (defaults to 20, max 10000)
+ * @param query - Optional query with status filter, pagination, and sorting
  * @returns Query result with positions array
  */
 export function usePositionsBySession(
     sessionId: string,
-    status?: PositionStatus,
-    limit?: number
+    query?: PositionQuery
 ) {
-    const searchParams = new URLSearchParams();
-    if (status) {
-        searchParams.append("status", status);
-    }
-    if (limit) {
-        searchParams.append("limit", String(limit));
-    }
-
-    const queryString = searchParams.toString();
-    const url = queryString
-        ? `/sessions/${sessionId}/positions?${queryString}`
-        : `/sessions/${sessionId}/positions`;
-
+    const url = buildUrlWithParams(`/sessions/${sessionId}/positions`, query);
     return useGet(url, PositionListResponseSchema, { enabled: !!sessionId });
 }
 

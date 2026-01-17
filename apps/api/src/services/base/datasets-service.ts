@@ -48,6 +48,23 @@ const VALID_SORT_FIELDS = [
 type DatasetSortField = (typeof VALID_SORT_FIELDS)[number];
 
 /**
+ * Interface for stored chunk data
+ */
+interface ChunkData {
+    buffer: Buffer;
+    chunkIndex: number;
+    receivedAt: number;
+}
+
+/**
+ * Interface for chunk upload result
+ */
+interface ChunkUploadResult {
+    complete: boolean;
+    receivedChunks: number;
+}
+
+/**
  * Datasets Service
  *
  * Handles business logic for dataset operations including CRUD, validation, and caching.
@@ -58,8 +75,28 @@ type DatasetSortField = (typeof VALID_SORT_FIELDS)[number];
  * - Write operations (create, update, delete, upload): Admin only
  */
 class DatasetsService extends BaseService {
+    /**
+     * In-memory storage for file chunks during chunked uploads
+     * Key: `${datasetId}-${originalFileName}`
+     * Value: Map of chunkIndex -> ChunkData
+     *
+     * Note: This is a simple in-memory solution. For production with multiple instances,
+     * consider using Redis or another shared storage solution.
+     */
+    private readonly chunkStorage = new Map<string, Map<number, ChunkData>>();
+
+    /**
+     * Cleanup interval for stale chunks (5 minutes)
+     */
+    private readonly CHUNK_CLEANUP_INTERVAL = 5 * 60 * 1000;
+
     constructor() {
         super("datasets-service");
+
+        // Start cleanup interval for stale chunks
+        setInterval(() => {
+            this.cleanupStaleChunks();
+        }, this.CHUNK_CLEANUP_INTERVAL);
     }
 
     // ============================================================================
@@ -378,7 +415,7 @@ class DatasetsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        return datasetsRepo.getAllDatasets({
+        return datasetsRepo.findDatasets({
             where,
             skip,
             take,
@@ -584,6 +621,153 @@ class DatasetsService extends BaseService {
         );
 
         return updatedDataset;
+    }
+
+    /**
+     * Upload a chunk of a dataset file
+     *
+     * Stores chunks temporarily and reassembles the complete file when all chunks are received.
+     * Admin-only operation.
+     *
+     * @param id - Dataset ID
+     * @param chunkBuffer - Chunk buffer
+     * @param originalFileName - Original file name
+     * @param chunkIndex - Index of this chunk (0-based)
+     * @param totalChunks - Total number of chunks
+     * @param user - User entity making the request (for authorization)
+     * @returns Result indicating if upload is complete and how many chunks received
+     * @throws NotFoundError if dataset doesn't exist
+     * @throws ForbiddenError if user is not admin
+     * @throws BadRequestError if chunk index is invalid
+     */
+    async uploadDatasetFileChunk(
+        id: string,
+        chunkBuffer: Buffer,
+        originalFileName: string,
+        chunkIndex: number,
+        totalChunks: number,
+        user: User
+    ): Promise<ChunkUploadResult> {
+        // Check admin access
+        this.ensureAdminAccess(user, "upload");
+
+        const numericId = Number(id);
+
+        // Validate chunk index
+        if (chunkIndex < 0 || chunkIndex >= totalChunks) {
+            throw new BadRequestError(
+                `Invalid chunk index. Must be between 0 and ${totalChunks - 1}`
+            );
+        }
+
+        // Fetch dataset to validate it exists
+        const dataset = await datasetsRepo.getDatasetById(id);
+        if (!dataset) {
+            this.logger.debug(
+                { id },
+                "Dataset not found, throwing not found error"
+            );
+            throw new NotFoundError("Dataset not found");
+        }
+
+        // Create storage key
+        const storageKey = `${numericId}-${originalFileName}`;
+
+        // Initialize chunk storage for this upload if needed
+        if (!this.chunkStorage.has(storageKey)) {
+            this.chunkStorage.set(storageKey, new Map());
+        }
+
+        const chunks = this.chunkStorage.get(storageKey)!;
+
+        // Store the chunk
+        chunks.set(chunkIndex, {
+            buffer: chunkBuffer,
+            chunkIndex,
+            receivedAt: Date.now(),
+        });
+
+        this.logger.debug(
+            {
+                datasetId: numericId,
+                chunkIndex,
+                totalChunks,
+                receivedChunks: chunks.size,
+                userId: user.id,
+            },
+            "Chunk stored"
+        );
+
+        // Check if all chunks have been received
+        if (chunks.size === totalChunks) {
+            this.logger.info(
+                {
+                    datasetId: numericId,
+                    totalChunks,
+                    userId: user.id,
+                },
+                "All chunks received, reassembling file"
+            );
+
+            // Reassemble chunks in order
+            const sortedChunks = Array.from(chunks.entries())
+                .sort(([a], [b]) => a - b)
+                .map(([, data]) => data.buffer);
+
+            const completeFile = Buffer.concat(sortedChunks);
+
+            // Clean up chunk storage
+            this.chunkStorage.delete(storageKey);
+
+            // Process the complete file using the existing uploadDatasetFile method
+            await this.uploadDatasetFile(
+                id,
+                completeFile,
+                originalFileName,
+                user
+            );
+
+            return {
+                complete: true,
+                receivedChunks: totalChunks,
+            };
+        }
+
+        return {
+            complete: false,
+            receivedChunks: chunks.size,
+        };
+    }
+
+    /**
+     * Clean up stale chunks that haven't been completed
+     *
+     * Removes chunks older than 30 minutes to prevent memory leaks.
+     */
+    private cleanupStaleChunks(): void {
+        const now = Date.now();
+        const STALE_THRESHOLD = 30 * 60 * 1000; // 30 minutes
+
+        for (const [key, chunks] of this.chunkStorage.entries()) {
+            if (chunks.size === 0) {
+                this.chunkStorage.delete(key);
+                continue;
+            }
+
+            // Check if any chunk is stale
+            const chunkArray = Array.from(chunks.values());
+            const oldestChunk = chunkArray.reduce((oldest, chunk) =>
+                chunk.receivedAt < oldest.receivedAt ? chunk : oldest
+            );
+
+            if (oldestChunk && now - oldestChunk.receivedAt > STALE_THRESHOLD) {
+                this.logger.debug(
+                    { storageKey: key, chunksCount: chunks.size },
+                    "Cleaning up stale chunks"
+                );
+                this.chunkStorage.delete(key);
+            }
+        }
     }
 }
 

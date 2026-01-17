@@ -18,6 +18,8 @@ import {
     type UpdateSessionRequest,
     type SessionUpdateInput,
     IdParamsSchema,
+    type SessionSkipResponse,
+    type Timeframe,
 } from "@backtrade/types";
 import { candlesRepo } from "@backtrade/data";
 import sessionsService from "../services/base/sessions-service";
@@ -414,6 +416,75 @@ class SessionsController {
         );
 
         res.status(204).send();
+    }
+
+    /**
+     * Skip to the next candle for a session
+     *
+     * Advances the session's current_time to the next candle timestamp for the specified timeframe,
+     * processes bar advancement (TP/SL checks, liquidations), and returns the updated session
+     * along with the new candle data.
+     *
+     * Query parameters:
+     * - timeframe: Required timeframe (M1, M5, M10, M15, M30, H1, H2, H4, D1, W1)
+     *
+     * @param req - Express request object (req.user guaranteed by authMiddleware)
+     * @param res - Express response object
+     * @throws BadRequestError if session ID is invalid or missing, timeframe is missing or invalid
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    async skipSession(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        let id: string;
+        try {
+            ({ id } = IdParamsSchema.parse(req.params));
+        } catch {
+            throw new BadRequestError("Invalid session ID");
+        }
+
+        // Validate timeframe query parameter
+        let timeframe: string;
+        try {
+            const parsed = TimeframeSchema.parse(req.query.timeframe);
+            timeframe = parsed;
+        } catch (error) {
+            this.logger.debug(
+                { timeframe: req.query.timeframe, error },
+                "Invalid timeframe query parameter"
+            );
+            throw new BadRequestError(
+                "timeframe query parameter is required and must be a valid timeframe (M1, M5, M10, M15, M30, H1, H2, H4, D1, W1)"
+            );
+        }
+
+        this.logger.trace(
+            { id, userId: user.id, timeframe },
+            "Skipping to next candle"
+        );
+
+        const result = await sessionsService.skipToNextCandle(
+            id,
+            timeframe as Timeframe,
+            user
+        );
+
+        this.logger.info(
+            {
+                id,
+                userId: user.id,
+                timeframe,
+                newTime: result.session.current_time,
+            },
+            "Session skipped to next candle successfully"
+        );
+
+        const response: SessionSkipResponse = {
+            session: result.session,
+            candle: result.candle,
+        };
+
+        res.status(200).json(response);
     }
 }
 

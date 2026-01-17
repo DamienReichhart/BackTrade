@@ -6,6 +6,7 @@ import {
     UpdatePlanRequestSchema,
     type SearchQuery,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Plan Management API Hooks
@@ -13,17 +14,7 @@ import {
  */
 
 export function usePlans(query?: SearchQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/plans?${searchParams.toString()}` : "/plans";
-
+    const url = buildUrlWithParams("/plans", query);
     return useGet(url, PlanListResponseSchema);
 }
 

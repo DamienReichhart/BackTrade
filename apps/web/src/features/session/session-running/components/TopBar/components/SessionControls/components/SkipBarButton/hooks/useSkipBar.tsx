@@ -1,13 +1,21 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useUpdateSession } from "../../../../../../../../../../api/hooks/requests/sessions";
-import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
+import { useSkipSession } from "../../../../../../../../../../api/hooks/requests/sessions";
+import {
+    useCurrentSessionStore,
+    useCurrentSessionCandlesStore,
+} from "../../../../../../../../../../store/session";
 import { useChartSettingsStore } from "../../../../../../../../../../store/chart";
-import { timeframeToMilliseconds } from "@backtrade/utils";
 
 /**
  * Hook to manage skip bar functionality
- * Skips the session time forward by one timeframe
+ * Skips the session time forward to the next candle for the specified timeframe
+ *
+ * This hook uses the new skip endpoint which:
+ * - Advances session time to the next candle timestamp
+ * - Processes bar advancement (TP/SL checks, liquidations)
+ * - Returns the updated session and the new candle
+ * - Appends the new candle to the chart instead of refetching all candles
  *
  * @param onError - Callback when skip bar fails
  * @param onSuccess - Callback when skip bar succeeds
@@ -18,12 +26,14 @@ export function useSkipBar(
     onSuccess?: () => void
 ) {
     const { currentSession } = useCurrentSessionStore();
+    const { appendCandle } = useCurrentSessionCandlesStore();
     const timeframe = useChartSettingsStore((state) => state.timeframe);
     const sessionId = currentSession?.id?.toString();
 
     const queryClient = useQueryClient();
-    const { execute: updateSession, isLoading } = useUpdateSession(
-        sessionId ?? ""
+    const { execute: skipSession, isLoading } = useSkipSession(
+        sessionId ?? "",
+        timeframe
     );
 
     const canSkip = useMemo(
@@ -43,32 +53,21 @@ export function useSkipBar(
         }
 
         try {
-            // Calculate new current_time by adding timeframe duration
-            const currentTime = new Date(currentSession.current_time);
-            const timeframeMs = timeframeToMilliseconds(timeframe);
-            let newTime = new Date(currentTime.getTime() + timeframeMs);
+            // Call the skip endpoint which handles:
+            // - Finding the next candle for the timeframe
+            // - Advancing session time
+            // - Processing bar advancement
+            // - Returning the updated session and new candle
+            // Note: skipSession mutation requires an empty object as request body
+            const result = await skipSession({});
 
-            // Validate against session end_time boundary
-            if (currentSession.end_time) {
-                const endTs = new Date(currentSession.end_time);
-                if (newTime.getTime() > endTs.getTime()) {
-                    // Clamp to end_time if new time exceeds session boundary
-                    newTime = endTs;
-                }
+            if (!result) {
+                throw new Error("Skip session returned no result");
             }
 
-            // Format as ISO datetime string (YYYY-MM-DDTHH:mm:ssZ)
-            const newCurrentTs = newTime.toISOString().slice(0, 19) + "Z";
+            // Append the new candle to the store (which will trigger chart update)
+            appendCandle(result.candle);
 
-            const updatedSession = await updateSession({
-                current_time: newCurrentTs,
-            });
-
-            // Update the session query cache with the mutation result
-            queryClient.setQueryData(
-                ["GET", `/sessions/${sessionId}`],
-                updatedSession
-            );
             onSuccess?.();
         } catch (err) {
             const errorMessage =
@@ -79,8 +78,9 @@ export function useSkipBar(
         sessionId,
         currentSession,
         timeframe,
-        updateSession,
+        skipSession,
         queryClient,
+        appendCandle,
         onError,
         onSuccess,
     ]);

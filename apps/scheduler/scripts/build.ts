@@ -21,7 +21,7 @@ async function main() {
                 __dirname: "import.meta.url",
                 __filename: "import.meta.url",
             },
-            external: [],
+            external: ["@prisma/client", "@prisma/adapter-pg", "pg"],
         });
 
         // eslint-disable-next-line no-console

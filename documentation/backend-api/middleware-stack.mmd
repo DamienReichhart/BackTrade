@@ -1,0 +1,50 @@
+graph LR
+    subgraph "Middleware Execution Order"
+        direction TB
+        
+        M1[Helmet<br/>Security Headers<br/>XSS, CSRF Protection]
+        M2[CORS<br/>Cross-Origin Resource Sharing<br/>Origin Validation]
+        M3[Stripe Webhook<br/>Raw Body Parser<br/>Bypass JSON Parsing]
+        M4[Compression<br/>Gzip Compression<br/>Response Optimization]
+        M5[Express JSON<br/>Body Parser<br/>JSON to Object]
+        M6[Rate Limiter<br/>Request Throttling<br/>Prevent Abuse]
+        M7[Request ID<br/>Generate Unique ID<br/>Request Tracking]
+        M8[Request Logger<br/>Structured Logging<br/>Pino HTTP]
+        M9[Router<br/>Route Matching<br/>Path Resolution]
+        M10[Auth Middleware<br/>JWT Verification<br/>Token Validation]
+        M11[Admin Middleware<br/>Role Check<br/>Admin Only]
+        M12[Input Validation<br/>Zod Schema Validation<br/>Request Validation]
+        M13[Controller<br/>Request Handler<br/>Business Logic Entry]
+    end
+
+    M1 --> M2
+    M2 --> M3
+    M3 --> M4
+    M4 --> M5
+    M5 --> M6
+    M6 --> M7
+    M7 --> M8
+    M8 --> M9
+    M9 --> M10
+    M10 --> M11
+    M11 --> M12
+    M12 --> M13
+
+    subgraph "Conditional Middleware"
+        direction TB
+        C1{Is Stripe Webhook?}
+        C2{Is Protected Route?}
+        C3{Is Admin Route?}
+        C4{Has Request Body?}
+    end
+
+    M3 -.->|Yes| C1
+    M9 -.->|Yes| C2
+    M10 -.->|Yes| C3
+    M12 -.->|Yes| C4
+
+    style M1 fill:#ffcdd2
+    style M3 fill:#e1bee7
+    style M10 fill:#fff3e0
+    style M11 fill:#ffcdd2
+    style M12 fill:#c8e6c9

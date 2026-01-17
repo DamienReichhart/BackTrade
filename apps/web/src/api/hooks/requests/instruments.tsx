@@ -6,6 +6,7 @@ import {
     type SearchQuery,
     UpdateInstrumentRequestSchema,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Instrument Management API Hooks
@@ -13,19 +14,7 @@ import {
  */
 
 export function useInstruments(query?: SearchQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/instruments?${searchParams.toString()}`
-        : "/instruments";
-
+    const url = buildUrlWithParams("/instruments", query);
     return useGet(url, InstrumentListResponseSchema);
 }
 

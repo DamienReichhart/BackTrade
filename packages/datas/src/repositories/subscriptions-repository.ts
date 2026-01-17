@@ -10,16 +10,44 @@ import type {
     SubscriptionWhereInput,
     SubscriptionCreateInput,
     SubscriptionUpdateInput,
+    SubscriptionOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
+
+export interface SubscriptionFindAllOptions {
+    where?: SubscriptionWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: SubscriptionOrderBy;
+}
 
 /**
  * Repository for Subscription model CRUD operations.
  */
 class SubscriptionsRepository extends BasePostgresRepository {
     /**
+     * Find subscriptions with optional filtering, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching subscriptions
+     */
+    async findSubscriptions(
+        options?: SubscriptionFindAllOptions
+    ): Promise<Subscription[]> {
+        return this.prisma.subscription.findMany({
+            where: options?.where as Prisma.SubscriptionWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.SubscriptionOrderByWithRelationInput
+                | undefined,
+        }) as unknown as Subscription[];
+    }
+
+    /**
      * Get all subscriptions matching optional filter conditions.
      *
+     * @deprecated Use findSubscriptions instead
      * @param where - Optional filter conditions
      * @returns Array of matching subscriptions
      */

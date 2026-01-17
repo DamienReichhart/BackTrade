@@ -14,3 +14,7 @@ export type {
     TradingCosts,
     PositionClosingResult,
 } from "./position-closing-service";
+
+// Export utilities
+export { default as tradingStateService } from "./trading-state-service";
+export type { TradingState } from "./trading-state-service";

@@ -5,6 +5,7 @@ import {
     UpdateUserRequestSchema,
     type SearchQueryUser,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * User Management API Hooks
@@ -12,17 +13,7 @@ import {
  */
 
 export function useUsers(query?: SearchQueryUser) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/users?${searchParams.toString()}` : "/users";
-
+    const url = buildUrlWithParams("/users", query);
     return useGet(url, UserListResponseSchema);
 }
 

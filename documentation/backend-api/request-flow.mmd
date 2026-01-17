@@ -1,0 +1,69 @@
+sequenceDiagram
+    participant Client
+    participant Proxy as Nginx Proxy
+    participant Express as Express App
+    participant Middleware as Middleware Stack
+    participant Router as Router
+    participant Controller as Controller
+    participant Service as Service
+    participant Repository as Repository
+    participant DB as Database
+    participant Cache as Redis Cache
+    participant Queue as RabbitMQ
+
+    Client->>Proxy: HTTP Request
+    Proxy->>Express: Forward Request
+    
+    Note over Express,Middleware: Middleware Processing
+    Express->>Middleware: Helmet (Security Headers)
+    Express->>Middleware: CORS (Origin Check)
+    Express->>Middleware: Compression (Gzip)
+    Express->>Middleware: Rate Limiter (Throttle)
+    Express->>Middleware: Request ID (Generate ID)
+    Express->>Middleware: Request Logger (Log Request)
+    
+    Express->>Router: Route Matching
+    
+    alt Protected Route
+        Router->>Middleware: Auth Middleware
+        Middleware->>Middleware: Verify JWT Token
+        alt Invalid Token
+            Middleware-->>Client: 401 Unauthorized
+        else Valid Token
+            Router->>Middleware: Admin Middleware (if admin route)
+            Router->>Middleware: Input Validation
+            alt Validation Failed
+                Middleware-->>Client: 400 Bad Request
+            else Validation Passed
+                Router->>Controller: Call Controller Method
+            end
+        end
+    else Public Route
+        Router->>Middleware: Input Validation
+        Router->>Controller: Call Controller Method
+    end
+    
+    Note over Controller,Service: Business Logic
+    Controller->>Service: Call Service Method
+    Service->>Cache: Check Cache (if applicable)
+    alt Cache Hit
+        Cache-->>Service: Cached Data
+        Service-->>Controller: Return Data
+    else Cache Miss
+        Service->>Repository: Query Database
+        Repository->>DB: Execute Query
+        DB-->>Repository: Result Data
+        Repository-->>Service: Entity Data
+        Service->>Cache: Store in Cache
+        Service-->>Controller: Return Data
+    end
+    
+    alt Async Operation Required
+        Service->>Queue: Publish Job
+        Queue-->>Service: Job ID
+    end
+    
+    Controller->>Controller: Format Response
+    Controller-->>Express: Response Object
+    Express-->>Proxy: HTTP Response
+    Proxy-->>Client: HTTP Response

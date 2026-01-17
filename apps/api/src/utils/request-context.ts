@@ -94,21 +94,27 @@ export function getClientIp(req: Request): string {
 }
 
 /**
- * Format date for email display
- *
- * @param date - Date to format
- * @returns Formatted date string
- */
-/**
  * Format a date for display in emails
  *
+ * Uses UTC timezone for consistency across all server environments.
+ *
  * @param date - Date to format
- * @returns Formatted date string (e.g., "January 15, 2025 at 2:30 PM")
+ * @returns Formatted date string in UTC (e.g., "Wednesday, January 15, 2025, 2:30 PM UTC")
  */
 export function formatDate(date: Date = new Date()): string {
     return formatLoginDate(date);
 }
 
+/**
+ * Format a login date for email notifications
+ *
+ * Uses UTC timezone for consistency across all server environments.
+ * This ensures the same timestamp is displayed regardless of where
+ * the server is deployed.
+ *
+ * @param date - Date to format
+ * @returns Formatted date string in UTC (e.g., "Wednesday, January 15, 2025, 2:30 PM UTC")
+ */
 export function formatLoginDate(date: Date = new Date()): string {
     return date.toLocaleString("en-US", {
         weekday: "long",
@@ -118,5 +124,7 @@ export function formatLoginDate(date: Date = new Date()): string {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
+        timeZone: "UTC",
+        timeZoneName: "short",
     });
 }

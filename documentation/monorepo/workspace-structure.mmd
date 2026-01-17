@@ -1,0 +1,75 @@
+graph TB
+    subgraph "Monorepo Root"
+        Root[BackTrade Root<br/>pnpm workspace]
+        Turbo[Turbo<br/>Build Orchestration]
+        WorkspaceConfig[pnpm-workspace.yaml<br/>Workspace Definition]
+    end
+
+    subgraph "Applications (apps/)"
+        APIApp[apps/api<br/>Backend API<br/>Express.js]
+        WebApp[apps/web<br/>Frontend App<br/>React + Vite]
+        WorkerApp[apps/worker<br/>Background Jobs<br/>RabbitMQ Consumer]
+        SchedulerApp[apps/scheduler<br/>Scheduled Tasks<br/>Cron Jobs]
+    end
+
+    subgraph "Shared Packages (packages/)"
+        DataPackage[packages/datas<br/>Data Access Layer<br/>Prisma, ClickHouse, Repositories]
+        TypesPackage[packages/types<br/>Shared Types<br/>Zod Schemas, TypeScript Types]
+        UtilsPackage[packages/utils<br/>Utility Functions<br/>Parsing, Validation, Time]
+        CachePackage[packages/cache<br/>Redis Cache<br/>Cache Repositories]
+        QueuePackage[packages/queue<br/>RabbitMQ<br/>Queue Integration]
+        StoragePackage[packages/storage<br/>MinIO Storage<br/>Object Storage]
+        MailerPackage[packages/mailer<br/>Email Service<br/>SMTP Integration]
+        LoggerPackage[packages/logger<br/>Structured Logging<br/>Pino Logger]
+        ESLintPackage[packages/eslint-config<br/>ESLint Configuration<br/>Shared Rules]
+        TSConfigPackage[packages/tsconfig<br/>TypeScript Config<br/>Base Configuration]
+    end
+
+    Root --> Turbo
+    Root --> WorkspaceConfig
+    WorkspaceConfig --> APIApp
+    WorkspaceConfig --> WebApp
+    WorkspaceConfig --> WorkerApp
+    WorkspaceConfig --> SchedulerApp
+    WorkspaceConfig --> DataPackage
+    WorkspaceConfig --> TypesPackage
+    WorkspaceConfig --> UtilsPackage
+    WorkspaceConfig --> CachePackage
+    WorkspaceConfig --> QueuePackage
+    WorkspaceConfig --> StoragePackage
+    WorkspaceConfig --> MailerPackage
+    WorkspaceConfig --> LoggerPackage
+    WorkspaceConfig --> ESLintPackage
+    WorkspaceConfig --> TSConfigPackage
+
+    APIApp --> DataPackage
+    APIApp --> TypesPackage
+    APIApp --> UtilsPackage
+    APIApp --> CachePackage
+    APIApp --> QueuePackage
+    APIApp --> StoragePackage
+    APIApp --> MailerPackage
+    APIApp --> LoggerPackage
+    
+    WebApp --> TypesPackage
+    WebApp --> UtilsPackage
+    
+    WorkerApp --> DataPackage
+    WorkerApp --> TypesPackage
+    WorkerApp --> UtilsPackage
+    WorkerApp --> QueuePackage
+    WorkerApp --> StoragePackage
+    WorkerApp --> LoggerPackage
+    
+    SchedulerApp --> DataPackage
+    SchedulerApp --> TypesPackage
+    SchedulerApp --> QueuePackage
+    SchedulerApp --> LoggerPackage
+
+    style Root fill:#4a90e2
+    style APIApp fill:#339933
+    style WebApp fill:#61dafb
+    style WorkerApp fill:#ff6b6b
+    style SchedulerApp fill:#ff6b6b
+    style DataPackage fill:#ffa500
+    style TypesPackage fill:#9c27b0

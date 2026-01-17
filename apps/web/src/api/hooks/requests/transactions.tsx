@@ -4,8 +4,9 @@ import {
     TransactionListResponseSchema,
     CreateTransactionRequestSchema,
     type DateRangeQuery,
-    type PaginationQuery,
+    type SearchQuery,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Transaction Management API Hooks
@@ -13,19 +14,7 @@ import {
  */
 
 export function useTransactions(query?: DateRangeQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/transactions?${searchParams.toString()}`
-        : "/transactions";
-
+    const url = buildUrlWithParams("/transactions", query);
     return useGet(url, TransactionListResponseSchema);
 }
 
@@ -34,39 +23,18 @@ export function useTransaction(id: string) {
 }
 
 export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/users/${userId}/transactions?${searchParams.toString()}`
-        : `/users/${userId}/transactions`;
-
+    const url = buildUrlWithParams(`/users/${userId}/transactions`, query);
     return useGet(url, TransactionListResponseSchema, { enabled: !!userId });
 }
 
 export function useTransactionsBySession(
     sessionId: string,
-    query?: PaginationQuery
+    query?: SearchQuery
 ) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/sessions/${sessionId}/transactions?${searchParams.toString()}`
-        : `/sessions/${sessionId}/transactions`;
-
+    const url = buildUrlWithParams(
+        `/sessions/${sessionId}/transactions`,
+        query
+    );
     return useGet(url, TransactionListResponseSchema, { enabled: !!sessionId });
 }
 

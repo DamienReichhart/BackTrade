@@ -3,6 +3,7 @@ import { SidePanel } from "./components/SidePanel";
 import { PositionsTable } from "./components/PositionsTable";
 import { TransactionsTable } from "./components/TransactionsTable";
 import { SessionInfo } from "./components/SessionInfo";
+import { SessionMetrics } from "./components/SessionMetrics";
 import { RunningSessionChart } from "./components/RunningSessionChart";
 import { useSessionData, useAutoAdvanceTime } from "./hooks";
 import { SESSION_STATUS } from "@backtrade/types";
@@ -40,6 +41,11 @@ export function SessionRunning() {
     return (
         <div className={styles.page}>
             <TopBar />
+
+            {/* Critical Trading Metrics */}
+            <div className={styles.metricsWrapper}>
+                <SessionMetrics />
+            </div>
 
             <div className={styles.content}>
                 {/* Chart */}

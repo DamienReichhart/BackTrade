@@ -27,12 +27,12 @@ export interface FindAllOptions {
  */
 class SessionsRepository extends BasePostgresRepository {
     /**
-     * Get all sessions matching optional filter, pagination, and sorting.
+     * Find sessions with optional filtering, pagination, and sorting.
      *
      * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching sessions
      */
-    async getAllSessions(options?: FindAllOptions): Promise<Session[]> {
+    async findSessions(options?: FindAllOptions): Promise<Session[]> {
         return this.prisma.session.findMany({
             where: options?.where as Prisma.SessionWhereInput | undefined,
             skip: options?.skip,
@@ -41,6 +41,17 @@ class SessionsRepository extends BasePostgresRepository {
                 | Prisma.SessionOrderByWithRelationInput
                 | undefined,
         }) as unknown as Session[];
+    }
+
+    /**
+     * Get all sessions matching optional filter, pagination, and sorting.
+     *
+     * @deprecated Use findSessions instead
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching sessions
+     */
+    async getAllSessions(options?: FindAllOptions): Promise<Session[]> {
+        return this.findSessions(options);
     }
 
     /**

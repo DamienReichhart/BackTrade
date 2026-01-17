@@ -247,16 +247,15 @@ class PlansService extends BaseService {
         // Build pagination using shared utility
         const { skip, take } = buildPagination(page, limit);
 
-        // Note: plansRepo.getAllPlans currently only accepts where
-        // We'll pass all params but the repo will only use where for now
-        const plans = await plansRepo.getAllPlans(where);
+        // Execute query with pagination and sorting
+        const plans = await plansRepo.findPlans({
+            where,
+            skip,
+            take,
+        });
 
-        // Apply pagination manually if repo doesn't support it
-        // This is a temporary solution until the repo is updated
-        const paginatedPlans = plans.slice(skip, skip + take);
-
-        this.logger.trace({ count: paginatedPlans.length }, "Plans fetched");
-        return paginatedPlans;
+        this.logger.trace({ count: plans.length }, "Plans fetched");
+        return plans;
     }
 
     /**

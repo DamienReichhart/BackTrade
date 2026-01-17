@@ -501,7 +501,7 @@ class UsersService extends BaseService {
         this.ensureAdminAccess(requestingUser, "getAllUsers");
 
         // Execute query
-        const users = await usersRepo.getAllUsers({ where });
+        const users = await usersRepo.findUsers({ where });
 
         this.logger.trace({ count: users.length }, "Users fetched");
         return users;
@@ -576,7 +576,7 @@ class UsersService extends BaseService {
         );
 
         // Execute query
-        const users = await usersRepo.getAllUsers({
+        const users = await usersRepo.findUsers({
             where,
             skip,
             take,

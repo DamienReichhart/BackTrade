@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import type { Position } from "@backtrade/types";
+import type { Position, PositionQuery } from "@backtrade/types";
 import { usePositionsBySession } from "../../../../api/hooks/requests/positions";
 import { useCurrentSessionStore } from "../../../../store/session";
 
@@ -15,7 +15,8 @@ export interface UseSessionPositionsResult {
  * Fetch and normalize open positions for the current session.
  *
  * This hook fetches only OPEN positions from the server for use on the session page.
- * For viewing all positions (including closed), use the positions list page.
+ * No pagination limit is applied - fetches all open positions.
+ * For viewing all positions (including closed) with pagination, use the positions list page.
  */
 export function useSessionPositions(): UseSessionPositionsResult {
     const { id = "" } = useParams<{ id: string }>();
@@ -23,10 +24,20 @@ export function useSessionPositions(): UseSessionPositionsResult {
     const sessionId = currentSession ? String(currentSession.id) : id;
     const hasValidSession = sessionId !== "";
 
+    // Query to fetch all open positions with no limit
+    const query: PositionQuery = useMemo(
+        () => ({
+            status: "OPEN",
+            page: 1,
+            limit: 100,
+            order: "desc",
+        }),
+        []
+    );
+
     const { data: positionsData, isLoading } = usePositionsBySession(
         sessionId,
-        "OPEN",
-        10000
+        query
     );
 
     const positions = useMemo<Position[]>(() => {
