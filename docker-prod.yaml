@@ -17,8 +17,8 @@ services:
             - TUNNEL_TOKEN=${TUNNEL_TOKEN}
         command: tunnel run
         networks:
-            backtrade:
-                ipv4_address: 192.168.250.253
+            public:
+                ipv4_address: 192.168.252.10
         restart: unless-stopped
         healthcheck:
             test: ["CMD", "cloudflared", "tunnel", "info"]
@@ -44,8 +44,10 @@ services:
         ports:
             - "80:8080"
         networks:
-            backtrade:
-                ipv4_address: 192.168.250.1
+            public:
+                ipv4_address: 192.168.252.11
+            frontend:
+                ipv4_address: 192.168.251.10
         depends_on:
             frontend:
                 condition: service_started
@@ -106,7 +108,7 @@ services:
             STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
             STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.10
         depends_on:
             postgres:
@@ -170,8 +172,10 @@ services:
             CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
             CLICKHOUSE_DB: ${CLICKHOUSE_DB}
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.11
+            frontend:
+                ipv4_address: 192.168.251.12
         depends_on:
             migrate:
                 condition: service_completed_successfully
@@ -199,8 +203,8 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: "4.0"
-                    memory: 8G
+                    cpus: "8.0"
+                    memory: 16G
                 reservations:
                     cpus: "0.5"
                     memory: 512M
@@ -218,8 +222,8 @@ services:
             context: .
             dockerfile: docker/images/frontend.prod.dockerfile
         networks:
-            backtrade:
-                ipv4_address: 192.168.250.12
+            frontend:
+                ipv4_address: 192.168.251.11
         depends_on:
             - backend
         restart: unless-stopped
@@ -274,7 +278,7 @@ services:
             MINIO_PASSWORD: ${MINIO_PASSWORD}
             MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.13
         depends_on:
             migrate:
@@ -332,7 +336,7 @@ services:
             CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
             CLICKHOUSE_DB: ${CLICKHOUSE_DB}
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.14
         depends_on:
             migrate:
@@ -373,7 +377,7 @@ services:
         volumes:
             - backtrade_db:/var/lib/postgresql/data
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.21
         restart: unless-stopped
         healthcheck:
@@ -410,7 +414,7 @@ services:
         environment:
             REDIS_PASSWORD: ${REDIS_PASSWORD}
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.22
         restart: unless-stopped
         healthcheck:
@@ -452,7 +456,7 @@ services:
             - backtrade_minio_data:/data
             - ./docker/config/minio:/mnt/minio:ro
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.23
         restart: unless-stopped
         healthcheck:
@@ -492,7 +496,7 @@ services:
         volumes:
             - backtrade_clickhouse_data:/var/lib/clickhouse
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.24
         restart: unless-stopped
         healthcheck:
@@ -514,7 +518,7 @@ services:
             resources:
                 limits:
                     cpus: "4.0"
-                    memory: 8G
+                    memory: 16G
                 reservations:
                     cpus: "0.5"
                     memory: 1G
@@ -540,7 +544,7 @@ services:
         volumes:
             - backtrade_rabbitmq_data:/var/lib/rabbitmq
         networks:
-            backtrade:
+            backend:
                 ipv4_address: 192.168.250.31
         restart: unless-stopped
         healthcheck:
@@ -581,9 +585,21 @@ volumes:
 # Networks - Isolated network with fixed IP addresses
 # =============================================================================
 networks:
-    backtrade:
+    backend:
         driver: bridge
         ipam:
             config:
                 - subnet: 192.168.250.0/24
                   gateway: 192.168.250.254
+    frontend:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.251.0/24
+                  gateway: 192.168.251.254
+    public:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.252.0/24
+                  gateway: 192.168.252.254
