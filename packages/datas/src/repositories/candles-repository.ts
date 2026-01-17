@@ -72,6 +72,9 @@ class CandlesRepository extends BaseClickHouseRepository {
     /**
      * Bulk insert candles for better performance.
      *
+     * Groups candles by partition (year-month) to avoid ClickHouse's partition limit
+     * (max_partitions_per_insert_block = 100). Inserts each partition group separately.
+     *
      * @param data - Array of candle creation data
      * @returns Number of inserted candles
      */
@@ -99,29 +102,49 @@ class CandlesRepository extends BaseClickHouseRepository {
 
         const clickHouseNow = toClickHouseDateTime(now);
 
-        try {
-            await this.clickhouse.insert({
-                table: "candles",
-                values: candles.map((candle) => ({
-                    instrument_id: candle.instrument_id,
-                    timeframe: candle.timeframe,
-                    ts: toClickHouseDateTime(candle.ts),
-                    open: Number(candle.open),
-                    high: Number(candle.high),
-                    low: Number(candle.low),
-                    close: Number(candle.close),
-                    volume: Number(candle.volume),
-                    created_at: candle.created_at
-                        ? toClickHouseDateTime(candle.created_at)
-                        : clickHouseNow,
-                    updated_at: candle.updated_at
-                        ? toClickHouseDateTime(candle.updated_at)
-                        : clickHouseNow,
-                })),
-                format: "JSONEachRow",
-            });
+        // Group candles by partition (year-month) to avoid partition limit
+        // Partition key is toYYYYMM(ts), which returns YYYYMM as integer
+        const partitionGroups = new Map<string, Candle[]>();
+        for (const candle of candles) {
+            const date = new Date(candle.ts);
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+            const partitionKey = `${year}${month}`; // YYYYMM format
 
-            return candles.length;
+            if (!partitionGroups.has(partitionKey)) {
+                partitionGroups.set(partitionKey, []);
+            }
+            partitionGroups.get(partitionKey)!.push(candle);
+        }
+
+        // Insert each partition group separately
+        let totalInserted = 0;
+        try {
+            for (const partitionCandles of partitionGroups.values()) {
+                await this.clickhouse.insert({
+                    table: "candles",
+                    values: partitionCandles.map((candle) => ({
+                        instrument_id: candle.instrument_id,
+                        timeframe: candle.timeframe,
+                        ts: toClickHouseDateTime(candle.ts),
+                        open: Number(candle.open),
+                        high: Number(candle.high),
+                        low: Number(candle.low),
+                        close: Number(candle.close),
+                        volume: Number(candle.volume),
+                        created_at: candle.created_at
+                            ? toClickHouseDateTime(candle.created_at)
+                            : clickHouseNow,
+                        updated_at: candle.updated_at
+                            ? toClickHouseDateTime(candle.updated_at)
+                            : clickHouseNow,
+                    })),
+                    format: "JSONEachRow",
+                });
+                totalInserted += partitionCandles.length;
+            }
+
+            return totalInserted;
         } catch (error) {
             throw new Error(
                 `Failed to bulk insert candles in ClickHouse: ${error instanceof Error ? error.message : String(error)}`
