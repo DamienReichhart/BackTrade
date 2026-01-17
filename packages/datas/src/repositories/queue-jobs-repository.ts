@@ -22,14 +22,14 @@ import { BasePostgresRepository } from "./base-repository";
  */
 class QueueJobsRepository extends BasePostgresRepository {
     /**
-     * Get all queue jobs matching optional filter conditions.
+     * Find queue jobs with optional filtering, pagination, and sorting.
      *
      * @param where - Optional filter conditions
      * @param orderBy - Optional sorting criteria
      * @param limit - Optional limit on number of results
      * @returns Array of matching queue jobs
      */
-    async getAllQueueJobs(
+    async findQueueJobs(
         where?: QueueJobWhereInput,
         orderBy?: QueueJobOrderBy,
         limit?: number
@@ -41,6 +41,23 @@ class QueueJobsRepository extends BasePostgresRepository {
                 | undefined,
             take: limit,
         }) as unknown as QueueJob[];
+    }
+
+    /**
+     * Get all queue jobs matching optional filter conditions.
+     *
+     * @deprecated Use findQueueJobs instead
+     * @param where - Optional filter conditions
+     * @param orderBy - Optional sorting criteria
+     * @param limit - Optional limit on number of results
+     * @returns Array of matching queue jobs
+     */
+    async getAllQueueJobs(
+        where?: QueueJobWhereInput,
+        orderBy?: QueueJobOrderBy,
+        limit?: number
+    ): Promise<QueueJob[]> {
+        return this.findQueueJobs(where, orderBy, limit);
     }
 
     /**
@@ -109,7 +126,7 @@ class QueueJobsRepository extends BasePostgresRepository {
         orderBy?: QueueJobOrderBy,
         limit?: number
     ): Promise<QueueJob[]> {
-        return this.getAllQueueJobs(
+        return this.findQueueJobs(
             { status: { equals: status } },
             orderBy,
             limit
@@ -129,7 +146,7 @@ class QueueJobsRepository extends BasePostgresRepository {
         orderBy?: QueueJobOrderBy,
         limit?: number
     ): Promise<QueueJob[]> {
-        return this.getAllQueueJobs(
+        return this.findQueueJobs(
             { type: { equals: type } as QueueJobWhereInput["type"] },
             orderBy,
             limit
@@ -163,7 +180,7 @@ class QueueJobsRepository extends BasePostgresRepository {
         orderBy?: QueueJobOrderBy,
         limit?: number
     ): Promise<QueueJob[]> {
-        return this.getAllQueueJobs(
+        return this.findQueueJobs(
             {
                 status: { equals: "FAILED" },
                 retry_count: { lt: maxRetries },

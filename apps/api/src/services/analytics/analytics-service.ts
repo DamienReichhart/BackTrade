@@ -38,17 +38,19 @@ class AnalyticsService {
             throw new ForbiddenError("Access denied");
         }
 
-        const [positions, transactions] = await Promise.all([
-            positionsRepo.getPositionsBySessionId(sessionId),
+        // Fetch closed positions and transactions in parallel
+        // Only need closed positions for analytics calculations
+        const [closedPositions, transactions] = await Promise.all([
+            positionsRepo.getClosedOrLiquidatedPositionsBySessionId(sessionId),
             transactionsRepo.getTransactionsBySessionId(sessionId),
         ]);
 
-        return this.calculateAnalytics(session, positions, transactions);
+        return this.calculateAnalytics(session, closedPositions, transactions);
     }
 
     private calculateAnalytics(
         session: Session,
-        positions: Position[],
+        closedPositions: Position[],
         transactions: Transaction[]
     ): SessionAnalyticsResponse {
         // Sort transactions by date for equity curve
@@ -60,12 +62,7 @@ class AnalyticsService {
                     new Date(b.created_at!).getTime()
             );
 
-        // Sort positions by closed_at (if available) or opened_at
-        const closedPositions = positions.filter(
-            (p) =>
-                p.position_status === "CLOSED" ||
-                p.position_status === "LIQUIDATED"
-        );
+        // Positions are already filtered to closed positions at database level
 
         // Summary Stats
         const totalTrades = closedPositions.length;

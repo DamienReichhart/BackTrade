@@ -29,19 +29,13 @@ class PerformanceMetricsService extends BaseService {
      * A winning trade is one with realized_pnl > 0.
      * Only considers closed positions (CLOSED or LIQUIDATED status).
      *
-     * @param positions - Array of all positions (including open)
+     * @param closedPositions - Array of closed positions (CLOSED or LIQUIDATED status)
      * @returns Win rate as a percentage (0-100), or 0 if no closed positions
      */
-    calculateWinRate(positions: Position[]): number {
-        const closedPositions = positions.filter(
-            (p) =>
-                p.position_status === "CLOSED" ||
-                p.position_status === "LIQUIDATED"
-        );
-
+    calculateWinRate(closedPositions: Position[]): number {
         if (closedPositions.length === 0) {
             this.logger.trace(
-                { totalPositions: positions.length },
+                { positionCount: closedPositions.length },
                 "No closed positions, win rate is 0"
             );
             return 0;
@@ -56,7 +50,6 @@ class PerformanceMetricsService extends BaseService {
 
         this.logger.trace(
             {
-                totalPositions: positions.length,
                 closedPositions: closedPositions.length,
                 winningTrades: winningTrades.length,
                 winRate,
@@ -109,16 +102,10 @@ class PerformanceMetricsService extends BaseService {
      *
      * A profit factor > 1 indicates overall profitability.
      *
-     * @param positions - Array of all positions
+     * @param closedPositions - Array of closed positions (CLOSED or LIQUIDATED status)
      * @returns Profit factor (null if no losses to divide by)
      */
-    calculateProfitFactor(positions: Position[]): number | null {
-        const closedPositions = positions.filter(
-            (p) =>
-                p.position_status === "CLOSED" ||
-                p.position_status === "LIQUIDATED"
-        );
-
+    calculateProfitFactor(closedPositions: Position[]): number | null {
         if (closedPositions.length === 0) {
             return null;
         }
@@ -159,16 +146,10 @@ class PerformanceMetricsService extends BaseService {
     /**
      * Calculate average trade return
      *
-     * @param positions - Array of all positions
+     * @param closedPositions - Array of closed positions (CLOSED or LIQUIDATED status)
      * @returns Average realized PnL per trade, or 0 if no closed positions
      */
-    calculateAverageTrade(positions: Position[]): number {
-        const closedPositions = positions.filter(
-            (p) =>
-                p.position_status === "CLOSED" ||
-                p.position_status === "LIQUIDATED"
-        );
-
+    calculateAverageTrade(closedPositions: Position[]): number {
         if (closedPositions.length === 0) {
             return 0;
         }

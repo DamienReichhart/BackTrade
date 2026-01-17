@@ -10,16 +10,44 @@ import type {
     UserSessionWhereInput,
     UserSessionCreateInput,
     UserSessionUpdateInput,
+    UserSessionOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
+
+export interface UserSessionFindAllOptions {
+    where?: UserSessionWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: UserSessionOrderBy;
+}
 
 /**
  * Repository for UserSession model CRUD operations.
  */
 class UserSessionsRepository extends BasePostgresRepository {
     /**
+     * Find user sessions with optional filtering, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching user sessions
+     */
+    async findUserSessions(
+        options?: UserSessionFindAllOptions
+    ): Promise<UserSession[]> {
+        return this.prisma.userSession.findMany({
+            where: options?.where as Prisma.UserSessionWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.UserSessionOrderByWithRelationInput
+                | undefined,
+        }) as unknown as UserSession[];
+    }
+
+    /**
      * Get all user sessions matching optional filter conditions.
      *
+     * @deprecated Use findUserSessions instead
      * @param where - Optional filter conditions
      * @returns Array of matching user sessions
      */

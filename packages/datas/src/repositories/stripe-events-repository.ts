@@ -10,16 +10,62 @@ import type {
     StripeEventWhereInput,
     StripeEventCreateInput,
     StripeEventUpdateInput,
+    StripeEventOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
+
+export interface StripeEventFindAllOptions {
+    where?: StripeEventWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: StripeEventOrderBy;
+}
 
 /**
  * Repository for StripeEvent model CRUD operations.
  */
 class StripeEventsRepository extends BasePostgresRepository {
     /**
+     * Find stripe events with optional filtering, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching stripe events
+     */
+    async findStripeEvents(
+        options?: StripeEventFindAllOptions
+    ): Promise<StripeEvent[]> {
+        return this.prisma.stripeEvent.findMany({
+            where: options?.where as Prisma.StripeEventWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.StripeEventOrderByWithRelationInput
+                | undefined,
+        }) as unknown as StripeEvent[];
+    }
+
+    /**
+     * Get a stripe event by Stripe event ID.
+     *
+     * Used for webhook processing to check if an event has already been processed.
+     *
+     * @param stripeEventId - Stripe event ID
+     * @returns StripeEvent entity or null if not found
+     */
+    async getStripeEventByStripeEventId(
+        stripeEventId: string
+    ): Promise<StripeEvent | null> {
+        return this.prisma.stripeEvent.findFirst({
+            where: {
+                stripe_event_id: stripeEventId,
+            },
+        }) as unknown as StripeEvent | null;
+    }
+
+    /**
      * Get all stripe events matching optional filter conditions.
      *
+     * @deprecated Use findStripeEvents instead
      * @param where - Optional filter conditions
      * @returns Array of matching stripe events
      */

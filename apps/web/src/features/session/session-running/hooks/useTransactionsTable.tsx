@@ -24,7 +24,7 @@ export function useTransactionsTable() {
     const { data: transactionsData, isLoading: loading } =
         useTransactionsBySession(sessionId, {
             page: 1,
-            limit: 10000,
+            limit: 10,
             order: "desc",
             sort: "created_at",
         });

@@ -10,16 +10,42 @@ import type {
     PlanWhereInput,
     PlanCreateInput,
     PlanUpdateInput,
+    PlanOrderBy,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
+
+export interface PlanFindAllOptions {
+    where?: PlanWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: PlanOrderBy;
+}
 
 /**
  * Repository for Plan model CRUD operations.
  */
 class PlansRepository extends BasePostgresRepository {
     /**
+     * Find plans with optional filtering, pagination, and sorting.
+     *
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching plans
+     */
+    async findPlans(options?: PlanFindAllOptions): Promise<Plan[]> {
+        return this.prisma.plan.findMany({
+            where: options?.where as Prisma.PlanWhereInput | undefined,
+            skip: options?.skip,
+            take: options?.take,
+            orderBy: options?.orderBy as
+                | Prisma.PlanOrderByWithRelationInput
+                | undefined,
+        }) as unknown as Plan[];
+    }
+
+    /**
      * Get all plans matching optional filter conditions.
      *
+     * @deprecated Use findPlans instead
      * @param where - Optional filter conditions
      * @returns Array of matching plans
      */

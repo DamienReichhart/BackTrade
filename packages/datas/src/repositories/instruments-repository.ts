@@ -26,12 +26,12 @@ export interface FindAllOptions {
  */
 class InstrumentsRepository extends BasePostgresRepository {
     /**
-     * Get all instruments matching optional filter, pagination, and sorting.
+     * Find instruments with optional filtering, pagination, and sorting.
      *
      * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching instruments
      */
-    async getAllInstruments(options?: FindAllOptions): Promise<Instrument[]> {
+    async findInstruments(options?: FindAllOptions): Promise<Instrument[]> {
         return this.prisma.instrument.findMany({
             where: options?.where as Prisma.InstrumentWhereInput | undefined,
             skip: options?.skip,
@@ -40,6 +40,17 @@ class InstrumentsRepository extends BasePostgresRepository {
                 | Prisma.InstrumentOrderByWithRelationInput
                 | undefined,
         }) as unknown as Instrument[];
+    }
+
+    /**
+     * Get all instruments matching optional filter, pagination, and sorting.
+     *
+     * @deprecated Use findInstruments instead
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching instruments
+     */
+    async getAllInstruments(options?: FindAllOptions): Promise<Instrument[]> {
+        return this.findInstruments(options);
     }
 
     /**

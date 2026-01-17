@@ -737,7 +737,7 @@ class SessionsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        return sessionsRepo.getAllSessions({
+        return sessionsRepo.findSessions({
             where,
             skip,
             take,

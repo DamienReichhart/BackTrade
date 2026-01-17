@@ -11,6 +11,7 @@ import type {
     PositionCreateInput,
     PositionUpdateInput,
     PositionOrderBy,
+    PositionStatus,
 } from "@backtrade/types";
 import { BasePostgresRepository } from "./base-repository";
 
@@ -105,6 +106,86 @@ class PositionsRepository extends BasePostgresRepository {
     ): Promise<Position[]> {
         return this.prisma.position.findMany({
             where: { session_id: this.toNumericId(sessionId) },
+        }) as unknown as Position[];
+    }
+
+    /**
+     * Get open positions for a specific session.
+     *
+     * Filters at database level to only fetch positions with status "OPEN".
+     *
+     * @param sessionId - Session ID as number or string
+     * @returns Array of open positions belonging to the session
+     */
+    async getOpenPositionsBySessionId(
+        sessionId: number | string
+    ): Promise<Position[]> {
+        return this.prisma.position.findMany({
+            where: {
+                session_id: this.toNumericId(sessionId),
+                position_status: "OPEN",
+            },
+        }) as unknown as Position[];
+    }
+
+    /**
+     * Get closed positions for a specific session.
+     *
+     * Filters at database level to only fetch positions with status "CLOSED" or "LIQUIDATED".
+     *
+     * @param sessionId - Session ID as number or string
+     * @returns Array of closed positions (CLOSED or LIQUIDATED) belonging to the session
+     */
+    async getClosedPositionsBySessionId(
+        sessionId: number | string
+    ): Promise<Position[]> {
+        return this.prisma.position.findMany({
+            where: {
+                session_id: this.toNumericId(sessionId),
+                position_status: {
+                    in: ["CLOSED", "LIQUIDATED"],
+                },
+            },
+        }) as unknown as Position[];
+    }
+
+    /**
+     * Get positions for a specific session filtered by status.
+     *
+     * Generic method to filter positions by session and status at database level.
+     *
+     * @param sessionId - Session ID as number or string
+     * @param status - Position status to filter by
+     * @returns Array of positions matching the session and status
+     */
+    async getPositionsBySessionIdAndStatus(
+        sessionId: number | string,
+        status: PositionStatus
+    ): Promise<Position[]> {
+        return this.prisma.position.findMany({
+            where: {
+                session_id: this.toNumericId(sessionId),
+                position_status: status,
+            },
+        }) as unknown as Position[];
+    }
+
+    /**
+     * Get closed or liquidated positions for a specific session.
+     *
+     * @param sessionId - Session ID as number or string
+     * @returns Array of closed or liquidated positions belonging to the session
+     */
+    async getClosedOrLiquidatedPositionsBySessionId(
+        sessionId: number | string
+    ): Promise<Position[]> {
+        return this.prisma.position.findMany({
+            where: {
+                session_id: this.toNumericId(sessionId),
+                position_status: {
+                    in: ["CLOSED", "LIQUIDATED"],
+                },
+            },
         }) as unknown as Position[];
     }
 }

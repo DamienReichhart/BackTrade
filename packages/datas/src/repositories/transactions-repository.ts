@@ -26,12 +26,12 @@ export interface FindAllOptions {
  */
 class TransactionsRepository extends BasePostgresRepository {
     /**
-     * Get all transactions matching optional filter, pagination, and sorting.
+     * Find transactions with optional filtering, pagination, and sorting.
      *
      * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching transactions
      */
-    async getAllTransactions(options?: FindAllOptions): Promise<Transaction[]> {
+    async findTransactions(options?: FindAllOptions): Promise<Transaction[]> {
         return this.prisma.transaction.findMany({
             where: options?.where as Prisma.TransactionWhereInput | undefined,
             skip: options?.skip,
@@ -40,6 +40,17 @@ class TransactionsRepository extends BasePostgresRepository {
                 | Prisma.TransactionOrderByWithRelationInput
                 | undefined,
         }) as unknown as Transaction[];
+    }
+
+    /**
+     * Get all transactions matching optional filter, pagination, and sorting.
+     *
+     * @deprecated Use findTransactions instead
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching transactions
+     */
+    async getAllTransactions(options?: FindAllOptions): Promise<Transaction[]> {
+        return this.findTransactions(options);
     }
 
     /**

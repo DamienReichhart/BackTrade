@@ -29,12 +29,12 @@ export interface UserFindAllOptions {
  */
 class UsersRepository extends BasePostgresRepository {
     /**
-     * Get all users matching optional filter, pagination, and sorting.
+     * Find users with optional filtering, pagination, and sorting.
      *
      * @param options - Optional filter, pagination, and sorting options
      * @returns Array of matching users
      */
-    async getAllUsers(options?: UserFindAllOptions): Promise<User[]> {
+    async findUsers(options?: UserFindAllOptions): Promise<User[]> {
         return this.prisma.user.findMany({
             where: options?.where as Prisma.UserWhereInput | undefined,
             skip: options?.skip,
@@ -43,6 +43,17 @@ class UsersRepository extends BasePostgresRepository {
                 | Prisma.UserOrderByWithRelationInput
                 | undefined,
         }) as unknown as User[];
+    }
+
+    /**
+     * Get all users matching optional filter, pagination, and sorting.
+     *
+     * @deprecated Use findUsers instead
+     * @param options - Optional filter, pagination, and sorting options
+     * @returns Array of matching users
+     */
+    async getAllUsers(options?: UserFindAllOptions): Promise<User[]> {
+        return this.findUsers(options);
     }
 
     /**

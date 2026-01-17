@@ -500,7 +500,7 @@ class TransactionsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        const transactions = await transactionsRepo.getAllTransactions({
+        const transactions = await transactionsRepo.findTransactions({
             where,
             skip,
             take,

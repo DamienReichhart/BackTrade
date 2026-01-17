@@ -298,7 +298,7 @@ class InstrumentsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        return instrumentsRepo.getAllInstruments({
+        return instrumentsRepo.findInstruments({
             where,
             skip,
             take,

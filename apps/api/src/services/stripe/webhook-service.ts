@@ -46,11 +46,10 @@ class WebhookService extends BaseService {
         );
 
         // Idempotency check
-        const existingEvent = await stripeEventsRepo.getAllStripeEvents({
-            stripe_event_id: { equals: event.id },
-        });
+        const existingEvent =
+            await stripeEventsRepo.getStripeEventByStripeEventId(event.id);
 
-        if (existingEvent.length > 0 && existingEvent[0]?.processed_at) {
+        if (existingEvent?.processed_at) {
             this.logger.info(
                 { eventId: event.id },
                 "Event already processed, skipping"
@@ -60,7 +59,7 @@ class WebhookService extends BaseService {
 
         // Store event (if not exists)
         const eventRecord =
-            existingEvent[0] ??
+            existingEvent ??
             (await stripeEventsRepo.createStripeEvent({
                 stripe_event_id: event.id,
                 type: event.type,

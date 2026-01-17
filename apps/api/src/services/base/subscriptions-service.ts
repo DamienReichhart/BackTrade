@@ -414,18 +414,18 @@ class SubscriptionsService extends BaseService {
         // Build pagination using shared utility
         const { skip, take } = buildPagination(page, limit);
 
-        // Get all subscriptions matching criteria
-        const subscriptions =
-            await subscriptionsRepo.getAllSubscriptions(where);
-
-        // Apply pagination manually (until repo is updated to support it)
-        const paginatedSubscriptions = subscriptions.slice(skip, skip + take);
+        // Get subscriptions matching criteria with pagination
+        const subscriptions = await subscriptionsRepo.findSubscriptions({
+            where,
+            skip,
+            take,
+        });
 
         this.logger.trace(
-            { count: paginatedSubscriptions.length },
+            { count: subscriptions.length },
             "Subscriptions fetched"
         );
-        return paginatedSubscriptions;
+        return subscriptions;
     }
 
     /**
@@ -468,8 +468,9 @@ class SubscriptionsService extends BaseService {
             where = { AND: [where, dateConditions] };
         }
 
-        const subscriptions =
-            await subscriptionsRepo.getAllSubscriptions(where);
+        const subscriptions = await subscriptionsRepo.findSubscriptions({
+            where,
+        });
 
         this.logger.trace(
             { userId: numericUserId, count: subscriptions.length },

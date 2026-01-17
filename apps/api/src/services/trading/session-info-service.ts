@@ -23,12 +23,11 @@ import {
     transactionsRepo,
 } from "@backtrade/data";
 import sessionsService from "../base/sessions-service";
-import pnlCalculationService from "./pnl-calculation-service";
-import marginService from "./margin-service";
 import performanceMetricsService from "./performance-metrics-service";
 import NotFoundError from "../../errors/web/not-found-error";
 import { BaseService } from "../base/base-service";
 import { toNumber } from "../../utils";
+import tradingStateService from "./trading-state-service";
 
 /**
  * Session Info Service
@@ -74,32 +73,43 @@ class SessionInfoService extends BaseService {
     }
 
     /**
-     * Get all positions for a session
+     * Get open positions for a session
+     *
+     * Fetches only open positions at database level for optimal performance.
      *
      * @param sessionId - Session ID
-     * @returns Array of positions for the session
+     * @returns Array of open positions for the session
      */
-    private async getSessionPositions(sessionId: number): Promise<Position[]> {
-        const positions = await positionsRepo.getAllPositions({
-            where: { session_id: { equals: sessionId } },
-        });
+    private async getOpenPositions(sessionId: number): Promise<Position[]> {
+        const positions =
+            await positionsRepo.getOpenPositionsBySessionId(sessionId);
 
         this.logger.trace(
             { sessionId, positionCount: positions.length },
-            "Retrieved session positions"
+            "Retrieved open positions"
         );
 
         return positions;
     }
 
     /**
-     * Get open positions from a list of positions
+     * Get closed positions for a session
      *
-     * @param positions - All positions
-     * @returns Only open positions
+     * Fetches only closed positions (CLOSED or LIQUIDATED) at database level for optimal performance.
+     *
+     * @param sessionId - Session ID
+     * @returns Array of closed positions for the session
      */
-    private filterOpenPositions(positions: Position[]): Position[] {
-        return positions.filter((p) => p.position_status === "OPEN");
+    private async getClosedPositions(sessionId: number): Promise<Position[]> {
+        const positions =
+            await positionsRepo.getClosedPositionsBySessionId(sessionId);
+
+        this.logger.trace(
+            { sessionId, positionCount: positions.length },
+            "Retrieved closed positions"
+        );
+
+        return positions;
     }
 
     /**
@@ -116,7 +126,7 @@ class SessionInfoService extends BaseService {
         sessionId: number,
         initialBalance: number
     ): Promise<number> {
-        const transactions = await transactionsRepo.getAllTransactions({
+        const transactions = await transactionsRepo.findTransactions({
             where: { session_id: { equals: sessionId } },
         });
 
@@ -209,50 +219,40 @@ class SessionInfoService extends BaseService {
         const initialBalance = toNumber(session.initial_balance);
 
         // Fetch all required data in parallel
-        const [positions, currentPrice, peakBalance] = await Promise.all([
-            this.getSessionPositions(session.id),
-            this.getCurrentPrice(session.instrument_id, session.current_time),
-            this.getPeakBalance(session.id, initialBalance),
-        ]);
+        // Fetch open and closed positions separately at database level for optimal performance
+        const [openPositions, closedPositions, currentPrice, peakBalance] =
+            await Promise.all([
+                this.getOpenPositions(session.id),
+                this.getClosedPositions(session.id),
+                this.getCurrentPrice(
+                    session.instrument_id,
+                    session.current_time
+                ),
+                this.getPeakBalance(session.id, initialBalance),
+            ]);
 
-        // Separate open positions
-        const openPositions = this.filterOpenPositions(positions);
-
-        // Calculate unrealized PnL using contract_size (0 if no price data)
-        const unrealizedPnL =
+        // Calculate trading state using service (0 if no price data)
+        const tradingState =
             currentPrice !== null
-                ? pnlCalculationService.calculateTotalUnrealizedPnL(
+                ? tradingStateService.calculateTradingState(
+                      session,
                       openPositions,
-                      currentPrice,
-                      contractSize
+                      currentPrice
                   )
-                : 0;
+                : {
+                      currentBalance: toNumber(session.current_balance),
+                      unrealizedPnL: 0,
+                      equity: toNumber(session.current_balance),
+                      usedMargin: 0,
+                      marginLevel: 0,
+                  };
 
-        // Convert Prisma Decimal to number for calculations
-        const currentBalance = toNumber(session.current_balance);
+        const currentEquity = tradingState.equity;
+        const marginLevel = tradingState.marginLevel;
 
-        // Calculate current equity
-        const currentEquity = currentBalance + unrealizedPnL;
-
-        // Calculate used margin using contract_size (0 if no price data or no open positions)
-        const usedMargin =
-            currentPrice !== null && openPositions.length > 0
-                ? marginService.calculateUsedMargin(
-                      openPositions,
-                      currentPrice,
-                      session.leverage,
-                      contractSize
-                  )
-                : 0;
-
-        // Calculate margin level
-        const marginLevel = marginService.calculateMarginLevel(
-            currentEquity,
-            usedMargin
-        );
-
-        // Calculate win rate from all positions
-        const winRate = performanceMetricsService.calculateWinRate(positions);
+        // Calculate win rate from closed positions only
+        const winRate =
+            performanceMetricsService.calculateWinRate(closedPositions);
 
         // Calculate drawdown
         // Use max of peak balance and current equity for peak (in case equity exceeds recorded peak)
@@ -276,10 +276,10 @@ class SessionInfoService extends BaseService {
                 sessionId,
                 ...sessionInfo,
                 openPositionCount: openPositions.length,
-                totalPositionCount: positions.length,
+                closedPositionCount: closedPositions.length,
                 currentPrice,
-                unrealizedPnL,
-                usedMargin,
+                unrealizedPnL: tradingState.unrealizedPnL,
+                usedMargin: tradingState.usedMargin,
                 peakBalance,
                 contractSize,
             },

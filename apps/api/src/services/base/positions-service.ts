@@ -875,12 +875,10 @@ class PositionsService extends BaseService {
         await this.ensureSessionAccess(session.id, user);
 
         // 3. Get all OPEN positions for the session
-        const allPositions = await positionsRepo.getAllPositions({
-            where: {
-                session_id: { equals: session.id },
-                position_status: { equals: "OPEN" },
-            },
-        });
+        // Use repository method that filters at database level
+        const allPositions = await positionsRepo.getOpenPositionsBySessionId(
+            session.id
+        );
 
         if (allPositions.length === 0) {
             this.logger.info(

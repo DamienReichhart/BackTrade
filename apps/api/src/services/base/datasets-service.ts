@@ -415,7 +415,7 @@ class DatasetsService extends BaseService {
         const { skip, take } = buildPagination(page, limit);
 
         // Execute query
-        return datasetsRepo.getAllDatasets({
+        return datasetsRepo.findDatasets({
             where,
             skip,
             take,

@@ -22,10 +22,10 @@ import type {
 import { candlesRepo, positionsRepo, sessionsRepo } from "@backtrade/data";
 import positionClosingService from "./position-closing-service";
 import pnlCalculationService from "./pnl-calculation-service";
-import marginService from "./margin-service";
 import { BaseService } from "../base/base-service";
 import { toNumber } from "../../utils";
 import { TRADING_CONSTANTS } from "../../config/trading-constants";
+import tradingStateService from "./trading-state-service";
 
 /**
  * TP/SL hit detection result
@@ -95,12 +95,7 @@ class BarAdvancementService extends BaseService {
         const positionsClosed: PositionClosureInfo[] = [];
 
         // 1. Get all open positions for the session
-        const allPositions = await positionsRepo.getAllPositions({
-            where: { session_id: { equals: session.id } },
-        });
-        const openPositions = allPositions.filter(
-            (p) => p.position_status === "OPEN"
-        );
+        const openPositions = await this.getOpenPositionsForSession(session.id);
 
         if (openPositions.length === 0) {
             this.logger.debug(
@@ -203,22 +198,12 @@ class BarAdvancementService extends BaseService {
         }
 
         // 4. Refresh session data to get updated balance after TP/SL closures
-        const updatedSession = await sessionsRepo.getSessionWithInstrument(
-            session.id
-        );
-        if (!updatedSession) {
-            throw new Error(
-                `Session ${session.id} not found after TP/SL processing`
-            );
-        }
+        const updatedSession = await this.refreshSession(session.id);
 
         // 5. Get remaining open positions after TP/SL closures
-        const remainingPositions = await positionsRepo.getAllPositions({
-            where: {
-                session_id: { equals: session.id },
-                position_status: { equals: "OPEN" },
-            },
-        });
+        const remainingPositions = await this.getOpenPositionsForSession(
+            session.id
+        );
 
         if (remainingPositions.length === 0) {
             this.logger.debug(
@@ -247,12 +232,9 @@ class BarAdvancementService extends BaseService {
         positionsClosed.push(...liquidationResult.liquidatedPositions);
 
         // 8. Update unrealized PnL for all remaining open positions
-        const finalOpenPositions = await positionsRepo.getAllPositions({
-            where: {
-                session_id: { equals: session.id },
-                position_status: { equals: "OPEN" },
-            },
-        });
+        const finalOpenPositions = await this.getOpenPositionsForSession(
+            session.id
+        );
 
         if (finalOpenPositions.length > 0) {
             const contractSize = session.instrument.contract_size;
@@ -470,24 +452,12 @@ class BarAdvancementService extends BaseService {
 
         const currentPrice = toNumber(candles[0]!.close);
         const contractSize = session.instrument.contract_size;
-        const currentBalance = toNumber(session.current_balance);
 
-        const unrealizedPnL = pnlCalculationService.calculateTotalUnrealizedPnL(
+        // Calculate trading state using service
+        const tradingState = tradingStateService.calculateTradingState(
+            session,
             openPositions,
-            currentPrice,
-            contractSize
-        );
-
-        const equity = currentBalance + unrealizedPnL;
-        const usedMargin = marginService.calculateUsedMargin(
-            openPositions,
-            currentPrice,
-            session.leverage,
-            contractSize
-        );
-        const marginLevel = marginService.calculateMarginLevel(
-            equity,
-            usedMargin
+            currentPrice
         );
 
         // Update unrealized PnL for all open positions
@@ -499,8 +469,8 @@ class BarAdvancementService extends BaseService {
 
         return {
             positionsClosed: [],
-            marginLevelAfter: marginLevel,
-            equityAfter: equity,
+            marginLevelAfter: tradingState.marginLevel,
+            equityAfter: tradingState.equity,
         };
     }
 
@@ -537,31 +507,21 @@ class BarAdvancementService extends BaseService {
         let remainingPositions = [...openPositions];
         let currentSession = session;
 
-        // Calculate initial state
-        let currentBalance = toNumber(currentSession.current_balance);
-        let unrealizedPnL = pnlCalculationService.calculateTotalUnrealizedPnL(
+        // Calculate initial state using service
+        let tradingState = tradingStateService.calculateTradingState(
+            currentSession,
             remainingPositions,
-            currentPrice,
-            contractSize
+            currentPrice
         );
-        let equity = currentBalance + unrealizedPnL;
-        let usedMargin = marginService.calculateUsedMargin(
-            remainingPositions,
-            currentPrice,
-            currentSession.leverage,
-            contractSize
-        );
-        let marginLevel = marginService.calculateMarginLevel(
-            equity,
-            usedMargin
-        );
+        let marginLevel = tradingState.marginLevel;
+        let equity = tradingState.equity;
 
         this.logger.debug(
             {
                 sessionId: session.id,
                 marginLevel,
                 equity,
-                usedMargin,
+                usedMargin: tradingState.usedMargin,
                 threshold: TRADING_CONSTANTS.LIQUIDATION_THRESHOLD_PERCENT,
             },
             "Checking margin level for liquidation"
@@ -647,34 +607,16 @@ class BarAdvancementService extends BaseService {
                 );
 
                 // Refresh session data
-                const updatedSession =
-                    await sessionsRepo.getSessionWithInstrument(session.id);
-                if (!updatedSession) {
-                    throw new Error(
-                        `Session ${session.id} not found after liquidation`
-                    );
-                }
-                currentSession = updatedSession;
+                currentSession = await this.refreshSession(session.id);
 
-                // Recalculate margin level
-                currentBalance = toNumber(currentSession.current_balance);
-                unrealizedPnL =
-                    pnlCalculationService.calculateTotalUnrealizedPnL(
-                        remainingPositions,
-                        currentPrice,
-                        contractSize
-                    );
-                equity = currentBalance + unrealizedPnL;
-                usedMargin = marginService.calculateUsedMargin(
+                // Recalculate margin level using service
+                tradingState = tradingStateService.calculateTradingState(
+                    currentSession,
                     remainingPositions,
-                    currentPrice,
-                    currentSession.leverage,
-                    contractSize
+                    currentPrice
                 );
-                marginLevel = marginService.calculateMarginLevel(
-                    equity,
-                    usedMargin
-                );
+                marginLevel = tradingState.marginLevel;
+                equity = tradingState.equity;
 
                 this.logger.debug(
                     {
@@ -759,6 +701,41 @@ class BarAdvancementService extends BaseService {
                 "Updated position unrealized PnL"
             );
         }
+    }
+
+    /**
+     * Refresh session data from database
+     *
+     * Helper method to fetch updated session data and handle errors consistently.
+     *
+     * @param sessionId - Session ID to refresh
+     * @returns Updated session with instrument data
+     * @throws Error if session not found
+     */
+    private async refreshSession(
+        sessionId: number
+    ): Promise<SessionWithInstrument> {
+        const updatedSession =
+            await sessionsRepo.getSessionWithInstrument(sessionId);
+        if (!updatedSession) {
+            throw new Error(`Session ${sessionId} not found`);
+        }
+        return updatedSession;
+    }
+
+    /**
+     * Get all open positions for a session
+     *
+     * Helper method to fetch open positions with consistent query pattern.
+     * Fetches only open positions at database level for optimal performance.
+     *
+     * @param sessionId - Session ID
+     * @returns Array of open positions
+     */
+    private async getOpenPositionsForSession(
+        sessionId: number
+    ): Promise<Position[]> {
+        return await positionsRepo.getOpenPositionsBySessionId(sessionId);
     }
 }
 
