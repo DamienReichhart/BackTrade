@@ -17,66 +17,20 @@ inputs:
     remote_dir:
         description: Remote directory to copy files into
         required: true
-    database_url:
-        description: Database URL for Prisma client generation during build
-        required: true
+
 runs:
     using: composite
     steps:
-        - name: Validate inputs
-          shell: bash
-          run: |
-              echo "Validating deployment inputs..."
-              echo "ssh_host is set: $([ -n "${{ inputs.ssh_host }}" ] && echo 'yes' || echo 'no')"
-              echo "ssh_user is set: $([ -n "${{ inputs.ssh_user }}" ] && echo 'yes' || echo 'no')"
-              echo "ssh_port is set: $([ -n "${{ inputs.ssh_port }}" ] && echo 'yes' || echo 'no')"
-              echo "ssh_key is set: $([ -n "${{ inputs.ssh_key }}" ] && echo 'yes' || echo 'no')"
-              echo "remote_dir is set: $([ -n "${{ inputs.remote_dir }}" ] && echo 'yes' || echo 'no')"
-              echo "database_url is set: $([ -n "${{ inputs.database_url }}" ] && echo 'yes' || echo 'no')"
-
-              if [ -z "${{ inputs.ssh_host }}" ] || \
-                 [ -z "${{ inputs.ssh_user }}" ] || \
-                 [ -z "${{ inputs.ssh_port }}" ] || \
-                 [ -z "${{ inputs.ssh_key }}" ] || \
-                 [ -z "${{ inputs.remote_dir }}" ] || \
-                 [ -z "${{ inputs.database_url }}" ]; then
-                  echo "Error: One or more required inputs are missing"
-                  exit 1
-              fi
-              echo "All inputs validated successfully"
-
         - name: Setup SSH key
           shell: bash
           run: |
               set -e
               mkdir -p ~/.ssh
-
-              # Validate required inputs
-              if [ -z "${{ inputs.ssh_host }}" ]; then
-                  echo "Error: ssh_host is empty or not set"
-                  exit 1
-              fi
-              if [ -z "${{ inputs.ssh_user }}" ]; then
-                  echo "Error: ssh_user is empty or not set"
-                  exit 1
-              fi
-              if [ -z "${{ inputs.ssh_port }}" ]; then
-                  echo "Error: ssh_port is empty or not set"
-                  exit 1
-              fi
-              if [ -z "${{ inputs.ssh_key }}" ]; then
-                  echo "Error: ssh_key is empty or not set"
-                  exit 1
-              fi
-
-              # Write SSH key
               echo "${{ inputs.ssh_key }}" > ~/.ssh/id_deploy
               chmod 600 ~/.ssh/id_deploy
 
               # Remove any existing "Host remote" entry from config
               if [ -f ~/.ssh/config ]; then
-                  # Remove the "Host remote" block and all its indented options
-                  # This awk script removes lines from "Host remote" until the next non-indented line
                   awk '
                       BEGIN { skip = 0 }
                       /^Host remote$/ { skip = 1; next }
@@ -86,7 +40,7 @@ runs:
                   ' ~/.ssh/config > ~/.ssh/config.new && mv ~/.ssh/config.new ~/.ssh/config
               fi
 
-              # Create SSH config with proper escaping
+              # Create SSH config
               {
                   echo "Host remote"
                   echo "  HostName ${{ inputs.ssh_host }}"
@@ -95,14 +49,6 @@ runs:
                   echo "  IdentityFile ~/.ssh/id_deploy"
                   echo "  StrictHostKeyChecking no"
               } >> ~/.ssh/config
-
-              # Verify SSH config is valid
-              if ! ssh -F ~/.ssh/config -G remote > /dev/null 2>&1; then
-                  echo "Error: Generated SSH config is invalid"
-                  echo "SSH config contents:"
-                  cat ~/.ssh/config
-                  exit 1
-              fi
 
         - name: Create backup directory and backup .env
           shell: bash
@@ -177,4 +123,4 @@ runs:
           shell: bash
           run: |
               echo "Deploying application..."
-              ssh remote "export DATABASE_URL='${{ inputs.database_url }}' && sudo -E /usr/local/bin/refresh_backtrade.sh safe_app"
+              ssh remote "source '${{ inputs.remote_dir }}/.env' && sudo -E /usr/local/bin/refresh_backtrade.sh safe_app"
