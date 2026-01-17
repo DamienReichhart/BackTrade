@@ -7,6 +7,11 @@
     min-width: 0;
 }
 
+.metricsWrapper {
+    width: 100%;
+    min-width: 0;
+}
+
 .content {
     display: grid;
     grid-template-columns: 1fr;
