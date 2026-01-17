@@ -6,7 +6,7 @@ on:
             environment:
                 description: Environment name (used for secrets scoping)
                 required: false
-                default: production
+                default: DEPLOY
     push:
         branches: [main, feature/*]
 
@@ -14,6 +14,7 @@ jobs:
     deploy:
         name: Deploy
         runs-on: self-hosted
+        environment: ${{ inputs.environment || 'DEPLOY' }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
