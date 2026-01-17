@@ -28,15 +28,18 @@ function createApp(): AppContext {
 
     app.use(helmet());
     app.use(cors({ origin: true, credentials: true }));
-    app.use(compression());
 
     // IMPORTANT: Stripe webhook must receive raw body for signature verification
-    // This route MUST be registered BEFORE the global express.json() middleware
+    // This route MUST be registered BEFORE compression and express.json() middleware
+    // Register webhook route first to bypass any body-modifying middleware
     app.post(
         "/api/v1/stripe/webhook",
         express.raw({ type: "application/json" }),
         stripeController.handleWebhook.bind(stripeController)
     );
+
+    // Apply compression AFTER webhook route to ensure webhook bypasses it
+    app.use(compression());
 
     app.use(express.json());
     app.use(rateLimit({ windowMs: 60_000, max: 1200 }));
