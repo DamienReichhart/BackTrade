@@ -11,6 +11,7 @@ import {
     type SearchQuery,
 } from "@backtrade/types";
 import { z } from "zod";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Session Management API Hooks
@@ -18,17 +19,7 @@ import { z } from "zod";
  */
 
 export function useSessions(query?: DateRangeQuery | SearchQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/sessions?${searchParams.toString()}` : "/sessions";
-
+    const url = buildUrlWithParams("/sessions", query);
     return useGet(url, SessionListResponseSchema);
 }
 

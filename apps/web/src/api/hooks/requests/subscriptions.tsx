@@ -6,6 +6,7 @@ import {
     UpdateSubscriptionRequestSchema,
     type DateRangeQuery,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Subscription Management API Hooks
@@ -13,19 +14,7 @@ import {
  */
 
 export function useSubscriptions(query?: DateRangeQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/subscriptions?${searchParams.toString()}`
-        : "/subscriptions";
-
+    const url = buildUrlWithParams("/subscriptions", query);
     return useGet(url, SubscriptionListResponseSchema);
 }
 
@@ -39,19 +28,10 @@ export function useSubscriptionsByUser(
     userId: string | undefined,
     query?: DateRangeQuery
 ) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/users/${userId ?? ""}/subscriptions?${searchParams.toString()}`
-        : `/users/${userId ?? ""}/subscriptions`;
-
+    const url = buildUrlWithParams(
+        `/users/${userId ?? ""}/subscriptions`,
+        query
+    );
     return useGet(url, SubscriptionListResponseSchema, { enabled: !!userId });
 }
 

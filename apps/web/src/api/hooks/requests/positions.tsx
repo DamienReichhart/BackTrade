@@ -11,6 +11,10 @@ import {
     type PositionStatus,
 } from "@backtrade/types";
 import { z } from "zod";
+import {
+    buildUrlWithParams,
+    buildUrlWithAdditionalParams,
+} from "../utils/url-params";
 
 /**
  * Position Management API Hooks
@@ -18,17 +22,7 @@ import { z } from "zod";
  */
 
 export function usePositions(query?: PositionQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/positions?${searchParams.toString()}` : "/positions";
-
+    const url = buildUrlWithParams("/positions", query);
     return useGet(url, PositionListResponseSchema);
 }
 
@@ -49,18 +43,18 @@ export function usePositionsBySession(
     status?: PositionStatus,
     limit?: number
 ) {
-    const searchParams = new URLSearchParams();
+    const additionalParams: Record<string, string> = {};
     if (status) {
-        searchParams.append("status", status);
+        additionalParams.status = status;
     }
     if (limit) {
-        searchParams.append("limit", String(limit));
+        additionalParams.limit = String(limit);
     }
 
-    const queryString = searchParams.toString();
-    const url = queryString
-        ? `/sessions/${sessionId}/positions?${queryString}`
-        : `/sessions/${sessionId}/positions`;
+    const url = buildUrlWithAdditionalParams(
+        `/sessions/${sessionId}/positions`,
+        additionalParams
+    );
 
     return useGet(url, PositionListResponseSchema, { enabled: !!sessionId });
 }

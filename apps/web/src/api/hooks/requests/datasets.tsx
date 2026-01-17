@@ -7,6 +7,7 @@ import {
     EmptyResponseSchema,
     type DateRangeQuery,
 } from "@backtrade/types";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Dataset Management API Hooks
@@ -14,17 +15,7 @@ import {
  */
 
 export function useDatasets(query?: DateRangeQuery) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query ? `/datasets?${searchParams.toString()}` : "/datasets";
-
+    const url = buildUrlWithParams("/datasets", query);
     return useGet(url, DatasetListResponseSchema);
 }
 
@@ -36,19 +27,10 @@ export function useDatasetsByInstrument(
     instrumentId: string,
     query?: DateRangeQuery
 ) {
-    const searchParams = new URLSearchParams();
-    if (query) {
-        Object.entries(query).forEach(([key, value]) => {
-            if (value !== undefined) {
-                searchParams.append(key, String(value));
-            }
-        });
-    }
-
-    const url = query
-        ? `/instruments/${instrumentId}/datasets?${searchParams.toString()}`
-        : `/instruments/${instrumentId}/datasets`;
-
+    const url = buildUrlWithParams(
+        `/instruments/${instrumentId}/datasets`,
+        query
+    );
     return useGet(url, DatasetListResponseSchema, { enabled: !!instrumentId });
 }
 
