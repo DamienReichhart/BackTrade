@@ -14,10 +14,22 @@ jobs:
     deploy:
         name: Deploy
         runs-on: self-hosted
-        environment: ${{ inputs.environment || 'PROD' }}
+        environment: ${{ github.event.inputs.environment || 'PROD' }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+
+            - name: Debug environment and secrets
+              shell: bash
+              run: |
+                  echo "Environment: ${{ github.event.inputs.environment || 'PROD' }}"
+                  echo "Checking if secrets are accessible..."
+                  echo "DEPLOY_SSH_HOST is set: $([ -n '${{ secrets.DEPLOY_SSH_HOST }}' ] && echo 'yes' || echo 'no')"
+                  echo "DEPLOY_SSH_USER is set: $([ -n '${{ secrets.DEPLOY_SSH_USER }}' ] && echo 'yes' || echo 'no')"
+                  echo "DEPLOY_SSH_PORT is set: $([ -n '${{ secrets.DEPLOY_SSH_PORT }}' ] && echo 'yes' || echo 'no')"
+                  echo "DEPLOY_SSH_KEY is set: $([ -n '${{ secrets.DEPLOY_SSH_KEY }}' ] && echo 'yes' || echo 'no')"
+                  echo "DEPLOY_REMOTE_DIR is set: $([ -n '${{ secrets.DEPLOY_REMOTE_DIR }}' ] && echo 'yes' || echo 'no')"
+                  echo "DATABASE_URL is set: $([ -n '${{ secrets.DATABASE_URL }}' ] && echo 'yes' || echo 'no')"
 
             - name: Deploy via SCP and SSH
               uses: ./.github/actions/deploy
