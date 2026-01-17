@@ -45,8 +45,6 @@ services:
         build:
             context: .
             dockerfile: docker/images/proxy.prod.dockerfile
-        ports:
-            - "80:8080"
         networks:
             public:
                 ipv4_address: 192.168.252.11
