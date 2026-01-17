@@ -4,6 +4,7 @@ import type { z } from "zod";
 import { API_BASE_URL } from "../../index";
 import { useAuthStore } from "../../../store/auth";
 import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
+import { createQueryKey } from "../utils/query-keys";
 
 /**
  * Hook for GET requests with automatic fetching
@@ -94,8 +95,12 @@ export function useGet<T = unknown>(
         return performFetch(currentAccessToken);
     };
 
+    // Create structured query key: ['GET', basePath, queryParams]
+    // This allows efficient invalidation by basePath regardless of query parameters
+    const queryKey = createQueryKey(url);
+
     const query = useQuery({
-        queryKey: [url],
+        queryKey: queryKey,
         queryFn: queryFn,
         enabled: enabled,
     });

@@ -3,11 +3,15 @@ import { useRef } from "react";
 import { API_BASE_URL } from "../../index";
 import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 import { useAuthStore } from "../../../store";
+import { invalidateByBasePath, parseUrl } from "../utils/query-keys";
 
 /**
  * Hook for DELETE requests
  */
-export function useDelete(url: string) {
+export function useDelete(
+    url: string,
+    queriesToInvalidate: string[] | null = null
+) {
     const queryClient = useQueryClient();
     const { login, logout } = useAuthStore();
     const isRefreshingToken = useRef(false);
@@ -88,7 +92,14 @@ export function useDelete(url: string) {
     const mutation = useMutation({
         mutationFn: mutationFn,
         onSuccess: () => {
-            queryClient.invalidateQueries();
+            if (queriesToInvalidate === null) {
+                queryClient.invalidateQueries();
+            } else {
+                queriesToInvalidate.forEach((queryUrl) => {
+                    const { basePath } = parseUrl(queryUrl);
+                    invalidateByBasePath(queryClient, basePath);
+                });
+            }
         },
     });
 

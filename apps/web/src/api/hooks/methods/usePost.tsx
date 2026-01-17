@@ -4,6 +4,7 @@ import type { z } from "zod";
 import { API_BASE_URL } from "../../index";
 import { useAuthStore } from "../../../store/auth";
 import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
+import { invalidateByBasePath, parseUrl } from "../utils/query-keys";
 
 /**
  * Hook for POST requests
@@ -11,7 +12,8 @@ import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
 export function usePost<TInput, TOutput>(
     url: string,
     inputSchema: z.ZodSchema<TInput>,
-    outputSchema: z.ZodSchema<TOutput>
+    outputSchema: z.ZodSchema<TOutput>,
+    queriesToInvalidate: string[] | null = null
 ) {
     const queryClient = useQueryClient();
     const { login, logout } = useAuthStore();
@@ -101,7 +103,14 @@ export function usePost<TInput, TOutput>(
     const mutation = useMutation({
         mutationFn: mutationFn,
         onSuccess: () => {
-            queryClient.invalidateQueries();
+            if (queriesToInvalidate === null) {
+                queryClient.invalidateQueries();
+            } else {
+                queriesToInvalidate.forEach((queryUrl) => {
+                    const { basePath } = parseUrl(queryUrl);
+                    invalidateByBasePath(queryClient, basePath);
+                });
+            }
         },
     });
 

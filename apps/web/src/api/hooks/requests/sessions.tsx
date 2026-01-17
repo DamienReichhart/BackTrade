@@ -80,17 +80,14 @@ export function useSessionAnalytics(id: string) {
  * @returns Mutation hook for skipping to next candle
  */
 export function useSkipSession(id: string, timeframe: string) {
-    const queriesToInvalidateWithoutGet: string[] = [
+    // Invalidate all queries related to this session
+    // The structured query key system will match all queries for these base paths
+    // regardless of query parameters (e.g., /sessions/123/positions?status=OPEN)
+    const queriesToInvalidate: string[] = [
         `/sessions/${id}`,
         `/sessions/${id}/info`,
         `/sessions/${id}/positions`,
         `/sessions/${id}/transactions`,
-    ];
-    const queriesToInvalidateWithGet: [string, string][] =
-        queriesToInvalidateWithoutGet.map((query) => [`GET`, query]);
-    const queriesToInvalidate = [
-        ...queriesToInvalidateWithoutGet,
-        ...queriesToInvalidateWithGet,
     ];
     return usePatch(
         `/sessions/${id}/skip?timeframe=${timeframe}`,

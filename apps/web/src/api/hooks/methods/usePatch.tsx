@@ -4,6 +4,7 @@ import type { z } from "zod";
 import { API_BASE_URL } from "../../index";
 import { useAuthStore } from "../../../store/auth";
 import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
+import { invalidateByBasePath, parseUrl } from "../utils/query-keys";
 
 /**
  * Hook for PATCH requests
@@ -12,7 +13,7 @@ export function usePatch<TInput, TOutput>(
     url: string,
     inputSchema: z.ZodSchema<TInput>,
     outputSchema: z.ZodSchema<TOutput>,
-    queriesToInvalidate: (string | [string, string])[] | null = null
+    queriesToInvalidate: string[] | null = null
 ) {
     const queryClient = useQueryClient();
     const { login, logout } = useAuthStore();
@@ -105,8 +106,14 @@ export function usePatch<TInput, TOutput>(
             if (queriesToInvalidate === null) {
                 queryClient.invalidateQueries();
             } else {
-                queriesToInvalidate.forEach((query) => {
-                    queryClient.invalidateQueries({ queryKey: [query] });
+                queriesToInvalidate.forEach((queryUrl) => {
+                    // Extract base path from URL (without query parameters)
+                    // This allows invalidating all queries for a resource regardless of query params
+                    // e.g., '/sessions/123/positions' will invalidate all queries like:
+                    // - '/sessions/123/positions?status=OPEN&limit=10000'
+                    // - '/sessions/123/positions?status=CLOSED'
+                    const { basePath } = parseUrl(queryUrl);
+                    invalidateByBasePath(queryClient, basePath);
                 });
             }
         },
