@@ -4,7 +4,7 @@ import {
     TransactionListResponseSchema,
     CreateTransactionRequestSchema,
     type DateRangeQuery,
-    type PaginationQuery,
+    type SearchQuery,
 } from "@backtrade/types";
 import { buildUrlWithParams } from "../utils/url-params";
 
@@ -29,7 +29,7 @@ export function useTransactionsByUser(userId: string, query?: DateRangeQuery) {
 
 export function useTransactionsBySession(
     sessionId: string,
-    query?: PaginationQuery
+    query?: SearchQuery
 ) {
     const url = buildUrlWithParams(
         `/sessions/${sessionId}/transactions`,

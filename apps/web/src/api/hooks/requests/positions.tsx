@@ -8,13 +8,9 @@ import {
     ClosePositionRequestSchema,
     EmptyResponseSchema,
     type PositionQuery,
-    type PositionStatus,
 } from "@backtrade/types";
 import { z } from "zod";
-import {
-    buildUrlWithParams,
-    buildUrlWithAdditionalParams,
-} from "../utils/url-params";
+import { buildUrlWithParams } from "../utils/url-params";
 
 /**
  * Position Management API Hooks
@@ -31,31 +27,17 @@ export function usePosition(id: string) {
 }
 
 /**
- * Fetch positions for a specific session with optional status filter.
+ * Fetch positions for a specific session with optional status filter, pagination, and sorting.
  *
  * @param sessionId - The session ID to fetch positions for
- * @param status - Optional position status filter (OPEN, CLOSED, LIQUIDATED)
- * @param limit - Optional limit for pagination (defaults to 20, max 10000)
+ * @param query - Optional query with status filter, pagination, and sorting
  * @returns Query result with positions array
  */
 export function usePositionsBySession(
     sessionId: string,
-    status?: PositionStatus,
-    limit?: number
+    query?: PositionQuery
 ) {
-    const additionalParams: Record<string, string> = {};
-    if (status) {
-        additionalParams.status = status;
-    }
-    if (limit) {
-        additionalParams.limit = String(limit);
-    }
-
-    const url = buildUrlWithAdditionalParams(
-        `/sessions/${sessionId}/positions`,
-        additionalParams
-    );
-
+    const url = buildUrlWithParams(`/sessions/${sessionId}/positions`, query);
     return useGet(url, PositionListResponseSchema, { enabled: !!sessionId });
 }
 

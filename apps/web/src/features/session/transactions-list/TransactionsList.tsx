@@ -2,27 +2,37 @@ import { useParams, Link } from "react-router-dom";
 import { TransactionDetailsModal } from "../session-running/components/TransactionDetailsModal";
 import { useTransactionsList } from "./hooks/useTransactionsList";
 import { formatDateTime } from "@backtrade/utils";
+import { Button } from "../../../components/Button/Button";
+import { Input } from "../../../components/Input/Input";
 import styles from "./TransactionsList.module.css";
 
 /**
  * Transactions List page for a session
  *
- * Displays all transactions for a session with sorting capabilities.
+ * Displays all transactions for a session with server-side search, sorting, and pagination.
  * Users can sort by any column by clicking on the column header.
  */
 export function TransactionsList() {
     const { id = "" } = useParams<{ id: string }>();
     const {
         session,
-        sortedTransactions,
+        transactions,
         isLoadingTransactions,
+        searchQuery,
+        page,
+        limit,
+        setPage,
         isModalOpen,
         selectedTransaction,
+        handleSearchChange,
         handleSort,
         getSortIndicator,
         handleRowClick,
         closeModal,
     } = useTransactionsList();
+
+    const hasResults = transactions.length > 0;
+    const hasMore = transactions.length === limit;
 
     return (
         <div className={styles.page}>
@@ -42,9 +52,20 @@ export function TransactionsList() {
                     <span className={styles.badge}>
                         {isLoadingTransactions
                             ? "Loading..."
-                            : `${sortedTransactions.length} transaction${sortedTransactions.length !== 1 ? "s" : ""}`}
+                            : `Page ${page}${hasResults ? ` (${transactions.length} shown)` : ""}`}
                     </span>
                 </div>
+            </div>
+
+            {/* Search Control */}
+            <div className={styles.searchContainer}>
+                <Input
+                    type="text"
+                    placeholder="Search by transaction type..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className={styles.searchInput}
+                />
             </div>
 
             <div className={styles.card}>
@@ -96,7 +117,7 @@ export function TransactionsList() {
                                 </tr>
                             )}
                             {!isLoadingTransactions &&
-                                sortedTransactions.length === 0 && (
+                                transactions.length === 0 && (
                                     <tr>
                                         <td
                                             className={styles.empty}
@@ -107,7 +128,7 @@ export function TransactionsList() {
                                     </tr>
                                 )}
                             {!isLoadingTransactions &&
-                                sortedTransactions.map((transaction) => (
+                                transactions.map((transaction) => (
                                     <tr
                                         key={transaction.id}
                                         className={styles.clickableRow}
@@ -143,6 +164,29 @@ export function TransactionsList() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {hasResults && (
+                    <div className={styles.pagination}>
+                        <Button
+                            variant="outline"
+                            size="small"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1 || isLoadingTransactions}
+                        >
+                            Previous
+                        </Button>
+                        <span className={styles.pageInfo}>Page {page}</span>
+                        <Button
+                            variant="outline"
+                            size="small"
+                            onClick={() => setPage((p) => p + 1)}
+                            disabled={!hasMore || isLoadingTransactions}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <TransactionDetailsModal

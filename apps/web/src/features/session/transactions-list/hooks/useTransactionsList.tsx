@@ -1,25 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import type { Transaction } from "@backtrade/types";
+import type { Transaction, SearchQuery, SortOrder } from "@backtrade/types";
 import { useSession } from "../../../../api/hooks/requests/sessions";
 import { useTransactionsBySession } from "../../../../api/hooks/requests/transactions";
 import { useModal } from "../../../../hooks/useModal";
-import {
-    sortTransactions,
-    type TransactionSortField,
-    type SortOrder,
-} from "../utils/sorting";
+import type { TransactionSortField } from "../utils/sorting";
 
 /**
- * Hook to manage transactions list data, sorting, and modal state
+ * Hook to manage transactions list data, search, sorting, pagination, and modal state
  *
  * @returns Transactions list state and handlers
  */
 export function useTransactionsList() {
     const { id = "" } = useParams<{ id: string }>();
-    const [sortField, setSortField] =
-        useState<TransactionSortField>("created_at");
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [sortField, setSortField] = useState<string>("created_at");
     const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+    const [page, setPage] = useState<number>(1);
+    const limit = 30;
 
     const {
         isOpen,
@@ -29,12 +27,25 @@ export function useTransactionsList() {
     } = useModal<Transaction>();
 
     const { data: session } = useSession(id);
+
+    // Build query with search, pagination and sorting
+    const query: SearchQuery = useMemo(() => {
+        const searchParams: SearchQuery = {
+            page,
+            limit,
+            sort: sortField,
+            order: sortOrder,
+        };
+
+        if (searchQuery.trim()) {
+            searchParams.q = searchQuery.trim();
+        }
+
+        return searchParams;
+    }, [searchQuery, page, limit, sortField, sortOrder]);
+
     const { data: transactionsData, isLoading: isLoadingTransactions } =
-        useTransactionsBySession(id, {
-            page: 1,
-            limit: 10000,
-            order: "desc",
-        });
+        useTransactionsBySession(id, query);
 
     // Normalize transactions data
     const transactions: Transaction[] = useMemo(() => {
@@ -42,30 +53,35 @@ export function useTransactionsList() {
         return transactionsData;
     }, [transactionsData]);
 
-    // Sort transactions based on current sort field and order
-    const sortedTransactions = useMemo(() => {
-        return sortTransactions(transactions, sortField, sortOrder);
-    }, [transactions, sortField, sortOrder]);
+    /**
+     * Handle search input change
+     */
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setPage(1); // Reset to first page on search
+    };
 
     /**
      * Handle column header click to toggle sorting
      */
     const handleSort = (field: TransactionSortField) => {
-        if (sortField === field) {
+        const fieldString = field as string;
+        if (sortField === fieldString) {
             // Toggle order if clicking the same field
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
             // Set new field with default descending order
-            setSortField(field);
+            setSortField(fieldString);
             setSortOrder("desc");
         }
+        setPage(1); // Reset to first page on sort change
     };
 
     /**
      * Get sort indicator for column header
      */
     const getSortIndicator = (field: TransactionSortField) => {
-        if (sortField !== field) return null;
+        if (sortField !== (field as string)) return null;
         return sortOrder === "asc" ? " ↑" : " ↓";
     };
 
@@ -76,12 +92,16 @@ export function useTransactionsList() {
     return {
         session,
         transactions,
-        sortedTransactions,
         isLoadingTransactions,
+        searchQuery,
         sortField,
         sortOrder,
+        page,
+        limit,
+        setPage,
         isModalOpen: isOpen,
         selectedTransaction,
+        handleSearchChange,
         handleSort,
         getSortIndicator,
         handleRowClick,

@@ -1,24 +1,22 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import type { Position } from "@backtrade/types";
+import type { Position, PositionQuery, SortOrder } from "@backtrade/types";
 import { useSession } from "../../../../api/hooks/requests/sessions";
 import { usePositionsBySession } from "../../../../api/hooks/requests/positions";
 import { useModal } from "../../../../hooks/useModal";
-import {
-    sortPositions,
-    type PositionSortField,
-    type SortOrder,
-} from "../utils/sorting";
+import type { PositionSortField } from "../utils/sorting";
 
 /**
- * Hook to manage positions list data, sorting, and modal state
+ * Hook to manage positions list data, sorting, pagination, and modal state
  *
  * @returns Positions list state and handlers
  */
 export function usePositionsList() {
     const { id = "" } = useParams<{ id: string }>();
-    const [sortField, setSortField] = useState<PositionSortField>("opened_at");
+    const [sortField, setSortField] = useState<string>("opened_at");
     const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+    const [page, setPage] = useState<number>(1);
+    const limit = 30;
 
     const {
         isOpen,
@@ -28,8 +26,20 @@ export function usePositionsList() {
     } = useModal<Position>();
 
     const { data: session } = useSession(id);
+
+    // Build query with pagination and sorting
+    const query: PositionQuery = useMemo(
+        () => ({
+            page,
+            limit,
+            sort: sortField,
+            order: sortOrder,
+        }),
+        [page, limit, sortField, sortOrder]
+    );
+
     const { data: positionsData, isLoading: isLoadingPositions } =
-        usePositionsBySession(id, undefined, 10000);
+        usePositionsBySession(id, query);
 
     // Normalize positions data
     const positions: Position[] = useMemo(() => {
@@ -46,30 +56,27 @@ export function usePositionsList() {
         }));
     }, [positionsData]);
 
-    // Sort positions based on current sort field and order
-    const sortedPositions = useMemo(() => {
-        return sortPositions(positions, sortField, sortOrder);
-    }, [positions, sortField, sortOrder]);
-
     /**
      * Handle column header click to toggle sorting
      */
     const handleSort = (field: PositionSortField) => {
-        if (sortField === field) {
+        const fieldString = field as string;
+        if (sortField === fieldString) {
             // Toggle order if clicking the same field
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
             // Set new field with default descending order
-            setSortField(field);
+            setSortField(fieldString);
             setSortOrder("desc");
         }
+        setPage(1); // Reset to first page on sort change
     };
 
     /**
      * Get sort indicator for column header
      */
     const getSortIndicator = (field: PositionSortField) => {
-        if (sortField !== field) return null;
+        if (sortField !== (field as string)) return null;
         return sortOrder === "asc" ? " ↑" : " ↓";
     };
 
@@ -80,10 +87,12 @@ export function usePositionsList() {
     return {
         session,
         positions,
-        sortedPositions,
         isLoadingPositions,
         sortField,
         sortOrder,
+        page,
+        limit,
+        setPage,
         isModalOpen: isOpen,
         selectedPosition,
         handleSort,
