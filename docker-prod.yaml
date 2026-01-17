@@ -438,11 +438,18 @@ services:
                 reservations:
                     cpus: "0.5"
                     memory: 1G
-        # Security: Drop all Linux capabilities and prevent privilege escalation
-        # PostgreSQL runs on non-privileged port 5432; Docker volumes handle permissions correctly
-        # Official image entrypoint handles initialization as root, then drops to postgres user
+        # Security: Drop all Linux capabilities except minimal required for initialization
+        # PostgreSQL needs CHOWN and FOWNER to set up data directory and runtime directory
+        # DAC_OVERRIDE needed for directory traversal during initialization
+        # SETUID and SETGID needed to switch from root to postgres user
         cap_drop:
             - ALL
+        cap_add:
+            - CHOWN # Change file/directory ownership
+            - FOWNER # Bypass permission checks for ownership operations
+            - DAC_OVERRIDE # Bypass file permission checks for directory access
+            - SETUID # Change user ID (needed to switch from root to postgres)
+            - SETGID # Change group ID (needed to switch from root to postgres)
         security_opt:
             - no-new-privileges:true
         logging:
@@ -627,10 +634,18 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 512M
-        # Security: Drop all Linux capabilities and prevent privilege escalation
-        # RabbitMQ runs on non-privileged ports (5672, 15672); Docker volumes handle permissions correctly
+        # Security: Drop all Linux capabilities except minimal required for initialization
+        # RabbitMQ needs CHOWN and FOWNER to set up data directory and manage file ownership
+        # SETUID and SETGID needed to switch from root to rabbitmq user
+        # DAC_READ_SEARCH needed to read .erlang.cookie and access files in data directory
         cap_drop:
             - ALL
+        cap_add:
+            - CHOWN # Change file/directory ownership
+            - FOWNER # Bypass permission checks for ownership operations
+            - SETUID # Change user ID (needed to switch from root to rabbitmq)
+            - SETGID # Change group ID (needed to switch from root to rabbitmq)
+            - DAC_READ_SEARCH # Bypass read permission checks for directory traversal and file access
         security_opt:
             - no-new-privileges:true
         logging:
