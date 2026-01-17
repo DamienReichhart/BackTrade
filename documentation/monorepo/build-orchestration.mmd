@@ -1,0 +1,63 @@
+graph TB
+    subgraph "Turbo Build System"
+        TurboConfig[turbo.json<br/>Task Configuration]
+        BuildTask[build Task<br/>Outputs: dist/**]
+        DevTask[dev Task<br/>Cache: false]
+        TypecheckTask[typecheck Task<br/>Type Checking]
+        LintTask[lint Task<br/>Code Linting]
+        TestTask[test Task<br/>Unit Tests]
+    end
+
+    subgraph "Build Pipeline"
+        RootBuild[pnpm build<br/>Turbo Run Build]
+        ParallelBuild[Parallel Execution<br/>All Packages]
+        DependencyGraph[Dependency Graph<br/>Resolve Dependencies]
+        BuildOrder[Build Order<br/>Dependencies First]
+    end
+
+    subgraph "Package Builds"
+        DataBuild[datas Build<br/>Generate Prisma Client<br/>Build TypeScript]
+        TypesBuild[types Build<br/>Build TypeScript]
+        UtilsBuild[utils Build<br/>Build TypeScript]
+        APIBuild[api Build<br/>Build TypeScript<br/>Bundle with esbuild]
+        WebBuild[web Build<br/>Vite Production Build<br/>Optimize Assets]
+    end
+
+    subgraph "Build Caching"
+        CacheKey[Cache Key<br/>Input Hash]
+        CacheHit[Cache Hit<br/>Skip Build]
+        CacheMiss[Cache Miss<br/>Execute Build]
+        CacheStore[Cache Store<br/>Save Output]
+    end
+
+    TurboConfig --> BuildTask
+    TurboConfig --> DevTask
+    TurboConfig --> TypecheckTask
+    TurboConfig --> LintTask
+    TurboConfig --> TestTask
+    
+    RootBuild --> DependencyGraph
+    DependencyGraph --> BuildOrder
+    BuildOrder --> ParallelBuild
+    
+    ParallelBuild --> TypesBuild
+    ParallelBuild --> DataBuild
+    ParallelBuild --> UtilsBuild
+    
+    TypesBuild --> APIBuild
+    DataBuild --> APIBuild
+    UtilsBuild --> APIBuild
+    
+    TypesBuild --> WebBuild
+    UtilsBuild --> WebBuild
+    
+    BuildTask --> CacheKey
+    CacheKey --> CacheHit
+    CacheKey --> CacheMiss
+    CacheMiss --> CacheStore
+    CacheHit --> BuildTask
+
+    style TurboConfig fill:#4a90e2
+    style BuildTask fill:#339933
+    style CacheHit fill:#c8e6c9
+    style CacheMiss fill:#ffa500

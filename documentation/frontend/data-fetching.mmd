@@ -1,0 +1,65 @@
+sequenceDiagram
+    participant Component
+    participant APIHook as API Hook<br/>(useGet/usePost)
+    participant RequestUtil as Request Utils
+    participant AuthStore as Auth Store
+    participant API as Backend API
+    participant ReactQuery as React Query
+
+    Note over Component,ReactQuery: Data Fetching Flow
+
+    Component->>APIHook: useGet(url, schema)
+    APIHook->>AuthStore: Get Access Token
+    AuthStore-->>APIHook: Token or undefined
+    
+    alt No Token
+        APIHook-->>Component: Error: Unauthenticated
+    else Has Token
+        APIHook->>RequestUtil: Create Request Config
+        RequestUtil->>RequestUtil: Add Authorization Header
+        RequestUtil->>RequestUtil: Add Content-Type Header
+        RequestUtil-->>APIHook: Request Config
+        
+        APIHook->>ReactQuery: useQuery(config)
+        ReactQuery->>API: HTTP GET Request
+        
+        alt Request Success
+            API-->>ReactQuery: 200 OK + Data
+            ReactQuery->>RequestUtil: Validate with Zod Schema
+            RequestUtil-->>ReactQuery: Validated Data
+            ReactQuery-->>APIHook: { data, isLoading: false }
+            APIHook-->>Component: { data, isLoading: false }
+        else Request Failed (401)
+            API-->>ReactQuery: 401 Unauthorized
+            ReactQuery->>RequestUtil: Handle 401 Error
+            RequestUtil->>AuthStore: Check Refresh Token
+            AuthStore-->>RequestUtil: Refresh Token Available
+            
+            alt Refresh Token Valid
+                RequestUtil->>API: POST /auth/refresh-token
+                API-->>RequestUtil: New Tokens
+                RequestUtil->>AuthStore: Update Tokens
+                RequestUtil->>API: Retry Original Request
+                API-->>ReactQuery: 200 OK + Data
+                ReactQuery-->>Component: { data, isLoading: false }
+            else Refresh Token Invalid
+                RequestUtil->>AuthStore: Logout
+                AuthStore-->>Component: Redirect to Login
+            end
+        else Request Failed (Other)
+            API-->>ReactQuery: Error Response
+            ReactQuery-->>APIHook: { error, isLoading: false }
+            APIHook-->>Component: { error, isLoading: false }
+        end
+    end
+
+    Note over Component,ReactQuery: Mutation Flow (POST/PATCH/DELETE)
+    
+    Component->>APIHook: usePost(url, inputSchema, outputSchema)
+    APIHook->>ReactQuery: useMutation(config)
+    Component->>APIHook: mutate(data)
+    APIHook->>RequestUtil: Create Request
+    RequestUtil->>API: HTTP POST Request
+    API-->>RequestUtil: Response
+    RequestUtil->>ReactQuery: Update Cache
+    ReactQuery-->>Component: { data, isSuccess }
