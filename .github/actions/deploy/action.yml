@@ -17,6 +17,9 @@ inputs:
     remote_dir:
         description: Remote directory to copy files into
         required: true
+    database_url:
+        description: Database URL for Prisma client generation during build
+        required: true
 runs:
     using: composite
     steps:
@@ -102,4 +105,4 @@ runs:
           shell: bash
           run: |
               echo "Deploying application..."
-              ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
+              ssh remote "export DATABASE_URL='${{ inputs.database_url }}' && sudo -E /usr/local/bin/refresh_backtrade.sh safe_app"
