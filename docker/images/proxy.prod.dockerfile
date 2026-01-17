@@ -1,7 +1,7 @@
 # =============================================================================
 # Stage 1: Extract Nginx Runtime Dependencies
 # =============================================================================
-FROM nginx:1.27-alpine AS extractor
+FROM nginx:1.29-alpine AS extractor
 
 # Install tools for dependency analysis
 RUN apk add --no-cache binutils
