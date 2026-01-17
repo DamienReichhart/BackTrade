@@ -7,6 +7,7 @@ import {
     useChartMarkers,
     useSessionPositions,
     usePositionMarkers,
+    usePositionPriceLines,
 } from "../../hooks";
 import { ChartMenuButton } from "./components/ChartMenuButton";
 import {
@@ -61,6 +62,9 @@ export function RunningSessionChart() {
     const { positions } = useSessionPositions();
     const markers = usePositionMarkers(positions);
     useChartMarkers(markersPluginRef, markers, isReady);
+
+    // Display TP/SL price lines for open positions
+    usePositionPriceLines(seriesRef, positions, isReady);
 
     useIndicatorEngine({
         chartRef,
