@@ -73,6 +73,19 @@ runs:
               echo "${{ inputs.ssh_key }}" > ~/.ssh/id_deploy
               chmod 600 ~/.ssh/id_deploy
 
+              # Remove any existing "Host remote" entry from config
+              if [ -f ~/.ssh/config ]; then
+                  # Remove the "Host remote" block and all its indented options
+                  # This awk script removes lines from "Host remote" until the next non-indented line
+                  awk '
+                      BEGIN { skip = 0 }
+                      /^Host remote$/ { skip = 1; next }
+                      skip && /^[[:space:]]/ { next }
+                      skip && /^$/ { next }
+                      { skip = 0; print }
+                  ' ~/.ssh/config > ~/.ssh/config.new && mv ~/.ssh/config.new ~/.ssh/config
+              fi
+
               # Create SSH config with proper escaping
               {
                   echo "Host remote"
