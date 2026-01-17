@@ -133,6 +133,10 @@ db-reset: ## Reset database (WARNING: deletes all data)
 install: ## Install all dependencies
 	@echo "Installing dependencies..."
 	$(PNPM) install
+	cp .env.example .env
+	cp .env.example apps/api/.env
+	cp .env.example apps/worker/.env
+	cp .env.example apps/scheduler/.env
 
 .PHONY: install-dev
 install-dev: dev ## Install dependencies and start dev environment

@@ -45,8 +45,6 @@ services:
         build:
             context: .
             dockerfile: docker/images/proxy.prod.dockerfile
-        # Port 80 exposed only for testing - remove in real production
-        # In production, only Cloudflare Tunnel should access this service
         ports:
             - "80:8080"
         networks:
