@@ -20,6 +20,12 @@ services:
             public:
                 ipv4_address: 192.168.252.10
         restart: unless-stopped
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Cloudflared tunnel service doesn't require special capabilities for standard operation
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         healthcheck:
             test: ["CMD", "cloudflared", "tunnel", "info"]
             interval: 30s
@@ -54,6 +60,12 @@ services:
             backend:
                 condition: service_healthy
         restart: unless-stopped
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Nginx runs on non-privileged port 8080 as non-root user (UID 101), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         # Note: Health check disabled for distroless nginx container
         # Use external monitoring or add health check endpoint monitoring
         logging:
@@ -116,6 +128,12 @@ services:
             clickhouse:
                 condition: service_healthy
         restart: "no"
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Node.js migration service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         # Migration service runs once and exits
         # Exit code 0 = success, non-zero = failure
         logging:
@@ -208,6 +226,12 @@ services:
                 reservations:
                     cpus: "0.5"
                     memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Backend API runs as non-root user (UID 1001) on non-privileged port (>1024), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -237,6 +261,12 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 128M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Frontend nginx runs on non-privileged port as non-root user (UID 101), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -300,6 +330,12 @@ services:
                 reservations:
                     cpus: "0.5"
                     memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Worker service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -356,6 +392,12 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 256M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Scheduler service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -398,6 +440,13 @@ services:
                 reservations:
                     cpus: "0.5"
                     memory: 1G
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # PostgreSQL runs on non-privileged port 5432; Docker volumes handle permissions correctly
+        # Official image entrypoint handles initialization as root, then drops to postgres user
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -436,6 +485,12 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Redis runs as non-root redis user on non-privileged port 6379, no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -475,6 +530,12 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # MinIO runs on non-privileged ports (9000, 9001); Docker volumes handle permissions correctly
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -522,6 +583,13 @@ services:
                 reservations:
                     cpus: "0.5"
                     memory: 1G
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # ClickHouse runs as non-root clickhouse user on non-privileged ports (8123, 9000);
+        # Docker volumes handle permissions correctly
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
@@ -561,6 +629,12 @@ services:
                 reservations:
                     cpus: "0.25"
                     memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # RabbitMQ runs on non-privileged ports (5672, 15672); Docker volumes handle permissions correctly
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
         logging:
             driver: "json-file"
             options:
