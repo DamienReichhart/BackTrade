@@ -90,6 +90,24 @@ class InstrumentsService extends BaseService {
     }
 
     /**
+     * Validate that contract_size is a positive integer if provided
+     *
+     * @param contractSize - Contract size to validate
+     * @throws BadRequestError if contract_size is invalid
+     */
+    private validateContractSize(
+        contractSize: number | undefined | null
+    ): void {
+        if (contractSize !== undefined && contractSize !== null) {
+            if (!Number.isInteger(contractSize) || contractSize <= 0) {
+                throw new BadRequestError(
+                    "contract_size must be a positive integer if provided"
+                );
+            }
+        }
+    }
+
+    /**
      * Validate all business rules for instrument creation
      *
      * @param instrument - Instrument creation data
@@ -101,6 +119,7 @@ class InstrumentsService extends BaseService {
         this.validateSymbol(instrument.symbol);
         this.validateDisplayName(instrument.display_name);
         this.validatePipSize(instrument.pip_size);
+        this.validateContractSize(instrument.contract_size);
     }
 
     /**
@@ -116,6 +135,7 @@ class InstrumentsService extends BaseService {
         }
         this.validateDisplayName(instrument.display_name);
         this.validatePipSize(instrument.pip_size);
+        this.validateContractSize(instrument.contract_size);
     }
 
     // ============================================================================

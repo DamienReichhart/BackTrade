@@ -5,6 +5,7 @@ export const CreateInstrumentRequestSchema = z.object({
     symbol: z.string(),
     display_name: z.string(),
     pip_size: z.number().positive(),
+    contract_size: z.number().int().positive().optional().default(100000),
 });
 export type CreateInstrumentRequest = z.infer<
     typeof CreateInstrumentRequestSchema
@@ -13,6 +14,7 @@ export type CreateInstrumentRequest = z.infer<
 export const UpdateInstrumentRequestSchema = z.object({
     display_name: z.string().optional(),
     pip_size: z.number().positive().optional(),
+    contract_size: z.number().int().positive().optional(),
 });
 export type UpdateInstrumentRequest = z.infer<
     typeof UpdateInstrumentRequestSchema

@@ -22,6 +22,10 @@ const InstrumentFormSchema = z.object({
     symbol: z.string().min(1, "Symbol is required"),
     display_name: z.string().min(1, "Display name is required"),
     pip_size: z.number().positive("Pip size must be positive"),
+    contract_size: z
+        .number()
+        .int()
+        .positive("Contract size must be a positive integer"),
 });
 
 type InstrumentFormData = z.infer<typeof InstrumentFormSchema>;
@@ -61,6 +65,7 @@ export function InstrumentModal({
             symbol: "",
             display_name: "",
             pip_size: 0.0001,
+            contract_size: 100000,
         },
     });
 
@@ -71,12 +76,14 @@ export function InstrumentModal({
                     symbol: instrument.symbol,
                     display_name: instrument.display_name,
                     pip_size: instrument.pip_size,
+                    contract_size: instrument.contract_size,
                 });
             } else {
                 reset({
                     symbol: "",
                     display_name: "",
                     pip_size: 0.0001,
+                    contract_size: 100000,
                 });
             }
         }
@@ -89,6 +96,7 @@ export function InstrumentModal({
                 const updateData = UpdateInstrumentRequestSchema.parse({
                     display_name: data.display_name,
                     pip_size: data.pip_size,
+                    contract_size: data.contract_size,
                 });
                 await updateMutation.execute(updateData);
             } else {
@@ -97,6 +105,7 @@ export function InstrumentModal({
                     symbol: data.symbol,
                     display_name: data.display_name,
                     pip_size: data.pip_size,
+                    contract_size: data.contract_size,
                 });
                 await createMutation.execute(createData);
             }
@@ -165,6 +174,19 @@ export function InstrumentModal({
                             disabled={isLoading}
                             placeholder="0.0001"
                             {...register("pip_size", { valueAsNumber: true })}
+                        />
+
+                        <Input
+                            label="Contract Size"
+                            type="number"
+                            step="1"
+                            error={errors.contract_size?.message}
+                            hasError={!!errors.contract_size}
+                            disabled={isLoading}
+                            placeholder="100000"
+                            {...register("contract_size", {
+                                valueAsNumber: true,
+                            })}
                         />
 
                         {errors.root && (
