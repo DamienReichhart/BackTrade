@@ -27,7 +27,7 @@ COPY apps/ ./apps/
 RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client (required for migrations)
-RUN cd packages/datas && pnpm prisma:generate
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" && cd packages/datas && pnpm prisma:generate
 
 FROM node:25-alpine
 

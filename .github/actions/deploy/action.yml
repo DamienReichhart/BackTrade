@@ -123,4 +123,4 @@ runs:
           shell: bash
           run: |
               echo "Deploying application..."
-              ssh remote "source '${{ inputs.remote_dir }}/.env' && sudo /usr/local/bin/refresh_backtrade.sh safe_app"
+              ssh remote "sudo /usr/local/bin/refresh_backtrade.sh safe_app"
