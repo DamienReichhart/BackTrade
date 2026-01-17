@@ -8,7 +8,7 @@ on:
                 required: false
                 default: production
     push:
-        branches: [main, feature/cdtest]
+        branches: [main, feature/*]
 
 jobs:
     deploy:
