@@ -26,6 +26,9 @@ COPY apps/ ./apps/
 # Install all dependencies (including dev dependencies for Prisma CLI)
 RUN pnpm install --frozen-lockfile
 
+# Set DATABASE_URL for Prisma client generation (dummy URL is fine for generation)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+
 # Generate Prisma client (required for migrations)
 RUN cd packages/datas && pnpm prisma:generate
 
