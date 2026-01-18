@@ -4,4 +4,30 @@
  * Central export point for all service functions.
  */
 
-export * from "./security/hash.service";
+// Security services
+export { default as authService } from "./security/auth-service";
+export { default as hashService } from "./security/hash-service";
+export { default as jwtService } from "./security/jwt-service";
+
+// Base services
+export { default as userService } from "./base/users-service";
+export { default as sessionsService } from "./base/sessions-service";
+export { default as positionsService } from "./base/positions-service";
+export { default as transactionsService } from "./base/transactions-service";
+export { default as instrumentsService } from "./base/instruments-service";
+export { default as datasetsService } from "./base/datasets-service";
+
+// Trading services
+export { default as pnlCalculationService } from "./trading/pnl-calculation-service";
+export { default as marginService } from "./trading/margin-service";
+export { default as performanceMetricsService } from "./trading/performance-metrics-service";
+export { default as sessionInfoService } from "./trading/session-info-service";
+
+// Utility services
+export { default as healthService } from "./utils/health-service";
+
+// Notification services
+export { default as emailNotificationService } from "./notifications/email-notification-service";
+
+// Queue services
+export { default as queueService } from "./queue/queue-service";

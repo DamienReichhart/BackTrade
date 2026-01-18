@@ -1,0 +1,89 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+**/dist/
+**/build/
+out/
+.next/
+.turbo/
+
+# Generated files and folders
+**/generated/**
+generated/
+coverage/
+**/coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Package manager files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Documentation assets (images, PDFs, etc.)
+documentation/**/*.png
+documentation/**/*.jpg
+documentation/**/*.pdf
+documentation/**/*.fig
+documentation/**/*.deck
+documentation/**/*.lo1
+documentation/**/*.loo
+documentation/**/*.mmd
+documentation/**/*.iuml
+
+# Assets
+assets/
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.svg
+**/*.ico
+**/*.webp
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+.DS_Store

@@ -6,5 +6,5 @@ const root = document.documentElement;
  * @returns The value of the CSS variable
  */
 export const getCSSVar = (varName: string) => {
-  return getComputedStyle(root).getPropertyValue(varName).trim();
+    return getComputedStyle(root).getPropertyValue(varName).trim();
 };

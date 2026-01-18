@@ -4,14 +4,30 @@ import { z } from "zod";
 export * from "./enums";
 export * from "./entities";
 export * from "./requests";
+export * from "./queries";
+export * from "./responses";
+
+export const SingleServiceHealthStatusSchema = z.enum(["ok", "error"]);
+export type SingleServiceHealthStatus = z.infer<
+    typeof SingleServiceHealthStatusSchema
+>;
 
 // Legacy schemas (keeping for backward compatibility)
 export const HealthSchema = z.object({
-  status: z.literal("ok"),
-  time: z.iso.datetime(),
-  database: z.enum(["connected", "error"]),
-  redis: z.enum(["connected", "error"]),
+    status: z.literal("ok"),
+    time: z.iso.datetime(),
+    database: SingleServiceHealthStatusSchema,
+    redis: SingleServiceHealthStatusSchema,
+    queuing: SingleServiceHealthStatusSchema,
+    mailer: SingleServiceHealthStatusSchema,
+    storage: SingleServiceHealthStatusSchema,
 });
 export type Health = z.infer<typeof HealthSchema>;
+
+export const DateRangeSchema = z.object({
+    startDate: z.iso.datetime(),
+    endDate: z.iso.datetime(),
+});
+export type DateRange = z.infer<typeof DateRangeSchema>;
 
 export const HealthResponseSchema = HealthSchema;

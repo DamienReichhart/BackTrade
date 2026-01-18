@@ -2,111 +2,101 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { CreatePositionRequest } from "@backtrade/types";
 import { useCreatePosition } from "../../../../api/hooks/requests/positions";
 import {
-  useCurrentPriceStore,
-  useCurrentSessionStore,
+    useCurrentPriceStore,
+    useCurrentSessionStore,
 } from "../../../../store/session";
-import type { OrderFormActions } from "./useOrderForm";
-
-/**
- * Validation error messages
- */
-export interface ValidationError {
-  message: string;
-}
+import type { OrderFormReturn } from "./useOrderForm";
+import type { OrderFormState } from "../../../../types/forms";
 
 /**
  * Hook to handle position creation logic
  *
- * @param formActions - Order form actions for error handling
+ * @param form - Order form handle
  * @returns Position creation function and loading state
  */
-export function usePositionCreation(formActions: OrderFormActions) {
-  const queryClient = useQueryClient();
-  const { currentPrice } = useCurrentPriceStore();
-  const { currentSession } = useCurrentSessionStore();
-  const { execute: createPosition, isLoading: isCreatingPosition } =
-    useCreatePosition();
+export function usePositionCreation(form: OrderFormReturn) {
+    const queryClient = useQueryClient();
+    const { currentPrice } = useCurrentPriceStore();
+    const { currentSession } = useCurrentSessionStore();
+    const { execute: createPosition, isLoading: isCreatingPosition } =
+        useCreatePosition();
 
-  /**
-   * Validate position creation inputs
-   */
-  const validatePosition = (
-    qty: number,
-  ): { isValid: boolean; error?: string } => {
-    if (!currentSession?.id) {
-      return { isValid: false, error: "Session is required" };
-    }
+    /**
+     * Create a position with the given side
+     */
+    const createPositionWithSide = async (
+        side: "BUY" | "SELL",
+        data: OrderFormState
+    ): Promise<void> => {
+        form.clearErrors("root");
 
-    if (!currentPrice) {
-      return { isValid: false, error: "Current price is not available" };
-    }
+        if (!currentSession?.id) {
+            form.setError("root", {
+                type: "manual",
+                message: "Session is required",
+            });
+            return;
+        }
 
-    if (!qty || qty <= 0) {
-      return { isValid: false, error: "Quantity must be greater than 0" };
-    }
+        if (!currentPrice) {
+            form.setError("root", {
+                type: "manual",
+                message: "Current price is not available",
+            });
+            return;
+        }
 
-    if (!currentSession.current_time) {
-      return { isValid: false, error: "Session timestamp is not available" };
-    }
+        if (!currentSession.current_time) {
+            form.setError("root", {
+                type: "manual",
+                message: "Session timestamp is not available",
+            });
+            return;
+        }
 
-    return { isValid: true };
-  };
+        try {
+            const request: CreatePositionRequest = {
+                session_id: currentSession.id,
+                side,
+                entry_price: currentPrice,
+                quantity_lots: data.qty,
+                position_status: "OPEN",
+                opened_at: currentSession.current_time,
+                ...(data.tp !== undefined && data.tp > 0
+                    ? { tp_price: data.tp }
+                    : {}),
+                ...(data.sl !== undefined && data.sl > 0
+                    ? { sl_price: data.sl }
+                    : {}),
+            };
 
-  /**
-   * Create a position with the given side
-   */
-  const createPositionWithSide = async (
-    side: "BUY" | "SELL",
-    qty: number,
-    tp: number | undefined,
-    sl: number | undefined,
-  ): Promise<void> => {
-    formActions.setError(null);
+            await createPosition(request);
 
-    const validation = validatePosition(qty);
-    if (!validation.isValid) {
-      formActions.setError(validation.error ?? "Validation failed");
-      return;
-    }
+            // Invalidate positions and transactions queries to refresh the tables
+            const sessionId = String(currentSession.id);
+            queryClient.invalidateQueries({
+                queryKey: ["GET", `/sessions/${sessionId}/positions`],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["GET", `/sessions/${sessionId}/transactions`],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["GET", `/sessions/${sessionId}`],
+            });
 
-    if (!currentSession || !currentPrice) {
-      return;
-    }
+            // Optionally reset form but keep quantity? Or just keep as is.
+            // form.reset();
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to create position";
+            form.setError("root", { type: "manual", message: errorMessage });
+        }
+    };
 
-    try {
-      const request: CreatePositionRequest = {
-        session_id: currentSession.id,
-        side,
-        entry_price: currentPrice,
-        quantity_lots: qty,
-        position_status: "OPEN",
-        opened_at: currentSession.current_time,
-        ...(tp !== undefined && tp > 0 ? { tp_price: tp } : {}),
-        ...(sl !== undefined && sl > 0 ? { sl_price: sl } : {}),
-      };
-
-      await createPosition(request);
-
-      // Invalidate positions and transactions queries to refresh the tables
-      const sessionId = String(currentSession.id);
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}/positions`],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}/transactions`],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["GET", `/sessions/${sessionId}`],
-      });
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to create position";
-      formActions.setError(errorMessage);
-    }
-  };
-
-  return {
-    createPositionWithSide,
-    isCreatingPosition,
-  };
+    return {
+        createPositionWithSide,
+        isCreatingPosition,
+    };
 }

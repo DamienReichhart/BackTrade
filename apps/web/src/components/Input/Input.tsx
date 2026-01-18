@@ -5,20 +5,20 @@ import styles from "./Input.module.css";
  * Input component props
  */
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  /**
-   * Label text for the input
-   */
-  label?: string;
+    /**
+     * Label text for the input
+     */
+    label?: string;
 
-  /**
-   * Error message to display below the input
-   */
-  error?: string;
+    /**
+     * Error message to display below the input
+     */
+    error?: string;
 
-  /**
-   * If true, input is in error state
-   */
-  hasError?: boolean;
+    /**
+     * If true, input is in error state
+     */
+    hasError?: boolean;
 }
 
 /**
@@ -31,27 +31,27 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * ```
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hasError, className, id, ...props }, ref) => {
-    const generatedId = useId();
-    const inputId = id ?? `input-${generatedId}`;
+    ({ label, error, hasError, className, id, ...props }, ref) => {
+        const generatedId = useId();
+        const inputId = id ?? `input-${generatedId}`;
 
-    return (
-      <div className={styles.container}>
-        {label && (
-          <label htmlFor={inputId} className={styles.label}>
-            {label}
-          </label>
-        )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={`${styles.input} ${hasError ? styles.inputError : ""} ${className ?? ""}`}
-          {...props}
-        />
-        {error && <span className={styles.error}>{error}</span>}
-      </div>
-    );
-  },
+        return (
+            <div className={styles.container}>
+                {label && (
+                    <label htmlFor={inputId} className={styles.label}>
+                        {label}
+                    </label>
+                )}
+                <input
+                    ref={ref}
+                    id={inputId}
+                    className={`${styles.input} ${hasError ? styles.inputError : ""} ${className ?? ""}`}
+                    {...props}
+                />
+                {error && <span className={styles.error}>{error}</span>}
+            </div>
+        );
+    }
 );
 
 Input.displayName = "Input";

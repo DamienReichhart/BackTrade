@@ -1,0 +1,62 @@
+{
+    "name": "@backtrade/data",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "import": "./src/index.ts",
+            "require": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "dev": "npx tsc --watch --project tsconfig.json",
+        "build": "npx tsc --project tsconfig.json",
+        "lint": "eslint . --ext .ts,.tsx",
+        "lint:fix": "eslint . --ext .ts,.tsx --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "typecheck": "npx tsc --noEmit",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:studio": "prisma studio",
+        "prisma:reset": "prisma migrate reset",
+        "clickhouse:deploy": "tsx scripts/clickhouse-migrate.ts",
+        "prisma:deploy": "prisma migrate deploy && pnpm clickhouse:deploy",
+        "prisma:seed": "pnpm --filter @backtrade/api db:seed",
+        "prisma:init": "pnpm prisma:generate && pnpm prisma:deploy && pnpm prisma:seed"
+    },
+    "dependencies": {
+        "@backtrade/types": "workspace:*",
+        "@clickhouse/client": "^1.16.0",
+        "@prisma/adapter-pg": "^7.2.0",
+        "@prisma/client": "^7.2.0",
+        "pg": "^8.17.1",
+        "zod": "4.3.5"
+    },
+    "devDependencies": {
+        "@backtrade/eslint-config": "workspace:*",
+        "@backtrade/tsconfig": "workspace:*",
+        "@types/jest": "30.0.0",
+        "@types/node": "25.0.9",
+        "@types/pg": "^8.16.0",
+        "globals": "^17.0.0",
+        "jest": "30.2.0",
+        "prisma": "^7.2.0",
+        "ts-jest": "^29.4.6",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "8.53.0"
+    },
+    "prisma": {
+        "seed": "tsx prisma/seed/index.ts"
+    },
+    "license": "PROPRIETARY",
+    "author": "REICHHART Damien"
+}

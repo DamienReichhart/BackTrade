@@ -1,17 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": ["esnext", "DOM", "DOM.Iterable"],
-    "module": "esnext",
-    "moduleResolution": "Bundler",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noEmit": false,
-    "jsx": "react-jsx"
-  }
+    "compilerOptions": {
+        "target": "esnext",
+        "lib": ["esnext", "DOM", "DOM.Iterable"],
+        "module": "esnext",
+        "moduleResolution": "Bundler",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noEmit": false,
+        "jsx": "react-jsx"
+    }
 }

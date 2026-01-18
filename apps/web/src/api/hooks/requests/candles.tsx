@@ -1,9 +1,12 @@
 import { useGet } from "..";
 import {
-  CandleSchema,
-  CandleListResponseSchema,
-  type DateRangeQuery,
+    CandleListResponseSchema,
+    type DateRangeQuery,
 } from "@backtrade/types";
+import {
+    buildUrlWithParams,
+    buildUrlWithAdditionalParams,
+} from "../utils/url-params";
 
 /**
  * Candle Management API Hooks
@@ -11,58 +14,48 @@ import {
  */
 
 export function useCandles(query?: DateRangeQuery) {
-  const searchParams = new URLSearchParams();
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-  }
-
-  const url = query ? `/candles?${searchParams.toString()}` : "/candles";
-
-  return useGet(url, CandleListResponseSchema);
+    const url = buildUrlWithParams("/candles", query);
+    return useGet(url, CandleListResponseSchema);
 }
 
-export function useCandle(id: string) {
-  return useGet(`/candles/${id}`, CandleSchema, { enabled: !!id });
-}
+export function useCandlesByInstrument(
+    instrumentId: string,
+    timeframe: string,
+    query?: DateRangeQuery
+) {
+    const url = buildUrlWithAdditionalParams(
+        `/instruments/${instrumentId}/candles`,
+        { timeframe },
+        query
+    );
 
-export function useCandlesByInstrument(instrumentId: string, timeframe: string, query?: DateRangeQuery) {
-  const searchParams = new URLSearchParams();
-  searchParams.append("timeframe", timeframe);
+    // Validate that instrumentId is not empty, not "0", and is a valid positive number
+    const isValidInstrumentId =
+        !!instrumentId &&
+        instrumentId !== "0" &&
+        !isNaN(Number(instrumentId)) &&
+        Number(instrumentId) > 0;
 
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
+    return useGet(url, CandleListResponseSchema, {
+        enabled: isValidInstrumentId && !!timeframe,
     });
-  }
-
-  const url = `/instruments/${instrumentId}/candles?${searchParams.toString()}`;
-
-  return useGet(url, CandleListResponseSchema, { enabled: !!instrumentId && !!timeframe });
 }
 
 export function useCandlesByDataset(datasetId: string, query?: DateRangeQuery) {
-  const searchParams = new URLSearchParams();
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-  }
-
-  const url = query
-    ? `/datasets/${datasetId}/candles?${searchParams.toString()}`
-    : `/datasets/${datasetId}/candles`;
-
-  return useGet(url, CandleListResponseSchema, { enabled: !!datasetId });
+    const url = buildUrlWithParams(`/datasets/${datasetId}/candles`, query);
+    return useGet(url, CandleListResponseSchema, { enabled: !!datasetId });
 }
 
-export function useCandlesBySession(id: string) {
-  return useGet(`/sessions/${id}/candles`, CandleListResponseSchema, { enabled: !!id });
+export function useCandlesBySession(id: string, timeframe: string) {
+    const url = buildUrlWithAdditionalParams(`/sessions/${id}/candles`, {
+        timeframe,
+    });
+
+    // Validate that session id is not empty and timeframe is provided
+    const isValidSessionId =
+        !!id && id !== "0" && !isNaN(Number(id)) && Number(id) > 0;
+
+    return useGet(url, CandleListResponseSchema, {
+        enabled: isValidSessionId && !!timeframe,
+    });
 }

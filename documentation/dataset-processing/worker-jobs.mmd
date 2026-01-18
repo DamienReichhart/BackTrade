@@ -1,0 +1,42 @@
+graph TB
+    subgraph "Job Types"
+        DatasetFileSplit[DatasetFileSplit Job<br/>Split large CSV file into parts]
+        DatasetPartProcess[DatasetPartProcess Job<br/>Process individual part]
+    end
+
+    subgraph "Job Payloads"
+        SplitPayload[Split Payload<br/>datasetId: number<br/>fileName: string<br/>bucket: string<br/>path: string]
+        ProcessPayload[Process Payload<br/>datasetId: number<br/>partPath: string<br/>partNumber: number<br/>totalParts: number<br/>instrumentId: number<br/>timeframe: string]
+    end
+
+    subgraph "Job Processing Flow"
+        QueueConsume[Worker Consumes Job<br/>RabbitMQ]
+        JobValidation[Validate Payload<br/>Zod Schema]
+        JobProcessing[Process Job<br/>Business Logic]
+        JobCompletion[Job Complete<br/>Acknowledge]
+        JobError[Job Error<br/>Retry or Dead Letter]
+    end
+
+    subgraph "Error Handling"
+        RetryLogic[Retry Logic<br/>Exponential Backoff]
+        DeadLetterQueue[Dead Letter Queue<br/>Failed Jobs]
+        ErrorLogging[Error Logging<br/>Structured Logs]
+    end
+
+    DatasetFileSplit --> SplitPayload
+    DatasetPartProcess --> ProcessPayload
+    
+    QueueConsume --> JobValidation
+    JobValidation --> JobProcessing
+    JobProcessing --> JobCompletion
+    JobProcessing --> JobError
+    
+    JobError --> RetryLogic
+    RetryLogic --> JobProcessing
+    RetryLogic --> DeadLetterQueue
+    JobError --> ErrorLogging
+
+    style DatasetFileSplit fill:#4a90e2
+    style DatasetPartProcess fill:#ffa500
+    style JobError fill:#ff6b6b
+    style DeadLetterQueue fill:#f44336

@@ -8,12 +8,12 @@ import { useSessionInfo as useSessionInfoApi } from "../../../../api/hooks/reque
  * @returns Session info data and loading state
  */
 export function useSessionInfo() {
-  const { id = "" } = useParams();
-  const { data, isLoading, error } = useSessionInfoApi(id);
+    const { id = "" } = useParams();
+    const { data, isLoading, error } = useSessionInfoApi(id);
 
-  return {
-    sessionInfo: data,
-    isLoading,
-    error,
-  };
+    return {
+        sessionInfo: data,
+        isLoading,
+        error,
+    };
 }

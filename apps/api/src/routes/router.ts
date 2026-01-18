@@ -1,8 +1,8 @@
 import { Router } from "express";
-import healthRouter from "./health/router";
+import apiV1Router from "./v1/router";
 
-const router = Router();
+const apiRouter = Router();
 
-router.use("/health", healthRouter);
+apiRouter.use("/v1", apiV1Router);
 
-export { router };
+export { apiRouter };

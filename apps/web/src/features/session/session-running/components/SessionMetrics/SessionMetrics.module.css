@@ -1,0 +1,109 @@
+/**
+ * SessionMetrics Component Styles
+ *
+ * Prominent metrics bar displaying critical trading metrics (equity, drawdown, margin level).
+ * Positioned between TopBar and Chart for maximum visibility.
+ */
+
+.metricsBar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    flex: 1;
+    min-width: 0;
+}
+
+.metricLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metricValue {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.2;
+}
+
+.metricValueNegative {
+    color: var(--color-danger);
+}
+
+.metricValueWarning {
+    color: var(--color-warning);
+}
+
+.separator {
+    width: 1px;
+    height: 40px;
+    background: var(--color-border-primary);
+    flex-shrink: 0;
+}
+
+/* Tablet and up: Better spacing */
+@media (min-width: 768px) {
+    .metricsBar {
+        padding: var(--spacing-lg);
+        gap: var(--spacing-xl);
+    }
+
+    .metricValue {
+        font-size: var(--font-size-xl);
+    }
+
+    .separator {
+        height: 48px;
+    }
+}
+
+/* Large screens: Optimize for wider displays */
+@media (min-width: 1024px) {
+    .metricsBar {
+        gap: var(--spacing-2xl);
+    }
+
+    .metricValue {
+        font-size: var(--font-size-2xl);
+    }
+}
+
+/* Mobile: Stack metrics vertically on very small screens */
+@media (max-width: 640px) {
+    .metricsBar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+
+    .separator {
+        width: 100%;
+        height: 1px;
+    }
+
+    .metric {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .metricValue {
+        font-size: var(--font-size-base);
+    }
+}

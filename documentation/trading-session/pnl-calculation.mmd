@@ -1,0 +1,52 @@
+graph TB
+    subgraph "P&L Calculation Types"
+        UnrealizedPnL[Unrealized P&L<br/>Open Positions]
+        RealizedPnL[Realized P&L<br/>Closed Positions]
+    end
+
+    subgraph "Unrealized P&L Calculation"
+        OpenPosition[Open Position<br/>entry_price, direction, lots]
+        CurrentPrice[Current Market Price<br/>Latest Candle Close]
+        PriceDiff[Price Difference<br/>current_price - entry_price<br/>(for Buy)]
+        ContractValue[Contract Value<br/>lots * contract_size]
+        UnrealizedPnLCalc[Unrealized P&L<br/>price_diff * contract_value<br/>* direction_multiplier]
+    end
+
+    subgraph "Realized P&L Calculation"
+        ClosedPosition[Closed Position<br/>entry_price, exit_price, direction, lots]
+        ExitPriceDiff[Exit Price Difference<br/>exit_price - entry_price<br/>(for Buy)]
+        RealizedPnLCalc[Realized P&L<br/>exit_price_diff * contract_value<br/>* direction_multiplier]
+        CommissionDeduction[Commission Deduction<br/>Subtract commission per trade]
+        FinalPnL[Final Realized P&L]
+    end
+
+    subgraph "Direction Multipliers"
+        BuyMultiplier[Buy Position<br/>Multiplier: +1]
+        SellMultiplier[Sell Position<br/>Multiplier: -1]
+    end
+
+    OpenPosition --> CurrentPrice
+    CurrentPrice --> PriceDiff
+    OpenPosition --> ContractValue
+    PriceDiff --> UnrealizedPnLCalc
+    ContractValue --> UnrealizedPnLCalc
+    OpenPosition --> BuyMultiplier
+    OpenPosition --> SellMultiplier
+    BuyMultiplier --> UnrealizedPnLCalc
+    SellMultiplier --> UnrealizedPnLCalc
+    
+    ClosedPosition --> ExitPriceDiff
+    ClosedPosition --> ContractValue
+    ExitPriceDiff --> RealizedPnLCalc
+    ContractValue --> RealizedPnLCalc
+    ClosedPosition --> BuyMultiplier
+    ClosedPosition --> SellMultiplier
+    BuyMultiplier --> RealizedPnLCalc
+    SellMultiplier --> RealizedPnLCalc
+    RealizedPnLCalc --> CommissionDeduction
+    CommissionDeduction --> FinalPnL
+
+    style UnrealizedPnL fill:#4a90e2
+    style RealizedPnL fill:#339933
+    style UnrealizedPnLCalc fill:#ffa500
+    style FinalPnL fill:#ff6b6b

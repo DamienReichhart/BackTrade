@@ -3,51 +3,51 @@
  */
 
 .section {
-  background-color: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
 }
 
 .title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
 }
 
 .accountId {
-  padding: var(--spacing-xs) var(--spacing-md);
-  background-color: var(--color-surface-tertiary);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background-color: var(--color-surface-tertiary);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .emailField {
-  max-width: 500px;
+    max-width: 500px;
 }
 
 .errorMessage {
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
-  margin: 0;
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+    margin: 0;
 }
 
 .actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }

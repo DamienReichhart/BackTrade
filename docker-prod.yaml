@@ -1,89 +1,690 @@
+# =============================================================================
+# BackTrade Production Docker Compose Configuration
+# =============================================================================
+# This file defines the complete production stack with all services, health
+# checks, dependencies, and production-grade configurations.
+# =============================================================================
+
 services:
-  cloudflared:
-    build:
-      context: .
-      dockerfile: docker/images/cloudflared.prod.dockerfile
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-    command: tunnel run
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.253
-    restart: always
+    # =========================================================================
+    # Cloudflare Tunnel - Secure remote access
+    # =========================================================================
+    cloudflared:
+        build:
+            context: .
+            dockerfile: docker/images/cloudflared.prod.dockerfile
+        environment:
+            - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+        command: tunnel run
+        networks:
+            public:
+                ipv4_address: 192.168.252.10
+        restart: unless-stopped
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Cloudflared tunnel service doesn't require special capabilities for standard operation
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        healthcheck:
+            test: ["CMD", "cloudflared", "tunnel", "info"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-  proxy:
-    build:
-      context: .
-      dockerfile: docker/images/proxy.prod.dockerfile
-    ports:
-      - "80:80" # Only for testing purposes. Remove this on real production, no port opening, only cloudflare tunnel
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.1
-    restart: always
+    # =========================================================================
+    # Nginx Reverse Proxy - Routes traffic to frontend and backend
+    # =========================================================================
+    proxy:
+        build:
+            context: .
+            dockerfile: docker/images/proxy.prod.dockerfile
+        networks:
+            public:
+                ipv4_address: 192.168.252.11
+            frontend:
+                ipv4_address: 192.168.251.10
+        depends_on:
+            frontend:
+                condition: service_started
+            backend:
+                condition: service_healthy
+        restart: unless-stopped
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Nginx runs on non-privileged port 8080 as non-root user (UID 101), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        # Note: Health check disabled for distroless nginx container
+        # Use external monitoring or add health check endpoint monitoring
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-  backend:
-    build:
-      context: .
-      dockerfile: docker/images/backend.prod.dockerfile
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      API_HOST: ${API_HOST}
-      API_PORT: ${API_PORT}
-      API_LOG_LEVEL: ${API_LOG_LEVEL}
-      API_LOG_DIR: ${API_LOG_DIR}
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.11
-    restart: always
+    # =========================================================================
+    # Database Migration Service
+    # =========================================================================
+    migrate:
+        build:
+            context: .
+            dockerfile: docker/images/migrate.prod.dockerfile
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            DATABASE_URL: ${DATABASE_URL}
+            CLICKHOUSE_HOST: ${CLICKHOUSE_HOST}
+            CLICKHOUSE_PORT: ${CLICKHOUSE_PORT}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+            API_HOST: ${API_HOST}
+            API_PORT: ${API_PORT}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            API_LOG_LEVEL: ${API_LOG_LEVEL}
+            API_LOG_DIR: ${API_LOG_DIR}
+            ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+            REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+            ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
+            REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASSWORD: ${SMTP_PASSWORD}
+            SMTP_FROM: ${SMTP_FROM}
+            FRONTEND_URL: ${FRONTEND_URL}
+            NEUTRALIZE_EMAIL: ${NEUTRALIZE_EMAIL}
+            MINIO_HOST: ${MINIO_HOST}
+            MINIO_PORT: ${MINIO_PORT}
+            MINIO_USER: ${MINIO_USER}
+            MINIO_PASSWORD: ${MINIO_PASSWORD}
+            RABBITMQ_HOST: ${RABBITMQ_HOST}
+            RABBITMQ_PORT: ${RABBITMQ_PORT}
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+            STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+            STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+            STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+        networks:
+            backend:
+                ipv4_address: 192.168.250.10
+        depends_on:
+            postgres:
+                condition: service_healthy
+            clickhouse:
+                condition: service_healthy
+        restart: "no"
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Node.js migration service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        # Migration service runs once and exits
+        # Exit code 0 = success, non-zero = failure
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/images/frontend.prod.dockerfile
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.12
-    restart: always
+    # =========================================================================
+    # Backend API Service
+    # =========================================================================
+    backend:
+        build:
+            context: .
+            dockerfile: docker/images/backend.prod.dockerfile
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            API_HOST: ${API_HOST}
+            API_PORT: ${API_PORT}
+            API_LOG_LEVEL: ${API_LOG_LEVEL}
+            API_LOG_DIR: ${API_LOG_DIR}
+            DATABASE_URL: ${DATABASE_URL}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+            REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+            ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
+            REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASSWORD: ${SMTP_PASSWORD}
+            SMTP_FROM: ${SMTP_FROM}
+            FRONTEND_URL: ${FRONTEND_URL}
+            NEUTRALIZE_EMAIL: ${NEUTRALIZE_EMAIL}
+            MINIO_HOST: ${MINIO_HOST}
+            MINIO_PORT: ${MINIO_PORT}
+            MINIO_USER: ${MINIO_USER}
+            MINIO_PASSWORD: ${MINIO_PASSWORD}
+            MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
+            MINIO_DATASETS_BUCKET: ${MINIO_DATASETS_BUCKET}
+            RABBITMQ_HOST: ${RABBITMQ_HOST}
+            RABBITMQ_PORT: ${RABBITMQ_PORT}
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+            STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+            STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+            STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+            CLICKHOUSE_HOST: ${CLICKHOUSE_HOST}
+            CLICKHOUSE_PORT: ${CLICKHOUSE_PORT}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+        networks:
+            backend:
+                ipv4_address: 192.168.250.11
+            frontend:
+                ipv4_address: 192.168.251.12
+        depends_on:
+            migrate:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+            minio:
+                condition: service_healthy
+        restart: unless-stopped
+        healthcheck:
+            # Use node to check health endpoint (node is available in alpine image)
+            # Note: API_PORT env var is used, defaulting to 21799 if not set
+            test:
+                [
+                    "CMD-SHELL",
+                    'node -e "require(''http'').get(''http://localhost:'' + (process.env.API_PORT || ''21799'') + ''/api/v1/health'', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) }).on(''error'', () => process.exit(1))"',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+        deploy:
+            resources:
+                limits:
+                    cpus: "8.0"
+                    memory: 16G
+                reservations:
+                    cpus: "0.5"
+                    memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Backend API runs as non-root user (UID 1001) on non-privileged port (>1024), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "5"
 
-  postgres:
-    build:
-      context: .
-      dockerfile: docker/images/postgres.dockerfile
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - backtrade_db:/var/lib/postgresql/data
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.21
-    restart: always
+    # =========================================================================
+    # Frontend Web Application
+    # =========================================================================
+    frontend:
+        build:
+            context: .
+            dockerfile: docker/images/frontend.prod.dockerfile
+        networks:
+            frontend:
+                ipv4_address: 192.168.251.11
+        depends_on:
+            - backend
+        restart: unless-stopped
+        # Note: Health check disabled for distroless nginx container
+        # The /health endpoint is available but requires external tooling to check
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 512M
+                reservations:
+                    cpus: "0.25"
+                    memory: 128M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Frontend nginx runs on non-privileged port as non-root user (UID 101), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
 
-  redis:
-    build:
-      context: .
-      dockerfile: docker/images/redis.dockerfile
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks:
-      backtrade:
-        ipv4_address: 192.168.250.22
-    restart: always
+    # =========================================================================
+    # Worker Service - Processes background jobs from RabbitMQ
+    # =========================================================================
+    worker:
+        build:
+            context: .
+            dockerfile: docker/images/worker.prod.dockerfile
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            WORKER_LOG_LEVEL: ${WORKER_LOG_LEVEL}
+            WORKER_LOG_DIR: ${WORKER_LOG_DIR}
+            RABBITMQ_HOST: ${RABBITMQ_HOST}
+            RABBITMQ_PORT: ${RABBITMQ_PORT}
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+            CLICKHOUSE_HOST: ${CLICKHOUSE_HOST}
+            CLICKHOUSE_PORT: ${CLICKHOUSE_PORT}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+            DATABASE_URL: ${DATABASE_URL}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASSWORD: ${SMTP_PASSWORD}
+            SMTP_FROM: ${SMTP_FROM}
+            FRONTEND_URL: ${FRONTEND_URL}
+            NEUTRALIZE_EMAIL: ${NEUTRALIZE_EMAIL}
+            MINIO_HOST: ${MINIO_HOST}
+            MINIO_PORT: ${MINIO_PORT}
+            MINIO_USER: ${MINIO_USER}
+            MINIO_PASSWORD: ${MINIO_PASSWORD}
+            MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
+        networks:
+            backend:
+                ipv4_address: 192.168.250.13
+        depends_on:
+            migrate:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+            clickhouse:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+            minio:
+                condition: service_healthy
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "2.0"
+                    memory: 8G
+                reservations:
+                    cpus: "0.5"
+                    memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Worker service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "5"
 
+    # =========================================================================
+    # Scheduler Service - Handles scheduled tasks and queue retries
+    # =========================================================================
+    scheduler:
+        build:
+            context: .
+            dockerfile: docker/images/scheduler.prod.dockerfile
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            SCHEDULER_LOG_LEVEL: ${SCHEDULER_LOG_LEVEL}
+            SCHEDULER_LOG_DIR: ${SCHEDULER_LOG_DIR}
+            DATABASE_URL: ${DATABASE_URL}
+            RABBITMQ_HOST: ${RABBITMQ_HOST}
+            RABBITMQ_PORT: ${RABBITMQ_PORT}
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            RABBITMQ_QUEUE_NAME: ${RABBITMQ_QUEUE_NAME}
+            QUEUE_RETRY_ENABLED: ${QUEUE_RETRY_ENABLED}
+            QUEUE_RETRY_CRON: ${QUEUE_RETRY_CRON}
+            QUEUE_RETRY_BATCH_SIZE: ${QUEUE_RETRY_BATCH_SIZE}
+            QUEUE_RETRY_INITIAL_BACKOFF_MS: ${QUEUE_RETRY_INITIAL_BACKOFF_MS}
+            QUEUE_RETRY_BACKOFF_MULTIPLIER: ${QUEUE_RETRY_BACKOFF_MULTIPLIER}
+            QUEUE_RETRY_MAX_RETRIES: ${QUEUE_RETRY_MAX_RETRIES}
+            QUEUE_RETRY_MAX_BACKOFF_MS: ${QUEUE_RETRY_MAX_BACKOFF_MS}
+            CLICKHOUSE_HOST: ${CLICKHOUSE_HOST}
+            CLICKHOUSE_PORT: ${CLICKHOUSE_PORT}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+        networks:
+            backend:
+                ipv4_address: 192.168.250.14
+        depends_on:
+            migrate:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+            clickhouse:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 1G
+                reservations:
+                    cpus: "0.25"
+                    memory: 256M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Scheduler service runs as non-root user (UID 1001), no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "5"
+
+    # =========================================================================
+    # PostgreSQL Database
+    # =========================================================================
+    postgres:
+        build:
+            context: .
+            dockerfile: docker/images/postgres.dockerfile
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+            PGDATA: /var/lib/postgresql/data/pgdata
+        volumes:
+            - backtrade_db:/var/lib/postgresql/data
+        networks:
+            backend:
+                ipv4_address: 192.168.250.21
+        restart: unless-stopped
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        deploy:
+            resources:
+                limits:
+                    cpus: "2.0"
+                    memory: 8G
+                reservations:
+                    cpus: "0.5"
+                    memory: 1G
+        # Security: Drop all Linux capabilities except minimal required for initialization
+        # PostgreSQL needs CHOWN and FOWNER to set up data directory and runtime directory
+        # DAC_OVERRIDE needed for directory traversal during initialization
+        # SETUID and SETGID needed to switch from root to postgres user
+        cap_drop:
+            - ALL
+        cap_add:
+            - CHOWN # Change file/directory ownership
+            - FOWNER # Bypass permission checks for ownership operations
+            - DAC_OVERRIDE # Bypass file permission checks for directory access
+            - SETUID # Change user ID (needed to switch from root to postgres)
+            - SETGID # Change group ID (needed to switch from root to postgres)
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # =========================================================================
+    # Redis Cache
+    # =========================================================================
+    redis:
+        build:
+            context: .
+            dockerfile: docker/images/redis.dockerfile
+        environment:
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        networks:
+            backend:
+                ipv4_address: 192.168.250.22
+        restart: unless-stopped
+        healthcheck:
+            # Redis health check with password authentication
+            test:
+                [
+                    "CMD-SHELL",
+                    'redis-cli -a "${REDIS_PASSWORD}" ping | grep -q PONG',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 8G
+                reservations:
+                    cpus: "0.25"
+                    memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # Redis runs as non-root redis user on non-privileged port 6379, no special capabilities needed
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # =========================================================================
+    # MinIO Object Storage
+    # =========================================================================
+    minio:
+        build:
+            context: .
+            dockerfile: docker/images/minio.dockerfile
+        environment:
+            MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+        volumes:
+            - backtrade_minio_data:/data
+            - ./docker/config/minio:/mnt/minio:ro
+        networks:
+            backend:
+                ipv4_address: 192.168.250.23
+        restart: unless-stopped
+        healthcheck:
+            # MinIO health check - MinIO image includes curl
+            test:
+                ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 30s
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 4G
+                reservations:
+                    cpus: "0.25"
+                    memory: 512M
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # MinIO runs on non-privileged ports (9000, 9001); Docker volumes handle permissions correctly
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # =========================================================================
+    # ClickHouse Analytics Database
+    # =========================================================================
+    clickhouse:
+        build:
+            context: .
+            dockerfile: docker/images/clickhouse.dockerfile
+        environment:
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB:-default}
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+            CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+        volumes:
+            - backtrade_clickhouse_data:/var/lib/clickhouse
+        networks:
+            backend:
+                ipv4_address: 192.168.250.24
+        restart: unless-stopped
+        healthcheck:
+            # ClickHouse health check using wget (available in clickhouse image)
+            test:
+                [
+                    "CMD",
+                    "wget",
+                    "--no-verbose",
+                    "--tries=1",
+                    "--spider",
+                    "http://localhost:8123/ping",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
+        deploy:
+            resources:
+                limits:
+                    cpus: "4.0"
+                    memory: 16G
+                reservations:
+                    cpus: "0.5"
+                    memory: 1G
+        # Security: Drop all Linux capabilities and prevent privilege escalation
+        # ClickHouse runs as non-root clickhouse user on non-privileged ports (8123, 9000);
+        # Docker volumes handle permissions correctly
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # =========================================================================
+    # RabbitMQ Message Queue
+    # =========================================================================
+    # Note: RABBITMQ_DEFAULT_USER and RABBITMQ_DEFAULT_PASS are used to configure
+    # the RabbitMQ server. Applications connect using RABBITMQ_USER and RABBITMQ_PASSWORD
+    # which should typically match the DEFAULT values.
+    rabbitmq:
+        build:
+            context: .
+            dockerfile: docker/images/rabbitmq.dockerfile
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        volumes:
+            - backtrade_rabbitmq_data:/var/lib/rabbitmq
+        networks:
+            backend:
+                ipv4_address: 192.168.250.31
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "ping"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 2G
+                reservations:
+                    cpus: "0.25"
+                    memory: 512M
+        # Security: Drop all Linux capabilities except minimal required for initialization
+        # RabbitMQ needs CHOWN and FOWNER to set up data directory and manage file ownership
+        # SETUID and SETGID needed to switch from root to rabbitmq user
+        # DAC_READ_SEARCH needed to read .erlang.cookie and access files in data directory
+        cap_drop:
+            - ALL
+        cap_add:
+            - CHOWN # Change file/directory ownership
+            - FOWNER # Bypass permission checks for ownership operations
+            - SETUID # Change user ID (needed to switch from root to rabbitmq)
+            - SETGID # Change group ID (needed to switch from root to rabbitmq)
+            - DAC_READ_SEARCH # Bypass read permission checks for directory traversal and file access
+        security_opt:
+            - no-new-privileges:true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+# =============================================================================
+# Volumes - Persistent data storage
+# =============================================================================
+# Using named volumes for better portability and Docker management
 volumes:
-  backtrade_db:
-    driver: local
+    backtrade_db:
+        driver: local
+    backtrade_minio_data:
+        driver: local
+    backtrade_clickhouse_data:
+        driver: local
+    backtrade_rabbitmq_data:
+        driver: local
 
+# =============================================================================
+# Networks - Isolated network with fixed IP addresses
+# =============================================================================
 networks:
-  backtrade:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.250.0/24
-          gateway: 192.168.250.254
+    backend:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.250.0/24
+                  gateway: 192.168.250.254
+    frontend:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.251.0/24
+                  gateway: 192.168.251.254
+    public:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.252.0/24
+                  gateway: 192.168.252.254

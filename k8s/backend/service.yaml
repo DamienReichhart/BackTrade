@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backtrade-api
-  namespace: backtrade
-  labels:
-    app: api
-    component: backend
+    name: backtrade-api
+    namespace: backtrade
+    labels:
+        app: api
+        component: backend
 spec:
-  type: ClusterIP
-  ports:
-    - port: 3000
-      targetPort: 3000
-      protocol: TCP
-      name: http
-  selector:
-    app: api
-    component: backend
+    type: ClusterIP
+    ports:
+        - port: 3000
+          targetPort: 3000
+          protocol: TCP
+          name: http
+    selector:
+        app: api
+        component: backend

@@ -6,62 +6,71 @@ import { PurchaseSuccess } from "../features/plans/components/PurchaseSuccess";
 import { AdminChoices } from "../features/admin";
 import { UserManagement } from "../features/admin/user-management";
 import { DatasetManagement } from "../features/admin/dataset-management";
+import { InstrumentManagement } from "../features/admin/instrument-management";
 
 export const dashboardRoutes = [
-  {
-    path: "/dashboard",
-    element: (
-      <AuthenticatedLayout>
-        <Dashboard />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/settings",
-    element: (
-      <AuthenticatedLayout>
-        <Settings />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/plans",
-    element: (
-      <AuthenticatedLayout>
-        <Plans />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/plans/purchase-success",
-    element: (
-      <AuthenticatedLayout>
-        <PurchaseSuccess />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/admin",
-    element: (
-      <AuthenticatedLayout>
-        <AdminChoices />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/admin/user-management",
-    element: (
-      <AuthenticatedLayout>
-        <UserManagement />
-      </AuthenticatedLayout>
-    ),
-  },
-  {
-    path: "/dashboard/admin/dataset-management",
-    element: (
-      <AuthenticatedLayout>
-        <DatasetManagement />
-      </AuthenticatedLayout>
-    ),
-  },
+    {
+        path: "/dashboard",
+        element: (
+            <AuthenticatedLayout>
+                <Dashboard />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/settings",
+        element: (
+            <AuthenticatedLayout>
+                <Settings />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/plans",
+        element: (
+            <AuthenticatedLayout>
+                <Plans />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/plans/purchase-success",
+        element: (
+            <AuthenticatedLayout>
+                <PurchaseSuccess />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/admin",
+        element: (
+            <AuthenticatedLayout>
+                <AdminChoices />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/admin/user-management",
+        element: (
+            <AuthenticatedLayout>
+                <UserManagement />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/admin/dataset-management",
+        element: (
+            <AuthenticatedLayout>
+                <DatasetManagement />
+            </AuthenticatedLayout>
+        ),
+    },
+    {
+        path: "/dashboard/admin/instrument-management",
+        element: (
+            <AuthenticatedLayout>
+                <InstrumentManagement />
+            </AuthenticatedLayout>
+        ),
+    },
 ];

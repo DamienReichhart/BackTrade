@@ -8,8 +8,13 @@ export { useOrderForm } from "./useOrderForm";
 export { usePositionCreation } from "./usePositionCreation";
 export { usePositionsTable } from "./usePositionsTable";
 export { usePositionMarkers } from "./usePositionMarkers";
+export { usePositionPriceLines } from "./usePositionPriceLines";
 export { useTransactionsTable } from "./useTransactionsTable";
 export { useUpdatePositionTpSl } from "./useUpdatePositionTpSl";
+export { useAutoAdvanceTime } from "./useAutoAdvanceTime";
 
 export type { ChartRefs } from "./useChart";
-export type { OrderFormState, OrderFormActions } from "./useOrderForm";
+export type { OrderFormReturn } from "./useOrderForm";
+
+// Re-export form types from centralized location
+export type { OrderFormState } from "../../../../types/forms";

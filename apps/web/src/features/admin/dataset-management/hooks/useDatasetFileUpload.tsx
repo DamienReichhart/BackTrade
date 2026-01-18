@@ -14,73 +14,106 @@ import { validateFile } from "@backtrade/utils";
  * @returns Object containing upload state and handlers
  */
 export function useDatasetFileUpload(datasetId: number) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-  const {
-    error: apiError,
-    isLoading,
-    execute,
-  } = useUploadDataset(String(datasetId));
+    const {
+        error: apiError,
+        isLoading,
+        execute,
+    } = useUploadDataset(String(datasetId));
 
-  /**
-   * Handle file selection
-   */
-  const handleFileSelect = useCallback((file: File | null) => {
-    setSelectedFile(file);
-    setError(null);
-  }, []);
+    /**
+     * Handle file selection
+     */
+    const handleFileSelect = useCallback((file: File | null) => {
+        setSelectedFile(file);
+        setError(null);
+    }, []);
 
-  /**
-   * Handle file upload
-   * @param file - Optional file to upload. If not provided, uses selectedFile from state
-   */
-  const handleUpload = useCallback(
-    async (file?: File | null) => {
-      const fileToUpload = file ?? selectedFile;
+    /**
+     * Handle file upload
+     * @param file - Optional file to upload. If not provided, uses selectedFile from state
+     */
+    const handleUpload = useCallback(
+        async (file?: File | null) => {
+            const fileToUpload = file ?? selectedFile;
 
-      // Validate file
-      const validation = validateFile(fileToUpload);
-      if (!validation.isValid) {
-        setError(validation.error ?? "Invalid file");
-        return null;
-      }
+            // Validate file
+            const validation = validateFile(fileToUpload);
+            if (!validation.isValid) {
+                setError(validation.error ?? "Invalid file");
+                return null;
+            }
 
-      try {
-        const formData = new FormData();
-        formData.append("file", fileToUpload as File);
+            try {
+                const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB
+                const fileSize = fileToUpload!.size;
+                const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
 
-        const result = await execute(formData);
+                let lastResult = null;
 
-        // Clear selected file on success
+                if (totalChunks <= 1) {
+                    // Single file upload
+                    const formData = new FormData();
+                    formData.append("file", fileToUpload as File);
+                    lastResult = await execute(formData);
+                } else {
+                    // Chunked upload
+                    for (let i = 0; i < totalChunks; i++) {
+                        const start = i * CHUNK_SIZE;
+                        const end = Math.min(fileSize, start + CHUNK_SIZE);
+                        const chunkBlob = fileToUpload!.slice(start, end);
+
+                        // Create a File object from the Blob with the correct MIME type
+                        // This ensures the backend recognizes it as a CSV file
+                        const chunkFile = new File(
+                            [chunkBlob],
+                            fileToUpload!.name,
+                            {
+                                type: fileToUpload!.type || "text/csv",
+                                lastModified: fileToUpload!.lastModified,
+                            }
+                        );
+
+                        const formData = new FormData();
+                        formData.append("file", chunkFile);
+                        formData.append("chunkIndex", String(i));
+                        formData.append("totalChunks", String(totalChunks));
+
+                        lastResult = await execute(formData);
+                    }
+                }
+
+                // Clear selected file on success
+                setSelectedFile(null);
+                setError(null);
+
+                return lastResult;
+            } catch {
+                setError("Failed to upload file");
+                return null;
+            }
+        },
+        [selectedFile, execute]
+    );
+
+    /**
+     * Reset upload state
+     */
+    const resetUpload = useCallback(() => {
         setSelectedFile(null);
         setError(null);
+    }, []);
 
-        return result;
-      } catch {
-        setError("Failed to upload file");
-        return null;
-      }
-    },
-    [selectedFile, execute],
-  );
-
-  /**
-   * Reset upload state
-   */
-  const resetUpload = useCallback(() => {
-    setSelectedFile(null);
-    setError(null);
-  }, []);
-
-  return {
-    // State
-    selectedFile,
-    error: error ?? apiError,
-    isLoading,
-    // Handlers
-    handleFileSelect,
-    handleUpload,
-    resetUpload,
-  };
+    return {
+        // State
+        selectedFile,
+        error: error ?? apiError,
+        isLoading,
+        // Handlers
+        handleFileSelect,
+        handleUpload,
+        resetUpload,
+    };
 }

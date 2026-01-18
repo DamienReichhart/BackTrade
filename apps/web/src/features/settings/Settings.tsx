@@ -1,9 +1,9 @@
 import { useAuthStore } from "../../store/auth";
 import styles from "./Settings.module.css";
 import {
-  AccountSection,
-  SecuritySection,
-  DataPrivacySection,
+    AccountSection,
+    SecuritySection,
+    DataPrivacySection,
 } from "./components";
 
 /**
@@ -12,22 +12,22 @@ import {
  * Main container for user settings including account, security, and data privacy configurations
  */
 export function Settings() {
-  const { user } = useAuthStore();
-  const accountId = user?.id.toString() ?? "";
+    const { user } = useAuthStore();
+    const accountId = user?.id.toString() ?? "";
 
-  return (
-    <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <h1 className={styles.title}>Settings</h1>
-      </header>
+    return (
+        <div className={styles.container}>
+            {/* Header */}
+            <header className={styles.header}>
+                <h1 className={styles.title}>Settings</h1>
+            </header>
 
-      {/* Settings Sections */}
-      <div className={styles.content}>
-        <AccountSection accountId={accountId} />
-        <SecuritySection />
-        <DataPrivacySection />
-      </div>
-    </div>
-  );
+            {/* Settings Sections */}
+            <div className={styles.content}>
+                <AccountSection accountId={accountId} />
+                <SecuritySection />
+                <DataPrivacySection />
+            </div>
+        </div>
+    );
 }

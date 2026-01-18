@@ -1,0 +1,119 @@
+/**
+ * TradesSection Component Styles
+ */
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.sectionLabel {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.tab {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    background: transparent;
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.tab:hover {
+    color: var(--color-text-secondary);
+    border-color: var(--color-border-accent);
+}
+
+.tab.active {
+    color: var(--color-accent);
+    background: var(--color-accent-bg-10);
+    border-color: var(--color-border-accent);
+}
+
+.card {
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+}
+
+.tableTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+/* Side colors */
+.sideBuy {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.sideSell {
+    color: var(--color-danger);
+    font-weight: var(--font-weight-medium);
+}
+
+/* PnL colors */
+.pnlPositive {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.pnlNegative {
+    color: var(--color-danger);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card {
+        padding: var(--spacing-md);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .card {
+        padding: var(--spacing-md);
+    }
+}

@@ -6,10 +6,10 @@
  * @returns Formatted currency string
  */
 export function formatCurrency(value: number, currency = "EUR"): string {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: currency,
-  }).format(value);
+    return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: currency,
+    }).format(value);
 }
 
 /**
@@ -20,5 +20,5 @@ export function formatCurrency(value: number, currency = "EUR"): string {
  * @returns Formatted percentage string
  */
 export function formatPercentage(value: number, decimals = 1): string {
-  return `${value.toFixed(decimals)}%`;
+    return `${value.toFixed(decimals)}%`;
 }

@@ -1,0 +1,290 @@
+<mjml>
+    <mj-head>
+        <mj-title>New Sign-in to BackTrade</mj-title>
+        <mj-preview
+            >A new sign-in to your BackTrade account was detected</mj-preview
+        >
+
+        <!-- Include global styles -->
+        <mj-include path="./partials/styles.mjml" />
+    </mj-head>
+
+    <mj-body background-color="#0b0f14">
+        <!-- Header -->
+        <mj-section padding="48px 24px 32px 24px">
+            <mj-column>
+                <mj-text align="center" padding="0">
+                    <span
+                        style="
+                            font-size: 28px;
+                            font-weight: 600;
+                            color: #e6eef5;
+                            letter-spacing: -0.5px;
+                        "
+                    >
+                        ◈ BackTrade
+                    </span>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- Main Card -->
+        <mj-section padding="0 24px">
+            <mj-column
+                background-color="rgba(230, 238, 245, 0.06)"
+                border-radius="16px"
+                padding="40px 32px"
+            >
+                <!-- Security badge -->
+                <mj-text align="center" padding="0 0 8px 0">
+                    <span class="badge badge-info">🔐 Security Alert</span>
+                </mj-text>
+
+                <!-- Main heading -->
+                <mj-text
+                    align="center"
+                    font-size="28px"
+                    font-weight="700"
+                    color="#e6eef5"
+                    padding="16px 0 8px 0"
+                    line-height="1.3"
+                >
+                    New sign-in detected
+                </mj-text>
+
+                <!-- Subheading -->
+                <mj-text
+                    align="center"
+                    font-size="16px"
+                    color="rgba(230, 238, 245, 0.7)"
+                    padding="0 0 32px 0"
+                >
+                    Hi {{ username }}, we noticed a new sign-in to your
+                    BackTrade account.
+                </mj-text>
+
+                <!-- Sign-in details label -->
+                <mj-text
+                    font-size="12px"
+                    font-weight="600"
+                    color="rgba(230, 238, 245, 0.5)"
+                    padding="0 0 16px 0"
+                    text-transform="uppercase"
+                    letter-spacing="1px"
+                >
+                    Sign-in Details
+                </mj-text>
+
+                <!-- Date & Time -->
+                <mj-text padding="0 0 12px 0">
+                    <table
+                        width="100%"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                            border-bottom: 1px solid rgba(230, 238, 245, 0.08);
+                        "
+                    >
+                        <tr>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: rgba(230, 238, 245, 0.5);
+                                "
+                            >
+                                Date & Time
+                            </td>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: #e6eef5;
+                                    font-weight: 500;
+                                    text-align: right;
+                                "
+                            >
+                                {{ loginDate }}
+                            </td>
+                        </tr>
+                    </table>
+                </mj-text>
+
+                <!-- Device -->
+                <mj-text padding="0 0 12px 0">
+                    <table
+                        width="100%"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                            border-bottom: 1px solid rgba(230, 238, 245, 0.08);
+                        "
+                    >
+                        <tr>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: rgba(230, 238, 245, 0.5);
+                                "
+                            >
+                                Device
+                            </td>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: #e6eef5;
+                                    font-weight: 500;
+                                    text-align: right;
+                                "
+                            >
+                                {{ device }}
+                            </td>
+                        </tr>
+                    </table>
+                </mj-text>
+
+                <!-- Browser -->
+                <mj-text padding="0">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: rgba(230, 238, 245, 0.5);
+                                "
+                            >
+                                Browser
+                            </td>
+                            <td
+                                style="
+                                    padding: 12px 0;
+                                    font-size: 14px;
+                                    color: #e6eef5;
+                                    font-weight: 500;
+                                    text-align: right;
+                                "
+                            >
+                                {{ browser }}
+                            </td>
+                        </tr>
+                    </table>
+                </mj-text>
+
+                <!-- Confirmation message -->
+                <mj-text
+                    align="center"
+                    font-size="15px"
+                    color="rgba(230, 238, 245, 0.7)"
+                    padding="24px 0 0 0"
+                >
+                    If this was you, no action is needed. You can safely ignore
+                    this email.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- Warning box -->
+        <mj-section padding="24px 24px 0 24px">
+            <mj-column
+                background-color="rgba(239, 68, 68, 0.08)"
+                border="1px solid rgba(239, 68, 68, 0.2)"
+                border-radius="12px"
+                padding="24px"
+            >
+                <mj-text
+                    align="center"
+                    font-size="15px"
+                    font-weight="600"
+                    color="#ef4444"
+                    padding="0 0 12px 0"
+                >
+                    ⚠️ Wasn't you?
+                </mj-text>
+
+                <mj-text
+                    align="center"
+                    font-size="14px"
+                    color="rgba(230, 238, 245, 0.7)"
+                    padding="0 0 20px 0"
+                >
+                    If you didn't sign in, your account may be compromised.
+                    Secure it immediately by changing your password.
+                </mj-text>
+
+                <mj-button
+                    href="{{secureAccountUrl}}"
+                    background-color="#ef4444"
+                    align="center"
+                >
+                    Secure My Account
+                </mj-button>
+            </mj-column>
+        </mj-section>
+
+        <!-- Security tips -->
+        <mj-section padding="24px 24px 0 24px">
+            <mj-column
+                background-color="rgba(230, 238, 245, 0.03)"
+                border-radius="12px"
+                padding="24px"
+            >
+                <mj-text
+                    align="center"
+                    font-size="14px"
+                    font-weight="600"
+                    color="#e6eef5"
+                    padding="0 0 16px 0"
+                >
+                    🛡️ Security Tips
+                </mj-text>
+
+                <mj-text
+                    font-size="14px"
+                    color="rgba(230, 238, 245, 0.6)"
+                    padding="0 0 8px 0"
+                >
+                    • Use a strong, unique password for your account
+                </mj-text>
+                <mj-text
+                    font-size="14px"
+                    color="rgba(230, 238, 245, 0.6)"
+                    padding="0 0 8px 0"
+                >
+                    • Never share your login credentials with anyone
+                </mj-text>
+                <mj-text
+                    font-size="14px"
+                    color="rgba(230, 238, 245, 0.6)"
+                    padding="0"
+                >
+                    • Review your account activity regularly
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- Footer -->
+        <mj-section padding="32px 24px 48px 24px">
+            <mj-column>
+                <mj-text
+                    align="center"
+                    font-size="14px"
+                    color="rgba(230, 238, 245, 0.5)"
+                    padding="0 0 16px 0"
+                >
+                    This is an automated security notification from BackTrade.
+                </mj-text>
+                <mj-text
+                    align="center"
+                    font-size="12px"
+                    color="rgba(230, 238, 245, 0.3)"
+                    padding="0"
+                >
+                    © {{ year }} BackTrade. All rights reserved.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

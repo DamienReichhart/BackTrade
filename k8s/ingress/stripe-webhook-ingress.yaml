@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: backtrade-stripe-webhook-ingress
+    namespace: backtrade
+    annotations:
+        # SSL/TLS Configuration
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+        # Nginx Ingress Controller - CRITICAL for Stripe webhook
+        # Disable request buffering to preserve raw body for signature verification
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+        nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+
+        # CRITICAL: Disable request buffering to preserve raw body
+        # Stripe signature verification requires the exact raw request body
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_request_buffering off;
+            proxy_buffering off;
+spec:
+    ingressClassName: nginx
+    tls:
+        - hosts:
+              - backtrade.damien-reichhart.fr
+          secretName: backtrade-tls
+    rules:
+        - host: backtrade.damien-reichhart.fr
+          http:
+              paths:
+                  - path: /api/v1/stripe/webhook
+                    pathType: Exact
+                    backend:
+                        service:
+                            name: backtrade-api
+                            port:
+                                number: 3000

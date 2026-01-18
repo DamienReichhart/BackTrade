@@ -1,19 +1,12 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useChangePassword } from "../../../api/hooks/requests/auth";
-import {
-  validatePassword,
-  validatePasswordConfirmation,
-} from "@backtrade/utils";
 import { useAuthStore } from "../../../store/auth";
-
-/**
- * Password form state
- */
-export interface PasswordFormState {
-  current: string;
-  new: string;
-  confirm: string;
-}
+import {
+    ChangePasswordFormSchema,
+    type ChangePasswordFormState,
+} from "../../../types/forms";
 
 /**
  * Hook to manage security section state and operations
@@ -21,101 +14,74 @@ export interface PasswordFormState {
  * @returns Security section state and handlers
  */
 export function useSecuritySection() {
-  const [passwords, setPasswords] = useState<PasswordFormState>({
-    current: "",
-    new: "",
-    confirm: "",
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const { user } = useAuthStore();
+    const [success, setSuccess] = useState(false);
+    const { user } = useAuthStore();
+    const { execute, isLoading } = useChangePassword(user?.id.toString() ?? "");
 
-  const { execute, isLoading } = useChangePassword(user?.id.toString() ?? "");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isValid, isDirty },
+        setError,
+    } = useForm<ChangePasswordFormState>({
+        resolver: zodResolver(ChangePasswordFormSchema),
+        mode: "onChange",
+        defaultValues: {
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
 
-  /**
-   * Handle password field change
-   */
-  const handlePasswordChange = (
-    field: keyof PasswordFormState,
-    value: string,
-  ) => {
-    setPasswords((prev) => ({ ...prev, [field]: value }));
-    setError(null);
-    setSuccess(false);
-  };
+    /**
+     * Handle password update
+     */
+    const onSubmit = async (data: ChangePasswordFormState) => {
+        setSuccess(false);
 
-  /**
-   * Handle password update
-   */
-  const handleUpdatePassword = async () => {
-    setError(null);
-    setSuccess(false);
+        if (!user?.id) {
+            setError("root", {
+                type: "manual",
+                message:
+                    "User information is not available. Please log in again.",
+            });
+            return;
+        }
 
-    if (!user?.id) {
-      setError("User information is not available. Please log in again.");
-      return;
-    }
+        try {
+            await execute({
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+            });
+            setSuccess(true);
+            reset();
+        } catch (err) {
+            setError("root", {
+                type: "manual",
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to update password",
+            });
+        }
+    };
 
-    // Validate current password
-    if (!passwords.current) {
-      setError("Current password is required");
-      return;
-    }
+    /**
+     * Clear password fields
+     */
+    const handleClearPasswords = () => {
+        reset();
+        setSuccess(false);
+    };
 
-    // Validate new password
-    const passwordValidation = validatePassword(passwords.new);
-    if (!passwordValidation.isValid) {
-      setError(passwordValidation.error ?? "Invalid password");
-      return;
-    }
-
-    // Validate password confirmation
-    const confirmationValidation = validatePasswordConfirmation(
-      passwords.new,
-      passwords.confirm,
-    );
-    if (!confirmationValidation.isValid) {
-      setError(confirmationValidation.error ?? "Passwords don't match");
-      return;
-    }
-
-    try {
-      await execute({
-        currentPassword: passwords.current,
-        newPassword: passwords.new,
-      });
-      setSuccess(true);
-      setPasswords({ current: "", new: "", confirm: "" });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update password",
-      );
-    }
-  };
-
-  /**
-   * Clear password fields
-   */
-  const handleClearPasswords = () => {
-    setPasswords({ current: "", new: "", confirm: "" });
-    setError(null);
-    setSuccess(false);
-  };
-
-  /**
-   * Check if update password button should be disabled
-   */
-  const isUpdateDisabled =
-    isLoading || !passwords.current || !passwords.new || !passwords.confirm;
-
-  return {
-    passwords,
-    error,
-    success,
-    isLoading,
-    isUpdateDisabled,
-    handlePasswordChange,
-    handleUpdatePassword,
-    handleClearPasswords,
-  };
+    return {
+        register,
+        errors,
+        success,
+        isLoading,
+        isUpdateDisabled: !isDirty || !isValid || isLoading,
+        handleUpdatePassword: handleSubmit(onSubmit),
+        handleClearPasswords,
+    };
 }

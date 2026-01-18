@@ -8,5 +8,5 @@ import { formatDate } from "@backtrade/utils";
  * @returns Formatted period string
  */
 export function formatPeriod(start: string, end: string): string {
-  return `${formatDate(start)} - ${formatDate(end)}`;
+    return `${formatDate(start)} - ${formatDate(end)}`;
 }

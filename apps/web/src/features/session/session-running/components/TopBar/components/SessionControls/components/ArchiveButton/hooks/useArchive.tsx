@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { SESSION_STATUS } from "@backtrade/types";
 import { useArchiveSession } from "../../../../../../../../../../api/hooks/requests/sessions";
 import { useCurrentSessionStore } from "../../../../../../../../../../store/session";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatLocalDateTimeToISO } from "../../../../../../../../../session-add/utils";
-import { redirectToSessionAnalytics } from "../../../../../../../../../../utils";
+import { getSessionAnalyticsUrl } from "../../../../../../../../../../utils";
 
 /**
  * Hook to manage archive session functionality
@@ -14,71 +15,77 @@ import { redirectToSessionAnalytics } from "../../../../../../../../../../utils"
  * @returns Archive state and handlers
  */
 export function useArchive(
-  onError?: (error: string) => void,
-  onSuccess?: () => void,
+    onError?: (error: string) => void,
+    onSuccess?: () => void
 ) {
-  const { id = "" } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { currentSession } = useCurrentSessionStore();
+    const { id = "" } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { currentSession } = useCurrentSessionStore();
 
-  const { execute: archiveSession, isLoading: isArchiving } =
-    useArchiveSession(id);
+    const { execute: archiveSession, isLoading: isArchiving } =
+        useArchiveSession(id);
 
-  const handleArchive = useCallback(async () => {
-    if (!id) {
-      onError?.("Session ID is required");
-      return;
-    }
+    const handleArchive = useCallback(async () => {
+        if (!id) {
+            onError?.("Session ID is required");
+            return;
+        }
 
-    // Prevent archiving if already archived
-    if (currentSession?.session_status === "ARCHIVED") {
-      onError?.("Session is already archived");
-      return;
-    }
+        // Prevent archiving if already archived
+        if (currentSession?.session_status === SESSION_STATUS.ARCHIVED) {
+            onError?.("Session is already archived");
+            return;
+        }
 
-    try {
-      const updatedSession = await archiveSession({
-        session_status: "ARCHIVED",
-        end_time: currentSession?.end_time
-          ? formatLocalDateTimeToISO(currentSession.end_time)
-          : undefined,
-      });
+        try {
+            const updatedSession = await archiveSession({
+                session_status: SESSION_STATUS.ARCHIVED,
+                end_time: currentSession?.end_time
+                    ? formatLocalDateTimeToISO(currentSession.end_time)
+                    : undefined,
+            });
 
-      // Invalidate queries to refresh session data
-      queryClient.invalidateQueries({ queryKey: ["GET", "/sessions"] });
-      queryClient.invalidateQueries({ queryKey: ["GET", `/sessions/${id}`] });
+            // Invalidate queries to refresh session data
+            queryClient.invalidateQueries({ queryKey: ["GET", "/sessions"] });
+            queryClient.invalidateQueries({
+                queryKey: ["GET", `/sessions/${id}`],
+            });
 
-      // Update the current session in the store
-      if (updatedSession) {
-        useCurrentSessionStore
-          .getState()
-          .setCurrentSession(updatedSession);
-      }
+            // Update the current session in the store
+            if (updatedSession) {
+                useCurrentSessionStore
+                    .getState()
+                    .setCurrentSession(updatedSession);
+            }
 
-      onSuccess?.();
+            onSuccess?.();
 
-      // Navigate to analytics page after successful archive
-      redirectToSessionAnalytics(String(id));
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to archive session";
-      onError?.(errorMessage);
-    }
-  }, [
-    id,
-    archiveSession,
-    currentSession,
-    queryClient,
-    navigate,
-    onError,
-    onSuccess,
-  ]);
+            // Navigate to analytics page after successful archive
+            navigate(getSessionAnalyticsUrl(String(id)));
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to archive session";
+            onError?.(errorMessage);
+        }
+    }, [
+        id,
+        archiveSession,
+        currentSession,
+        queryClient,
+        navigate,
+        onError,
+        onSuccess,
+    ]);
 
-  return {
-    isArchiving,
-    isDisabled:
-      !id || isArchiving || currentSession?.session_status === "ARCHIVED",
-    handleArchive,
-  };
+    return {
+        isArchiving,
+        isDisabled:
+            !id ||
+            isArchiving ||
+            currentSession?.session_status === SESSION_STATUS.ARCHIVED,
+        handleArchive,
+    };
 }

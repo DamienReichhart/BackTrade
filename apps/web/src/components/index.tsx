@@ -5,6 +5,7 @@ export { Checkbox } from "./Checkbox";
 export { Input } from "./Input";
 export { PricingCard } from "./PricingCard";
 export { AuthenticatedLayout } from "./AuthenticatedLayout";
+export { AuthInitializer } from "./AuthInitializer";
 export { Toggle } from "./Toggle";
 export { ConfirmModal } from "./ConfirmModal";
 export { Select } from "./Select";

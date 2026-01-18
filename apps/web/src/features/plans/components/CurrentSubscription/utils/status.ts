@@ -8,9 +8,9 @@ import { getStatusColorClass } from "../../../utils/subscriptions";
  * @returns CSS class name for status color
  */
 export function getStatusColor(
-  status: string,
-  styles: Record<string, string>,
+    status: string,
+    styles: Record<string, string>
 ): string {
-  const colorClass = getStatusColorClass(status);
-  return colorClass ? (styles[colorClass] ?? "") : "";
+    const colorClass = getStatusColorClass(status);
+    return colorClass ? (styles[colorClass] ?? "") : "";
 }

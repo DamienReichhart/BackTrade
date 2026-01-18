@@ -1,20 +1,14 @@
-import pino from "pino";
-import { transport } from "../core/logger/transport";
-import { serializers } from "../core/logger/serializers";
+import { createLogger, expressSerializers } from "@backtrade/logger";
 import { ENV } from "../config/env";
 
-export const logger = pino(
-  {
+/**
+ * Main logger instance for the API application
+ * Uses @backtrade/logger package with Express serializers
+ */
+export const logger = createLogger({
+    service: "api-backend",
     level: ENV.API_LOG_LEVEL,
-    serializers,
-    base: {
-      pid: false,
-      service: "api-backend",
-    },
-  },
-  transport,
-);
-
-export function getModuleLogger(moduleName: string) {
-  return logger.child({ module: moduleName });
-}
+    logDir: ENV.API_LOG_DIR,
+    nodeEnv: ENV.NODE_ENV,
+    serializers: expressSerializers,
+});

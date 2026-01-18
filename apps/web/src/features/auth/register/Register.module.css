@@ -3,26 +3,26 @@
  */
 
 .register {
-  position: relative;
-  min-height: 100vh;
-  background-color: var(--color-principal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: relative;
+    min-height: 100vh;
+    background-color: var(--color-principal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Container */
 .container {
-  display: flex;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  min-height: 100vh;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .container {
-    flex-direction: column;
-  }
+    .container {
+        flex-direction: column;
+    }
 }

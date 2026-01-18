@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 interface CurrentPriceState {
-  currentPrice: number | undefined;
-  setCurrentPrice: (price: number | undefined) => void;
+    currentPrice: number | undefined;
+    setCurrentPrice: (price: number | undefined) => void;
 }
 
 /**
@@ -11,6 +11,6 @@ interface CurrentPriceState {
  * allowing all components to access the current price.
  */
 export const useCurrentPriceStore = create<CurrentPriceState>((set) => ({
-  currentPrice: undefined,
-  setCurrentPrice: (price) => set({ currentPrice: price }),
+    currentPrice: undefined,
+    setCurrentPrice: (price) => set({ currentPrice: price }),
 }));

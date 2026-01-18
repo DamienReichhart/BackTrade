@@ -1,0 +1,101 @@
+graph TB
+  subgraph Route_Configuration["Route Configuration"]
+    direction TB
+
+    RootRoute["/<br/>App Component"]
+
+    subgraph Public_Routes["Public Routes"]
+      HomeRoute["/<br/>Home Page"]
+      PricingRoute["/pricing<br/>Pricing Page"]
+      LegalRoute["/legal/*<br/>Terms, Privacy"]
+    end
+
+    subgraph Auth_Routes["Auth Routes"]
+      LoginRoute["/login<br/>Login Page"]
+      RegisterRoute["/register<br/>Registration Page"]
+      ForgotPasswordRoute["/forgot-password<br/>Password Reset Request"]
+      ResetPasswordRoute["/reset-password<br/>Password Reset Form"]
+    end
+
+    subgraph Dashboard_Routes["Dashboard Routes"]
+      DashboardRoute["/dashboard<br/>Dashboard Overview"]
+      SettingsRoute["/dashboard/settings<br/>User Settings"]
+      PlansRoute["/dashboard/plans<br/>Subscription Plans"]
+      PurchaseSuccessRoute["/dashboard/plans/purchase-success<br/>Stripe Success"]
+    end
+
+    subgraph Session_Routes["Session Routes"]
+      SessionCreateRoute["/sessions/create<br/>Create Session"]
+      SessionRunningRoute["/sessions/:id/running<br/>Running Session"]
+      SessionAnalyticsRoute["/sessions/:id/analytics<br/>Session Analytics"]
+    end
+
+    subgraph Admin_Routes["Admin Routes"]
+      AdminChoicesRoute["/dashboard/admin<br/>Admin Dashboard"]
+      UserManagementRoute["/dashboard/admin/user-management<br/>User Management"]
+      DatasetManagementRoute["/dashboard/admin/dataset-management<br/>Dataset Management"]
+      InstrumentManagementRoute["/dashboard/admin/instrument-management<br/>Instrument Management"]
+    end
+
+    subgraph Error_Routes["Error Routes"]
+      NotFoundRoute["/*<br/>404 Not Found"]
+      ServerErrorRoute["/error<br/>500 Server Error"]
+    end
+  end
+
+  subgraph Route_Protection["Route Protection"]
+    direction TB
+    PublicAccess["Public Access<br/>No Authentication"]
+    AuthRequired["Authentication Required<br/>Auth Middleware"]
+    AdminRequired["Admin Role Required<br/>Admin Check"]
+  end
+
+  RootRoute --> HomeRoute
+  RootRoute --> PricingRoute
+  RootRoute --> LegalRoute
+  RootRoute --> LoginRoute
+  RootRoute --> RegisterRoute
+  RootRoute --> ForgotPasswordRoute
+  RootRoute --> ResetPasswordRoute
+  RootRoute --> DashboardRoute
+  RootRoute --> SettingsRoute
+  RootRoute --> PlansRoute
+  RootRoute --> PurchaseSuccessRoute
+  RootRoute --> SessionsListRoute
+  RootRoute --> SessionCreateRoute
+  RootRoute --> SessionRunningRoute
+  RootRoute --> SessionAnalyticsRoute
+  RootRoute --> AdminChoicesRoute
+  RootRoute --> UserManagementRoute
+  RootRoute --> DatasetManagementRoute
+  RootRoute --> InstrumentManagementRoute
+  RootRoute --> NotFoundRoute
+  RootRoute --> ServerErrorRoute
+
+  HomeRoute --> PublicAccess
+  PricingRoute --> PublicAccess
+  LegalRoute --> PublicAccess
+  LoginRoute --> PublicAccess
+  RegisterRoute --> PublicAccess
+  ForgotPasswordRoute --> PublicAccess
+  ResetPasswordRoute --> PublicAccess
+
+  DashboardRoute --> AuthRequired
+  SettingsRoute --> AuthRequired
+  PlansRoute --> AuthRequired
+  PurchaseSuccessRoute --> AuthRequired
+  SessionsListRoute --> AuthRequired
+  SessionCreateRoute --> AuthRequired
+  SessionRunningRoute --> AuthRequired
+  SessionAnalyticsRoute --> AuthRequired
+
+  AdminChoicesRoute --> AdminRequired
+  UserManagementRoute --> AdminRequired
+  DatasetManagementRoute --> AdminRequired
+  InstrumentManagementRoute --> AdminRequired
+
+  style HomeRoute fill:#c8e6c9
+  style LoginRoute fill:#c8e6c9
+  style DashboardRoute fill:#fff3e0
+  style SessionRunningRoute fill:#ff6b6b
+  style AdminChoicesRoute fill:#ffcdd2

@@ -19,6 +19,7 @@ erDiagram
       boolean is_banned
       string stripe_customer_id UK
       string password_reset_code
+      datetime password_reset_expires_at
       datetime created_at
       datetime updated_at
     }
@@ -54,8 +55,6 @@ erDiagram
       datetime current_period_start
       datetime current_period_end
       boolean cancel_at_period_end
-      datetime canceled_at
-      datetime trial_end
       datetime created_at
       datetime updated_at
     }
@@ -118,6 +117,7 @@ erDiagram
       datetime current_time
       datetime end_time
       decimal initial_balance
+      decimal current_balance
       enum leverage
       int spread_pts
       int slippage_pts
@@ -156,14 +156,6 @@ erDiagram
       datetime updated_at
     }
 
-    SESSION_ANALYTICS {
-      string id PK
-      string session_id FK
-      string file_name
-      datetime created_at
-      datetime updated_at
-    }
-
 
 
     USER ||--o{ SESSION : "owns"
@@ -177,4 +169,3 @@ erDiagram
     USER ||--o{ USER_SESSION : "login"
     POSITION ||--o| CANDLE : "entry_candle"
     POSITION ||--o| CANDLE : "exit_candle"
-    SESSION ||--o| SESSION_ANALYTICS : "has"

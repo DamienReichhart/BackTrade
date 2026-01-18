@@ -1,49 +1,94 @@
 import { z } from "zod";
-import { PublicUserSchema } from "../entities";
+
+/**
+ * JWT payload for token generation
+ *
+ * Contains only essential claims to minimize token size:
+ * - sub: User ID (subject claim per JWT spec)
+ */
+export const JwtPayloadGenerationSchema = z.object({
+    sub: z.number().int().positive(),
+});
+export type JwtPayloadGeneration = z.infer<typeof JwtPayloadGenerationSchema>;
+
+/**
+ * JWT payload after token verification
+ *
+ * Contains:
+ * - sub: User ID
+ * - iat: Issued at timestamp
+ * - exp: Expiration timestamp
+ */
+export const JwtPayloadSchema = z.object({
+    sub: z.number().int().positive(),
+    iat: z.number(),
+    exp: z.number(),
+});
+export type JwtPayload = z.infer<typeof JwtPayloadSchema>;
 
 export const LoginRequestSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+    email: z
+        .string()
+        .email()
+        .transform((email) => email.toLowerCase()),
+    password: z.string().min(8),
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const RegisterRequestSchema = z
-  .object({
-    email: z.string().email(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+    .object({
+        email: z
+            .string()
+            .email()
+            .transform((email) => email.toLowerCase()),
+        password: z.string().min(8),
+        confirmPassword: z.string().min(8),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    });
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 
 export const ChangePasswordRequestSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string().min(8),
+    currentPassword: z.string(),
+    newPassword: z.string().min(8),
 });
 export type ChangePasswordRequest = z.infer<typeof ChangePasswordRequestSchema>;
 
+/**
+ * Schema for changing a user's password by ID
+ *
+ * For users changing their own password: currentPassword is required
+ * For admins changing another user's password: currentPassword is optional
+ */
+export const ChangeUserPasswordRequestSchema = z.object({
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(8),
+});
+export type ChangeUserPasswordRequest = z.infer<
+    typeof ChangeUserPasswordRequestSchema
+>;
+
 export const ForgotPasswordRequestSchema = z.object({
-  email: z.string().email(),
+    email: z.email().transform((email) => email.toLowerCase()),
 });
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
 export const ResetPasswordRequestSchema = z.object({
-  code: z.string(),
-  newPassword: z.string().min(8),
+    email: z.email().transform((email) => email.toLowerCase()),
+    code: z.string().min(1),
+    newPassword: z.string().min(8),
 });
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 
 export const AuthResponseSchema = z.object({
-  user: PublicUserSchema,
-  accessToken: z.string(),
-  refreshToken: z.string(),
+    accessToken: z.string(),
+    refreshToken: z.string(),
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
 export const RefreshTokenRequestSchema = z.object({
-  refreshToken: z.string().min(1),
+    refreshToken: z.string().min(1),
 });
 export type RefreshTokenRequest = z.infer<typeof RefreshTokenRequestSchema>;

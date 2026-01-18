@@ -1,50 +1,50 @@
 .chartContainer {
-  position: relative;
-  width: 100%;
-  height: 520px;
-  min-height: 300px;
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 520px;
+    min-height: 300px;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    overflow: hidden;
 }
 
 .menuButtonWrapper {
-  position: absolute;
-  top: var(--spacing-md);
-  left: var(--spacing-md);
-  z-index: 10;
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    z-index: 10;
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .chart {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 /* Responsive chart heights */
 @media (max-width: 767px) {
-  .chartContainer {
-    height: 350px;
-    min-height: 250px;
-  }
+    .chartContainer {
+        height: 350px;
+        min-height: 250px;
+    }
 
-  .menuButtonWrapper {
-    top: var(--spacing-sm);
-    left: var(--spacing-sm);
-  }
+    .menuButtonWrapper {
+        top: var(--spacing-sm);
+        left: var(--spacing-sm);
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .chartContainer {
-    height: 400px;
-  }
+    .chartContainer {
+        height: 400px;
+    }
 }
 
 @media (min-width: 1280px) {
-  .chartContainer {
-    height: 600px;
-  }
+    .chartContainer {
+        height: 600px;
+    }
 }

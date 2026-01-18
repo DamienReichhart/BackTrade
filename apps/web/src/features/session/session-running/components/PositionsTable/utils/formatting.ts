@@ -1,3 +1,19 @@
+import type { Position } from "@backtrade/types";
+
+/**
+ * Get the appropriate PnL value to display for a position
+ *
+ * Returns unrealized_pnl for open positions and realized_pnl for closed positions.
+ *
+ * @param position - Position object
+ * @returns The PnL value to display (unrealized for open, realized for closed)
+ */
+export function getDisplayPnL(position: Position): number | null {
+    return position.position_status === "OPEN"
+        ? position.unrealized_pnl
+        : position.realized_pnl;
+}
+
 /**
  * Format PnL value for display
  *
@@ -5,7 +21,7 @@
  * @returns Formatted PnL string with 2 decimal places
  */
 export function formatPnL(pnl: number | null | undefined): string {
-  return Number(pnl ?? 0).toFixed(2);
+    return Number(pnl ?? 0).toFixed(2);
 }
 
 /**
@@ -15,7 +31,7 @@ export function formatPnL(pnl: number | null | undefined): string {
  * @returns CSS class name for positive or negative PnL
  */
 export function getPnLClassName(pnl: number | null | undefined): string {
-  return (pnl ?? 0) >= 0 ? "pnlPos" : "pnlNeg";
+    return (pnl ?? 0) >= 0 ? "pnlPos" : "pnlNeg";
 }
 
 /**
@@ -26,8 +42,8 @@ export function getPnLClassName(pnl: number | null | undefined): string {
  * @returns Formatted price string or fallback
  */
 export function formatPriceOrFallback(
-  price: number | null | undefined,
-  fallback = "-",
+    price: number | null | undefined,
+    fallback = "-"
 ): string {
-  return price !== null && price !== undefined ? String(price) : fallback;
+    return price !== null && price !== undefined ? String(price) : fallback;
 }

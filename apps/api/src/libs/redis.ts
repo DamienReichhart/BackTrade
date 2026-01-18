@@ -1,9 +1,11 @@
-import Redis from "ioredis";
-import { ENV } from "../config/env";
+/**
+ * Redis Client
+ *
+ * Redis client instance using @backtrade/cache package.
+ * This file provides a singleton Redis client for the API application.
+ */
 
-export const redis = new Redis({
-  host: ENV.REDIS_HOST,
-  port: ENV.REDIS_PORT,
-  maxRetriesPerRequest: null,
-  password: ENV.REDIS_PASSWORD,
-});
+import { createRedisClient } from "@backtrade/cache";
+import { logger } from "./pino";
+
+export const redis = createRedisClient(logger);

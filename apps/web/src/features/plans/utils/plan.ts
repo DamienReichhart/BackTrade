@@ -6,8 +6,8 @@
  * @returns Formatted plan title
  */
 export function formatPlanTitle(
-  planCode: string | undefined,
-  planId: number,
+    planCode: string | undefined,
+    planId: number
 ): string {
-  return planCode ? planCode.toUpperCase() : `Plan #${planId}`;
+    return planCode ? planCode.toUpperCase() : `Plan #${planId}`;
 }

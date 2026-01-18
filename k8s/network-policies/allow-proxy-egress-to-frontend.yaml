@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-proxy-egress-to-frontend
-  namespace: backtrade
+    name: allow-proxy-egress-to-frontend
+    namespace: backtrade
 spec:
-  podSelector:
-    matchLabels:
-      app: proxy
-      component: nginx
-  policyTypes:
-    - Egress
-  egress:
-    # Allow proxy pods to connect to frontend
-    - to:
-        - podSelector:
-            matchLabels:
-              app: frontend
-              component: web
-      ports:
-        - protocol: TCP
-          port: 80
+    podSelector:
+        matchLabels:
+            app: proxy
+            component: nginx
+    policyTypes:
+        - Egress
+    egress:
+        # Allow proxy pods to connect to frontend
+        - to:
+              - podSelector:
+                    matchLabels:
+                        app: frontend
+                        component: web
+          ports:
+              - protocol: TCP
+                port: 80

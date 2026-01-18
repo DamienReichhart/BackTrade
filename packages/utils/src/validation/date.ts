@@ -8,14 +8,14 @@ import type { ValidationResult } from "./types";
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateRequired<T>(
-  value: T | null | undefined,
-  fieldName: string = "Field",
+    value: T | null | undefined,
+    fieldName: string = "Field"
 ): ValidationResult {
-  if (value === null || value === undefined) {
-    return { isValid: false, error: `${fieldName} is required` };
-  }
+    if (value === null || value === undefined) {
+        return { isValid: false, error: `${fieldName} is required` };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -26,14 +26,14 @@ export function validateRequired<T>(
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateRequiredString(
-  value: string,
-  fieldName: string = "Field",
+    value: string,
+    fieldName: string = "Field"
 ): ValidationResult {
-  if (!value || value.trim() === "") {
-    return { isValid: false, error: `${fieldName} is required` };
-  }
+    if (!value || value.trim() === "") {
+        return { isValid: false, error: `${fieldName} is required` };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }
 
 /**
@@ -44,26 +44,26 @@ export function validateRequiredString(
  * @returns Validation result with isValid flag and optional error message
  */
 export function validateDateRange(
-  startDate: string,
-  endDate: string,
+    startDate: string,
+    endDate: string
 ): ValidationResult {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-  if (isNaN(start.getTime())) {
-    return { isValid: false, error: "Start date is invalid" };
-  }
+    if (isNaN(start.getTime())) {
+        return { isValid: false, error: "Start date is invalid" };
+    }
 
-  if (isNaN(end.getTime())) {
-    return { isValid: false, error: "End date is invalid" };
-  }
+    if (isNaN(end.getTime())) {
+        return { isValid: false, error: "End date is invalid" };
+    }
 
-  if (end < start) {
-    return {
-      isValid: false,
-      error: "End date must be after or equal to start date",
-    };
-  }
+    if (end < start) {
+        return {
+            isValid: false,
+            error: "End date must be after or equal to start date",
+        };
+    }
 
-  return { isValid: true };
+    return { isValid: true };
 }

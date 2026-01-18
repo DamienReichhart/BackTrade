@@ -1,54 +1,44 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_BASE_URL } from "../../index";
-import { refreshToken as refreshTokenUtils } from "../../utils/refresh-token";
-import { useAuthStore } from "../../../store";
+import { useRef } from "react";
+import { useAuthStore } from "../../../store/auth";
+import { invalidateQueries } from "../utils/query-invalidation";
+import { performFetchWithAuth } from "../utils/fetch-utils";
 
 /**
  * Hook for DELETE requests
  */
-export function useDelete(url: string) {
-  const queryClient = useQueryClient();
-  const { refreshToken, accessToken, login } = useAuthStore();
-  let isRefreshingToken = false;
+export function useDelete(
+    url: string,
+    queriesToInvalidate: string[] | null = null
+) {
+    const queryClient = useQueryClient();
+    const isRefreshingToken = useRef(false);
 
-  const mutationFn = async (): Promise<void> => {
-    let headers: Record<string, string> = {
-      "Content-Type": "application/json",
+    const mutationFn = async (): Promise<void> => {
+        // Get fresh token from store at mutation execution time
+        const currentAccessToken = useAuthStore.getState().accessToken;
+
+        await performFetchWithAuth(
+            {
+                method: "DELETE",
+                url: url,
+            },
+            currentAccessToken,
+            isRefreshingToken
+        );
     };
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
 
-    const response = await fetch(API_BASE_URL + url, {
-      method: "DELETE",
-      headers: headers,
+    const mutation = useMutation({
+        mutationFn: mutationFn,
+        onSuccess: () => {
+            invalidateQueries(queryClient, queriesToInvalidate);
+        },
     });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        if (refreshToken && !isRefreshingToken) {
-          isRefreshingToken = true;
-          const authResponse = await refreshTokenUtils(refreshToken);
-          if (authResponse) {
-            login(authResponse.accessToken, authResponse.refreshToken);
-            return mutationFn();
-          }
-        }
-      }
-    }
-  };
-
-  const mutation = useMutation({
-    mutationFn: mutationFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-    },
-  });
-
-  return {
-    data: null,
-    isLoading: mutation.isPending,
-    error: mutation.error,
-    execute: mutation.mutateAsync,
-  };
+    return {
+        data: null,
+        isLoading: mutation.isPending,
+        error: mutation.error,
+        execute: mutation.mutateAsync,
+    };
 }

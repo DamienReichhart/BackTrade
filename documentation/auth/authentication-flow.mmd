@@ -1,0 +1,78 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API as Backend API
+    participant AuthService as Auth Service
+    participant JwtService as JWT Service
+    participant HashService as Hash Service
+    participant UserService as User Service
+    participant DB as PostgreSQL
+
+    Note over User,DB: Login Flow
+
+    User->>Frontend: Enter Email & Password
+    Frontend->>API: POST /auth/login<br/>{ email, password }
+    
+    API->>AuthService: login(email, password)
+    AuthService->>UserService: getUserByEmail(email)
+    UserService->>DB: SELECT user WHERE email
+    DB-->>UserService: User Record
+    UserService-->>AuthService: User
+    
+    alt User Not Found
+        AuthService-->>API: Error: Invalid Credentials
+        API-->>Frontend: 401 Unauthorized
+    else User Found
+        AuthService->>HashService: verifyPassword(password, user.password_hash)
+        HashService-->>AuthService: Password Valid/Invalid
+        
+        alt Password Invalid
+            AuthService-->>API: Error: Invalid Credentials
+            API-->>Frontend: 401 Unauthorized
+        else Password Valid
+            alt User Banned
+                AuthService-->>API: Error: Account Banned
+                API-->>Frontend: 403 Forbidden
+            else User Active
+                AuthService->>JwtService: generateAccessToken({ sub: user.id })
+                JwtService-->>AuthService: Access Token (1 hour)
+                
+                AuthService->>JwtService: generateRefreshToken({ sub: user.id })
+                JwtService-->>AuthService: Refresh Token (7 days)
+                
+                AuthService-->>API: { accessToken, refreshToken }
+                API-->>Frontend: 200 OK + Tokens
+                Frontend->>Frontend: Store Tokens in Cookies
+                Frontend->>Frontend: Fetch User Data (/auth/me)
+                Frontend-->>User: Login Successful
+            end
+        end
+    end
+
+    Note over User,DB: Registration Flow
+
+    User->>Frontend: Enter Registration Data
+    Frontend->>API: POST /auth/register<br/>{ email, password, ... }
+    
+    API->>AuthService: register(data)
+    AuthService->>UserService: getUserByEmail(email)
+    UserService->>DB: SELECT user WHERE email
+    DB-->>UserService: User or null
+    
+    alt User Already Exists
+        AuthService-->>API: Error: Email Already Exists
+        API-->>Frontend: 409 Conflict
+    else New User
+        AuthService->>HashService: hashPassword(password)
+        HashService-->>AuthService: Password Hash
+        
+        AuthService->>UserService: createUser({ email, password_hash, ... })
+        UserService->>DB: INSERT user
+        DB-->>UserService: Created User
+        
+        AuthService->>JwtService: generateAccessToken({ sub: user.id })
+        AuthService->>JwtService: generateRefreshToken({ sub: user.id })
+        AuthService-->>API: { accessToken, refreshToken }
+        API-->>Frontend: 201 Created + Tokens
+        Frontend-->>User: Registration Successful
+    end

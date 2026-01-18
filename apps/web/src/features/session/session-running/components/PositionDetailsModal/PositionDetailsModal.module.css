@@ -1,149 +1,149 @@
 .backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--color-modal-backdrop);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal-backdrop);
-  padding: var(--spacing-md);
-  animation: fadeIn 0.2s ease-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-modal-backdrop);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal-backdrop);
+    padding: var(--spacing-md);
+    animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal {
-  background: var(--color-modal-bg);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  z-index: var(--z-modal);
-  box-shadow: var(--shadow-xl);
-  animation: slideUp 0.2s ease-out;
+    background: var(--color-modal-bg);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    z-index: var(--z-modal);
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.2s ease-out;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-primary);
 }
 
 .title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  font-size: var(--font-size-3xl);
-  line-height: 1;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  transition:
-    background-color var(--transition-fast),
-    color var(--transition-fast);
+    background: none;
+    border: none;
+    font-size: var(--font-size-3xl);
+    line-height: 1;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast);
 }
 
 .closeButton:hover {
-  background: var(--color-surface-elevated);
-  color: var(--color-text-primary);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-primary);
 }
 
 .content {
-  padding: var(--spacing-lg);
-  overflow-y: auto;
-  flex: 1;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    flex: 1;
 }
 
 .section {
-  margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
 }
 
 .section:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--color-border-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border-secondary);
 }
 
 .row:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
 }
 
 .value {
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-regular);
-  text-align: right;
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-regular);
+    text-align: right;
 }
 
 .buy {
-  color: var(--color-success);
+    color: var(--color-success);
 }
 
 .sell {
-  color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .pnlPos {
-  color: var(--color-success);
+    color: var(--color-success);
 }
 
 .pnlNeg {
-  color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .footer {
-  padding: var(--spacing-lg);
-  border-top: 1px solid var(--color-border-primary);
-  display: flex;
-  justify-content: flex-end;
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--color-border-primary);
+    display: flex;
+    justify-content: flex-end;
 }

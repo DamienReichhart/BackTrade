@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "../../../store/auth";
 import { useUpdateUser } from "../../../api/hooks/requests/users";
-import { validateEmail } from "@backtrade/utils";
+import { AccountFormSchema, type AccountFormState } from "../../../types/forms";
 
 /**
  * Hook to manage account section state and operations
@@ -9,70 +11,76 @@ import { validateEmail } from "@backtrade/utils";
  * @returns Account section state and handlers
  */
 export function useAccountSection() {
-  const { user } = useAuthStore();
-  const [email, setEmail] = useState(user?.email ?? "");
-  const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const { user } = useAuthStore();
+    const [isEditing, setIsEditing] = useState(false);
+    const { execute, isLoading } = useUpdateUser(user?.id.toString() ?? "");
 
-  const { execute, isLoading } = useUpdateUser(user?.id.toString() ?? "");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isValid },
+        setError,
+    } = useForm<AccountFormState>({
+        resolver: zodResolver(AccountFormSchema),
+        defaultValues: {
+            email: user?.email ?? "",
+        },
+    });
 
-  /**
-   * Handle email input change
-   */
-  const handleEmailChange = (newEmail: string) => {
-    setEmail(newEmail);
-    setError(null);
-  };
+    // Update form default values when user loads
+    useEffect(() => {
+        if (user?.email) {
+            reset({ email: user.email });
+        }
+    }, [user, reset]);
 
-  /**
-   * Handle save email changes
-   */
-  const handleSave = async () => {
-    if (!user) return;
+    /**
+     * Handle save email changes
+     */
+    const onSubmit = async (data: AccountFormState) => {
+        if (!user) return;
 
-    setError(null);
+        try {
+            await execute({ email: data.email });
+            setIsEditing(false);
+            // Optionally, we could reset here with new values if the store doesn't update immediately,
+            // but useAuthStore likely updates via query invalidation or similar mechanism.
+            // reset({ email: data.email });
+        } catch (err) {
+            setError("email", {
+                type: "manual",
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to update email",
+            });
+        }
+    };
 
-    // Validate email
-    const validation = validateEmail(email);
-    if (!validation.isValid) {
-      setError(validation.error ?? "Invalid email");
-      return;
-    }
+    /**
+     * Handle cancel editing
+     */
+    const handleCancel = () => {
+        reset({ email: user?.email ?? "" });
+        setIsEditing(false);
+    };
 
-    try {
-      await execute({ email });
-      setIsEditing(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update email");
-    }
-  };
+    /**
+     * Handle start editing
+     */
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
 
-  /**
-   * Handle cancel editing
-   */
-  const handleCancel = () => {
-    setEmail(user?.email ?? "");
-    setIsEditing(false);
-    setError(null);
-  };
-
-  /**
-   * Handle start editing
-   */
-  const handleEdit = () => {
-    setEmail(user?.email ?? "");
-    setIsEditing(true);
-    setError(null);
-  };
-
-  return {
-    email,
-    isEditing,
-    error,
-    isLoading,
-    handleEmailChange,
-    handleSave,
-    handleCancel,
-    handleEdit,
-  };
+    return {
+        register,
+        errors,
+        isEditing,
+        isLoading,
+        isValid,
+        handleSave: handleSubmit(onSubmit),
+        handleCancel,
+        handleEdit,
+    };
 }

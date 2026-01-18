@@ -7,15 +7,15 @@ import { getErrorConfig } from "../../utils/errorConfig";
  * Displayed when the request is malformed or invalid
  */
 export function BadRequestError() {
-  const config = getErrorConfig(400);
+    const config = getErrorConfig(400);
 
-  return (
-    <ErrorPage
-      statusCode={400}
-      title={config.title}
-      description={config.description}
-      details={config.details}
-      primaryActionText={config.primaryActionText}
-    />
-  );
+    return (
+        <ErrorPage
+            statusCode={400}
+            title={config.title}
+            description={config.description}
+            details={config.details}
+            primaryActionText={config.primaryActionText}
+        />
+    );
 }

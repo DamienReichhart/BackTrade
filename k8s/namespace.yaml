@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: backtrade
-  labels:
     name: backtrade
-    environment: production
+    labels:
+        name: backtrade
+        environment: production

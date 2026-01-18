@@ -13,10 +13,10 @@ import type { SortField, SortOrder } from "../../../hooks";
  * @returns Sort indicator character (↑ for asc, ↓ for desc) or null
  */
 export function getSortIndicator(
-  field: SortField,
-  currentSortField: SortField,
-  sortOrder: SortOrder,
+    field: SortField,
+    currentSortField: SortField,
+    sortOrder: SortOrder
 ): string | null {
-  if (currentSortField !== field) return null;
-  return sortOrder === "asc" ? "↑" : "↓";
+    if (currentSortField !== field) return null;
+    return sortOrder === "asc" ? "↑" : "↓";
 }

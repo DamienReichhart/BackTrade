@@ -6,33 +6,36 @@ import { useState, useEffect, useRef } from "react";
  * @returns Menu state and handlers
  */
 export function useMenuToggle() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        if (isMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
+    const handleToggle = () => {
+        setIsMenuOpen(!isMenuOpen);
     };
 
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    return {
+        isMenuOpen,
+        menuRef,
+        handleToggle,
     };
-  }, [isMenuOpen]);
-
-  const handleToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  return {
-    isMenuOpen,
-    menuRef,
-    handleToggle,
-  };
 }

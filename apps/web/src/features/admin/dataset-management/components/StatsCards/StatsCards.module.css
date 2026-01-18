@@ -1,0 +1,123 @@
+/**
+ * StatsCards Styles
+ */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.card {
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-border-accent);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.3;
+}
+
+/* Skeleton Loading */
+.cardSkeleton {
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+}
+
+.skeletonContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.skeletonValue {
+    height: 36px;
+    width: 80px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonLabel {
+    height: 16px;
+    width: 140px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-tertiary) 25%,
+        var(--color-surface-elevated) 50%,
+        var(--color-surface-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.1s;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+        padding: var(--spacing-md);
+    }
+
+    .value {
+        font-size: var(--font-size-2xl);
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .value {
+        font-size: var(--font-size-xl);
+    }
+}

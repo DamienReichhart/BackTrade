@@ -2,11 +2,11 @@ import { create } from "zustand";
 import type { Session, Instrument } from "@backtrade/types";
 
 interface CurrentSessionState {
-  currentSession: Session | undefined;
-  currentSessionInstrument: Instrument | undefined;
-  setCurrentSession: (session: Session | undefined) => void;
-  setCurrentSessionInstrument: (instrument: Instrument | undefined) => void;
-  clearCurrentSession: () => void;
+    currentSession: Session | undefined;
+    currentSessionInstrument: Instrument | undefined;
+    setCurrentSession: (session: Session | undefined) => void;
+    setCurrentSessionInstrument: (instrument: Instrument | undefined) => void;
+    clearCurrentSession: () => void;
 }
 
 /**
@@ -15,11 +15,11 @@ interface CurrentSessionState {
  * and update the current session and instrument without prop drilling.
  */
 export const useCurrentSessionStore = create<CurrentSessionState>((set) => ({
-  currentSession: undefined,
-  currentSessionInstrument: undefined,
-  setCurrentSession: (session) => set({ currentSession: session }),
-  setCurrentSessionInstrument: (instrument) =>
-    set({ currentSessionInstrument: instrument }),
-  clearCurrentSession: () =>
-    set({ currentSession: undefined, currentSessionInstrument: undefined }),
+    currentSession: undefined,
+    currentSessionInstrument: undefined,
+    setCurrentSession: (session) => set({ currentSession: session }),
+    setCurrentSessionInstrument: (instrument) =>
+        set({ currentSessionInstrument: instrument }),
+    clearCurrentSession: () =>
+        set({ currentSession: undefined, currentSessionInstrument: undefined }),
 }));

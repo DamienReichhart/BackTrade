@@ -9,29 +9,29 @@ import { useState, useCallback } from "react";
  * @returns Modal state and control functions
  */
 export function useModal<T = unknown>() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<T | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  /**
-   * Open the modal with an item
-   */
-  const openModal = useCallback((item: T) => {
-    setSelectedItem(item);
-    setIsOpen(true);
-  }, []);
+    /**
+     * Open the modal with an item
+     */
+    const openModal = useCallback((item: T) => {
+        setSelectedItem(item);
+        setIsOpen(true);
+    }, []);
 
-  /**
-   * Close the modal and clear the selected item
-   */
-  const closeModal = useCallback(() => {
-    setIsOpen(false);
-    setSelectedItem(null);
-  }, []);
+    /**
+     * Close the modal and clear the selected item
+     */
+    const closeModal = useCallback(() => {
+        setIsOpen(false);
+        setSelectedItem(null);
+    }, []);
 
-  return {
-    isOpen,
-    selectedItem,
-    openModal,
-    closeModal,
-  };
+    return {
+        isOpen,
+        selectedItem,
+        openModal,
+        closeModal,
+    };
 }

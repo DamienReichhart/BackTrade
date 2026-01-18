@@ -8,23 +8,28 @@ import styles from "./DashboardHeader.module.css";
  * Displays page title and primary actions
  */
 export function DashboardHeader() {
-  const { handleNewSession } = useDashboardHeader();
+    const { handleNewSession } = useDashboardHeader();
 
-  return (
-    <div className={styles.header}>
-      <div className={styles.content}>
-        <div className={styles.titleSection}>
-          <h1 className={styles.title}>Dashboard</h1>
-          <p className={styles.subtitle}>
-            Manage your trading sessions and view performance metrics
-          </p>
+    return (
+        <div className={styles.header}>
+            <div className={styles.content}>
+                <div className={styles.titleSection}>
+                    <h1 className={styles.title}>Dashboard</h1>
+                    <p className={styles.subtitle}>
+                        Manage your trading sessions and view performance
+                        metrics
+                    </p>
+                </div>
+                <div className={styles.actions}>
+                    <Button
+                        variant="primary"
+                        size="medium"
+                        onClick={handleNewSession}
+                    >
+                        New Session
+                    </Button>
+                </div>
+            </div>
         </div>
-        <div className={styles.actions}>
-          <Button variant="primary" size="medium" onClick={handleNewSession}>
-            New Session
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

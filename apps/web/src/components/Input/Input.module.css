@@ -3,64 +3,64 @@
  */
 
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
 }
 
 .label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .input {
-  width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-base);
-  font-family: var(--font-sans);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-secondary);
-  border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
-  outline: none;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+    outline: none;
 }
 
 .input::placeholder {
-  color: var(--color-text-tertiary);
+    color: var(--color-text-tertiary);
 }
 
 .input:hover:not(:disabled) {
-  background-color: var(--color-surface-tertiary);
-  border-color: var(--color-border-accent);
+    background-color: var(--color-surface-tertiary);
+    border-color: var(--color-border-accent);
 }
 
 .input:focus {
-  background-color: var(--color-surface-tertiary);
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-focus);
+    background-color: var(--color-surface-tertiary);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-focus);
 }
 
 .input:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .inputError {
-  border-color: var(--color-danger);
+    border-color: var(--color-danger);
 }
 
 .inputError:focus {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px var(--color-danger-bg);
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-bg);
 }
 
 .error {
-  font-size: var(--font-size-sm);
-  color: var(--color-danger);
-  margin-top: calc(var(--spacing-xs) * -1);
+    font-size: var(--font-size-sm);
+    color: var(--color-danger);
+    margin-top: calc(var(--spacing-xs) * -1);
 }

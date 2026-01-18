@@ -1,0 +1,83 @@
+
+graph TB
+    subgraph "External Access"
+        Internet[Internet Users]
+        Cloudflare[Cloudflare Network]
+    end
+
+    subgraph "Public Network (192.168.252.0/24)"
+        Cloudflared[Cloudflared Tunnel<br/>192.168.252.10<br/>Secure Remote Access]
+        Proxy[Nginx Reverse Proxy<br/>192.168.252.11<br/>Port 80:8080]
+    end
+
+    subgraph "Frontend Network (192.168.251.0/24)"
+        Frontend[Frontend Nginx<br/>192.168.251.11<br/>Port 8080<br/>React SPA]
+        ProxyFrontend[Proxy Frontend Interface<br/>192.168.251.10]
+        BackendFrontend[Backend Frontend Interface<br/>192.168.251.12]
+    end
+
+    subgraph "Backend Network (192.168.250.0/24)"
+        Backend[Backend API<br/>192.168.250.11<br/>Port 21799<br/>Express.js]
+        Worker[Worker Service<br/>192.168.250.13<br/>Background Jobs]
+        Scheduler[Scheduler Service<br/>192.168.250.14<br/>Scheduled Tasks]
+        Migrate[Migrate Service<br/>192.168.250.10<br/>DB Migrations]
+        
+        Postgres[(PostgreSQL<br/>192.168.250.21<br/>Port 5432<br/>Primary DB)]
+        Redis[(Redis<br/>192.168.250.22<br/>Port 6379<br/>Cache)]
+        ClickHouse[(ClickHouse<br/>192.168.250.24<br/>Ports 8123, 9000<br/>Analytics DB)]
+        MinIO[(MinIO<br/>192.168.250.23<br/>Ports 9000, 9001<br/>Object Storage)]
+        RabbitMQ[(RabbitMQ<br/>192.168.250.31<br/>Ports 5672, 15672<br/>Message Queue)]
+    end
+
+    subgraph "Persistent Storage"
+        VolDB[(backtrade_db<br/>PostgreSQL Data)]
+        VolMinIO[(backtrade_minio_data<br/>MinIO Data)]
+        VolClickHouse[(backtrade_clickhouse_data<br/>ClickHouse Data)]
+        VolRabbitMQ[(backtrade_rabbitmq_data<br/>RabbitMQ Data)]
+    end
+
+    Internet --> Cloudflare
+    Cloudflare --> Cloudflared
+    Cloudflared --> Proxy
+    
+    Proxy --> ProxyFrontend
+    ProxyFrontend --> Frontend
+    ProxyFrontend --> BackendFrontend
+    
+    BackendFrontend --> Backend
+    
+    Backend --> Postgres
+    Backend --> Redis
+    Backend --> ClickHouse
+    Backend --> MinIO
+    Backend --> RabbitMQ
+    
+    Worker --> Postgres
+    Worker --> ClickHouse
+    Worker --> MinIO
+    Worker --> RabbitMQ
+    
+    Scheduler --> Postgres
+    Scheduler --> ClickHouse
+    Scheduler --> RabbitMQ
+    
+    Migrate --> Postgres
+    Migrate --> ClickHouse
+    
+    Postgres --> VolDB
+    MinIO --> VolMinIO
+    ClickHouse --> VolClickHouse
+    RabbitMQ --> VolRabbitMQ
+
+    style Cloudflared fill:#4a90e2
+    style Proxy fill:#4a90e2
+    style Frontend fill:#61dafb
+    style Backend fill:#339933
+    style Worker fill:#ff6b6b
+    style Scheduler fill:#ff6b6b
+    style Migrate fill:#ffa500
+    style Postgres fill:#336791
+    style Redis fill:#dc382d
+    style ClickHouse fill:#ffcc02
+    style MinIO fill:#c03
+    style RabbitMQ fill:#ff6600

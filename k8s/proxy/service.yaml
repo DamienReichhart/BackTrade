@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backtrade-proxy
-  namespace: backtrade
-  labels:
-    app: proxy
-    component: nginx
+    name: backtrade-proxy
+    namespace: backtrade
+    labels:
+        app: proxy
+        component: nginx
 spec:
-  type: LoadBalancer
-  ports:
-    - port: 80
-      targetPort: 80
-      protocol: TCP
-      name: http
-  selector:
-    app: proxy
-    component: nginx
+    type: LoadBalancer
+    ports:
+        - port: 80
+          targetPort: 80
+          protocol: TCP
+          name: http
+    selector:
+        app: proxy
+        component: nginx

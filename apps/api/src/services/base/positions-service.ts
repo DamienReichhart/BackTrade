@@ -1,0 +1,1012 @@
+import { positionsRepo, candlesRepo, sessionsRepo } from "@backtrade/data";
+import type {
+    Position,
+    PositionWhereInput,
+    PositionCreateInput,
+    PositionUpdateInput,
+    PositionOrderBy,
+    PositionQuery,
+    PositionStatus,
+    User,
+} from "@backtrade/types";
+import { positionsCacheRepo } from "../../libs/cache";
+import NotFoundError from "../../errors/web/not-found-error";
+import BadRequestError from "../../errors/web/bad-request-error";
+import ForbiddenError from "../../errors/web/forbidden-error";
+import sessionsService from "./sessions-service";
+import positionClosingService from "../trading/position-closing-service";
+import { BaseService } from "./base-service";
+import {
+    buildOrderBy,
+    buildPagination,
+    filterByAccess,
+    toNumber,
+} from "../../utils";
+import { PAGINATION_CONSTANTS } from "../../config/trading-constants";
+
+/**
+ * Valid sortable fields for positions
+ */
+const VALID_SORT_FIELDS = [
+    "id",
+    "session_id",
+    "position_status",
+    "side",
+    "quantity_lots",
+    "entry_price",
+    "exit_price",
+    "opened_at",
+    "closed_at",
+    "realized_pnl",
+    "created_at",
+    "updated_at",
+] as const;
+
+type PositionSortField = (typeof VALID_SORT_FIELDS)[number];
+
+/**
+ * Result of closing all positions for a session
+ */
+export interface CloseAllPositionsResult {
+    /** Number of positions successfully closed */
+    closed: number;
+    /** Number of positions that failed to close */
+    failed: number;
+    /** Total number of open positions found */
+    total: number;
+    /** Array of errors for positions that failed to close */
+    errors?: Array<{ positionId: string; error: string }>;
+}
+
+/**
+ * Positions Service
+ *
+ * Handles business logic for position operations including CRUD, validation, and caching.
+ * Positions represent trading positions within a session.
+ */
+class PositionsService extends BaseService {
+    constructor() {
+        super("positions-service");
+    }
+
+    // ============================================================================
+    // VALIDATION METHODS
+    // ============================================================================
+
+    /**
+     * Validate that session_id is provided
+     *
+     * @param sessionId - Session ID to validate
+     * @throws BadRequestError if session_id is missing
+     */
+    private validateSessionId(sessionId: number | undefined | null): void {
+        if (!sessionId) {
+            throw new BadRequestError("session_id is required");
+        }
+    }
+
+    /**
+     * Validate that side is provided
+     *
+     * @param side - Side to validate
+     * @throws BadRequestError if side is missing
+     */
+    private validateSide(side: string | undefined | null): void {
+        if (!side) {
+            throw new BadRequestError("side is required");
+        }
+    }
+
+    /**
+     * Validate that entry_price is provided and positive
+     *
+     * @param entryPrice - Entry price to validate
+     * @throws BadRequestError if entry_price is invalid
+     */
+    private validateEntryPrice(entryPrice: number | undefined | null): void {
+        if (!entryPrice || entryPrice <= 0) {
+            throw new BadRequestError(
+                "entry_price is required and must be positive"
+            );
+        }
+    }
+
+    /**
+     * Validate that quantity_lots is provided and positive
+     *
+     * @param quantityLots - Quantity in lots to validate
+     * @throws BadRequestError if quantity_lots is invalid
+     */
+    private validateQuantityLots(
+        quantityLots: number | undefined | null
+    ): void {
+        if (!quantityLots || quantityLots <= 0) {
+            throw new BadRequestError(
+                "quantity_lots is required and must be positive"
+            );
+        }
+    }
+
+    /**
+     * Validate that opened_at is provided
+     *
+     * @param openedAt - Opened timestamp to validate
+     * @throws BadRequestError if opened_at is missing
+     */
+    private validateOpenedAt(openedAt: string | undefined | null): void {
+        if (!openedAt) {
+            throw new BadRequestError("opened_at is required");
+        }
+    }
+
+    /**
+     * Validate that a price field is positive if provided
+     *
+     * @param price - Price to validate
+     * @param fieldName - Name of the field for error message
+     * @throws BadRequestError if price is invalid
+     */
+    private validateOptionalPrice(
+        price: number | undefined | null,
+        fieldName: string
+    ): void {
+        if (price !== undefined && price !== null && price <= 0) {
+            throw new BadRequestError(
+                `${fieldName} must be positive if provided`
+            );
+        }
+    }
+
+    /**
+     * Validate that a cost field is non-negative if provided
+     *
+     * @param cost - Cost to validate
+     * @param fieldName - Name of the field for error message
+     * @throws BadRequestError if cost is negative
+     */
+    private validateOptionalCost(
+        cost: number | undefined | null,
+        fieldName: string
+    ): void {
+        if (cost !== undefined && cost !== null && cost < 0) {
+            throw new BadRequestError(`${fieldName} must be non-negative`);
+        }
+    }
+
+    /**
+     * Validate that closed_at is greater than or equal to opened_at
+     *
+     * @param closedAt - Closed timestamp to validate
+     * @param openedAt - Opened timestamp
+     * @param positionId - Position ID for logging
+     * @throws BadRequestError if closed_at < opened_at
+     */
+    private validateClosedAtAgainstOpenedAt(
+        closedAt: Date,
+        openedAt: Date,
+        positionId: string
+    ): void {
+        if (closedAt < openedAt) {
+            this.logger.debug(
+                {
+                    id: positionId,
+                    closed_at: closedAt.toISOString(),
+                    opened_at: openedAt.toISOString(),
+                },
+                "closed_at validation failed: must be >= opened_at"
+            );
+            throw new BadRequestError(
+                "closed_at must be greater than or equal to opened_at"
+            );
+        }
+    }
+
+    /**
+     * Validate position status transitions
+     *
+     * @param newStatus - New position status
+     * @param currentStatus - Current position status
+     * @param positionId - Position ID for logging
+     * @throws BadRequestError if transition is invalid
+     */
+    private validatePositionStatusTransition(
+        newStatus: string,
+        currentStatus: string,
+        positionId: string
+    ): void {
+        // Allow same status
+        if (newStatus === currentStatus) {
+            return;
+        }
+
+        // Invalid transitions from terminal states
+        if (currentStatus === "CLOSED" || currentStatus === "LIQUIDATED") {
+            this.logger.debug(
+                {
+                    id: positionId,
+                    currentStatus,
+                    newStatus,
+                },
+                "Position status transition failed: cannot change from CLOSED/LIQUIDATED"
+            );
+            throw new BadRequestError(
+                `Cannot change position status from ${currentStatus} to ${newStatus}`
+            );
+        }
+
+        // OPEN -> CLOSED or LIQUIDATED is valid
+        if (
+            currentStatus === "OPEN" &&
+            newStatus !== "CLOSED" &&
+            newStatus !== "LIQUIDATED"
+        ) {
+            this.logger.debug(
+                {
+                    id: positionId,
+                    currentStatus,
+                    newStatus,
+                },
+                "Position status transition failed: invalid transition"
+            );
+            throw new BadRequestError(
+                `Invalid position status transition from ${currentStatus} to ${newStatus}`
+            );
+        }
+    }
+
+    /**
+     * Validate that required fields are present when closing a position
+     *
+     * @param position - Position update data
+     * @param positionId - Position ID for logging
+     * @throws BadRequestError if required fields are missing
+     */
+    private validatePositionClosingFields(
+        position: PositionUpdateInput,
+        positionId: string
+    ): void {
+        if (
+            position.position_status === "CLOSED" ||
+            position.position_status === "LIQUIDATED"
+        ) {
+            if (!position.exit_price) {
+                this.logger.debug(
+                    { id: positionId },
+                    "Position closing validation failed: exit_price is required"
+                );
+                throw new BadRequestError(
+                    "exit_price is required when closing a position"
+                );
+            }
+            if (!position.closed_at) {
+                this.logger.debug(
+                    { id: positionId },
+                    "Position closing validation failed: closed_at is required"
+                );
+                throw new BadRequestError(
+                    "closed_at is required when closing a position"
+                );
+            }
+        }
+    }
+
+    /**
+     * Validate position status on creation
+     *
+     * @param positionStatus - Position status to validate
+     * @throws BadRequestError if position is created with closed status
+     */
+    private validatePositionStatusOnCreation(
+        positionStatus: string | undefined | null
+    ): void {
+        if (positionStatus) {
+            if (
+                positionStatus === "CLOSED" ||
+                positionStatus === "LIQUIDATED"
+            ) {
+                throw new BadRequestError(
+                    "Positions must be created with status OPEN. Use update operation to close positions."
+                );
+            }
+        }
+    }
+
+    /**
+     * Validate all business rules for position creation
+     *
+     * @param position - Position creation data
+     * @throws BadRequestError if validation fails
+     */
+    private validatePositionCreation(position: PositionCreateInput): void {
+        this.validateSessionId(position.session_id);
+        this.validateSide(position.side);
+        this.validateEntryPrice(position.entry_price);
+        this.validateQuantityLots(position.quantity_lots);
+        this.validateOpenedAt(position.opened_at);
+        this.validateOptionalPrice(position.tp_price, "tp_price");
+        this.validateOptionalPrice(position.sl_price, "sl_price");
+        this.validatePositionStatusOnCreation(position.position_status);
+    }
+
+    /**
+     * Validate all business rules for position update
+     *
+     * @param position - Position update data
+     * @param existing - Existing position entity
+     * @param positionId - Position ID for logging
+     * @throws BadRequestError if validation fails
+     */
+    private validatePositionUpdate(
+        position: PositionUpdateInput,
+        existing: Position,
+        positionId: string
+    ): void {
+        // Validate position status transition
+        if (position.position_status !== undefined) {
+            this.validatePositionStatusTransition(
+                position.position_status,
+                existing.position_status,
+                positionId
+            );
+        }
+
+        // Validate closing fields if status is being changed to CLOSED/LIQUIDATED
+        this.validatePositionClosingFields(position, positionId);
+
+        // Validate closed_at >= opened_at if closed_at is being updated
+        if (position.closed_at !== undefined && position.closed_at !== null) {
+            const openedAt = new Date(existing.opened_at);
+            const closedAt = new Date(position.closed_at);
+            this.validateClosedAtAgainstOpenedAt(
+                closedAt,
+                openedAt,
+                positionId
+            );
+        }
+
+        // Validate optional price fields
+        this.validateOptionalPrice(position.exit_price, "exit_price");
+        this.validateOptionalPrice(position.tp_price, "tp_price");
+        this.validateOptionalPrice(position.sl_price, "sl_price");
+
+        // Validate cost fields are non-negative
+        this.validateOptionalCost(position.commission_cost, "commission_cost");
+        this.validateOptionalCost(position.slippage_cost, "slippage_cost");
+        this.validateOptionalCost(position.spread_cost, "spread_cost");
+    }
+
+    // ============================================================================
+    // AUTHORIZATION METHODS
+    // ============================================================================
+
+    /**
+     * Check if user can access a position via its session
+     *
+     * @param sessionId - Session ID to check
+     * @param user - User entity making the request
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    private async ensureSessionAccess(
+        sessionId: number,
+        user: User
+    ): Promise<void> {
+        await sessionsService.getSessionById(sessionId.toString(), user);
+    }
+
+    /**
+     * Verify user has access to a position without throwing
+     *
+     * Used for filtering lists of positions. Returns true if user has access,
+     * false otherwise. Logs access denials for security auditing.
+     *
+     * @param position - Position entity to check access for
+     * @param user - User entity making the request
+     * @returns true if user has access, false otherwise
+     */
+    private async verifyPositionAccess(
+        position: Position,
+        user: User
+    ): Promise<boolean> {
+        try {
+            await this.ensureSessionAccess(position.session_id, user);
+            return true;
+        } catch (error) {
+            const reason =
+                error instanceof NotFoundError
+                    ? "session not found"
+                    : error instanceof ForbiddenError
+                      ? "user does not own session"
+                      : "unknown error";
+
+            this.logger.debug(
+                {
+                    positionId: position.id,
+                    sessionId: position.session_id,
+                    userId: user.id,
+                    userRole: user.role,
+                    reason,
+                },
+                "Position access denied"
+            );
+
+            return false;
+        }
+    }
+
+    // ============================================================================
+    // CACHE METHODS
+    // ============================================================================
+
+    /**
+     * Get position from cache with access verification
+     *
+     * @param numericId - Numeric position ID
+     * @param user - User entity making the request
+     * @returns Cached position or null if not found or access denied
+     */
+    private async getCachedPositionWithAccess(
+        numericId: number,
+        user: User
+    ): Promise<Position | null> {
+        const cachedPosition =
+            await positionsCacheRepo.getCachedPosition(numericId);
+        if (!cachedPosition) {
+            return null;
+        }
+
+        this.logger.trace({ id: numericId }, "Position found in cache");
+
+        try {
+            await this.ensureSessionAccess(cachedPosition.session_id, user);
+            return cachedPosition;
+        } catch (error) {
+            // If NotFoundError, session doesn't exist - invalidate cache and return null
+            if (error instanceof NotFoundError) {
+                await positionsCacheRepo.invalidateCachedPosition(numericId);
+                return null;
+            }
+            // If ForbiddenError or any other error, rethrow immediately without invalidating
+            // (cache is valid, user just doesn't have access)
+            throw error;
+        }
+    }
+
+    /**
+     * Cache a position after retrieval
+     *
+     * @param position - Position entity to cache
+     */
+    private async cachePosition(position: Position): Promise<void> {
+        await positionsCacheRepo.cachePosition(position.id, position);
+        this.logger.trace({ id: position.id }, "Position cached");
+    }
+
+    /**
+     * Invalidate a cached position
+     *
+     * @param numericId - Numeric position ID
+     */
+    private async invalidateCachedPosition(numericId: number): Promise<void> {
+        await positionsCacheRepo.invalidateCachedPosition(numericId);
+        this.logger.trace({ id: numericId }, "Position invalidated from cache");
+    }
+
+    // ============================================================================
+    // QUERY BUILDING METHODS
+    // ============================================================================
+
+    /**
+     * Build session filter for position queries
+     *
+     * @param sessionId - Optional session ID to filter by
+     * @param user - User entity making the request
+     * @returns Where clause for session filtering
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     */
+    private async buildSessionFilter(
+        sessionId: string | undefined,
+        user: User
+    ): Promise<PositionWhereInput> {
+        if (sessionId) {
+            const numericSessionId = Number(sessionId);
+            await this.ensureSessionAccess(numericSessionId, user);
+            return { session_id: { equals: numericSessionId } };
+        }
+
+        // Get all sessions for the user
+        const userSessions = await sessionsService.getAllSessions(
+            user.role === "ADMIN" ? undefined : user.id
+        );
+        const sessionIds = userSessions.map((s) => s.id);
+
+        if (sessionIds.length === 0) {
+            // User has no sessions - return filter that matches nothing
+            return { session_id: { in: [] } };
+        }
+
+        return { session_id: { in: sessionIds } };
+    }
+
+    /**
+     * Build status filter for position queries
+     *
+     * @param status - Optional position status to filter by
+     * @returns Where clause for status filtering or undefined
+     */
+    private buildStatusFilter(
+        status: PositionStatus | undefined
+    ): PositionWhereInput | undefined {
+        if (!status) {
+            return undefined;
+        }
+
+        return { position_status: { equals: status } };
+    }
+
+    /**
+     * Combine session filter with status filter
+     *
+     * @param sessionFilter - Session filter where clause
+     * @param statusFilter - Optional status filter where clause
+     * @returns Combined where clause
+     */
+    private combineFilters(
+        sessionFilter: PositionWhereInput,
+        statusFilter: PositionWhereInput | undefined
+    ): PositionWhereInput {
+        if (!statusFilter) {
+            return sessionFilter;
+        }
+
+        return {
+            AND: [sessionFilter, statusFilter],
+        };
+    }
+
+    // ============================================================================
+    // PUBLIC METHODS
+    // ============================================================================
+
+    /**
+     * Get a position by ID with caching
+     *
+     * @param id - Position ID
+     * @param user - User entity making the request (for authorization)
+     * @returns Position entity
+     * @throws NotFoundError if position doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     */
+    async getPositionById(id: string, user: User): Promise<Position> {
+        const numericId = Number(id);
+
+        // Try to get from cache first
+        const cachedPosition = await this.getCachedPositionWithAccess(
+            numericId,
+            user
+        );
+        if (cachedPosition) {
+            return cachedPosition;
+        }
+
+        // Fetch from database
+        this.logger.trace(
+            { id },
+            "Position not found in cache, fetching from database"
+        );
+        const position = await positionsRepo.getPositionById(id);
+        if (!position) {
+            this.logger.debug(
+                { id },
+                "Position not found, throwing not found error"
+            );
+            throw new NotFoundError("Position not found");
+        }
+
+        // Verify access
+        await this.ensureSessionAccess(position.session_id, user);
+
+        // Cache and return
+        await this.cachePosition(position);
+        return position;
+    }
+
+    /**
+     * Get all positions with optional filtering, pagination, and sorting
+     *
+     * @param sessionId - Optional session ID to filter positions by
+     * @param user - User entity making the request (for authorization)
+     * @param query - Optional query with status filter, pagination, and sorting
+     * @returns Array of position entities
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     */
+    async getAllPositions(
+        sessionId: string | undefined,
+        user: User,
+        query?: PositionQuery
+    ): Promise<Position[]> {
+        const {
+            status,
+            page = PAGINATION_CONSTANTS.DEFAULT_PAGE,
+            limit = PAGINATION_CONSTANTS.DEFAULT_PAGE_LIMIT,
+            sort,
+            order = "desc",
+        } = query ?? {};
+
+        // Build session filter
+        const sessionFilter = await this.buildSessionFilter(sessionId, user);
+
+        // Handle empty filter case (user has no sessions)
+        if (sessionFilter.session_id && "in" in sessionFilter.session_id) {
+            const sessionIds = sessionFilter.session_id.in;
+            if (sessionIds?.length === 0) {
+                return [];
+            }
+        }
+
+        // Build status filter
+        const statusFilter = this.buildStatusFilter(status);
+
+        // Combine filters
+        const where = this.combineFilters(sessionFilter, statusFilter);
+
+        // Build order by using shared utility
+        const orderBy = buildOrderBy<PositionSortField>(
+            sort,
+            order,
+            VALID_SORT_FIELDS
+        ) as PositionOrderBy | undefined;
+
+        // Build pagination using shared utility
+        const { skip, take } = buildPagination(page, limit);
+
+        // Execute query
+        const positions = await positionsRepo.getAllPositions({
+            where,
+            skip,
+            take,
+            orderBy,
+        });
+
+        // Filter by access using shared utility
+        const result = await filterByAccess(
+            positions,
+            (position) => this.verifyPositionAccess(position, user),
+            this.logger,
+            { userId: user.id, userRole: user.role, entityType: "Position" }
+        );
+
+        return result.accessible;
+    }
+
+    /**
+     * Create a new position
+     *
+     * Validates that the session exists and user owns it before creating the position.
+     * Business logic validations are handled by validatePositionCreation.
+     *
+     * @param position - Position creation data
+     * @param user - User entity making the request (for authorization)
+     * @returns Created position entity
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own session and isn't admin
+     * @throws BadRequestError if validation fails
+     */
+    async createPosition(
+        position: PositionCreateInput,
+        user: User
+    ): Promise<Position> {
+        // Validate business rules
+        this.validatePositionCreation(position);
+
+        // Validate session access (session_id is guaranteed after validation)
+        await this.ensureSessionAccess(position.session_id as number, user);
+
+        this.logger.trace(
+            { session_id: position.session_id, user_id: user.id },
+            "Creating position"
+        );
+
+        const created = await positionsRepo.createPosition(position);
+        this.logger.debug({ id: created.id }, "Position created");
+
+        await this.cachePosition(created);
+        return created;
+    }
+
+    /**
+     * Check if the update represents a position closing operation
+     *
+     * A position is being closed when:
+     * - The existing position is OPEN
+     * - The new status is CLOSED or LIQUIDATED
+     * - exit_price and closed_at are provided
+     *
+     * @param position - Position update data
+     * @param existing - Existing position entity
+     * @returns true if this is a closing operation
+     */
+    private isClosingPosition(
+        position: PositionUpdateInput,
+        existing: Position
+    ): boolean {
+        const isStatusChangingToClosed =
+            position.position_status === "CLOSED" ||
+            position.position_status === "LIQUIDATED";
+
+        const isCurrentlyOpen = existing.position_status === "OPEN";
+
+        const hasClosingData =
+            position.exit_price !== undefined &&
+            position.closed_at !== undefined;
+
+        return isStatusChangingToClosed && isCurrentlyOpen && hasClosingData;
+    }
+
+    /**
+     * Update an existing position
+     *
+     * If the update is a position closing operation (status changing to CLOSED/LIQUIDATED
+     * with exit_price and closed_at), delegates to the position closing service to
+     * automatically calculate PnL, apply trading costs, and create transactions.
+     *
+     * @param id - Position ID
+     * @param position - Position update data
+     * @param user - User entity making the request (for authorization)
+     * @returns Updated position entity
+     * @throws NotFoundError if position doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     * @throws BadRequestError if validation fails
+     */
+    async updatePosition(
+        id: string,
+        position: PositionUpdateInput,
+        user: User
+    ): Promise<Position> {
+        const existing = await positionsRepo.getPositionById(id);
+        if (!existing) {
+            this.logger.debug(
+                { id },
+                "Position not found, throwing not found error"
+            );
+            throw new NotFoundError("Position not found");
+        }
+
+        // Check session access
+        await this.ensureSessionAccess(existing.session_id, user);
+
+        // Detect if this is a position closing operation
+        if (this.isClosingPosition(position, existing)) {
+            this.logger.debug(
+                { id, newStatus: position.position_status },
+                "Position closing detected, delegating to closing service"
+            );
+
+            // Delegate to position closing service for automatic PnL calculation
+            const result = await positionClosingService.closePosition(
+                id,
+                position.exit_price!,
+                position.closed_at!,
+                user,
+                position.position_status as "CLOSED" | "LIQUIDATED"
+            );
+
+            return result.position;
+        }
+
+        // Validate business rules for non-closing updates
+        this.validatePositionUpdate(position, existing, id);
+
+        const updated = await positionsRepo.updatePosition(id, position);
+        this.logger.debug({ id: updated.id }, "Position updated");
+
+        await this.cachePosition(updated);
+        return updated;
+    }
+
+    /**
+     * Delete a position
+     *
+     * @param id - Position ID
+     * @param user - User entity making the request (for authorization)
+     * @throws NotFoundError if position doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     */
+    async deletePosition(id: string, user: User): Promise<void> {
+        const existing = await positionsRepo.getPositionById(id);
+        if (!existing) {
+            this.logger.debug(
+                { id },
+                "Position not found, throwing not found error"
+            );
+            throw new NotFoundError("Position not found");
+        }
+
+        // Check session access
+        await this.ensureSessionAccess(existing.session_id, user);
+
+        await positionsRepo.deletePosition(id);
+        this.logger.debug({ id }, "Position deleted");
+
+        await this.invalidateCachedPosition(Number(id));
+    }
+
+    /**
+     * Close all open positions for a session
+     *
+     * Closes all OPEN positions for the specified session using the current market price
+     * at the session's current_time. Each position is closed sequentially to ensure
+     * accurate balance updates and transaction creation.
+     *
+     * This method:
+     * 1. Validates session exists and user has access
+     * 2. Gets session with instrument data
+     * 3. Retrieves all OPEN positions for the session
+     * 4. Gets current market price from last M1 candle at session.current_time
+     * 5. Closes each position sequentially using position closing service
+     * 6. Refreshes session balance after each close for accuracy
+     * 7. Collects results and errors
+     *
+     * @param sessionId - Session ID
+     * @param user - User entity making the request (for authorization)
+     * @returns Summary of the close all operation
+     * @throws NotFoundError if session doesn't exist
+     * @throws ForbiddenError if user doesn't own the session and isn't admin
+     * @throws BadRequestError if no price data is available
+     */
+    async closeAllPositions(
+        sessionId: string,
+        user: User
+    ): Promise<CloseAllPositionsResult> {
+        this.logger.debug(
+            { sessionId, userId: user.id },
+            "Starting close all positions operation"
+        );
+
+        // 1. Get session with instrument (includes access check)
+        const session = await sessionsRepo.getSessionWithInstrument(sessionId);
+        if (!session) {
+            this.logger.debug({ sessionId }, "Session not found");
+            throw new NotFoundError("Session not found");
+        }
+
+        // 2. Validate user access
+        await this.ensureSessionAccess(session.id, user);
+
+        // 3. Get all OPEN positions for the session
+        // Use repository method that filters at database level
+        const allPositions = await positionsRepo.getOpenPositionsBySessionId(
+            session.id
+        );
+
+        if (allPositions.length === 0) {
+            this.logger.info(
+                { sessionId, userId: user.id },
+                "No open positions to close"
+            );
+            return {
+                closed: 0,
+                failed: 0,
+                total: 0,
+            };
+        }
+
+        this.logger.debug(
+            { sessionId, openPositionCount: allPositions.length },
+            "Found open positions to close"
+        );
+
+        // 4. Get current market price from last M1 candle at session.current_time
+        const candles =
+            await candlesRepo.getLastCandlesByInstrumentAndTimeframe(
+                session.instrument_id,
+                "M1",
+                session.current_time,
+                1
+            );
+
+        if (candles.length === 0) {
+            this.logger.debug(
+                {
+                    sessionId,
+                    instrumentId: session.instrument_id,
+                    currentTime: session.current_time,
+                },
+                "No candle data available for current price"
+            );
+            throw new BadRequestError(
+                "No price data available at current session time. Cannot close positions without market price."
+            );
+        }
+
+        const currentPrice = toNumber(candles[0]!.close);
+        const closedAt = session.current_time;
+
+        this.logger.debug(
+            {
+                sessionId,
+                currentPrice,
+                closedAt,
+                positionCount: allPositions.length,
+            },
+            "Closing all positions with current market price"
+        );
+
+        // 5. Close each position sequentially
+        const results: CloseAllPositionsResult = {
+            closed: 0,
+            failed: 0,
+            total: allPositions.length,
+            errors: [],
+        };
+
+        for (const position of allPositions) {
+            try {
+                // Close position using position closing service
+                // Note: positionClosingService.closePosition() gets the session fresh
+                // from the database each time, ensuring accurate balance calculations
+                const closingResult =
+                    await positionClosingService.closePosition(
+                        position.id.toString(),
+                        currentPrice,
+                        closedAt,
+                        user,
+                        "CLOSED"
+                    );
+
+                results.closed++;
+
+                this.logger.debug(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        realizedPnl: closingResult.netPnL,
+                    },
+                    "Position closed successfully"
+                );
+            } catch (error) {
+                results.failed++;
+
+                const errorMessage =
+                    error instanceof Error
+                        ? error.message
+                        : (String(error) ?? "Unknown error");
+
+                const errorEntry = {
+                    positionId: position.id.toString(),
+                    error: errorMessage,
+                };
+
+                results.errors = results.errors ?? [];
+                results.errors.push(errorEntry);
+
+                this.logger.warn(
+                    {
+                        positionId: position.id,
+                        sessionId,
+                        error: errorMessage,
+                    },
+                    "Failed to close position, continuing with others"
+                );
+
+                // Continue closing other positions even if one fails
+            }
+        }
+
+        this.logger.info(
+            {
+                sessionId,
+                userId: user.id,
+                closed: results.closed,
+                failed: results.failed,
+                total: results.total,
+            },
+            "Close all positions operation completed"
+        );
+
+        return results;
+    }
+}
+
+export default new PositionsService();

@@ -2,16 +2,17 @@
 
 ## USER
 
-| Attribute           | Type     | Size | Constraints              | Description                                        | Domain                    |
-| ------------------- | -------- | ---- | ------------------------ | -------------------------------------------------- | ------------------------- |
-| email               | String   | -    | UNIQUE, NOT NULL         | Email address of the user, used for authentication | Valid email format        |
-| password_hash       | String   | -    | NOT NULL                 | Hashed password for user authentication            | Encrypted string          |
-| role                | Enum     | -    | NOT NULL, DEFAULT: USER  | User role defining access level                    | ANONYMOUS, USER, ADMIN    |
-| is_banned           | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if the user account is banned            | true, false               |
-| stripe_customer_id  | String   | -    | NULLABLE, UNIQUE         | Stripe customer identifier for billing             | Stripe customer ID format |
-| password_reset_code | String   | -    | NULLABLE                 | Temporary code for password reset functionality    | Alphanumeric string       |
-| created_at          | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the user account was created        | ISO 8601 datetime         |
-| updated_at          | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the user record was last modified   | ISO 8601 datetime         |
+| Attribute                 | Type     | Size | Constraints              | Description                                             | Domain                    |
+| ------------------------- | -------- | ---- | ------------------------ | ------------------------------------------------------- | ------------------------- |
+| email                     | String   | -    | UNIQUE, NOT NULL         | Email address of the user, used for authentication      | Valid email format        |
+| password_hash             | String   | -    | NOT NULL                 | Hashed password for user authentication                 | Encrypted string          |
+| role                      | Enum     | -    | NOT NULL, DEFAULT: USER  | User role defining access level                         | ANONYMOUS, USER, ADMIN    |
+| is_banned                 | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if the user account is banned                 | true, false               |
+| stripe_customer_id        | String   | -    | NULLABLE, UNIQUE         | Stripe customer identifier for billing                  | Stripe customer ID format |
+| password_reset_code       | String   | -    | NULLABLE                 | Temporary 6-digit code for password reset functionality | Numeric string (6 digits) |
+| password_reset_expires_at | DateTime | -    | NULLABLE                 | Expiration timestamp for the password reset code        | ISO 8601 datetime or NULL |
+| created_at                | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the user account was created             | ISO 8601 datetime         |
+| updated_at                | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the user record was last modified        | ISO 8601 datetime         |
 
 ---
 
@@ -30,31 +31,30 @@
 
 ## PLAN
 
-| Attribute         | Type     | Size | Constraints              | Description                                        | Domain                                  |
-| ----------------- | -------- | ---- | ------------------------ | -------------------------------------------------- | --------------------------------------- |
-| code              | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan | Alphanumeric code                       |
-| stripe_product_id | String   | -    | NOT NULL                 | Stripe product identifier                          | Stripe product ID format                |
-| stripe_price_id   | String   | -    | NOT NULL                 | Stripe price identifier                            | Stripe price ID format                  |
-| currency          | String   | 3    | NOT NULL                 | Currency code for the plan price                   | ISO 4217 currency code (e.g., USD, EUR) |
-| price             | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                     | Positive decimal number                 |
-| created_at        | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                | ISO 8601 datetime                       |
-| updated_at        | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified   | ISO 8601 datetime                       |
+| Attribute           | Type     | Size | Constraints              | Description                                                            | Domain                                  |
+| ------------------- | -------- | ---- | ------------------------ | ---------------------------------------------------------------------- | --------------------------------------- |
+| code                | String   | -    | UNIQUE, NOT NULL         | Internal code identifier for the subscription plan                     | Alphanumeric code                       |
+| stripe_product_id   | String   | -    | NOT NULL                 | Stripe product identifier                                              | Stripe product ID format                |
+| stripe_price_id     | String   | -    | NOT NULL                 | Stripe price identifier                                                | Stripe price ID format                  |
+| currency            | String   | 3    | NOT NULL                 | Currency code for the plan price                                       | ISO 4217 currency code (e.g., USD, EUR) |
+| price               | Decimal  | 10,2 | NOT NULL                 | Price of the subscription plan                                         | Positive decimal number                 |
+| max_active_sessions | Integer  | -    | NOT NULL, DEFAULT: 1     | Maximum number of active (non-archived) sessions allowed for this plan | Positive integer                        |
+| created_at          | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the plan was created                                    | ISO 8601 datetime                       |
+| updated_at          | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the plan record was last modified                       | ISO 8601 datetime                       |
 
 ---
 
 ## SUBSCRIPTION
 
-| Attribute              | Type     | Size | Constraints              | Description                                              | Domain                                    |
-| ---------------------- | -------- | ---- | ------------------------ | -------------------------------------------------------- | ----------------------------------------- |
-| stripe_subscription_id | String   | -    | UNIQUE, NOT NULL         | Stripe subscription identifier                           | Stripe subscription ID format             |
-| status                 | Enum     | -    | NOT NULL                 | Current status of the subscription                       | active, canceled, trialing, active_unpaid |
-| current_period_start   | DateTime | -    | NOT NULL                 | Start date of the current billing period                 | ISO 8601 datetime                         |
-| current_period_end     | DateTime | -    | NOT NULL                 | End date of the current billing period                   | ISO 8601 datetime                         |
-| cancel_at_period_end   | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if subscription will be canceled at period end | true, false                               |
-| canceled_at            | DateTime | -    | NULLABLE                 | Timestamp when the subscription was canceled             | ISO 8601 datetime or NULL                 |
-| trial_end              | DateTime | -    | NULLABLE                 | End date of the trial period, if applicable              | ISO 8601 datetime or NULL                 |
-| created_at             | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the subscription was created              | ISO 8601 datetime                         |
-| updated_at             | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the subscription record was last modified | ISO 8601 datetime                         |
+| Attribute              | Type     | Size | Constraints              | Description                                              | Domain                        |
+| ---------------------- | -------- | ---- | ------------------------ | -------------------------------------------------------- | ----------------------------- |
+| stripe_subscription_id | String   | -    | UNIQUE, NOT NULL         | Stripe subscription identifier                           | Stripe subscription ID format |
+| status                 | Enum     | -    | NOT NULL                 | Current status of the subscription                       | active, canceled              |
+| current_period_start   | DateTime | -    | NOT NULL                 | Start date of the current billing period                 | ISO 8601 datetime             |
+| current_period_end     | DateTime | -    | NOT NULL                 | End date of the current billing period                   | ISO 8601 datetime             |
+| cancel_at_period_end   | Boolean  | -    | NOT NULL, DEFAULT: false | Indicates if subscription will be canceled at period end | true, false                   |
+| created_at             | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the subscription was created              | ISO 8601 datetime             |
+| updated_at             | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the subscription record was last modified | ISO 8601 datetime             |
 
 ---
 
@@ -101,17 +101,20 @@
 
 ## CANDLE
 
-| Attribute  | Type     | Size | Constraints              | Description                                        | Domain                                    |
-| ---------- | -------- | ---- | ------------------------ | -------------------------------------------------- | ----------------------------------------- |
-| timeframe  | Enum     | -    | NOT NULL                 | Timeframe of the candle                            | M1, M5, M10, M15, M30, H1, H2, H4, D1, W1 |
-| ts         | DateTime | -    | NOT NULL                 | Timestamp of the candle (start of the period)      | ISO 8601 datetime                         |
-| open       | Decimal  | 18,8 | NOT NULL                 | Opening price of the candle                        | Positive decimal number                   |
-| high       | Decimal  | 18,8 | NOT NULL                 | Highest price during the candle period             | Positive decimal number, >= open, >= low  |
-| low        | Decimal  | 18,8 | NOT NULL                 | Lowest price during the candle period              | Positive decimal number, <= open, <= high |
-| close      | Decimal  | 18,8 | NOT NULL                 | Closing price of the candle                        | Positive decimal number                   |
-| volume     | Decimal  | 18,8 | NOT NULL                 | Trading volume for the candle period               | Positive decimal number                   |
-| created_at | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the candle record was created       | ISO 8601 datetime                         |
-| updated_at | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the candle record was last modified | ISO 8601 datetime                         |
+| Attribute     | Type     | Size | Constraints                   | Description                                        | Domain                                    |
+| ------------- | -------- | ---- | ----------------------------- | -------------------------------------------------- | ----------------------------------------- |
+| instrument_id | Integer  | -    | NOT NULL, FK → INSTRUMENT(id) | Instrument associated with the candle              | Existing instrument identifier            |
+| timeframe     | Enum     | -    | NOT NULL                      | Timeframe of the candle                            | M1, M5, M10, M15, M30, H1, H2, H4, D1, W1 |
+| ts            | DateTime | -    | NOT NULL                      | Timestamp of the candle (start of the period)      | ISO 8601 datetime                         |
+| open          | Decimal  | 18,8 | NOT NULL                      | Opening price of the candle                        | Positive decimal number                   |
+| high          | Decimal  | 18,8 | NOT NULL                      | Highest price during the candle period             | Positive decimal number, >= open, >= low  |
+| low           | Decimal  | 18,8 | NOT NULL                      | Lowest price during the candle period              | Positive decimal number, <= open, <= high |
+| close         | Decimal  | 18,8 | NOT NULL                      | Closing price of the candle                        | Positive decimal number                   |
+| volume        | Decimal  | 18,8 | NOT NULL                      | Trading volume for the candle period               | Positive decimal number                   |
+| created_at    | DateTime | -    | NOT NULL, DEFAULT: now()      | Timestamp when the candle record was created       | ISO 8601 datetime                         |
+| updated_at    | DateTime | -    | NOT NULL, AUTO UPDATE         | Timestamp when the candle record was last modified | ISO 8601 datetime                         |
+
+> Primary Key: **(instrument_id, timeframe, ts)**
 
 ---
 
@@ -126,6 +129,7 @@
 | current_time        | DateTime | -    | NOT NULL                    | Current timestamp in the session playback           | ISO 8601 datetime, >= start_time                                                                                |
 | end_time            | DateTime | -    | NULLABLE                    | End timestamp of the trading session                | ISO 8601 datetime or NULL, >= start_time                                                                        |
 | initial_balance     | Decimal  | 18,8 | NOT NULL                    | Initial account balance for the session             | Positive decimal number                                                                                         |
+| current_balance     | Decimal  | 18,8 | NOT NULL                    | Current account balance for the session             | Non-negative decimal number                                                                                     |
 | leverage            | Integer  | -    | NOT NULL, DEFAULT: 1        | Leverage multiplier for trading positions           | Positive integer (typically 1, 50, 100, 200, 500, 1000)                                                         |
 | spread_pts          | Decimal  | 10,4 | NOT NULL, DEFAULT: 0        | Spread cost in points                               | Non-negative decimal number                                                                                     |
 | slippage_pts        | Decimal  | 10,4 | NOT NULL, DEFAULT: 0        | Slippage cost in points                             | Non-negative decimal number                                                                                     |
@@ -137,23 +141,24 @@
 
 ## POSITION
 
-| Attribute       | Type     | Size | Constraints              | Description                                          | Domain                                   |
-| --------------- | -------- | ---- | ------------------------ | ---------------------------------------------------- | ---------------------------------------- |
-| position_status | Enum     | -    | NOT NULL, DEFAULT: OPEN  | Current status of the trading position               | OPEN, CLOSED, LIQUIDATED                 |
-| side            | Enum     | -    | NOT NULL                 | Direction of the position                            | BUY, SELL                                |
-| quantity_lots   | Decimal  | 18,8 | NOT NULL                 | Size of the position in lots                         | Positive decimal number                  |
-| tp_price        | Decimal  | 18,8 | NULLABLE                 | Take profit price level                              | Positive decimal number or NULL          |
-| sl_price        | Decimal  | 18,8 | NULLABLE                 | Stop loss price level                                | Positive decimal number or NULL          |
-| entry_price     | Decimal  | 18,8 | NOT NULL                 | Price at which the position was opened               | Positive decimal number                  |
-| exit_price      | Decimal  | 18,8 | NULLABLE                 | Price at which the position was closed               | Positive decimal number or NULL          |
-| opened_at       | DateTime | -    | NOT NULL                 | Timestamp when the position was opened               | ISO 8601 datetime                        |
-| closed_at       | DateTime | -    | NULLABLE                 | Timestamp when the position was closed               | ISO 8601 datetime or NULL, >= opened_at  |
-| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for the position             | Decimal number (can be negative) or NULL |
-| commission_cost | Decimal  | 18,8 | NULLABLE                 | Total commission cost for the position               | Non-negative decimal number or NULL      |
-| slippage_cost   | Decimal  | 18,8 | NULLABLE                 | Total slippage cost for the position                 | Non-negative decimal number or NULL      |
-| spread_cost     | Decimal  | 18,8 | NULLABLE                 | Total spread cost for the position                   | Non-negative decimal number or NULL      |
-| created_at      | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the position was created              | ISO 8601 datetime                        |
-| updated_at      | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the position record was last modified | ISO 8601 datetime                        |
+| Attribute       | Type     | Size | Constraints              | Description                                                               | Domain                                   |
+| --------------- | -------- | ---- | ------------------------ | ------------------------------------------------------------------------- | ---------------------------------------- |
+| position_status | Enum     | -    | NOT NULL, DEFAULT: OPEN  | Current status of the trading position                                    | OPEN, CLOSED, LIQUIDATED                 |
+| side            | Enum     | -    | NOT NULL                 | Direction of the position                                                 | BUY, SELL                                |
+| quantity_lots   | Decimal  | 18,8 | NOT NULL                 | Size of the position in lots                                              | Positive decimal number                  |
+| tp_price        | Decimal  | 18,8 | NULLABLE                 | Take profit price level                                                   | Positive decimal number or NULL          |
+| sl_price        | Decimal  | 18,8 | NULLABLE                 | Stop loss price level                                                     | Positive decimal number or NULL          |
+| entry_price     | Decimal  | 18,8 | NOT NULL                 | Price at which the position was opened                                    | Positive decimal number                  |
+| exit_price      | Decimal  | 18,8 | NULLABLE                 | Price at which the position was closed                                    | Positive decimal number or NULL          |
+| opened_at       | DateTime | -    | NOT NULL                 | Timestamp when the position was opened                                    | ISO 8601 datetime                        |
+| closed_at       | DateTime | -    | NULLABLE                 | Timestamp when the position was closed                                    | ISO 8601 datetime or NULL, >= opened_at  |
+| realized_pnl    | Decimal  | 18,8 | NULLABLE                 | Realized profit or loss for closed positions                              | Decimal number (can be negative) or NULL |
+| unrealized_pnl  | Decimal  | 18,8 | NULLABLE                 | Unrealized profit or loss for open positions (updated on bar advancement) | Decimal number (can be negative) or NULL |
+| commission_cost | Decimal  | 18,8 | NULLABLE                 | Total commission cost for the position                                    | Non-negative decimal number or NULL      |
+| slippage_cost   | Decimal  | 18,8 | NULLABLE                 | Total slippage cost for the position                                      | Non-negative decimal number or NULL      |
+| spread_cost     | Decimal  | 18,8 | NULLABLE                 | Total spread cost for the position                                        | Non-negative decimal number or NULL      |
+| created_at      | DateTime | -    | NOT NULL, DEFAULT: now() | Timestamp when the position was created                                   | ISO 8601 datetime                        |
+| updated_at      | DateTime | -    | NOT NULL, AUTO UPDATE    | Timestamp when the position record was last modified                      | ISO 8601 datetime                        |
 
 ---
 
@@ -241,8 +246,6 @@
 
 - **active**: Subscription is active and paid
 - **canceled**: Subscription has been canceled
-- **trialing**: Subscription is in trial period
-- **active_unpaid**: Subscription is active but payment is pending
 
 ---
 
@@ -251,8 +254,8 @@
 - **String**: Variable-length character string
 - **Integer**: Whole number (32-bit signed integer)
 - **Decimal (precision, scale)**: Fixed-precision decimal number
-  - First number: total number of digits
-  - Second number: number of digits after decimal point
+    - First number: total number of digits
+    - Second number: number of digits after decimal point
 - **Boolean**: Logical value (true/false)
 - **DateTime**: Date and time value (ISO 8601 format)
 - **Enum**: Enumerated type with predefined values

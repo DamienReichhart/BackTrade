@@ -7,83 +7,106 @@ import styles from "./CreateSubscriptionSection.module.css";
  * Create Subscription Section component props
  */
 interface CreateSubscriptionSectionProps {
-  /**
-   * Whether the create form is visible
-   */
-  isCreating: boolean;
+    /**
+     * Whether the create form is visible
+     */
+    isCreating: boolean;
 
-  /**
-   * Create form data
-   */
-  createForm: Partial<CreateSubscriptionRequest>;
+    /**
+     * Plan options for select
+     */
+    planOptions: Array<{ value: string; label: string }>;
 
-  /**
-   * Create form update handler
-   */
-  onFormChange: (form: Partial<CreateSubscriptionRequest>) => void;
+    /**
+     * Whether the form is submitting
+     */
+    isLoading: boolean;
 
-  /**
-   * Plan options for select
-   */
-  planOptions: Array<{ value: string; label: string }>;
+    /**
+     * Whether the user already has an active subscription
+     */
+    hasActiveSubscription: boolean;
 
-  /**
-   * Whether the form is submitting
-   */
-  isLoading: boolean;
+    /**
+     * Handler to start creating
+     */
+    onStartCreate: () => void;
 
-  /**
-   * Handler to start creating
-   */
-  onStartCreate: () => void;
+    /**
+     * Handler to cancel creating
+     */
+    onCancelCreate: () => void;
 
-  /**
-   * Handler to cancel creating
-   */
-  onCancelCreate: () => void;
+    /**
+     * Handler to submit the form
+     */
+    onSubmit: (data: CreateSubscriptionRequest) => void;
 
-  /**
-   * Handler to submit the form
-   */
-  onSubmit: () => void;
+    /**
+     * User ID for the form
+     */
+    userId: number;
 }
 
 /**
  * Create Subscription Section component
  *
- * Section containing the create subscription button and form
+ * Section containing the create subscription button and form.
+ * Shows a warning when user already has an active subscription.
  */
 export function CreateSubscriptionSection({
-  isCreating,
-  createForm,
-  onFormChange,
-  planOptions,
-  isLoading,
-  onStartCreate,
-  onCancelCreate,
-  onSubmit,
+    isCreating,
+    planOptions,
+    isLoading,
+    hasActiveSubscription,
+    onStartCreate,
+    onCancelCreate,
+    onSubmit,
+    userId,
 }: CreateSubscriptionSectionProps) {
-  return (
-    <div className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <h3 className={styles.sectionTitle}>Create New Subscription</h3>
-        {!isCreating && (
-          <Button variant="primary" size="small" onClick={onStartCreate}>
-            New Subscription
-          </Button>
-        )}
-      </div>
+    return (
+        <div className={styles.section}>
+            <div className={styles.sectionHeader}>
+                <h3 className={styles.sectionTitle}>Create New Subscription</h3>
+                {!isCreating && (
+                    <div className={styles.headerActions}>
+                        {hasActiveSubscription && (
+                            <span className={styles.warningBadge}>
+                                User has active subscription
+                            </span>
+                        )}
+                        <Button
+                            variant="primary"
+                            size="small"
+                            onClick={onStartCreate}
+                        >
+                            New Subscription
+                        </Button>
+                    </div>
+                )}
+            </div>
 
-      {isCreating && (
-        <CreateSubscriptionForm
-          form={createForm}
-          onFormChange={onFormChange}
-          planOptions={planOptions}
-          isLoading={isLoading}
-          onSubmit={onSubmit}
-          onCancel={onCancelCreate}
-        />
-      )}
-    </div>
-  );
+            {hasActiveSubscription && isCreating && (
+                <div className={styles.warningNotice}>
+                    <p className={styles.warningText}>
+                        <strong>Warning:</strong> This user already has an
+                        active subscription. Creating a new active subscription
+                        will be blocked by the system. You may only create a
+                        subscription with "canceled" status, or cancel the
+                        existing subscription first.
+                    </p>
+                </div>
+            )}
+
+            {isCreating && (
+                <CreateSubscriptionForm
+                    planOptions={planOptions}
+                    isLoading={isLoading}
+                    onSubmit={onSubmit}
+                    onCancel={onCancelCreate}
+                    userId={userId}
+                />
+            )}
+        </div>
+    );
 }

@@ -6,6 +6,6 @@ import type { Request, Response, NextFunction } from "express";
  * This ID is used for request tracing and logging.
  */
 export function requestId(req: Request, _res: Response, next: NextFunction) {
-  req.id = randomUUID();
-  next();
+    req.id = randomUUID();
+    next();
 }

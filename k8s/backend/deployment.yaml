@@ -1,91 +1,142 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backtrade-api
-  namespace: backtrade
-  labels:
-    app: api
-    component: backend
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: api
-      component: backend
-  template:
-    metadata:
-      labels:
+    name: backtrade-api
+    namespace: backtrade
+    labels:
         app: api
         component: backend
-    spec:
-      containers:
-        - name: api
-          image: reichhartdamien/backtrade-api:v1.0.0
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 3000
-              name: http
-              protocol: TCP
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 1000
-            capabilities:
-              drop:
-                - ALL
-          env:
-            - name: NODE_ENV
-              valueFrom:
-                secretKeyRef:
-                  name: backtrade-secrets
-                  key: NODE_ENV
-            - name: PORT
-              valueFrom:
-                secretKeyRef:
-                  name: backtrade-secrets
-                  key: PORT
-            - name: HOST
-              valueFrom:
-                secretKeyRef:
-                  name: backtrade-secrets
-                  key: HOST
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backtrade-secrets
-                  key: DATABASE_URL
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: backtrade-secrets
-                  key: JWT_SECRET
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-          livenessProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
-          startupProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 3000
-            initialDelaySeconds: 0
-            periodSeconds: 5
-            failureThreshold: 12
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: api
+            component: backend
+    template:
+        metadata:
+            labels:
+                app: api
+                component: backend
+        spec:
+            containers:
+                - name: api
+                  image: reichhartdamien/backtrade-api:v1.0.0
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 3000
+                        name: http
+                        protocol: TCP
+                  securityContext:
+                      allowPrivilegeEscalation: false
+                      runAsNonRoot: true
+                      runAsUser: 1000
+                      capabilities:
+                          drop:
+                              - ALL
+                  env:
+                      # Node Configuration
+                      - name: NODE_ENV
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: NODE_ENV
+                      - name: API_HOST
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_HOST
+                      - name: API_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_PORT
+                      - name: API_LOG_LEVEL
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_LOG_LEVEL
+                      - name: API_LOG_DIR
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: API_LOG_DIR
+                      # Database Configuration
+                      - name: DATABASE_URL
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: DATABASE_URL
+                      # Redis Configuration
+                      - name: REDIS_HOST
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REDIS_HOST
+                      - name: REDIS_PORT
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REDIS_PORT
+                      - name: REDIS_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REDIS_PASSWORD
+                      # Security Configuration
+                      - name: ACCESS_TOKEN_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: ACCESS_TOKEN_SECRET
+                      - name: REFRESH_TOKEN_SECRET
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REFRESH_TOKEN_SECRET
+                      - name: ACCESS_TOKEN_EXPIRATION
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: ACCESS_TOKEN_EXPIRATION
+                      - name: REFRESH_TOKEN_EXPIRATION
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: REFRESH_TOKEN_EXPIRATION
+                      # Cloudflare Tunnel (optional)
+                      - name: TUNNEL_TOKEN
+                        valueFrom:
+                            secretKeyRef:
+                                name: backtrade-secrets
+                                key: TUNNEL_TOKEN
+                                optional: true
+                  resources:
+                      requests:
+                          memory: "256Mi"
+                          cpu: "100m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+                  livenessProbe:
+                      httpGet:
+                          path: /api/v1/health
+                          port: 3000
+                      initialDelaySeconds: 30
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+                  readinessProbe:
+                      httpGet:
+                          path: /api/v1/health
+                          port: 3000
+                      initialDelaySeconds: 10
+                      periodSeconds: 5
+                      timeoutSeconds: 3
+                      failureThreshold: 3
+                  startupProbe:
+                      httpGet:
+                          path: /api/v1/health
+                          port: 3000
+                      initialDelaySeconds: 0
+                      periodSeconds: 5
+                      failureThreshold: 12

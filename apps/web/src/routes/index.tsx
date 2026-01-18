@@ -9,17 +9,17 @@ import { legalRoutes } from "./legal";
 import { InternalServerError } from "../features/errors";
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <InternalServerError />,
-    children: [
-      ...publicRoutes,
-      ...authRoutes,
-      ...legalRoutes,
-      ...dashboardRoutes,
-      ...sessionsRoutes,
-      ...errorsRoutes,
-    ],
-  },
+    {
+        path: "/",
+        element: <App />,
+        errorElement: <InternalServerError />,
+        children: [
+            ...publicRoutes,
+            ...authRoutes,
+            ...legalRoutes,
+            ...dashboardRoutes,
+            ...sessionsRoutes,
+            ...errorsRoutes,
+        ],
+    },
 ]);

@@ -1,0 +1,3 @@
+# Open source MinIO configuration
+# This file is kept for reference but open source MinIO uses environment variables
+# and command-line arguments directly, not this config file format.

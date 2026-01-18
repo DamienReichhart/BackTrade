@@ -8,10 +8,10 @@ import styles from "./Dashboard.module.css";
  * Main dashboard displaying trading sessions and overall statistics
  */
 export default function Dashboard() {
-  return (
-    <div className={styles.dashboard}>
-      <DashboardHeader />
-      <SessionList />
-    </div>
-  );
+    return (
+        <div className={styles.dashboard}>
+            <DashboardHeader />
+            <SessionList />
+        </div>
+    );
 }

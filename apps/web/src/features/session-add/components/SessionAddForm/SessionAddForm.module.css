@@ -3,68 +3,68 @@
  */
 
 .formContainer {
-  background: var(--color-surface);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
-  box-shadow: var(--shadow-md);
+    background: var(--color-surface);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
 }
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
 }
 
 .label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
 }
 
 .required {
-  color: var(--color-error);
+    color: var(--color-error);
 }
 
 .error {
-  font-size: var(--font-size-sm);
-  color: var(--color-error);
-  margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+    margin-top: var(--spacing-xs);
 }
 
 .helpText {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-top: var(--spacing-xs);
-  margin-bottom: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+    margin-bottom: 0;
 }
 
 .actions {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-  margin-top: var(--spacing-md);
-  padding-top: var(--spacing-lg);
-  border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .formContainer {
-    padding: var(--spacing-md);
-  }
+    .formContainer {
+        padding: var(--spacing-md);
+    }
 
-  .actions {
-    flex-direction: column-reverse;
-  }
+    .actions {
+        flex-direction: column-reverse;
+    }
 
-  .actions > * {
-    width: 100%;
-  }
+    .actions > * {
+        width: 100%;
+    }
 }
