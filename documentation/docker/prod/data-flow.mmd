@@ -1,4 +1,4 @@
-
+```mermaid
 sequenceDiagram
     participant User as Internet User
     participant CF as Cloudflare Tunnel
@@ -62,3 +62,4 @@ sequenceDiagram
     API->>Postgres: Commit Transaction
     Postgres-->>API: Success
     API->>Redis: Invalidate Related Cache
+```

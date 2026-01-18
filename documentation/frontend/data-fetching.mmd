@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Component
     participant APIHook as API Hook<br/>(useGet/usePost)
@@ -63,3 +64,4 @@ sequenceDiagram
     API-->>RequestUtil: Response
     RequestUtil->>ReactQuery: Update Cache
     ReactQuery-->>Component: { data, isSuccess }
+```

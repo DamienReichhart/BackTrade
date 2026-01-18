@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
     Start([Component makes API request]) --> PrepareRequest[Prepare request with accessToken]
     PrepareRequest --> SendRequest[Send API request<br/>Authorization: Bearer accessToken]
@@ -40,3 +41,4 @@ flowchart TD
     style UpdateAuthStore fill:#e8f5e9
     style RetryRequest fill:#fff3e0
     style LogoutUser fill:#ffcdd2
+```
