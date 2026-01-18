@@ -8,7 +8,7 @@ on:
                 required: false
                 default: PROD
     push:
-        branches: [main, feature/*]
+        branches: [main]
 
 jobs:
     deploy:
