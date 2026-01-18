@@ -1,0 +1,90 @@
+```mermaid
+graph TB
+    subgraph "Security Layers"
+        direction TB
+
+        subgraph "Layer 1: Network Isolation"
+            PublicNet[Public Network<br/>192.168.252.0/24<br/>Exposed Services Only]
+            FrontendNet[Frontend Network<br/>192.168.251.0/24<br/>Application Layer]
+            BackendNet[Backend Network<br/>192.168.250.0/24<br/>Data Layer<br/>No Internet Access]
+        end
+
+        subgraph "Layer 2: Container Security"
+            NonRoot[Non-Root Users<br/>UID 1001: Node Services<br/>UID 101: Nginx Services]
+            CapDrop[Capability Dropping<br/>ALL capabilities dropped<br/>Minimal required added]
+            NoPrivEsc[No Privilege Escalation<br/>no-new-privileges:true]
+            Distroless[Distroless Images<br/>Frontend & Proxy<br/>Minimal Attack Surface]
+        end
+
+        subgraph "Layer 3: Access Control"
+            CloudflareTunnel[Cloudflare Tunnel<br/>Secure Remote Access<br/>No Open Ports]
+            ProxyAuth[Proxy Authentication<br/>Nginx Security Headers<br/>Rate Limiting Ready]
+            APIAuth[API Authentication<br/>JWT Tokens<br/>Refresh Token Rotation]
+            DBPassword[Database Passwords<br/>Environment Variables<br/>No Hardcoded Secrets]
+        end
+
+        subgraph "Layer 4: Data Protection"
+            EncryptedVolumes[Encrypted Volumes<br/>Docker Volume Encryption<br/>At Rest Protection]
+            TLSReady[TLS Ready<br/>Cloudflare TLS Termination<br/>End-to-End Encryption]
+            SecureSecrets[Secret Management<br/>Environment Variables<br/>No Secrets in Images]
+        end
+
+        subgraph "Layer 5: Runtime Security"
+            HealthChecks[Health Checks<br/>Service Monitoring<br/>Automatic Restart]
+            Logging[Structured Logging<br/>JSON Logs<br/>Size Limits: 10MB<br/>Rotation: 3-5 files]
+            ResourceLimits[Resource Limits<br/>CPU & Memory Limits<br/>Prevent DoS]
+        end
+    end
+
+    subgraph "Security Configuration Details"
+        direction LR
+
+        subgraph "Container Capabilities"
+            PostgresCaps["PostgreSQL:<br/>CHOWN, FOWNER,<br/>DAC_OVERRIDE,<br/>SETUID, SETGID"]
+            RabbitMQCaps["RabbitMQ:<br/>CHOWN, FOWNER,<br/>SETUID, SETGID,<br/>DAC_READ_SEARCH"]
+            OtherCaps["All Others:<br/>ALL Dropped<br/>No Capabilities"]
+        end
+
+        subgraph "User IDs"
+            NodeUser["Node Services<br/>UID: 1001<br/>GID: 1001"]
+            NginxUser["Nginx Services<br/>UID: 101<br/>GID: 101"]
+        end
+
+        subgraph "Network Security"
+            NoInternet["Backend Services<br/>No Internet Access<br/>Isolated Network"]
+            ProxyOnly["Proxy Only<br/>Port 80:8080<br/>Non-Privileged Port"]
+        end
+    end
+
+    PublicNet --> CloudflareTunnel
+    CloudflareTunnel --> ProxyAuth
+    ProxyAuth --> FrontendNet
+    FrontendNet --> APIAuth
+    APIAuth --> BackendNet
+
+    BackendNet --> NonRoot
+    BackendNet --> CapDrop
+    BackendNet --> NoPrivEsc
+
+    FrontendNet --> Distroless
+    PublicNet --> Distroless
+
+    BackendNet --> DBPassword
+    BackendNet --> SecureSecrets
+    BackendNet --> EncryptedVolumes
+
+    PublicNet --> TLSReady
+    CloudflareTunnel --> TLSReady
+
+    BackendNet --> HealthChecks
+    BackendNet --> Logging
+    BackendNet --> ResourceLimits
+
+    style PublicNet fill:#ffebee
+    style FrontendNet fill:#fff3e0
+    style BackendNet fill:#e8f5e9
+    style CloudflareTunnel fill:#4a90e2
+    style Distroless fill:#c03
+    style NonRoot fill:#ff6b6b
+    style CapDrop fill:#ff6b6b
+```
