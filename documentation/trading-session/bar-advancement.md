@@ -1,0 +1,68 @@
+```mermaid
+sequenceDiagram
+    participant Frontend
+    participant API as Backend API
+    participant SessionService as Sessions Service
+    participant BarService as Bar Advancement Service
+    participant PositionsRepo as Positions Repository
+    participant ClickHouse as ClickHouse
+    participant PositionService as Position Closing Service
+    participant MarginService as Margin Service
+
+    Note over Frontend,MarginService: Bar Advancement Process
+
+    Frontend->>API: PATCH /sessions/:id<br/>{ current_time: newTime }
+    API->>SessionService: updateSession(id, { current_time })
+    SessionService->>SessionService: Check if time advanced forward
+
+    alt Time Advanced Forward
+        SessionService->>BarService: processBarAdvancement(session, oldTime, newTime)
+
+        Note over BarService,ClickHouse: Fetch Candles
+        BarService->>ClickHouse: Get M1 candles<br/>WHERE ts > oldTime AND ts <= newTime
+        ClickHouse-->>BarService: Candles Array
+
+        Note over BarService,PositionService: Check Open Positions
+        BarService->>PositionsRepo: getAllPositions(sessionId, status: OPEN)
+        PositionsRepo-->>BarService: Open Positions
+
+        loop For Each Open Position
+            BarService->>BarService: Check TP/SL Levels<br/>Against Candle High/Low
+
+            alt TP Hit (Buy Position)
+                BarService->>PositionService: closePosition(positionId, tpPrice, closedAt)
+                PositionService->>PositionService: Calculate P&L
+                PositionService->>PositionsRepo: Update Position Status
+                PositionService-->>BarService: Position Closed
+            else SL Hit (Buy Position)
+                BarService->>PositionService: closePosition(positionId, slPrice, closedAt)
+                PositionService-->>BarService: Position Closed
+            else TP Hit (Sell Position)
+                BarService->>PositionService: closePosition(positionId, tpPrice, closedAt)
+                PositionService-->>BarService: Position Closed
+            else SL Hit (Sell Position)
+                BarService->>PositionService: closePosition(positionId, slPrice, closedAt)
+                PositionService-->>BarService: Position Closed
+            end
+        end
+
+        Note over BarService,MarginService: Check Margin Level
+        BarService->>MarginService: calculateMarginLevel(session)
+        MarginService->>PositionsRepo: Get All Open Positions
+        MarginService->>MarginService: Calculate Margin Used
+        MarginService->>MarginService: Calculate Equity
+        MarginService-->>BarService: Margin Level %
+
+        alt Margin Level < 50%
+            BarService->>PositionService: Liquidate All Positions<br/>Close at Current Price
+            PositionService->>PositionsRepo: Update All Positions<br/>Status: LIQUIDATED
+            PositionService-->>BarService: All Positions Liquidated
+        end
+
+        BarService-->>SessionService: Bar Advancement Result<br/>{ positionsClosed, marginLevel, equity }
+        SessionService->>SessionService: Update Session<br/>current_balance, current_equity
+    end
+
+    SessionService-->>API: Updated Session
+    API-->>Frontend: 200 OK + Session Data
+```
