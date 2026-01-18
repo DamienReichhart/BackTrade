@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Admin as Admin User
     participant UM as UserManagement
@@ -91,4 +92,5 @@ sequenceDiagram
     SubAPI-->>Hook: Updated subscriptions
     Hook-->>SubModal: Updated list
     SubModal->>SubModal: Re-render without deleted subscription
+```
 

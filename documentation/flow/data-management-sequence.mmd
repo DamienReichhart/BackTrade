@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     actor Client
     participant Controller as API Controller
@@ -119,6 +120,7 @@ sequenceDiagram
     ClickHouse-->>Queue: OK
     Queue->>DataRepo: updateDataset(id, {records_count, start_time, end_time})
     end
+```
 
     rect rgb(200, 255, 255)
     note over Client,PostgreSQL: DELETE OPERATION

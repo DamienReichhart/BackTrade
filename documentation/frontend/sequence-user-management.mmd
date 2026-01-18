@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Admin as Admin User
     participant UM as UserManagement
@@ -41,6 +42,7 @@ sequenceDiagram
     API-->>Hook: Sorted users
     Hook-->>UM: Updated users list
     UM->>UM: Re-render UserTable with sort indicators
+```
     
     Note over Admin,Backend: Pagination Flow
     

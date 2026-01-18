@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Worker as Worker Service
     participant PartProcessor as Part Processor
@@ -53,3 +54,4 @@ sequenceDiagram
     Note over Worker,DB: Data Validation Rules
     
     Note over Validator: - Date: YYYY-MM-DD format<br/>- Time: HH:MM:SS format<br/>- OHLC: Positive numbers<br/>- High >= Low<br/>- High >= Open, Close<br/>- Low <= Open, Close<br/>- Volume: Non-negative
+```

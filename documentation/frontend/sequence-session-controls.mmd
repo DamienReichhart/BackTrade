@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant User
     participant SessionControls
@@ -45,4 +46,5 @@ sequenceDiagram
     end
     
     Note over User,useSessionData: Other controls follow same pattern:<br/>- SpeedSelector: Updates speed_multiplier<br/>- SkipBarButton: Increments current_time<br/>- CloseAllButton: POST /positions/close-all<br/>- ArchiveButton: Sets status to ARCHIVED
+```
 

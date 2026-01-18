@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Service
     participant Controller
@@ -24,3 +25,4 @@ sequenceDiagram
     
     ErrorHandler->>ErrorHandler: Format Error Response<br/>{ error: { message, code?, details? } }
     ErrorHandler-->>Client: HTTP Response<br/>statusCode + Error Object
+```
