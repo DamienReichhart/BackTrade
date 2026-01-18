@@ -1,0 +1,54 @@
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant API as Backend API
+    participant DatasetsService as Datasets Service
+    participant MinIO as MinIO Storage
+    participant Queue as RabbitMQ Queue
+    participant Worker as Worker Service
+    participant SplitProcessor as File Split Processor
+
+    Note over Admin,SplitProcessor: File Upload & Splitting
+
+    Admin->>API: POST /datasets/:id/file<br/>Multipart Form Data (CSV)
+    API->>DatasetsService: uploadDatasetFile(id, file)
+
+    DatasetsService->>DatasetsService: Validate Dataset<br/>Check Status, Instrument
+    DatasetsService->>MinIO: Upload File<br/>datasets/{id}/raw/{filename}
+    MinIO-->>DatasetsService: File Uploaded
+
+    DatasetsService->>DatasetsService: Update Dataset Metadata<br/>file_name, uploaded_at
+    DatasetsService->>Queue: Publish DatasetFileSplit Job<br/>{ datasetId, fileName, bucket, path }
+    Queue-->>DatasetsService: Job Queued
+
+    DatasetsService-->>API: Success
+    API-->>Admin: 204 No Content
+
+    Note over Queue,SplitProcessor: Asynchronous File Splitting
+
+    Queue->>Worker: Consume DatasetFileSplit Job
+    Worker->>SplitProcessor: process(jobData)
+
+    SplitProcessor->>MinIO: Download File<br/>datasets/{id}/raw/{filename}
+    MinIO-->>SplitProcessor: File Buffer
+
+    SplitProcessor->>SplitProcessor: Stream File<br/>Read Line by Line
+    SplitProcessor->>SplitProcessor: Accumulate Lines<br/>Max 10,000 lines per part
+
+    loop For Each Part (10K lines)
+        SplitProcessor->>SplitProcessor: Create Part Content<br/>Join lines with newlines
+        SplitProcessor->>MinIO: Upload Part<br/>datasets/{id}/parts/part_{N}.csv
+        MinIO-->>SplitProcessor: Part Uploaded
+
+        SplitProcessor->>Queue: Publish DatasetPartProcess Job<br/>{ datasetId, partPath, partNumber,<br/>totalParts, instrumentId, timeframe }
+        Queue-->>SplitProcessor: Job Queued
+    end
+
+    SplitProcessor->>SplitProcessor: Update Dataset<br/>records_count (estimated)
+    SplitProcessor-->>Worker: Splitting Complete
+    Worker-->>Queue: Acknowledge Job
+
+    Note over Admin,SplitProcessor: Benefits of Splitting
+
+    Note over SplitProcessor: - Parallel Processing<br/>- Memory Efficiency<br/>- Error Recovery<br/>- Progress Tracking
+```

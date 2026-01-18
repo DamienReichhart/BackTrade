@@ -1,0 +1,45 @@
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API as Backend API
+    participant StripeService as Stripe Service
+    participant Stripe as Stripe API
+    participant DB as PostgreSQL
+
+    Note over User,DB: Portal Session Creation
+
+    User->>Frontend: Click Manage Subscription
+    Frontend->>API: POST /stripe/portal<br/>Authorization: Bearer token
+
+    API->>StripeService: createPortalSession(user)
+    StripeService->>DB: Get User with stripe_customer_id
+    DB-->>StripeService: User Record
+
+    alt No Stripe Customer ID
+        StripeService-->>API: Error: No Stripe Customer
+        API-->>Frontend: 400 Bad Request
+    else Has Customer ID
+        StripeService->>Stripe: Create Portal Session<br/>customer: customerId<br/>return_url: /dashboard/plans
+        Stripe-->>StripeService: { url }
+
+        StripeService-->>API: { url }
+        API-->>Frontend: 200 OK + { url }
+        Frontend->>Frontend: Redirect to Portal URL
+        Frontend-->>User: Stripe Customer Portal
+    end
+
+    Note over User,DB: Portal Actions
+
+    User->>Stripe: View Subscription Details
+    User->>Stripe: Update Payment Method
+    User->>Stripe: Cancel Subscription
+    User->>Stripe: Update Billing Address
+
+    Stripe->>API: Webhook Events<br/>subscription.updated<br/>subscription.deleted
+    API->>API: Process Webhooks<br/>Update Local Subscription State
+    API-->>Stripe: 200 OK
+
+    User->>Frontend: Return from Portal<br/>Redirect to /dashboard/plans
+    Frontend->>Frontend: Display Updated Subscription Status
+```
