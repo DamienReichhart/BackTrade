@@ -36,8 +36,8 @@ sequenceDiagram
     Proxy-->>CF: Response
     CF-->>User: Response
 
-    Note over API,MinIO: Dataset Upload Flow
-    User->>API: Upload Dataset File
+    Note over API,MinIO: Dataset Upload Flow (api request example)
+    User->>API: Upload Dataset File (api request example)
     API->>MinIO: Store File Object
     MinIO-->>API: File Stored
     API->>RabbitMQ: Publish Processing Job
@@ -55,11 +55,4 @@ sequenceDiagram
     RabbitMQ-->>Worker: Retry Job Message
     Worker->>Postgres: Update Job Status
     Worker->>RabbitMQ: Acknowledge
-
-    Note over API,Postgres: Transaction Flow
-    API->>Postgres: Begin Transaction
-    API->>Postgres: Multiple Operations
-    API->>Postgres: Commit Transaction
-    Postgres-->>API: Success
-    API->>Redis: Invalidate Related Cache
 ```

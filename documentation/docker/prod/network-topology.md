@@ -30,7 +30,7 @@ graph TB
     subgraph "Network Communication Rules"
         direction LR
         Rule1["Public → Frontend<br/>Proxy can access Frontend network"]
-        Rule2["Frontend → Backend<br/>Frontend can access Backend API"]
+        Rule2["Proxy → Backend<br/>Proxy can access Backend API"]
         Rule3["Backend → All Services<br/>Backend can access all backend services"]
         Rule4["Worker/Scheduler → Backend Services<br/>Can access DB, Cache, Queue, Storage"]
         Rule5["No Direct Internet Access<br/>Backend services isolated from internet"]
