@@ -27,7 +27,7 @@
     "dependencies": {
         "@backtrade/logger": "workspace:*",
         "minio": "^8.0.6",
-        "zod": "4.3.5"
+        "zod": "4.3.6"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
