@@ -35,7 +35,7 @@
     "dependencies": {
         "@backtrade/types": "workspace:*",
         "@clickhouse/client": "^1.16.0",
-        "@prisma/adapter-pg": "^7.2.0",
+        "@prisma/adapter-pg": "^7.3.0",
         "@prisma/client": "^7.2.0",
         "pg": "^8.17.1",
         "zod": "4.3.5"
