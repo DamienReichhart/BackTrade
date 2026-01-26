@@ -33,7 +33,7 @@
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@types/jest": "30.0.0",
-        "globals": "^17.0.0",
+        "globals": "^17.1.0",
         "jest": "30.2.0",
         "ts-jest": "^29.4.6",
         "typescript": "^5.9.3",

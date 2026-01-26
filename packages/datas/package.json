@@ -46,7 +46,7 @@
         "@types/jest": "30.0.0",
         "@types/node": "25.0.9",
         "@types/pg": "^8.16.0",
-        "globals": "^17.0.0",
+        "globals": "^17.1.0",
         "jest": "30.2.0",
         "prisma": "^7.2.0",
         "ts-jest": "^29.4.6",
