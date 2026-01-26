@@ -29,7 +29,7 @@
         "@backtrade/logger": "workspace:*",
         "@backtrade/types": "workspace:*",
         "ioredis": "^5.9.2",
-        "zod": "4.3.5"
+        "zod": "4.3.6"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
