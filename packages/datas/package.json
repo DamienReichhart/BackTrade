@@ -44,7 +44,7 @@
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@types/jest": "30.0.0",
-        "@types/node": "25.0.9",
+        "@types/node": "25.0.10",
         "@types/pg": "^8.16.0",
         "globals": "^17.0.0",
         "jest": "30.2.0",
@@ -52,7 +52,7 @@
         "ts-jest": "^29.4.6",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "8.53.0"
+        "typescript-eslint": "8.53.1"
     },
     "prisma": {
         "seed": "tsx prisma/seed/index.ts"
