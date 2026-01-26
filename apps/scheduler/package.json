@@ -20,7 +20,7 @@
         "@backtrade/logger": "workspace:*",
         "@backtrade/queue": "workspace:*",
         "@backtrade/types": "workspace:*",
-        "@prisma/adapter-pg": "^7.2.0",
+        "@prisma/adapter-pg": "^7.3.0",
         "@prisma/client": "^7.2.0",
         "dotenv": "^17.2.3",
         "node-cron": "^4.2.1",
