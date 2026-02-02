@@ -29,7 +29,7 @@
         "react-hook-form": "^7.71.1",
         "react-router-dom": "7.12.0",
         "zod": "4.3.5",
-        "zustand": "^5.0.10"
+        "zustand": "^5.0.11"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
