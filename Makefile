@@ -126,6 +126,14 @@ db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset
 
 # =============================================================================
+# Stripe
+# =============================================================================
+
+.PHONY: stripe-listen
+stripe-listen: ## Forward Stripe webhook events to the local API
+	stripe listen --forward-to http://localhost:21799/api/v1/stripe/webhook
+
+# =============================================================================
 # Dependencies
 # =============================================================================
 

@@ -1,0 +1,15 @@
+{
+    "permissions": {
+      "allow": [
+        "Bash(*)",
+        "Read",
+        "Edit",
+        "Write"
+      ],
+      "deny": [
+        "Bash(rm -rf *)",
+        "Bash(sudo *)"
+      ],
+      "ask": []
+    }
+  }  
