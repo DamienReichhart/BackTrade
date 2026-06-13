@@ -50,7 +50,7 @@ services:
 
     worker:
         <<: *dev-base
-        command: ["pnpm", "--filter", "@backtrade/worker", "dev"]
+        command: ["pnpm", "--filter", "@backtrade/data-worker", "dev"]
         networks:
             backtrade:
                 ipv4_address: 192.168.250.13
