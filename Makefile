@@ -23,12 +23,12 @@ help: ## Display this help message
 .PHONY: dev
 dev: ## Start development environment (detached mode)
 	@echo "Starting development environment..."
-	$(DOCKER_COMPOSE_DEV) up -d
+	$(DOCKER_COMPOSE_DEV) up -d --remove-orphans
 
 .PHONY: dev-build
 dev-build: ## Build and start development environment
 	@echo "Building and starting development environment..."
-	$(DOCKER_COMPOSE_DEV) up -d --build
+	$(DOCKER_COMPOSE_DEV) up -d --build --remove-orphans
 
 .PHONY: dev-stop
 dev-stop: ## Stop development environment
