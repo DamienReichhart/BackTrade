@@ -1,37 +1,73 @@
+# Shared base for every dev app/tools container. Each service overrides
+# `command:`. Anonymous node_modules volumes are per-container (isolation);
+# the entrypoint runs `pnpm install --frozen-lockfile` then execs `command`.
+x-dev-base: &dev-base
+    build:
+        context: .
+        dockerfile: ./docker/images/dev.dockerfile
+    env_file:
+        - .env
+    volumes:
+        - ./apps:/app/apps
+        - ./packages:/app/packages
+        - ./assets:/app/assets
+        # Exclude node_modules from volume mounts to preserve installed dependencies
+        - /app/node_modules
+        - /app/apps/api/node_modules
+        - /app/apps/worker/node_modules
+        - /app/apps/web/node_modules
+        - /app/apps/scheduler/node_modules
+        - /app/packages/datas/node_modules
+        - /app/packages/logger/node_modules
+        - /app/packages/cache/node_modules
+        - /app/packages/queue/node_modules
+        - /app/packages/storage/node_modules
+        - /app/packages/mailer/node_modules
+        - /app/packages/eslint-config/node_modules
+        - /app/packages/tsconfig/node_modules
+        - /app/packages/types/node_modules
+        - /app/packages/utils/node_modules
+    restart: always
+
 services:
-    dev:
-        build:
-            context: .
-            dockerfile: ./docker/images/dev.dockerfile
-        env_file:
-            - .env
+    api:
+        <<: *dev-base
+        command: ["pnpm", "--filter", "@backtrade/api", "dev"]
         ports:
             - "21799:21799"
-            - "5173:5173"
-        volumes:
-            - ./apps:/app/apps
-            - ./packages:/app/packages
-            - ./assets:/app/assets
-            # Exclude node_modules from volume mounts to preserve installed dependencies
-            - /app/node_modules
-            - /app/apps/api/node_modules
-            - /app/apps/worker/node_modules
-            - /app/apps/web/node_modules
-            - /app/apps/scheduler/node_modules
-            - /app/packages/datas/node_modules
-            - /app/packages/logger/node_modules
-            - /app/packages/cache/node_modules
-            - /app/packages/queue/node_modules
-            - /app/packages/storage/node_modules
-            - /app/packages/mailer/node_modules
-            - /app/packages/eslint-config/node_modules
-            - /app/packages/tsconfig/node_modules
-            - /app/packages/types/node_modules
-            - /app/packages/utils/node_modules
         networks:
             backtrade:
                 ipv4_address: 192.168.250.11
-        restart: always
+
+    web:
+        <<: *dev-base
+        command: ["pnpm", "--filter", "@backtrade/web", "dev"]
+        ports:
+            - "5173:5173"
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.12
+
+    worker:
+        <<: *dev-base
+        command: ["pnpm", "--filter", "@backtrade/worker", "dev"]
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.13
+
+    scheduler:
+        <<: *dev-base
+        command: ["pnpm", "--filter", "@backtrade/scheduler", "dev"]
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.14
+
+    tools:
+        <<: *dev-base
+        command: ["sleep", "infinity"]
+        networks:
+            backtrade:
+                ipv4_address: 192.168.250.15
 
     postgres:
         build:
