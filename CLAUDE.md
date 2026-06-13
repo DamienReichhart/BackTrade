@@ -8,9 +8,9 @@ BackTrade is a deterministic multi-session historical trading simulator. Users r
 
 ## Working environment — all dev runs inside Docker
 
-The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `dev` container**, not on the host. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec dev …`.
+The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `tools` container**, not on the host. Each app process (`api`, `web`, `worker`, `scheduler`) runs in its own container; the `tools` container is a dedicated shell for pnpm/prisma/db work. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec tools …`.
 
-The `dev` container bind-mounts `apps/`, `packages/`, and `assets/`, but `node_modules` are anonymous volumes (host vs. container `node_modules` would clash on native deps like argon2/bcrypt). After adding a dep, run `make install-dev`, not `pnpm install` on the host.
+Each dev container (`api`, `web`, `worker`, `scheduler`, `tools`) bind-mounts `apps/`, `packages/`, and `assets/`, but `node_modules` are anonymous per-container volumes (host vs. container `node_modules` would clash on native deps like argon2/bcrypt). After adding a dep, run `make install-dev`, not `pnpm install` on the host.
 
 Services in the docker-dev network use **static IPs on `192.168.250.0/24`** (see [.env.example](.env.example)) — `DATABASE_URL`, `REDIS_HOST`, etc. point at those IPs, not service names. Anything talking to Postgres/Redis/MinIO/ClickHouse/RabbitMQ from inside the container goes through these IPs.
 
@@ -22,11 +22,11 @@ All via the Makefile — see `make help` for the full list.
 # Lifecycle
 make setup            # one-shot: install, build dev image, start, init DB
 make dev              # start the dev stack (detached)
-make dev-shell        # shell into the dev container (run pnpm/prisma here)
+make dev-shell        # shell into the tools container (run pnpm/prisma here)
 make dev-logs         # follow logs across all services
 make dev-down         # stop + remove containers
 
-# Database (Prisma, runs inside the dev container)
+# Database (Prisma, runs inside the tools container)
 make db-init          # generate + deploy + seed (first-time setup)
 make db-migrate       # prisma migrate dev (create a new migration)
 make db-generate      # regenerate Prisma client after schema edits
@@ -43,7 +43,7 @@ make test             # jest across packages
 make quality          # lint + typecheck + format-check
 ```
 
-Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec dev`):
+Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec tools`):
 
 ```bash
 pnpm --filter @backtrade/api <script>     # backend
