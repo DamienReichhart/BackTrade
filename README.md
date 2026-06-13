@@ -213,7 +213,7 @@ docker compose -f docker-dev.yaml up -d
 Initialize the database (run migrations and seed data):
 
 ```bash
-docker compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/data prisma:init
+docker compose -f docker-dev.yaml exec tools pnpm --filter @backtrade/data prisma:init
 ```
 
 Or use the Makefile:
