@@ -77,7 +77,11 @@ async function executeMigration(
 
         for (const statement of statements) {
             if (statement.trim()) {
-                await client.query({
+                // Use command() for DDL: it has no result set and drains the
+                // response stream, avoiding "socket was closed before the
+                // response was fully read" warnings that query() triggers when
+                // its unread stream is destroyed on client.close().
+                await client.command({
                     query: statement,
                 });
             }
