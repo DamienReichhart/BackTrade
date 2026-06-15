@@ -22,7 +22,7 @@ graph TB
             Postgres[PostgreSQL<br/>192.168.250.21]
             Redis[Redis<br/>192.168.250.22]
             ClickHouse[ClickHouse<br/>192.168.250.24]
-            MinIO[MinIO<br/>192.168.250.23]
+            RustFS[RustFS<br/>192.168.250.23]
             RabbitMQ[RabbitMQ<br/>192.168.250.31]
         end
     end
@@ -45,12 +45,12 @@ graph TB
     Backend -->|"SQL Queries"| Postgres
     Backend -->|"Cache Ops"| Redis
     Backend -->|"Analytics Queries"| ClickHouse
-    Backend -->|"Object Storage"| MinIO
+    Backend -->|"Object Storage"| RustFS
     Backend -->|"Publish Jobs"| RabbitMQ
 
     Worker -->|"Consume Jobs"| RabbitMQ
     Worker -->|"Write Analytics"| ClickHouse
-    Worker -->|"Read/Write Objects"| MinIO
+    Worker -->|"Read/Write Objects"| RustFS
     Worker -->|"Read Data"| Postgres
 
     Scheduler -->|"Retry Jobs"| RabbitMQ

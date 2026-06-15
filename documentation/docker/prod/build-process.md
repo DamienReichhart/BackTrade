@@ -76,7 +76,7 @@ graph TB
             I1[PostgreSQL<br/>Custom Dockerfile]
             I2[Redis<br/>Custom Dockerfile]
             I3[ClickHouse<br/>Custom Dockerfile]
-            I4[MinIO<br/>Custom Dockerfile]
+            I4[RustFS<br/>Official Image]
             I5[RabbitMQ<br/>Custom Dockerfile]
             I6[Cloudflared<br/>Official Image]
         end

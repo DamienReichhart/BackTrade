@@ -50,7 +50,7 @@ graph TB
         Dep2[Repository Layer<br/>Data Access]
         Dep3[Cache Layer<br/>Redis]
         Dep4[Queue Layer<br/>RabbitMQ]
-        Dep5[Storage Layer<br/>MinIO]
+        Dep5[Storage Layer<br/>RustFS]
         Dep6[External APIs<br/>Stripe, SMTP]
     end
 
