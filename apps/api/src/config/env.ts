@@ -36,12 +36,12 @@ const EnvSchema = z.object({
         .string()
         .default("false")
         .transform((val) => val === "true"),
-    MINIO_HOST: z.string(),
-    MINIO_PORT: z.coerce.number().int().positive(),
-    MINIO_USER: z.string(),
-    MINIO_PASSWORD: z.string(),
-    MINIO_CA_CERT_PATH: z.string().optional(),
-    MINIO_DATASETS_BUCKET: z.string().default("datasets"),
+    S3_HOST: z.string(),
+    S3_PORT: z.coerce.number().int().positive(),
+    S3_ACCESS_KEY_ID: z.string(),
+    S3_SECRET_ACCESS_KEY: z.string(),
+    S3_REGION: z.string().default("us-east-1"),
+    S3_DATASETS_BUCKET: z.string().default("datasets"),
     RABBITMQ_HOST: z.string(),
     RABBITMQ_PORT: z.coerce.number().int().positive(),
     RABBITMQ_USER: z.string(),
