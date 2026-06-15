@@ -1,11 +1,22 @@
 /**
  * Storage Service
  *
- * Handles file storage operations with MinIO.
- * Provides a clean interface for uploading, downloading, deleting, and managing files.
+ * Handles file storage operations against RustFS via the AWS S3 SDK.
+ * Provides a clean interface for uploading, downloading, deleting, and
+ * managing files.
  */
 
-import type { Client, BucketItemStat } from "minio";
+import {
+    S3Client,
+    PutObjectCommand,
+    GetObjectCommand,
+    DeleteObjectCommand,
+    HeadObjectCommand,
+    HeadBucketCommand,
+    CreateBucketCommand,
+    DeleteBucketCommand,
+    ListBucketsCommand,
+} from "@aws-sdk/client-s3";
 import type { Readable } from "stream";
 import type { Logger } from "@backtrade/logger";
 
@@ -13,8 +24,8 @@ import type { Logger } from "@backtrade/logger";
  * Storage service configuration
  */
 export interface StorageServiceConfig {
-    /** MinIO client instance */
-    client: Client;
+    /** S3 client instance */
+    client: S3Client;
     /** Logger instance from the consuming application */
     logger: Logger;
 }
@@ -30,12 +41,45 @@ export interface UploadOptions {
 }
 
 /**
+ * File metadata and statistics
+ */
+export interface FileStat {
+    /** Size of the object in bytes */
+    size: number;
+    /** Last modified timestamp */
+    lastModified?: Date;
+    /** Entity tag */
+    etag?: string;
+    /** User metadata attached to the object */
+    metadata?: Record<string, string>;
+}
+
+/**
+ * Returns true if an S3 SDK error represents a missing object/bucket (404).
+ */
+function isNotFoundError(error: unknown): boolean {
+    if (error && typeof error === "object") {
+        const err = error as {
+            name?: string;
+            $metadata?: { httpStatusCode?: number };
+        };
+        if (err.name === "NotFound" || err.name === "NoSuchKey") {
+            return true;
+        }
+        if (err.$metadata?.httpStatusCode === 404) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Storage Service
  *
- * Handles file storage operations with MinIO.
+ * Handles file storage operations against RustFS via the AWS S3 SDK.
  */
 export class StorageService {
-    private readonly client: Client;
+    private readonly client: S3Client;
     private readonly logger: ReturnType<Logger["child"]>;
 
     constructor(config: StorageServiceConfig) {
@@ -46,22 +90,13 @@ export class StorageService {
     }
 
     /**
-     * Upload a file to MinIO
+     * Upload a file.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
      * @param file - File content as Buffer
      * @param options - Optional upload options (contentType, metadata)
      * @throws Error if upload fails
-     *
-     * @example
-     * ```ts
-     * await storageService.upload(
-     *   "my-bucket",
-     *   "path/to/file.txt",
-     *   Buffer.from("file content")
-     * );
-     * ```
      */
     async upload(
         bucketName: string,
@@ -73,15 +108,15 @@ export class StorageService {
             // Ensure bucket exists before uploading
             await this.ensureBucket(bucketName);
 
-            await this.client.putObject(
-                bucketName,
-                fileName,
-                file,
-                file.length,
-                {
-                    "Content-Type": options?.contentType,
-                    ...options?.metadata,
-                }
+            await this.client.send(
+                new PutObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                    Body: file,
+                    ContentLength: file.length,
+                    ContentType: options?.contentType,
+                    Metadata: options?.metadata,
+                })
             );
 
             this.logger.info(
@@ -106,22 +141,25 @@ export class StorageService {
     }
 
     /**
-     * Download a file from MinIO as a Buffer
+     * Download a file as a Buffer.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
      * @returns File content as Buffer
      * @throws Error if download fails or file doesn't exist
-     *
-     * @example
-     * ```ts
-     * const fileBuffer = await storageService.download("my-bucket", "path/to/file.txt");
-     * ```
      */
     async download(bucketName: string, fileName: string): Promise<Buffer> {
         try {
-            const stream = await this.client.getObject(bucketName, fileName);
-            const buffer = await this.streamToBuffer(stream);
+            const response = await this.client.send(
+                new GetObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                })
+            );
+
+            const buffer = await this.streamToBuffer(
+                response.Body as Readable
+            );
 
             this.logger.info(
                 {
@@ -147,26 +185,25 @@ export class StorageService {
     }
 
     /**
-     * Get a file from MinIO as a readable stream
-     * Useful for large files to avoid loading entire file into memory
+     * Get a file as a readable stream.
+     * Useful for large files to avoid loading entire file into memory.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
      * @returns Readable stream of the file
      * @throws Error if stream creation fails or file doesn't exist
-     *
-     * @example
-     * ```ts
-     * const stream = await storageService.getObjectStream("my-bucket", "large-file.zip");
-     * stream.pipe(fs.createWriteStream("output.zip"));
-     * ```
      */
     async getObjectStream(
         bucketName: string,
         fileName: string
     ): Promise<Readable> {
         try {
-            const stream = await this.client.getObject(bucketName, fileName);
+            const response = await this.client.send(
+                new GetObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                })
+            );
 
             this.logger.debug(
                 {
@@ -176,7 +213,7 @@ export class StorageService {
                 "File stream created"
             );
 
-            return stream;
+            return response.Body as Readable;
         } catch (error) {
             this.logger.error(
                 {
@@ -191,20 +228,20 @@ export class StorageService {
     }
 
     /**
-     * Delete a file from MinIO
+     * Delete a file.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
      * @throws Error if deletion fails
-     *
-     * @example
-     * ```ts
-     * await storageService.delete("my-bucket", "path/to/file.txt");
-     * ```
      */
     async delete(bucketName: string, fileName: string): Promise<void> {
         try {
-            await this.client.removeObject(bucketName, fileName);
+            await this.client.send(
+                new DeleteObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                })
+            );
 
             this.logger.info(
                 {
@@ -227,35 +264,25 @@ export class StorageService {
     }
 
     /**
-     * Check if a file exists in MinIO
+     * Check if a file exists.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
      * @returns True if file exists, false otherwise
-     *
-     * @example
-     * ```ts
-     * const exists = await storageService.exists("my-bucket", "path/to/file.txt");
-     * if (exists) {
-     *   // File exists
-     * }
-     * ```
      */
     async exists(bucketName: string, fileName: string): Promise<boolean> {
         try {
-            await this.client.statObject(bucketName, fileName);
+            await this.client.send(
+                new HeadObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                })
+            );
             return true;
         } catch (error) {
-            // If error is "not found", file doesn't exist
-            if (
-                error &&
-                typeof error === "object" &&
-                "code" in error &&
-                error.code === "NotFound"
-            ) {
+            if (isNotFoundError(error)) {
                 return false;
             }
-            // For other errors, log and return false
             this.logger.error(
                 {
                     error,
@@ -269,33 +296,39 @@ export class StorageService {
     }
 
     /**
-     * Get file metadata and statistics
+     * Get file metadata and statistics.
      *
      * @param bucketName - Name of the bucket
      * @param fileName - Name/path of the file in the bucket
-     * @returns File statistics (size, lastModified, etc.)
+     * @returns File statistics (size, lastModified, etag, metadata)
      * @throws Error if file doesn't exist or stat fails
-     *
-     * @example
-     * ```ts
-     * const stats = await storageService.stat("my-bucket", "path/to/file.txt");
-     * console.log(`File size: ${stats.size} bytes`);
-     * ```
      */
-    async stat(bucketName: string, fileName: string): Promise<BucketItemStat> {
+    async stat(bucketName: string, fileName: string): Promise<FileStat> {
         try {
-            const stats = await this.client.statObject(bucketName, fileName);
+            const response = await this.client.send(
+                new HeadObjectCommand({
+                    Bucket: bucketName,
+                    Key: fileName,
+                })
+            );
+
+            const stat: FileStat = {
+                size: response.ContentLength ?? 0,
+                lastModified: response.LastModified,
+                etag: response.ETag,
+                metadata: response.Metadata,
+            };
 
             this.logger.debug(
                 {
                     bucket: bucketName,
                     fileName,
-                    size: stats.size,
+                    size: stat.size,
                 },
                 "File stats retrieved"
             );
 
-            return stats;
+            return stat;
         } catch (error) {
             this.logger.error(
                 {
@@ -310,21 +343,23 @@ export class StorageService {
     }
 
     /**
-     * Check if a bucket exists
+     * Check if a bucket exists.
      *
      * @param bucketName - Name of the bucket
      * @returns True if bucket exists, false otherwise
-     *
-     * @example
-     * ```ts
-     * const exists = await storageService.bucketExists("my-bucket");
-     * ```
      */
     async bucketExists(bucketName: string): Promise<boolean> {
         try {
-            const exists = await this.client.bucketExists(bucketName);
-            return exists;
+            await this.client.send(
+                new HeadBucketCommand({
+                    Bucket: bucketName,
+                })
+            );
+            return true;
         } catch (error) {
+            if (isNotFoundError(error)) {
+                return false;
+            }
             this.logger.error(
                 {
                     error,
@@ -337,21 +372,20 @@ export class StorageService {
     }
 
     /**
-     * Ensure a bucket exists, create it if it doesn't
+     * Ensure a bucket exists, create it if it doesn't.
      *
      * @param bucketName - Name of the bucket
      * @throws Error if bucket creation fails
-     *
-     * @example
-     * ```ts
-     * await storageService.ensureBucket("my-bucket");
-     * ```
      */
     async ensureBucket(bucketName: string): Promise<void> {
         try {
             const exists = await this.bucketExists(bucketName);
             if (!exists) {
-                await this.client.makeBucket(bucketName);
+                await this.client.send(
+                    new CreateBucketCommand({
+                        Bucket: bucketName,
+                    })
+                );
                 this.logger.info(
                     {
                         bucket: bucketName,
@@ -372,19 +406,18 @@ export class StorageService {
     }
 
     /**
-     * Create a bucket (fails if bucket already exists)
+     * Create a bucket (fails if bucket already exists).
      *
      * @param bucketName - Name of the bucket
      * @throws Error if bucket creation fails or bucket already exists
-     *
-     * @example
-     * ```ts
-     * await storageService.createBucket("my-bucket");
-     * ```
      */
     async createBucket(bucketName: string): Promise<void> {
         try {
-            await this.client.makeBucket(bucketName);
+            await this.client.send(
+                new CreateBucketCommand({
+                    Bucket: bucketName,
+                })
+            );
             this.logger.info(
                 {
                     bucket: bucketName,
@@ -404,19 +437,18 @@ export class StorageService {
     }
 
     /**
-     * Delete a bucket (must be empty)
+     * Delete a bucket (must be empty).
      *
      * @param bucketName - Name of the bucket
      * @throws Error if bucket deletion fails
-     *
-     * @example
-     * ```ts
-     * await storageService.deleteBucket("my-bucket");
-     * ```
      */
     async deleteBucket(bucketName: string): Promise<void> {
         try {
-            await this.client.removeBucket(bucketName);
+            await this.client.send(
+                new DeleteBucketCommand({
+                    Bucket: bucketName,
+                })
+            );
             this.logger.info(
                 {
                     bucket: bucketName,
@@ -436,20 +468,13 @@ export class StorageService {
     }
 
     /**
-     * Check MinIO connection
+     * Check storage connection.
      *
      * @returns True if connection is successful, false otherwise
-     *
-     * @example
-     * ```ts
-     * const isConnected = await storageService.checkConnection();
-     * ```
      */
     async checkConnection(): Promise<boolean> {
         try {
-            // Try to list buckets as a lightweight health check
-            // This verifies the connection is working without creating/checking specific buckets
-            await this.client.listBuckets();
+            await this.client.send(new ListBucketsCommand({}));
             return true;
         } catch {
             return false;
@@ -457,7 +482,7 @@ export class StorageService {
     }
 
     /**
-     * Convert a readable stream to a Buffer
+     * Convert a readable stream to a Buffer.
      *
      * @param stream - Readable stream
      * @returns Buffer containing stream data
