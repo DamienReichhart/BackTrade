@@ -7,7 +7,7 @@
  */
 
 import {
-    S3Client,
+    type S3Client,
     PutObjectCommand,
     GetObjectCommand,
     DeleteObjectCommand,
