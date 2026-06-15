@@ -16,7 +16,7 @@ import { TimeframeSchema } from "../enums";
 export const DatasetFileSplitPayloadSchema = z.object({
     /** ID of the dataset being processed */
     datasetId: z.number().int().positive(),
-    /** Path to the raw file in MinIO (e.g., "datasets/1/raw/file.csv") */
+    /** Path to the raw file in storage (e.g., "datasets/1/raw/file.csv") */
     filePath: z.string(),
     /** Instrument ID for the candles */
     instrumentId: z.number().int().positive(),
@@ -36,7 +36,7 @@ export type DatasetFileSplitPayload = z.infer<
 export const DatasetPartProcessPayloadSchema = z.object({
     /** ID of the dataset being processed */
     datasetId: z.number().int().positive(),
-    /** Path to the part file in MinIO (e.g., "datasets/1/parts/part_0.csv") */
+    /** Path to the part file in storage (e.g., "datasets/1/parts/part_0.csv") */
     partPath: z.string(),
     /** Part number (0-indexed) */
     partNumber: z.number().int().nonnegative(),
