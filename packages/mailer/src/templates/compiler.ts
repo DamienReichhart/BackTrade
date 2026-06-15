@@ -98,8 +98,8 @@ export class TemplateCompiler {
 
         const raw = await fs.promises.readFile(filePath, "utf-8");
 
-        // Compile MJML to HTML
-        const { html, errors } = mjml2html(raw, MJML_OPTIONS);
+        // Compile MJML to HTML (mjml2html is async as of MJML v5)
+        const { html, errors } = await mjml2html(raw, MJML_OPTIONS);
 
         if (errors.length > 0) {
             this.logger.warn(
