@@ -1,22 +1,11 @@
 import { z } from "zod";
 
 const EnvSchema = z.object({
-    MINIO_HOST: z.string(),
-    MINIO_PORT: z.coerce.number().int().positive(),
-    MINIO_USER: z.string(),
-    MINIO_PASSWORD: z.string(),
-    MINIO_CA_CERT_PATH: z.string().optional(),
-    MINIO_USE_SSL: z
-        .string()
-        .optional()
-        .default("false")
-        .transform((val) => {
-            // Default to false if not provided (SSL disabled by default)
-            if (val === undefined || val === "") {
-                return false;
-            }
-            return val === "true";
-        }),
+    S3_HOST: z.string(),
+    S3_PORT: z.coerce.number().int().positive(),
+    S3_ACCESS_KEY_ID: z.string(),
+    S3_SECRET_ACCESS_KEY: z.string(),
+    S3_REGION: z.string().default("us-east-1"),
 });
 
 export const ENV = EnvSchema.parse(process.env);
