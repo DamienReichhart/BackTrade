@@ -69,7 +69,7 @@ class HealthService {
     }
 
     /**
-     * Checks storage (MinIO) connectivity
+     * Checks storage (RustFS/S3) connectivity
      *
      * @returns Promise resolving to "ok" or "error"
      */
