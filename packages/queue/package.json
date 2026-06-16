@@ -32,8 +32,8 @@
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
-        "@types/amqplib": "^0.10.8",
         "@types/jest": "30.0.0",
+        "@types/node": "25.9.1",
         "globals": "^17.6.0",
         "jest": "30.4.2",
         "ts-jest": "^29.4.11",
