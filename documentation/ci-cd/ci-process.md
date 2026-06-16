@@ -9,6 +9,7 @@ The CI workflow ensures code quality, type safety, test coverage, and security b
 **File**: `.github/workflows/ci.yml`
 
 **Triggers**:
+
 - Push to branches: `main`, `dev`, `feature/*`
 - Pull requests targeting: `main`, `dev`
 
@@ -41,12 +42,14 @@ graph LR
 **Purpose**: Prepare the CI environment and install dependencies
 
 **Steps**:
+
 1. Checkout repository code
 2. Setup Node.js (via `setup-node@v4`)
 3. Install pnpm globally
 4. Install project dependencies with `--frozen-lockfile`
 
 **Outputs**:
+
 - `node`: Node.js version
 - `pnpm`: pnpm version
 
@@ -59,12 +62,14 @@ graph LR
 **Dependencies**: `setup` job
 
 **Steps**:
+
 1. Checkout code
 2. Setup environment (Node.js, pnpm, dependencies)
 3. Generate Prisma Client (requires `DATABASE_URL` secret)
 4. Run ESLint across the monorepo
 
 **Reusable Actions**:
+
 - `.github/actions/setup`
 - `.github/actions/prisma-generate`
 - `.github/actions/lint`
@@ -78,12 +83,14 @@ graph LR
 **Dependencies**: `setup` job
 
 **Steps**:
+
 1. Checkout code
 2. Setup environment
 3. Generate Prisma Client
 4. Run TypeScript compiler in type-check mode
 
 **Reusable Actions**:
+
 - `.github/actions/setup`
 - `.github/actions/prisma-generate`
 - `.github/actions/typecheck`
@@ -97,12 +104,14 @@ graph LR
 **Dependencies**: `setup` job
 
 **Steps**:
+
 1. Checkout code
 2. Setup environment
 3. Generate Prisma Client
 4. Run test suite via pnpm
 
 **Reusable Actions**:
+
 - `.github/actions/setup`
 - `.github/actions/prisma-generate`
 - `.github/actions/test`
@@ -118,15 +127,17 @@ graph LR
 **Dependencies**: `setup` job
 
 **Steps**:
+
 1. Checkout code
 2. Setup environment
 3. Generate Prisma Client
 4. Run tests with coverage collection
 5. Upload coverage artifacts:
-   - `api-coverage`: Coverage from `apps/api/coverage`
-   - `web-coverage`: Coverage from `apps/web/coverage`
+    - `api-coverage`: Coverage from `apps/api/coverage`
+    - `web-coverage`: Coverage from `apps/web/coverage`
 
 **Reusable Actions**:
+
 - `.github/actions/setup`
 - `.github/actions/prisma-generate`
 - `.github/actions/test-coverage`
@@ -142,16 +153,19 @@ graph LR
 **Dependencies**: `setup` job
 
 **Permissions**:
+
 - `security-events: write`: Report security findings
 - `actions: read`: Access workflow context
 - `contents: read`: Read repository code
 
 **Steps**:
+
 1. Checkout code
 2. Run Semgrep security scan
 3. Report findings to GitHub Security tab
 
 **Reusable Actions**:
+
 - `.github/actions/semgrep`
 
 **Required Secret**: `SEMGREP_APP_TOKEN`
@@ -165,12 +179,14 @@ graph LR
 **Dependencies**: All previous jobs (`lint`, `typecheck`, `test`, `coverage`, `semgrep`)
 
 **Steps**:
+
 1. Checkout code
 2. Setup environment
 3. Generate Prisma Client
 4. Build all packages and applications
 
 **Reusable Actions**:
+
 - `.github/actions/setup`
 - `.github/actions/prisma-generate`
 - `.github/actions/build`
@@ -197,7 +213,7 @@ sequenceDiagram
     Setup->>Setup: Setup Node.js
     Setup->>Setup: Install pnpm
     Setup->>Setup: Install Dependencies
-    
+
     par Parallel Execution
         Setup->>Lint: Start
         Setup->>Typecheck: Start
@@ -205,7 +221,7 @@ sequenceDiagram
         Setup->>Coverage: Start
         Setup->>Semgrep: Start
     end
-    
+
     Lint->>Lint: Generate Prisma
     Lint->>Lint: Run ESLint
     Typecheck->>Typecheck: Generate Prisma
@@ -217,13 +233,13 @@ sequenceDiagram
     Coverage->>GH: Upload Artifacts
     Semgrep->>Semgrep: Run Security Scan
     Semgrep->>GH: Report Findings
-    
+
     Lint->>Build: Success
     Typecheck->>Build: Success
     Test->>Build: Success
     Coverage->>Build: Success
     Semgrep->>Build: Success
-    
+
     Build->>Build: Checkout Code
     Build->>Build: Setup Environment
     Build->>Build: Generate Prisma

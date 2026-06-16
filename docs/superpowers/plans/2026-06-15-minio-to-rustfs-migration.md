@@ -19,6 +19,7 @@ The stack must be up (`make dev`) for these to work.
 ## File Structure
 
 **Rewritten / renamed (package):**
+
 - `packages/storage/src/libs/s3-client.ts` (renamed from `minio-client.ts`) — S3 client factory.
 - `packages/storage/src/services/storage-service.ts` — same API, S3 SDK internals.
 - `packages/storage/src/config/ENV.ts` — `S3_*` schema.
@@ -36,6 +37,7 @@ The stack must be up (`make dev`) for these to work.
 ## Task 1: Swap the storage package dependency
 
 **Files:**
+
 - Modify: `packages/storage/package.json:29`
 
 - [ ] **Step 1: Replace the minio dependency**
@@ -82,6 +84,7 @@ git commit -m "chore(deps): replace minio with @aws-sdk/client-s3 in storage"
 ## Task 2: Rewrite the storage env schema
 
 **Files:**
+
 - Modify: `packages/storage/src/config/ENV.ts`
 
 - [ ] **Step 1: Replace the entire file**
@@ -114,6 +117,7 @@ git commit -m "refactor(storage): replace minio env schema with s3 vars"
 ## Task 3: Replace the client factory (minio-client.ts → s3-client.ts)
 
 **Files:**
+
 - Create: `packages/storage/src/libs/s3-client.ts`
 - Delete: `packages/storage/src/libs/minio-client.ts`
 
@@ -121,7 +125,7 @@ git commit -m "refactor(storage): replace minio env schema with s3 vars"
 
 Create `packages/storage/src/libs/s3-client.ts` with:
 
-```ts
+````ts
 /**
  * S3 Client Factory
  *
@@ -182,7 +186,7 @@ export function createStorageClient(config: S3ClientConfig): S3Client {
 
     return client;
 }
-```
+````
 
 - [ ] **Step 2: Delete the old minio client**
 
@@ -201,6 +205,7 @@ git commit -m "refactor(storage): replace minio client factory with s3 client"
 ## Task 4: Rewrite the storage service internals
 
 **Files:**
+
 - Modify: `packages/storage/src/services/storage-service.ts` (full rewrite, same public API)
 
 - [ ] **Step 1: Replace the entire file**
@@ -367,9 +372,7 @@ export class StorageService {
                 })
             );
 
-            const buffer = await this.streamToBuffer(
-                response.Body as Readable
-            );
+            const buffer = await this.streamToBuffer(response.Body as Readable);
 
             this.logger.info(
                 {
@@ -730,13 +733,14 @@ git commit -m "refactor(storage): reimplement storage service with s3 sdk"
 ## Task 5: Update the package barrel exports
 
 **Files:**
+
 - Modify: `packages/storage/src/index.ts`
 
 - [ ] **Step 1: Replace the entire file**
 
 Replace the full contents of `packages/storage/src/index.ts` with:
 
-```ts
+````ts
 /**
  * @backtrade/storage
  *
@@ -805,7 +809,7 @@ export function createStorageService(
 ): StorageService {
     return new StorageService(config);
 }
-```
+````
 
 - [ ] **Step 2: Typecheck the package**
 
@@ -829,6 +833,7 @@ git commit -m "refactor(storage): update barrel exports for s3 client"
 ## Task 6: Update API env schema and storage lib
 
 **Files:**
+
 - Modify: `apps/api/src/config/env.ts:39-44`
 - Modify: `apps/api/src/libs/storage.ts`
 
@@ -893,6 +898,7 @@ git commit -m "refactor(api): switch storage env vars to s3 naming"
 ## Task 7: Update API datasets-service and health-service references
 
 **Files:**
+
 - Modify: `apps/api/src/services/base/datasets-service.ts`
 - Modify: `apps/api/src/services/utils/health-service.ts`
 
@@ -903,6 +909,7 @@ In `apps/api/src/services/base/datasets-service.ts`, replace both occurrences of
 - [ ] **Step 2: Update MinIO wording in datasets-service comments/logs**
 
 In the same file, replace the user-facing "MinIO" strings:
+
 - comment `In-memory ... Uploads the file to MinIO and creates a queue job for processing.` → `... Uploads the file to RustFS (S3) and creates a queue job for processing.`
 - comment `// Build file path in MinIO: datasets/{datasetId}/raw/{filename}` → `// Build file path in storage: datasets/{datasetId}/raw/{filename}`
 - log message `"Uploading dataset file to MinIO"` → `"Uploading dataset file to storage"`
@@ -930,6 +937,7 @@ git commit -m "refactor(api): update storage references from minio to s3"
 ## Task 8: Update worker env schema, storage lib, and processors
 
 **Files:**
+
 - Modify: `apps/worker/src/config/env.ts:35-40`
 - Modify: `apps/worker/src/libs/storage.ts`
 - Modify: `apps/worker/src/processor/dataset-file-split-processor.ts`
@@ -966,6 +974,7 @@ Open `apps/worker/src/libs/storage.ts`. It contains no MinIO-specific text (only
 - [ ] **Step 3: Update MinIO wording in dataset-file-split-processor**
 
 In `apps/worker/src/processor/dataset-file-split-processor.ts`, replace the "MinIO" strings:
+
 - header comment `Each part is uploaded to MinIO and a processing job is queued immediately,` → `Each part is uploaded to storage and a processing job is queued immediately,`
 - comment `Upload a part to MinIO and queue its processing job` → `Upload a part to storage and queue its processing job`
 - log message `"Uploading part to MinIO"` → `"Uploading part to storage"`
@@ -976,6 +985,7 @@ In `apps/worker/src/processor/dataset-file-split-processor.ts`, replace the "Min
 - [ ] **Step 4: Update MinIO wording in dataset-part-processor**
 
 In `apps/worker/src/processor/dataset-part-processor.ts`, replace:
+
 - comment `Downloads the part from MinIO, parses the CSV lines,` → `Downloads the part from storage, parses the CSV lines,`
 - comment `// Download part from MinIO` → `// Download part from storage`
 - log message `"Downloading part from MinIO"` → `"Downloading part from storage"`
@@ -997,11 +1007,13 @@ git commit -m "refactor(worker): update storage references from minio to s3"
 ## Task 9: Update the shared types comments
 
 **Files:**
+
 - Modify: `packages/types/src/entities/dataset-processing.ts:19,39`
 
 - [ ] **Step 1: Replace the MinIO wording**
 
 In `packages/types/src/entities/dataset-processing.ts`:
+
 - `/** Path to the raw file in MinIO (e.g., "datasets/1/raw/file.csv") */` → `/** Path to the raw file in storage (e.g., "datasets/1/raw/file.csv") */`
 - `/** Path to the part file in MinIO (e.g., "datasets/1/parts/part_0.csv") */` → `/** Path to the part file in storage (e.g., "datasets/1/parts/part_0.csv") */`
 
@@ -1017,6 +1029,7 @@ git commit -m "docs(types): update storage path comments to drop minio"
 ## Task 10: Migrate Docker, env, and utils to RustFS
 
 **Files:**
+
 - Create: `docker/images/rustfs.dockerfile`
 - Delete: `docker/images/minio.dockerfile`, `docker/config/minio/` (directory), `utils/generate_minio_certs.bat`, `utils/generate_minio_certs.sh`
 - Modify: `docker-dev.yaml`, `docker-prod.yaml`, `.env.example`
@@ -1034,11 +1047,13 @@ FROM rustfs/rustfs:latest
 - [ ] **Step 2: Delete the old MinIO image, config, and cert scripts**
 
 Run:
+
 ```bash
 git rm docker/images/minio.dockerfile
 git rm -r docker/config/minio
 git rm utils/generate_minio_certs.bat utils/generate_minio_certs.sh
 ```
+
 Expected: all removed.
 
 - [ ] **Step 3: Replace the minio service in docker-dev.yaml**
@@ -1046,26 +1061,26 @@ Expected: all removed.
 In `docker-dev.yaml`, replace the `minio:` service block (currently lines ~102-118) with:
 
 ```yaml
-    rustfs:
-        build:
-            context: .
-            dockerfile: ./docker/images/rustfs.dockerfile
-        ports:
-            - "9000:9000"
-            - "9001:9001"
-        environment:
-            RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
-            RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
-            RUSTFS_VOLUMES: /data
-            RUSTFS_ADDRESS: 0.0.0.0:9000
-            RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
-            RUSTFS_CONSOLE_ENABLE: "true"
-        volumes:
-            - backtrade_rustfs_data:/data
-        networks:
-            backtrade:
-                ipv4_address: 192.168.250.23
-        restart: always
+rustfs:
+    build:
+        context: .
+        dockerfile: ./docker/images/rustfs.dockerfile
+    ports:
+        - "9000:9000"
+        - "9001:9001"
+    environment:
+        RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+        RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
+        RUSTFS_VOLUMES: /data
+        RUSTFS_ADDRESS: 0.0.0.0:9000
+        RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+        RUSTFS_CONSOLE_ENABLE: "true"
+    volumes:
+        - backtrade_rustfs_data:/data
+    networks:
+        backtrade:
+            ipv4_address: 192.168.250.23
+    restart: always
 ```
 
 - [ ] **Step 4: Rename the dev volume**
@@ -1073,15 +1088,15 @@ In `docker-dev.yaml`, replace the `minio:` service block (currently lines ~102-1
 In `docker-dev.yaml`, in the top-level `volumes:` block, replace:
 
 ```yaml
-    backtrade_minio_data:
-        driver: local
+backtrade_minio_data:
+    driver: local
 ```
 
 with:
 
 ```yaml
-    backtrade_rustfs_data:
-        driver: local
+backtrade_rustfs_data:
+    driver: local
 ```
 
 - [ ] **Step 5: Replace the minio service in docker-prod.yaml**
@@ -1089,59 +1104,61 @@ with:
 In `docker-prod.yaml`, replace the `# MinIO Object Storage` / `minio:` service block (currently lines ~503-546) with:
 
 ```yaml
-    # =========================================================================
-    # RustFS Object Storage (S3-compatible)
-    # =========================================================================
-    rustfs:
-        build:
-            context: .
-            dockerfile: docker/images/rustfs.dockerfile
-        environment:
-            RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
-            RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
-            RUSTFS_VOLUMES: /data
-            RUSTFS_ADDRESS: 0.0.0.0:9000
-            RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
-            RUSTFS_CONSOLE_ENABLE: "true"
-        volumes:
-            - backtrade_rustfs_data:/data
-        networks:
-            backend:
-                ipv4_address: 192.168.250.23
-        restart: unless-stopped
-        healthcheck:
-            test:
-                ["CMD", "curl", "-f", "http://localhost:9000/health"]
-            interval: 30s
-            timeout: 10s
-            retries: 3
-            start_period: 40s
-        deploy:
-            resources:
-                limits:
-                    cpus: "1.0"
-                    memory: 4G
-                reservations:
-                    cpus: "0.25"
-                    memory: 512M
-        cap_drop:
-            - ALL
-        security_opt:
-            - no-new-privileges:true
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "10m"
-                max-file: "3"
+# =========================================================================
+# RustFS Object Storage (S3-compatible)
+# =========================================================================
+rustfs:
+    build:
+        context: .
+        dockerfile: docker/images/rustfs.dockerfile
+    environment:
+        RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+        RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
+        RUSTFS_VOLUMES: /data
+        RUSTFS_ADDRESS: 0.0.0.0:9000
+        RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+        RUSTFS_CONSOLE_ENABLE: "true"
+    volumes:
+        - backtrade_rustfs_data:/data
+    networks:
+        backend:
+            ipv4_address: 192.168.250.23
+    restart: unless-stopped
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+    deploy:
+        resources:
+            limits:
+                cpus: "1.0"
+                memory: 4G
+            reservations:
+                cpus: "0.25"
+                memory: 512M
+    cap_drop:
+        - ALL
+    security_opt:
+        - no-new-privileges:true
+    logging:
+        driver: "json-file"
+        options:
+            max-size: "10m"
+            max-file: "3"
 ```
 
 - [ ] **Step 6: Verify the RustFS image healthcheck command**
 
 The RustFS image may not ship `curl`. Run, after Step 11 brings the stack up (or run now against a one-off container):
+
 ```bash
 docker run --rm --entrypoint sh rustfs/rustfs:latest -c "command -v curl || command -v wget || echo NONE"
 ```
+
 Expected: prints a path to `curl` or `wget`, or `NONE`.
+
 - If `wget` only: change the healthcheck test to `["CMD", "wget", "-q", "--spider", "http://localhost:9000/health"]`.
 - If `NONE`: change to `["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000"]` as a TCP-liveness fallback.
 
@@ -1150,48 +1167,49 @@ Expected: prints a path to `curl` or `wget`, or `NONE`.
 In `docker-prod.yaml`, there are blocks injecting MinIO vars into the api and worker services. Replace each MinIO block:
 
 ```yaml
-            MINIO_HOST: ${MINIO_HOST}
-            MINIO_PORT: ${MINIO_PORT}
-            MINIO_USER: ${MINIO_USER}
-            MINIO_PASSWORD: ${MINIO_PASSWORD}
-            MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
-            MINIO_DATASETS_BUCKET: ${MINIO_DATASETS_BUCKET}
+MINIO_HOST: ${MINIO_HOST}
+MINIO_PORT: ${MINIO_PORT}
+MINIO_USER: ${MINIO_USER}
+MINIO_PASSWORD: ${MINIO_PASSWORD}
+MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
+MINIO_DATASETS_BUCKET: ${MINIO_DATASETS_BUCKET}
 ```
 
 with (for the api service, which had the datasets bucket):
 
 ```yaml
-            S3_HOST: ${S3_HOST}
-            S3_PORT: ${S3_PORT}
-            S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
-            S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
-            S3_REGION: ${S3_REGION}
-            S3_DATASETS_BUCKET: ${S3_DATASETS_BUCKET}
+S3_HOST: ${S3_HOST}
+S3_PORT: ${S3_PORT}
+S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+S3_REGION: ${S3_REGION}
+S3_DATASETS_BUCKET: ${S3_DATASETS_BUCKET}
 ```
 
 And the worker block (which had no datasets bucket and used `MINIO_CA_CERT_PATH`):
 
 ```yaml
-            MINIO_HOST: ${MINIO_HOST}
-            MINIO_PORT: ${MINIO_PORT}
-            MINIO_USER: ${MINIO_USER}
-            MINIO_PASSWORD: ${MINIO_PASSWORD}
-            MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
+MINIO_HOST: ${MINIO_HOST}
+MINIO_PORT: ${MINIO_PORT}
+MINIO_USER: ${MINIO_USER}
+MINIO_PASSWORD: ${MINIO_PASSWORD}
+MINIO_CA_CERT_PATH: ${MINIO_CA_CERT_PATH}
 ```
 
 with:
 
 ```yaml
-            S3_HOST: ${S3_HOST}
-            S3_PORT: ${S3_PORT}
-            S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
-            S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
-            S3_REGION: ${S3_REGION}
+S3_HOST: ${S3_HOST}
+S3_PORT: ${S3_PORT}
+S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+S3_REGION: ${S3_REGION}
 ```
 
 - [ ] **Step 8: Update depends_on and prod volume name**
 
 In `docker-prod.yaml`:
+
 - replace both `depends_on` entries referencing `minio:` with `rustfs:` (keep any condition such as `condition: service_healthy`).
 - in the top-level `volumes:` block, replace `backtrade_minio_data:` with `backtrade_rustfs_data:`.
 
@@ -1235,10 +1253,12 @@ S3_DATASETS_BUCKET=datasets
 - [ ] **Step 10: Validate both compose files**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml config >/dev/null && echo DEV_OK
 docker compose -f docker-prod.yaml config >/dev/null && echo PROD_OK
 ```
+
 Expected: `DEV_OK` and `PROD_OK` (no YAML/interpolation errors). Set any missing `S3_*`/`RUSTFS_*` vars in your local `.env` first (copy from `.env.example`).
 
 - [ ] **Step 11: Commit**
@@ -1253,6 +1273,7 @@ git commit -m "feat(docker): replace minio with rustfs object storage"
 ## Task 11: Update documentation
 
 **Files:**
+
 - Modify: `README.md`, `CLAUDE.md`, and every `documentation/**` file containing "MinIO"/"minio".
 
 - [ ] **Step 1: List the remaining doc references**
@@ -1263,6 +1284,7 @@ Expected: a list including `README.md`, `CLAUDE.md`, and files under `documentat
 - [ ] **Step 2: Update each doc file**
 
 For each file, replace MinIO references with RustFS/S3 terminology consistent with the new design:
+
 - Service/storage descriptions: "MinIO" → "RustFS (S3-compatible)".
 - Env-var mentions: `MINIO_*` → `S3_*` (and server creds `RUSTFS_ACCESS_KEY`/`RUSTFS_SECRET_KEY`).
 - Client mentions: "minio client" → "AWS S3 client (`@aws-sdk/client-s3`)".
@@ -1290,10 +1312,12 @@ git commit -m "docs: update storage docs from minio to rustfs"
 - [ ] **Step 1: Full lint + typecheck**
 
 Run:
+
 ```bash
 make lint
 make typecheck
 ```
+
 Expected: both PASS across the monorepo.
 
 - [ ] **Step 2: Repo-wide MinIO grep**
@@ -1304,9 +1328,11 @@ Expected: matches **only** under `docs/superpowers/` (historical task records: t
 - [ ] **Step 3: Optional end-to-end smoke test**
 
 Run: `make dev` (if not already up), wait for health, then:
+
 ```bash
 curl -s http://localhost:21799/api/v1/health | grep -o '"storage":[^,}]*'
 ```
+
 Expected: storage reports healthy/connected. Optionally upload a dataset through the UI/API and confirm the file round-trips (the `datasets` bucket is auto-created by `ensureBucket`).
 
 - [ ] **Step 4: Final commit (if regeneration changed tracked files)**

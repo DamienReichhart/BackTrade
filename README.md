@@ -93,19 +93,19 @@ BackTrade is built as a modern, scalable monorepo using **pnpm workspaces** and 
 
 The platform consists of the following services:
 
-| Service               | Description                              | Port (Dev)  |
-| --------------------- | ---------------------------------------- | ----------- |
-| **Frontend**          | React web application served by Nginx    | 5173        |
-| **Backend API**       | Express.js REST API server               | 21799       |
-| **Worker**            | Background job processor for async tasks | -           |
-| **Scheduler**         | Scheduled tasks and queue retry handler  | -           |
-| **PostgreSQL**        | Primary relational database              | 5432        |
-| **Redis**             | Caching and session storage              | 6379        |
-| **ClickHouse**        | Analytics database for time-series data  | 8123, 9002  |
-| **RustFS**            | S3-compatible object storage for datasets| 9000, 9001  |
-| **RabbitMQ**          | Message queue for job processing         | 5672, 15672 |
-| **Nginx**             | Reverse proxy (production only)          | 80          |
-| **Cloudflare Tunnel** | Secure remote access (production only)   | -           |
+| Service               | Description                               | Port (Dev)  |
+| --------------------- | ----------------------------------------- | ----------- |
+| **Frontend**          | React web application served by Nginx     | 5173        |
+| **Backend API**       | Express.js REST API server                | 21799       |
+| **Worker**            | Background job processor for async tasks  | -           |
+| **Scheduler**         | Scheduled tasks and queue retry handler   | -           |
+| **PostgreSQL**        | Primary relational database               | 5432        |
+| **Redis**             | Caching and session storage               | 6379        |
+| **ClickHouse**        | Analytics database for time-series data   | 8123, 9002  |
+| **RustFS**            | S3-compatible object storage for datasets | 9000, 9001  |
+| **RabbitMQ**          | Message queue for job processing          | 5672, 15672 |
+| **Nginx**             | Reverse proxy (production only)           | 80          |
+| **Cloudflare Tunnel** | Secure remote access (production only)    | -           |
 
 ### Network Architecture
 

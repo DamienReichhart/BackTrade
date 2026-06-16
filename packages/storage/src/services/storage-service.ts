@@ -157,9 +157,7 @@ export class StorageService {
                 })
             );
 
-            const buffer = await this.streamToBuffer(
-                response.Body as Readable
-            );
+            const buffer = await this.streamToBuffer(response.Body as Readable);
 
             this.logger.info(
                 {

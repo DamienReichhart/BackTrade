@@ -44,22 +44,22 @@ graph TB
 - **Triggers**: Push to `main`, `dev`, `feature/*` branches and pull requests
 - **Runs on**: GitHub-hosted Ubuntu runners
 - **Jobs**:
-  - Setup: Environment preparation and dependency installation
-  - Lint: Code quality checks via ESLint
-  - Typecheck: TypeScript type validation
-  - Test: Unit and integration tests
-  - Coverage: Test coverage analysis and artifact upload
-  - Semgrep: Security vulnerability scanning
-  - Build: Production build verification
+    - Setup: Environment preparation and dependency installation
+    - Lint: Code quality checks via ESLint
+    - Typecheck: TypeScript type validation
+    - Test: Unit and integration tests
+    - Coverage: Test coverage analysis and artifact upload
+    - Semgrep: Security vulnerability scanning
+    - Build: Production build verification
 
 ### CD Workflow (`.github/workflows/cd.yml`)
 
-- **Triggers**: 
-  - Automatic: Push to `main` branch
-  - Manual: Workflow dispatch with environment selection
+- **Triggers**:
+    - Automatic: Push to `main` branch
+    - Manual: Workflow dispatch with environment selection
 - **Runs on**: Self-hosted runner (infrastructure-based)
 - **Jobs**:
-  - Deploy: Complete deployment process via SSH/SCP
+    - Deploy: Complete deployment process via SSH/SCP
 
 ### Secrets Management
 

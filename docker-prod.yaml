@@ -522,8 +522,7 @@ services:
                 ipv4_address: 192.168.250.23
         restart: unless-stopped
         healthcheck:
-            test:
-                ["CMD", "curl", "-f", "http://localhost:9000/health"]
+            test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
             interval: 30s
             timeout: 10s
             retries: 3

@@ -9,6 +9,7 @@ The CD workflow automates the deployment of BackTrade to production infrastructu
 **File**: `.github/workflows/cd.yml`
 
 **Triggers**:
+
 - **Automatic**: Push to `main` branch
 - **Manual**: Workflow dispatch with optional environment selection
 
@@ -48,6 +49,7 @@ graph TB
 **Environment**: Dynamic based on workflow input (default: `PROD`)
 
 **Steps**:
+
 1. Checkout repository code
 2. Execute deployment via reusable action
 
@@ -58,6 +60,7 @@ graph TB
 **Type**: Composite action (bash-based)
 
 **Inputs**:
+
 - `ssh_host`: SSH hostname or IP address
 - `ssh_port`: SSH port (default: 22)
 - `ssh_user`: SSH username
@@ -71,16 +74,17 @@ graph TB
 **Purpose**: Configure SSH authentication for remote server access
 
 **Actions**:
+
 1. Create `~/.ssh` directory
 2. Write SSH private key to `~/.ssh/id_deploy`
 3. Set permissions to `600` (owner read/write only)
 4. Configure SSH config with:
-   - Host alias: `remote`
-   - HostName: From `ssh_host` input
-   - User: From `ssh_user` input
-   - Port: From `ssh_port` input
-   - IdentityFile: `~/.ssh/id_deploy`
-   - StrictHostKeyChecking: `no` (for automation)
+    - Host alias: `remote`
+    - HostName: From `ssh_host` input
+    - User: From `ssh_user` input
+    - Port: From `ssh_port` input
+    - IdentityFile: `~/.ssh/id_deploy`
+    - StrictHostKeyChecking: `no` (for automation)
 
 **Security**: SSH key is stored temporarily and removed after workflow completion
 
@@ -89,21 +93,23 @@ graph TB
 **Purpose**: Preserve production environment configuration
 
 **Actions**:
+
 1. Create deployment directory if it doesn't exist
 2. Create backup directory: `/tmp/backtrade_deploy_backup`
 3. If `.env` exists in deployment directory:
-   - Copy to backup location
-   - Log backup confirmation
+    - Copy to backup location
+    - Log backup confirmation
 4. If `.env` doesn't exist:
-   - Log that no backup was needed
+    - Log that no backup was needed
 
 ### Step 3: Stop Running Containers
 
 **Purpose**: Gracefully stop existing containers before deployment
 
 **Actions**:
+
 1. Execute `stop_backtrade.sh` script via sudo
-2. Script validates container name 
+2. Script validates container name
 3. Script stops containers using Docker Compose
 
 **Script**: `/usr/local/bin/stop_backtrade.sh`
@@ -115,11 +121,12 @@ graph TB
 **Purpose**: Remove all files from deployment directory for clean deployment
 
 **Actions**:
+
 1. Change to deployment directory
 2. Remove all files and directories:
-   - `./*`: All visible files
-   - `./.[!.]*`: Hidden files (excluding `.` and `..`)
-   - `./.??*`: Additional hidden files
+    - `./*`: All visible files
+    - `./.[!.]*`: Hidden files (excluding `.` and `..`)
+    - `./.??*`: Additional hidden files
 3. Suppress errors for non-existent files (`2>/dev/null || true`)
 
 ### Step 5: Copy Files to Remote
@@ -129,24 +136,26 @@ graph TB
 **Method**: Tarball via SSH pipe
 
 **Process**:
+
 1. Create compressed tarball excluding:
-   - `.git`: Version control files
-   - `.github`: CI/CD configuration
-   - `node_modules`: Dependencies (rebuilt on server)
-   - `**/node_modules`: Nested dependencies
-   - `dist`: Build artifacts (rebuilt on server)
-   - `**/dist`: Nested build artifacts
-   - `coverage`: Test coverage reports
-   - `**/coverage`: Nested coverage reports
-   - `.env`: Environment files (preserved separately)
-   - `*.log`: Log files
-   - `.vscode`, `.idea`: IDE configuration
-   - `*.swp`, `*.swo`: Editor swap files
-   - `.DS_Store`, `Thumbs.db`: OS-specific files
+    - `.git`: Version control files
+    - `.github`: CI/CD configuration
+    - `node_modules`: Dependencies (rebuilt on server)
+    - `**/node_modules`: Nested dependencies
+    - `dist`: Build artifacts (rebuilt on server)
+    - `**/dist`: Nested build artifacts
+    - `coverage`: Test coverage reports
+    - `**/coverage`: Nested coverage reports
+    - `.env`: Environment files (preserved separately)
+    - `*.log`: Log files
+    - `.vscode`, `.idea`: IDE configuration
+    - `*.swp`, `*.swo`: Editor swap files
+    - `.DS_Store`, `Thumbs.db`: OS-specific files
 2. Pipe tarball through SSH to remote server
 3. Extract tarball in deployment directory
 
 **Command**:
+
 ```bash
 tar --exclude='...' -czf - . | ssh remote "cd '$remote_dir' && tar -xzf -"
 ```
@@ -156,12 +165,13 @@ tar --exclude='...' -czf - . | ssh remote "cd '$remote_dir' && tar -xzf -"
 **Purpose**: Restore production environment configuration
 
 **Actions**:
+
 1. Check if backup exists: `/tmp/backtrade_deploy_backup/.env`
 2. If backup exists:
-   - Copy to deployment directory
-   - Log restoration confirmation
+    - Copy to deployment directory
+    - Log restoration confirmation
 3. If backup doesn't exist:
-   - Log that no backup was found
+    - Log that no backup was found
 4. Remove backup directory
 
 ### Step 7: Deploy Application
@@ -169,10 +179,11 @@ tar --exclude='...' -czf - . | ssh remote "cd '$remote_dir' && tar -xzf -"
 **Purpose**: Build and start application containers
 
 **Actions**:
+
 1. Execute `refresh_backtrade.sh` script via sudo
-3. Script performs:
-   - Docker Compose build with `--no-cache`
-   - Docker Compose up in detached mode
+2. Script performs:
+    - Docker Compose build with `--no-cache`
+    - Docker Compose up in detached mode
 
 **Script**: `/usr/local/bin/refresh_backtrade.sh`
 
@@ -251,7 +262,7 @@ echo "Starting containers..."
 echo "Deployment successful"
 ```
 
-#### Script flow 
+#### Script flow
 
 ```mermaid
 flowchart TD
@@ -322,7 +333,7 @@ echo "Containers stopped successfully"
 
 ```
 
-#### Script flow 
+#### Script flow
 
 ```mermaid
 flowchart TD
@@ -342,12 +353,14 @@ flowchart TD
 **User**: `backtradecd`
 
 **Capabilities**:
+
 - No root access
 - No Docker group membership
 - Can execute specific scripts via sudo without password
 - Has only execution right on `refresh_backtrade.sh` and `stop_backtrade.sh`
 
 **Sudoers Configuration** (`/etc/sudoers`):
+
 ```
 backtradecd ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/refresh_backtrade.sh
 backtradecd ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/stop_backtrade.sh
@@ -370,31 +383,31 @@ sequenceDiagram
     Runner->>Runner: Checkout Code
     Runner->>Runner: Setup SSH Key
     Runner->>SSH: Connect to Server
-    
+
     Runner->>Server: Create Backup Directory
     Server->>Server: Backup .env File
-    
+
     Runner->>Server: Stop Containers
     Server->>Server: Execute stop_backtrade.sh
     Server->>Docker: docker compose down
     Docker->>Containers: Stop All Containers
-    
+
     Runner->>Server: Clean Deployment Directory
     Server->>Server: Remove All Files
-    
+
     Runner->>Server: Copy Files (Tarball)
     Server->>Server: Extract Tarball
-    
+
     Runner->>Server: Restore .env File
     Server->>Server: Copy Backup to Deployment Dir
-    
+
     Runner->>Server: Deploy Application
     Server->>Server: Execute refresh_backtrade.sh
     Server->>Docker: docker compose build --no-cache
     Docker->>Docker: Build All Images
     Server->>Docker: docker compose up -d
     Docker->>Containers: Start All Containers
-    
+
     Containers->>Containers: Health Checks
     Containers->>Server: Ready
     Server->>Runner: Deployment Success

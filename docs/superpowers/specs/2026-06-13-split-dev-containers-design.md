@@ -34,14 +34,14 @@ The development stack runs all four application processes — `api`, `web`,
 
 ## Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Process topology | 4 app containers + 1 tooling container | Crash isolation; mirrors prod |
-| Image | Reuse existing `docker/images/dev.dockerfile` for all 5 services, override `command:` per service | DRY; no new dockerfiles |
-| Dependency strategy | Per-container `node_modules` (anonymous volumes), each runs `pnpm install` on entrypoint | Full isolation; reuses today's entrypoint unchanged |
-| Service names | `api` / `web` / `worker` / `scheduler` | Match `apps/` folder names and pnpm filters |
-| Tooling host | Dedicated `tools` container running `sleep infinity` | Keeps app containers single-purpose; hosts all Prisma/pnpm/db commands |
-| Package watchers | Dropped in dev runtime | Apps import package `src` directly (see Key Findings); watchers emit unused `dist`. Type-checking stays available via `make typecheck` |
+| Decision            | Choice                                                                                            | Rationale                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Process topology    | 4 app containers + 1 tooling container                                                            | Crash isolation; mirrors prod                                                                                                          |
+| Image               | Reuse existing `docker/images/dev.dockerfile` for all 5 services, override `command:` per service | DRY; no new dockerfiles                                                                                                                |
+| Dependency strategy | Per-container `node_modules` (anonymous volumes), each runs `pnpm install` on entrypoint          | Full isolation; reuses today's entrypoint unchanged                                                                                    |
+| Service names       | `api` / `web` / `worker` / `scheduler`                                                            | Match `apps/` folder names and pnpm filters                                                                                            |
+| Tooling host        | Dedicated `tools` container running `sleep infinity`                                              | Keeps app containers single-purpose; hosts all Prisma/pnpm/db commands                                                                 |
+| Package watchers    | Dropped in dev runtime                                                                            | Apps import package `src` directly (see Key Findings); watchers emit unused `dist`. Type-checking stays available via `make typecheck` |
 
 ## Key findings (verified against the codebase)
 
@@ -70,13 +70,13 @@ The development stack runs all four application processes — `api`, `web`,
 Replace the single `dev` service with five services, all built from
 `docker/images/dev.dockerfile`, differing only by `command:`.
 
-| Service | `command:` | Ports | Static IP |
-|---|---|---|---|
-| `api` | `pnpm --filter @backtrade/api dev` | `21799:21799` | 192.168.250.11 (unchanged) |
-| `web` | `pnpm --filter @backtrade/web dev` | `5173:5173` | 192.168.250.12 |
-| `worker` | `pnpm --filter @backtrade/worker dev` | — | 192.168.250.13 |
-| `scheduler` | `pnpm --filter @backtrade/scheduler dev` | — | 192.168.250.14 |
-| `tools` | `sleep infinity` | — | 192.168.250.15 |
+| Service     | `command:`                               | Ports         | Static IP                  |
+| ----------- | ---------------------------------------- | ------------- | -------------------------- |
+| `api`       | `pnpm --filter @backtrade/api dev`       | `21799:21799` | 192.168.250.11 (unchanged) |
+| `web`       | `pnpm --filter @backtrade/web dev`       | `5173:5173`   | 192.168.250.12             |
+| `worker`    | `pnpm --filter @backtrade/worker dev`    | —             | 192.168.250.13             |
+| `scheduler` | `pnpm --filter @backtrade/scheduler dev` | —             | 192.168.250.14             |
+| `tools`     | `sleep infinity`                         | —             | 192.168.250.15             |
 
 Each app/tools service:
 
@@ -107,9 +107,9 @@ Infra services and the network/volume definitions are unchanged.
 - Replace `DEV_SERVICE := dev` with `TOOLS_SERVICE := tools`. Point all `db-*`
   targets and `dev-shell` at `tools`.
 - Add per-service convenience targets:
-  - `logs-api`, `logs-web`, `logs-worker`, `logs-scheduler`
-  - `shell-api`, `shell-web`, `shell-worker`, `shell-scheduler` (and
-    `dev-shell` → `tools`)
+    - `logs-api`, `logs-web`, `logs-worker`, `logs-scheduler`
+    - `shell-api`, `shell-web`, `shell-worker`, `shell-scheduler` (and
+      `dev-shell` → `tools`)
 - `install-dev`: run `pnpm install` in each of the five app/tools containers
   (loop), since `node_modules` are per-container.
 - `dev-logs` (follow all) still works unchanged across the multiple services.

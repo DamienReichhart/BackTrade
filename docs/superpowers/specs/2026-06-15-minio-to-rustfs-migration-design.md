@@ -38,15 +38,17 @@ Rationale: consumers (`datasets-service`, the two worker processors, `health-ser
 ### 1. `packages/storage`
 
 **`libs/minio-client.ts` → `libs/s3-client.ts`**
+
 - `createStorageClient({ logger })` returns an `S3Client`:
-  - `endpoint: http://${S3_HOST}:${S3_PORT}`
-  - `region: S3_REGION`
-  - `credentials: { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }`
-  - `forcePathStyle: true`
+    - `endpoint: http://${S3_HOST}:${S3_PORT}`
+    - `region: S3_REGION`
+    - `credentials: { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }`
+    - `forcePathStyle: true`
 - No SSL/CA branch.
 - Rename interface `MinioClientConfig → S3ClientConfig`.
 
 **`services/storage-service.ts`** — same class name, same method signatures, reimplemented with SDK commands:
+
 - `upload` → `PutObjectCommand` (sets `ContentType`, `Metadata`), preceded by `ensureBucket`.
 - `download` → `GetObjectCommand`, stream body → `Buffer`.
 - `getObjectStream` → `GetObjectCommand`, return body as `Readable`.
@@ -61,6 +63,7 @@ Rationale: consumers (`datasets-service`, the two worker processors, `health-ser
 - The `StorageServiceConfig.client` type becomes `S3Client`.
 
 **`config/ENV.ts`** — new schema:
+
 - `S3_HOST: string`
 - `S3_PORT: coerce.number().int().positive()`
 - `S3_ACCESS_KEY_ID: string`
@@ -88,23 +91,23 @@ Rationale: consumers (`datasets-service`, the two worker processors, `health-ser
 - **`docker/images/minio.dockerfile` → `docker/images/rustfs.dockerfile`**: `FROM rustfs/rustfs:latest` (image provides its own entrypoint/CMD).
 - **`docker/config/minio/`**: remove the directory (stale `config` reference file + cert `.gitignore` no longer needed; no TLS, no read-only config mount).
 - **`docker-dev.yaml`**: `minio` service → `rustfs`:
-  - same static IP `192.168.250.23`, ports `9000:9000` / `9001:9001`
-  - env: `RUSTFS_ACCESS_KEY`, `RUSTFS_SECRET_KEY`, `RUSTFS_VOLUMES=/data`, `RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001`, `RUSTFS_CONSOLE_ENABLE=true`
-  - volume `backtrade_minio_data → backtrade_rustfs_data` at `/data`; drop the `:/mnt/minio:ro` mount
-  - update the named volume in the top-level `volumes:` block
+    - same static IP `192.168.250.23`, ports `9000:9000` / `9001:9001`
+    - env: `RUSTFS_ACCESS_KEY`, `RUSTFS_SECRET_KEY`, `RUSTFS_VOLUMES=/data`, `RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001`, `RUSTFS_CONSOLE_ENABLE=true`
+    - volume `backtrade_minio_data → backtrade_rustfs_data` at `/data`; drop the `:/mnt/minio:ro` mount
+    - update the named volume in the top-level `volumes:` block
 - **`docker-prod.yaml`**:
-  - `minio` service → `rustfs` (same rename as dev, plus existing prod hardening: `cap_drop`, `no-new-privileges`, resource limits, logging)
-  - api/worker env injection blocks: `MINIO_* → S3_*`, dropping `MINIO_CA_CERT_PATH` and `MINIO_USE_SSL`; `MINIO_DATASETS_BUCKET → S3_DATASETS_BUCKET`
-  - `depends_on: minio → rustfs` (both occurrences)
-  - healthcheck: `http://localhost:9000/minio/health/live → http://localhost:9000/health` (verify the image ships `curl`/`wget` during implementation; switch command form if not)
-  - volume rename `backtrade_minio_data → backtrade_rustfs_data` (service mount + top-level `volumes:`)
+    - `minio` service → `rustfs` (same rename as dev, plus existing prod hardening: `cap_drop`, `no-new-privileges`, resource limits, logging)
+    - api/worker env injection blocks: `MINIO_* → S3_*`, dropping `MINIO_CA_CERT_PATH` and `MINIO_USE_SSL`; `MINIO_DATASETS_BUCKET → S3_DATASETS_BUCKET`
+    - `depends_on: minio → rustfs` (both occurrences)
+    - healthcheck: `http://localhost:9000/minio/health/live → http://localhost:9000/health` (verify the image ships `curl`/`wget` during implementation; switch command form if not)
+    - volume rename `backtrade_minio_data → backtrade_rustfs_data` (service mount + top-level `volumes:`)
 
 ### 4. Environment & utilities
 
 - **`.env.example`**: replace the MinIO block with:
-  - RustFS server block: `RUSTFS_ACCESS_KEY`, `RUSTFS_SECRET_KEY`
-  - S3 client block: `S3_HOST=192.168.250.23`, `S3_PORT=9000`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_REGION=us-east-1`, `S3_DATASETS_BUCKET=datasets`
-  - client keys equal server keys; no SSL/CA lines
+    - RustFS server block: `RUSTFS_ACCESS_KEY`, `RUSTFS_SECRET_KEY`
+    - S3 client block: `S3_HOST=192.168.250.23`, `S3_PORT=9000`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_REGION=us-east-1`, `S3_DATASETS_BUCKET=datasets`
+    - client keys equal server keys; no SSL/CA lines
 - **Delete `utils/generate_minio_certs.bat` and `utils/generate_minio_certs.sh`**.
 
 ### 5. Documentation

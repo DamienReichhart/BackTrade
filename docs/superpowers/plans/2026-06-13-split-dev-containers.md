@@ -25,14 +25,17 @@
 ## Task 1: Replace the `dev` service with five per-process services in `docker-dev.yaml`
 
 **Files:**
+
 - Modify: `docker-dev.yaml:1-34` (the `services:` header and the entire `dev:` service block)
 
 - [ ] **Step 1: Verify the current `dev` block is exactly what we expect**
 
 Run:
+
 ```bash
 sed -n '1,34p' docker-dev.yaml
 ```
+
 Expected: lines 1-34 show `services:` followed by the `dev:` service ending at `restart: always` (line 34), immediately before the `postgres:` service on line 36.
 
 - [ ] **Step 2: Replace the `services:` header + `dev:` block with the anchor and five services**
@@ -154,18 +157,22 @@ services:
 - [ ] **Step 3: Validate the compose file parses and shows the five new services**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml config --services | sort
 ```
+
 Expected output (alphabetical): `api`, `clickhouse`, `minio`, `postgres`, `rabbitmq`, `redis`, `scheduler`, `tools`, `web`, `worker`. No `dev`. No YAML/anchor errors.
 
 - [ ] **Step 4: Confirm each app service resolved the anchor (volumes + build)**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml config | grep -A2 'image:\|context:' | head; \
 docker compose -f docker-dev.yaml config | grep -c '/app/apps/api/node_modules'
 ```
+
 Expected: the second command prints `5` (the anonymous node_modules entry appears once per app/tools service, proving the anchor merged into all five).
 
 - [ ] **Step 5: Commit**
@@ -180,6 +187,7 @@ git commit -m "feat(docker): split dev container into per-process services"
 ## Task 2: Retarget Makefile tooling/db commands and add per-service helpers
 
 **Files:**
+
 - Modify: `Makefile:7` (the `DEV_SERVICE` variable)
 - Modify: `Makefile:47-49` (`dev-shell` target)
 - Modify: `Makefile:93-126` (all `db-*` targets)
@@ -189,10 +197,13 @@ git commit -m "feat(docker): split dev container into per-process services"
 - [ ] **Step 1: Rename the service variable**
 
 Replace (line 7):
+
 ```makefile
 DEV_SERVICE := dev
 ```
+
 with:
+
 ```makefile
 TOOLS_SERVICE := tools
 ```
@@ -200,28 +211,35 @@ TOOLS_SERVICE := tools
 - [ ] **Step 2: Point `dev-shell` and all `db-*`/`install-dev` execs at `tools`**
 
 Run a single safe replacement of every `$(DEV_SERVICE)` reference to `$(TOOLS_SERVICE)`:
+
 ```bash
 sed -i 's/\$(DEV_SERVICE)/$(TOOLS_SERVICE)/g' Makefile
 ```
+
 Expected: the targets `dev-shell`, `db-init`, `db-generate`, `db-migrate`, `db-deploy`, `db-seed`, `db-studio`, `db-reset`, and `install-dev` now reference `$(TOOLS_SERVICE)`.
 
 - [ ] **Step 3: Verify no stale `$(DEV_SERVICE)` remains**
 
 Run:
+
 ```bash
 grep -n 'DEV_SERVICE' Makefile
 ```
+
 Expected: no output (zero matches).
 
 - [ ] **Step 4: Update the `dev-shell` help text to say `tools`**
 
 Replace (the `dev-shell` target, originally lines 47-49):
+
 ```makefile
 .PHONY: dev-shell
 dev-shell: ## Open shell in development container
 	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) /bin/sh
 ```
+
 with:
+
 ```makefile
 .PHONY: dev-shell
 dev-shell: ## Open shell in the tools container (run pnpm/prisma here)
@@ -231,6 +249,7 @@ dev-shell: ## Open shell in the tools container (run pnpm/prisma here)
 - [ ] **Step 5: Add per-service logs/shell targets after `dev-logs`**
 
 After the `dev-logs` target (originally lines 43-45), insert:
+
 ```makefile
 .PHONY: logs-api logs-web logs-worker logs-scheduler
 logs-api: ## Follow logs for the api service
@@ -256,13 +275,16 @@ shell-scheduler: ## Open a shell in the scheduler service
 - [ ] **Step 6: Make `install-dev` install across all five containers**
 
 Replace the `install-dev` target (originally lines 149-152, now with `$(TOOLS_SERVICE)`):
+
 ```makefile
 .PHONY: install-dev
 install-dev: dev ## Install dependencies and start dev environment
 	@echo "Installing dependencies and starting dev environment..."
 	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) install
 ```
+
 with:
+
 ```makefile
 .PHONY: install-dev
 install-dev: dev ## Install dependencies in every dev container (per-container node_modules)
@@ -276,9 +298,11 @@ install-dev: dev ## Install dependencies in every dev container (per-container n
 - [ ] **Step 7: Verify the Makefile parses and new targets appear in help**
 
 Run:
+
 ```bash
 make help | grep -E 'logs-(api|worker)|shell-api|dev-shell|install-dev'
 ```
+
 Expected: lines for `logs-api`, `logs-worker`, `shell-api`, `dev-shell`, and `install-dev` are listed with their help text. No `make` parse errors.
 
 - [ ] **Step 8: Commit**
@@ -293,15 +317,19 @@ git commit -m "feat(docker): point make tooling at tools container, add per-serv
 ## Task 3: Update `CLAUDE.md` references to the `dev` container
 
 **Files:**
+
 - Modify: `CLAUDE.md:11`, `CLAUDE.md:25`, `CLAUDE.md:29`, `CLAUDE.md:46`
 
 - [ ] **Step 1: Update the toolchain sentence (line 11)**
 
 Replace:
+
 ```
 The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `dev` container**, not on the host. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec dev …`.
 ```
+
 with:
+
 ```
 The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `tools` container**, not on the host. Each app process (`api`, `web`, `worker`, `scheduler`) runs in its own container; the `tools` container is a dedicated shell for pnpm/prisma/db work. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec tools …`.
 ```
@@ -309,10 +337,13 @@ The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `tools` contai
 - [ ] **Step 2: Update the `make dev-shell` comment (line 25)**
 
 Replace:
+
 ```
 make dev-shell        # shell into the dev container (run pnpm/prisma here)
 ```
+
 with:
+
 ```
 make dev-shell        # shell into the tools container (run pnpm/prisma here)
 ```
@@ -320,10 +351,13 @@ make dev-shell        # shell into the tools container (run pnpm/prisma here)
 - [ ] **Step 3: Update the Database section comment (line 29)**
 
 Replace:
+
 ```
 # Database (Prisma, runs inside the dev container)
 ```
+
 with:
+
 ```
 # Database (Prisma, runs inside the tools container)
 ```
@@ -331,10 +365,13 @@ with:
 - [ ] **Step 4: Update the single-workspace targeting note (line 46)**
 
 Replace:
+
 ```
 Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec dev`):
 ```
+
 with:
+
 ```
 Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec tools`):
 ```
@@ -342,9 +379,11 @@ Targeting a single workspace (run from inside `make dev-shell` or prefix with `d
 - [ ] **Step 5: Verify no stale `exec dev` / "dev container" references remain**
 
 Run:
+
 ```bash
 grep -n "exec dev\b\|the \`dev\` container\|into the dev container\|inside the \`dev\` container" CLAUDE.md
 ```
+
 Expected: no output (zero matches).
 
 - [ ] **Step 6: Commit**
@@ -363,64 +402,79 @@ git commit -m "docs(docker): update CLAUDE.md to reference tools container"
 - [ ] **Step 1: Build and start the new stack**
 
 Run:
+
 ```bash
 make dev-build
 ```
+
 Expected: compose builds (or reuses) the dev image and starts `api`, `web`, `worker`, `scheduler`, `tools`, plus the five infra services, with no errors.
 
 - [ ] **Step 2: Confirm all five app/tools containers are up**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml ps --format '{{.Service}}\t{{.State}}' | sort
 ```
+
 Expected: `api`, `web`, `worker`, `scheduler`, `tools` each show `running` (alongside the infra services).
 
 - [ ] **Step 3: Initialize the database from the tools container**
 
 Run:
+
 ```bash
 make db-init
 ```
+
 Expected: Prisma generate + migrate deploy + seed complete successfully, executing inside the `tools` container.
 
 - [ ] **Step 4: Verify the API is healthy and the frontend serves**
 
 Run:
+
 ```bash
 curl -fsS http://localhost:21799/api/v1/health && echo OK; \
 curl -fsS -o /dev/null -w '%{http_code}\n' http://localhost:5173
 ```
+
 Expected: health endpoint returns a success body then `OK`; the web request prints `200`.
 
 - [ ] **Step 5: Verify per-service logs are isolated**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml logs --tail=20 worker
 ```
+
 Expected: output contains only worker process output — no api/web/scheduler log lines interleaved.
 
 - [ ] **Step 6: Verify crash isolation**
 
 Run:
+
 ```bash
 docker compose -f docker-dev.yaml kill worker; sleep 2; \
 docker compose -f docker-dev.yaml ps --format '{{.Service}}\t{{.State}}' | grep -E 'api|web|scheduler'
 ```
+
 Expected: `api`, `web`, and `scheduler` remain `running` after `worker` is killed. (With `restart: always`, `worker` will also come back on its own shortly.)
 
 - [ ] **Step 7: Verify `make dev-shell` lands in the tools container**
 
 Run:
+
 ```bash
 echo 'pwd; pnpm --version' | docker compose -f docker-dev.yaml exec -T tools /bin/sh
 ```
+
 Expected: prints `/app` and a pnpm version — confirming the tools container has the workspace mounted and pnpm available.
 
 - [ ] **Step 8: Final commit (if any verification surfaced a fix)**
 
 If steps 1-7 all pass with no changes needed, there is nothing to commit here. If a fix was required, commit it:
+
 ```bash
 git add -A
 git commit -m "fix(docker): correct dev split issue found in verification"

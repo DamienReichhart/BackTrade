@@ -94,13 +94,13 @@ Based on the BackTrade project structure, the following scopes are recommended:
 
 #### Infrastructure Scopes
 
-| Scope    | Description                                       | Example                                           |
-| -------- | ------------------------------------------------- | ------------------------------------------------- |
-| `docker` | Docker configuration, Dockerfiles, docker-compose | `fix(docker): update rustfs image version`        |
-| `k8s`    | Kubernetes manifests and configuration            | `feat(k8s): add HPA for backend service`          |
-| `arch`   | Architecture changes affecting multiple systems   | `feat(arch): migrate object storage to rustfs`    |
-| `ci`     | CI/CD pipeline configuration                      | `ci: add automated testing workflow`              |
-| `build`  | Build system configuration                        | `build: update turbo configuration`               |
+| Scope    | Description                                       | Example                                        |
+| -------- | ------------------------------------------------- | ---------------------------------------------- |
+| `docker` | Docker configuration, Dockerfiles, docker-compose | `fix(docker): update rustfs image version`     |
+| `k8s`    | Kubernetes manifests and configuration            | `feat(k8s): add HPA for backend service`       |
+| `arch`   | Architecture changes affecting multiple systems   | `feat(arch): migrate object storage to rustfs` |
+| `ci`     | CI/CD pipeline configuration                      | `ci: add automated testing workflow`           |
+| `build`  | Build system configuration                        | `build: update turbo configuration`            |
 
 #### Other Scopes
 
