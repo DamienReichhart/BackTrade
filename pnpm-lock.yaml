@@ -265,6 +265,12 @@ importers:
       '@backtrade/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@fontsource/azeret-mono':
+        specifier: ^5.2.11
+        version: 5.2.11
+      '@fontsource/roboto':
+        specifier: ^5.2.10
+        version: 5.2.10
       '@hookform/resolvers':
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.76.1(react@19.2.6))
@@ -1414,6 +1420,12 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@fontsource/azeret-mono@5.2.11':
+    resolution: {integrity: sha512-DlufUsIj1AK6Z/26X/1bZj4SFsfuE6Cb1wYToGX3HoxTYrNzN0TUQ3Yv8bJ3kmvO3vOTCgOjFV81OJe2FERrUg==}
+
+  '@fontsource/roboto@5.2.10':
+    resolution: {integrity: sha512-8HlA5FtSfz//oFSr2eL7GFXAiE7eIkcGOtx7tjsLKq+as702x9+GU7K95iDeWFapHC4M2hv9RrpXKRTGGBI8Zg==}
 
   '@hono/node-server@1.19.11':
     resolution: {integrity: sha512-dr8/3zEaB+p0D2n/IUrlPF1HZm586qgJNXK1a9fhg/PzdtkK7Ksd5l312tJX2yBuALqDYBlG20QEbayqPyxn+g==}
@@ -6104,6 +6116,10 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.15.1': {}
+
+  '@fontsource/azeret-mono@5.2.11': {}
+
+  '@fontsource/roboto@5.2.10': {}
 
   '@hono/node-server@1.19.11(hono@4.12.23)':
     dependencies:

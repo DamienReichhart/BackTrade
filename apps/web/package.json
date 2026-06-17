@@ -20,6 +20,8 @@
     "dependencies": {
         "@backtrade/types": "workspace:*",
         "@backtrade/utils": "workspace:*",
+        "@fontsource/azeret-mono": "^5.2.11",
+        "@fontsource/roboto": "^5.2.10",
         "@hookform/resolvers": "^5.4.0",
         "@tanstack/react-query": "^5.100.14",
         "jwt-decode": "^4.0.0",
