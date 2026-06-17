@@ -11,6 +11,8 @@ export { ConfirmModal } from "./ConfirmModal";
 export { Select } from "./Select";
 export { Icon } from "./Icon";
 export type { IconSize } from "./Icon";
+export { Badge } from "./Badge";
+export type { BadgeVariant } from "./Badge";
 export { SkipLink } from "./SkipLink";
 export { Skeleton } from "./Skeleton";
 export { ToastContainer } from "./Toast";

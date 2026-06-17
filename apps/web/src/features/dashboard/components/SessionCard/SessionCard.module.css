@@ -42,40 +42,6 @@
     margin: 0;
 }
 
-.status {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.statusRunning {
-    background-color: var(--color-success-bg);
-    color: var(--color-success);
-}
-
-.statusPaused {
-    background-color: var(--color-warning-bg);
-    color: var(--color-warning);
-}
-
-.statusCompleted {
-    background-color: var(--color-info-bg);
-    color: var(--color-info);
-}
-
-.statusDraft {
-    background-color: var(--color-accent-bg-10);
-    color: var(--color-accent);
-}
-
-.statusArchived {
-    background-color: var(--color-gray-400-bg-10);
-    color: var(--color-gray-400);
-}
-
 .content {
     display: flex;
     flex-direction: column;
