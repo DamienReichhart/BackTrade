@@ -40,14 +40,15 @@ export function UserDetailsModal({
     isOpen,
     onClose,
 }: UserDetailsModalProps) {
-    // Handle modal behavior (Escape key, body scroll)
-    useModalBehavior(isOpen, onClose);
+    // Handle modal behavior (Escape key, body scroll, focus trap)
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     if (!isOpen) return null;
 
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"

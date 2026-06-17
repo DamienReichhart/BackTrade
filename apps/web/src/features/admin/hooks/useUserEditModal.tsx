@@ -20,8 +20,8 @@ export function useUserEditModal(
 ) {
     const updateUserMutation = useUpdateUser(user.id.toString());
 
-    // Handle modal behavior (Escape key, body scroll)
-    useModalBehavior(isOpen, onClose);
+    // Handle modal behavior (Escape key, body scroll, focus trap)
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     const {
         register,
@@ -88,6 +88,7 @@ export function useUserEditModal(
     };
 
     return {
+        modalRef,
         register,
         control,
         errors,

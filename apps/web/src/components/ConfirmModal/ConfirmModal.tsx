@@ -78,14 +78,15 @@ export function ConfirmModal({
     onConfirm,
     onCancel,
 }: ConfirmModalProps) {
-    // Handle modal behavior (Escape key, body scroll)
-    useModalBehavior(isOpen, onCancel);
+    // Handle modal behavior (Escape key, body scroll, focus trap)
+    const modalRef = useModalBehavior(isOpen, onCancel);
 
     if (!isOpen) return null;
 
     return (
         <div className={styles.backdrop} onClick={onCancel}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"

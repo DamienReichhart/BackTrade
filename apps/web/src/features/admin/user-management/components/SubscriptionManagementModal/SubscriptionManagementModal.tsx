@@ -38,6 +38,9 @@ export function SubscriptionManagementModal({
     onClose,
 }: SubscriptionManagementModalProps) {
     const {
+        // Refs
+        modalRef,
+
         // Data
         subscriptions,
         isLoading,
@@ -79,6 +82,7 @@ export function SubscriptionManagementModal({
         <>
             <div className={styles.backdrop} onClick={onClose}>
                 <div
+                    ref={modalRef}
                     className={styles.modal}
                     onClick={(e) => e.stopPropagation()}
                     role="dialog"

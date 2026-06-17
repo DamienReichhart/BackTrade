@@ -19,13 +19,14 @@ export function TransactionDetailsModal({
     isOpen,
     onClose,
 }: TransactionDetailsModalProps) {
-    useModalBehavior(isOpen, onClose);
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     if (!isOpen || !transaction) return null;
 
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
