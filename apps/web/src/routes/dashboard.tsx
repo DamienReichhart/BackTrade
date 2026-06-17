@@ -1,76 +1,70 @@
-import { AuthenticatedLayout } from "../components";
-import { Dashboard } from "../features/dashboard";
-import { Settings } from "../features/settings";
-import { Plans } from "../features/plans";
-import { PurchaseSuccess } from "../features/plans/components/PurchaseSuccess";
-import { AdminChoices } from "../features/admin";
-import { UserManagement } from "../features/admin/user-management";
-import { DatasetManagement } from "../features/admin/dataset-management";
-import { InstrumentManagement } from "../features/admin/instrument-management";
+import { lazy } from "react";
+import { withLayout } from "./utils";
+
+const Dashboard = lazy(() =>
+    import("../features/dashboard").then((m) => ({ default: m.Dashboard }))
+);
+const Settings = lazy(() =>
+    import("../features/settings").then((m) => ({ default: m.Settings }))
+);
+const Plans = lazy(() =>
+    import("../features/plans").then((m) => ({ default: m.Plans }))
+);
+const PurchaseSuccess = lazy(() =>
+    import("../features/plans/components/PurchaseSuccess").then((m) => ({
+        default: m.PurchaseSuccess,
+    }))
+);
+const AdminChoices = lazy(() =>
+    import("../features/admin").then((m) => ({ default: m.AdminChoices }))
+);
+const UserManagement = lazy(() =>
+    import("../features/admin/user-management").then((m) => ({
+        default: m.UserManagement,
+    }))
+);
+const DatasetManagement = lazy(() =>
+    import("../features/admin/dataset-management").then((m) => ({
+        default: m.DatasetManagement,
+    }))
+);
+const InstrumentManagement = lazy(() =>
+    import("../features/admin/instrument-management").then((m) => ({
+        default: m.InstrumentManagement,
+    }))
+);
 
 export const dashboardRoutes = [
     {
         path: "/dashboard",
-        element: (
-            <AuthenticatedLayout>
-                <Dashboard />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(Dashboard),
     },
     {
         path: "/dashboard/settings",
-        element: (
-            <AuthenticatedLayout>
-                <Settings />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(Settings),
     },
     {
         path: "/dashboard/plans",
-        element: (
-            <AuthenticatedLayout>
-                <Plans />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(Plans),
     },
     {
         path: "/dashboard/plans/purchase-success",
-        element: (
-            <AuthenticatedLayout>
-                <PurchaseSuccess />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(PurchaseSuccess),
     },
     {
         path: "/dashboard/admin",
-        element: (
-            <AuthenticatedLayout>
-                <AdminChoices />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(AdminChoices),
     },
     {
         path: "/dashboard/admin/user-management",
-        element: (
-            <AuthenticatedLayout>
-                <UserManagement />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(UserManagement),
     },
     {
         path: "/dashboard/admin/dataset-management",
-        element: (
-            <AuthenticatedLayout>
-                <DatasetManagement />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(DatasetManagement),
     },
     {
         path: "/dashboard/admin/instrument-management",
-        element: (
-            <AuthenticatedLayout>
-                <InstrumentManagement />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(InstrumentManagement),
     },
 ];

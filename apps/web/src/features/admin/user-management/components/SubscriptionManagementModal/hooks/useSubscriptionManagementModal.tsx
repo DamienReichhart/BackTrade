@@ -76,8 +76,8 @@ export function useSubscriptionManagementModal(
         subscriptionToDeleteId
     );
 
-    // Handle modal behavior (Escape key, body scroll)
-    useModalBehavior(isOpen, onClose);
+    // Handle modal behavior (Escape key, body scroll, focus trap)
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     // Plan lookup helper
     const getPlanById = (planId: number): Plan | undefined => {
@@ -181,6 +181,9 @@ export function useSubscriptionManagementModal(
     };
 
     return {
+        // Refs
+        modalRef,
+
         // Data
         subscriptions,
         plans,

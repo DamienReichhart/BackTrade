@@ -1,5 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { Input } from "../../../../../components/Input";
+import { Icon } from "../../../../../components/Icon";
 import { Select } from "../../../../../components/Select";
 import { Button } from "../../../../../components/Button";
 import type { SelectOption } from "../../../../../types/ui";
@@ -48,6 +50,14 @@ export function SearchFilter({
 }: SearchFilterProps) {
     const [localSearch, setLocalSearch] = useState(searchQuery);
 
+    // Sync external search changes by adjusting state during render rather than
+    // in an effect (avoids the cascading-render setState-in-effect antipattern).
+    const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
+    if (searchQuery !== prevSearchQuery) {
+        setPrevSearchQuery(searchQuery);
+        setLocalSearch(searchQuery);
+    }
+
     // Debounce search input
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -58,11 +68,6 @@ export function SearchFilter({
 
         return () => clearTimeout(timer);
     }, [localSearch, searchQuery, onSearchChange]);
-
-    // Sync external search changes
-    useEffect(() => {
-        setLocalSearch(searchQuery);
-    }, [searchQuery]);
 
     const handleSearchChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +98,7 @@ export function SearchFilter({
                             onClick={handleClearSearch}
                             aria-label="Clear search"
                         >
-                            ×
+                            <Icon icon={X} size="sm" />
                         </button>
                     )}
                 </div>

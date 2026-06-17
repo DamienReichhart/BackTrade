@@ -5,7 +5,7 @@
  * for parallel processing. Uses streaming to handle files of any size
  * without loading them entirely into memory.
  *
- * Each part is uploaded to MinIO and a processing job is queued immediately,
+ * Each part is uploaded to storage and a processing job is queued immediately,
  * enabling progressive parallel processing of large files.
  */
 
@@ -120,7 +120,7 @@ class DatasetFileSplitProcessor {
     }
 
     /**
-     * Upload a part to MinIO and queue its processing job
+     * Upload a part to storage and queue its processing job
      *
      * @param state - Current processing state
      * @param totalParts - Total number of parts (may be estimated during streaming)
@@ -151,7 +151,7 @@ class DatasetFileSplitProcessor {
                 partNumber,
                 lineCount: currentPartLines.length,
             },
-            "Uploading part to MinIO"
+            "Uploading part to storage"
         );
 
         await storageService.upload(bucket, partPath, partBuffer, {
@@ -253,7 +253,7 @@ class DatasetFileSplitProcessor {
     /**
      * Process a dataset file split job using streaming
      *
-     * Streams the file from MinIO, splits it into parts progressively,
+     * Streams the file from storage, splits it into parts progressively,
      * uploads each part, and immediately queues processing jobs.
      * This approach handles files of any size without memory constraints.
      *
@@ -287,10 +287,10 @@ class DatasetFileSplitProcessor {
             throw new Error(`Invalid file path format: ${filePath}`);
         }
 
-        // Get file stream from MinIO
+        // Get file stream from storage
         this.logger.debug(
             { bucket, objectPath },
-            "Creating file stream from MinIO"
+            "Creating file stream from storage"
         );
         const fileStream = await storageService.getObjectStream(
             bucket,

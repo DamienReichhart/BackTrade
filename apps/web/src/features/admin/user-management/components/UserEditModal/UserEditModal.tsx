@@ -1,6 +1,8 @@
 import type { PublicUser } from "@backtrade/types";
+import { X } from "lucide-react";
 import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
 import { Checkbox } from "../../../../../components/Checkbox";
@@ -46,14 +48,22 @@ export function UserEditModal({
     // Use a key based on user.id and isOpen to reset form state is handled in hook effect
     // but react-hook-form reset handles this cleaner.
 
-    const { register, control, errors, isLoading, handleSubmit, Controller } =
-        useUserEditModal(user, isOpen, onClose, onSuccess);
+    const {
+        modalRef,
+        register,
+        control,
+        errors,
+        isLoading,
+        handleSubmit,
+        Controller,
+    } = useUserEditModal(user, isOpen, onClose, onSuccess);
 
     if (!isOpen) return null;
 
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
@@ -70,7 +80,7 @@ export function UserEditModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

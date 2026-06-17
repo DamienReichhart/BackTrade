@@ -36,6 +36,7 @@ export function EquityCurveSection({
 }: EquityCurveSectionProps) {
     const { chartRef } = useEquityCurve(equityCurve);
 
+    const hasData = equityCurve.length > 0;
     const startEquity = equityCurve[0]?.equity ?? summary.start_balance;
     const totalTrades = summary.total_trades;
 
@@ -59,7 +60,17 @@ export function EquityCurveSection({
             </div>
 
             <div className={styles.chartContainer}>
-                <div ref={chartRef} className={styles.chart} />
+                {hasData ? (
+                    <div ref={chartRef} className={styles.chart} />
+                ) : (
+                    <div className={styles.empty}>
+                        <p className={styles.emptyTitle}>No equity data yet</p>
+                        <span className={styles.emptyHint}>
+                            The equity curve appears once the session has closed
+                            positions.
+                        </span>
+                    </div>
+                )}
             </div>
 
             <div className={styles.statsRow}>

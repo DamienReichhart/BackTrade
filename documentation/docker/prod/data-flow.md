@@ -8,7 +8,7 @@ sequenceDiagram
     participant Redis as Redis Cache
     participant Postgres as PostgreSQL
     participant ClickHouse as ClickHouse
-    participant MinIO as MinIO Storage
+    participant RustFS as RustFS Storage
     participant RabbitMQ as RabbitMQ Queue
     participant Worker as Worker Service
     participant Scheduler as Scheduler Service
@@ -36,14 +36,14 @@ sequenceDiagram
     Proxy-->>CF: Response
     CF-->>User: Response
 
-    Note over API,MinIO: Dataset Upload Flow (api request example)
+    Note over API,RustFS: Dataset Upload Flow (api request example)
     User->>API: Upload Dataset File (api request example)
-    API->>MinIO: Store File Object
-    MinIO-->>API: File Stored
+    API->>RustFS: Store File Object
+    RustFS-->>API: File Stored
     API->>RabbitMQ: Publish Processing Job
     RabbitMQ-->>Worker: Job Message
-    Worker->>MinIO: Read Dataset File
-    MinIO-->>Worker: File Content
+    Worker->>RustFS: Read Dataset File
+    RustFS-->>Worker: File Content
     Worker->>Postgres: Store Dataset Metadata
     Worker->>ClickHouse: Import Candlestick Data
     Worker->>RabbitMQ: Acknowledge Job

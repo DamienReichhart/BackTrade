@@ -45,6 +45,7 @@ export function SessionList() {
         sessions,
         isLoading,
         error,
+        refetch,
         handleSearchChange,
         handleSort,
         handleSortOrderChange,
@@ -52,7 +53,7 @@ export function SessionList() {
     } = useSessionList();
 
     if (error) {
-        return <ErrorState error={error} />;
+        return <ErrorState error={error} onRetry={() => void refetch()} />;
     }
 
     const hasResults = sessions.length > 0;

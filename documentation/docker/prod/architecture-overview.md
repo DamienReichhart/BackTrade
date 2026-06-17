@@ -25,13 +25,13 @@ graph TB
         Postgres[(PostgreSQL<br/>192.168.250.21<br/>Port 5432<br/>Primary DB)]
         Redis[(Redis<br/>192.168.250.22<br/>Port 6379<br/>Cache)]
         ClickHouse[(ClickHouse<br/>192.168.250.24<br/>Ports 8123, 9000<br/>Analytics DB)]
-        MinIO[(MinIO<br/>192.168.250.23<br/>Ports 9000, 9001<br/>Object Storage)]
+        RustFS[(RustFS<br/>192.168.250.23<br/>Ports 9000, 9001<br/>Object Storage)]
         RabbitMQ[(RabbitMQ<br/>192.168.250.31<br/>Ports 5672, 15672<br/>Message Queue)]
     end
 
     subgraph "Persistent Storage"
         VolDB[(backtrade_db<br/>PostgreSQL Data)]
-        VolMinIO[(backtrade_minio_data<br/>MinIO Data)]
+        VolRustFS[(backtrade_rustfs_data<br/>RustFS Data)]
         VolClickHouse[(backtrade_clickhouse_data<br/>ClickHouse Data)]
         VolRabbitMQ[(backtrade_rabbitmq_data<br/>RabbitMQ Data)]
     end
@@ -49,12 +49,12 @@ graph TB
     Backend --> Postgres
     Backend --> Redis
     Backend --> ClickHouse
-    Backend --> MinIO
+    Backend --> RustFS
     Backend --> RabbitMQ
 
     Worker --> Postgres
     Worker --> ClickHouse
-    Worker --> MinIO
+    Worker --> RustFS
     Worker --> RabbitMQ
 
     Scheduler --> Postgres
@@ -65,7 +65,7 @@ graph TB
     Migrate --> ClickHouse
 
     Postgres --> VolDB
-    MinIO --> VolMinIO
+    RustFS --> VolRustFS
     ClickHouse --> VolClickHouse
     RabbitMQ --> VolRabbitMQ
 
@@ -79,6 +79,6 @@ graph TB
     style Postgres fill:#336791
     style Redis fill:#dc382d
     style ClickHouse fill:#ffcc02
-    style MinIO fill:#c03
+    style RustFS fill:#c03
     style RabbitMQ fill:#ff6600
 ```

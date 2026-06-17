@@ -26,6 +26,7 @@ export function LoginFormPanel() {
                     <Input
                         label="Email"
                         type="email"
+                        autoComplete="email"
                         placeholder="you@domain.com"
                         error={errors.email?.message}
                         hasError={!!errors.email}
@@ -36,6 +37,7 @@ export function LoginFormPanel() {
                     <Input
                         label="Password"
                         type="password"
+                        autoComplete="current-password"
                         error={errors.password?.message}
                         hasError={!!errors.password}
                         {...register("password")}

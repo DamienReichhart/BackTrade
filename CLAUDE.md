@@ -8,11 +8,11 @@ BackTrade is a deterministic multi-session historical trading simulator. Users r
 
 ## Working environment — all dev runs inside Docker
 
-The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `dev` container**, not on the host. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec dev …`.
+The toolchain (pnpm, prisma, tsc, eslint, jest) runs **inside the `tools` container**, not on the host. Each app process (`api`, `web`, `worker`, `scheduler`) runs in its own container; the `tools` container is a dedicated shell for pnpm/prisma/db work. Don't run `pnpm`, `prisma`, or `node` directly on the host for app commands — go through the Makefile or `docker compose -f docker-dev.yaml exec tools …`.
 
-The `dev` container bind-mounts `apps/`, `packages/`, and `assets/`, but `node_modules` are anonymous volumes (host vs. container `node_modules` would clash on native deps like argon2/bcrypt). After adding a dep, run `make install-dev`, not `pnpm install` on the host.
+Each dev container (`api`, `web`, `worker`, `scheduler`, `tools`) bind-mounts `apps/`, `packages/`, and `assets/`, but `node_modules` are anonymous per-container volumes (host vs. container `node_modules` would clash on native deps like argon2/bcrypt). After adding a dep, run `make install-dev`, not `pnpm install` on the host.
 
-Services in the docker-dev network use **static IPs on `192.168.250.0/24`** (see [.env.example](.env.example)) — `DATABASE_URL`, `REDIS_HOST`, etc. point at those IPs, not service names. Anything talking to Postgres/Redis/MinIO/ClickHouse/RabbitMQ from inside the container goes through these IPs.
+Services in the docker-dev network use **static IPs on `192.168.250.0/24`** (see [.env.example](.env.example)) — `DATABASE_URL`, `REDIS_HOST`, etc. point at those IPs, not service names. Anything talking to Postgres/Redis/RustFS/ClickHouse/RabbitMQ from inside the container goes through these IPs.
 
 ## Common commands
 
@@ -22,11 +22,11 @@ All via the Makefile — see `make help` for the full list.
 # Lifecycle
 make setup            # one-shot: install, build dev image, start, init DB
 make dev              # start the dev stack (detached)
-make dev-shell        # shell into the dev container (run pnpm/prisma here)
+make dev-shell        # shell into the tools container (run pnpm/prisma here)
 make dev-logs         # follow logs across all services
 make dev-down         # stop + remove containers
 
-# Database (Prisma, runs inside the dev container)
+# Database (Prisma, runs inside the tools container)
 make db-init          # generate + deploy + seed (first-time setup)
 make db-migrate       # prisma migrate dev (create a new migration)
 make db-generate      # regenerate Prisma client after schema edits
@@ -43,7 +43,7 @@ make test             # jest across packages
 make quality          # lint + typecheck + format-check
 ```
 
-Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec dev`):
+Targeting a single workspace (run from inside `make dev-shell` or prefix with `docker compose -f docker-dev.yaml exec tools`):
 
 ```bash
 pnpm --filter @backtrade/api <script>     # backend
@@ -53,7 +53,7 @@ pnpm --filter @backtrade/data <script>    # prisma/data layer
 
 Run a single Jest test file: `pnpm --filter @backtrade/api test -- path/to/file.test.ts` (jest pattern after `--`).
 
-Endpoints once `make dev` is up: frontend `http://localhost:5173`, API `http://localhost:21799` (base path `/api/v1`), health `http://localhost:21799/api/v1/health`, RabbitMQ UI `http://localhost:15672`, MinIO console `http://localhost:9001`.
+Endpoints once `make dev` is up: frontend `http://localhost:5173`, API `http://localhost:21799` (base path `/api/v1`), health `http://localhost:21799/api/v1/health`, RabbitMQ UI `http://localhost:15672`, RustFS console `http://localhost:9001`.
 
 ## Architecture
 
@@ -71,7 +71,7 @@ Endpoints once `make dev` is up: frontend `http://localhost:5173`, API `http://l
 - **`@backtrade/data`** — **data access only**. Prisma schema, generated client, repositories (pure CRUD/queries/transactions), ClickHouse client, DB enums. **No business logic, no HTTP, no queue, no auth, no side effects.** Business rules live in `apps/api/src/services/`.
 - **`@backtrade/types`** — Zod schemas + inferred TS types shared between frontend and backend. When you add an endpoint, define its request/response schemas here so `useFetch` on the frontend and the route handler on the backend validate against the same source.
 - **`@backtrade/utils`** — pure helpers (no I/O).
-- **`@backtrade/cache`** (Redis/ioredis), **`@backtrade/queue`** (RabbitMQ), **`@backtrade/storage`** (MinIO/S3-compatible), **`@backtrade/mailer`** (SMTP), **`@backtrade/logger`** (Pino) — each is the single integration point for its concern. Don't `new Redis()` or `amqplib.connect()` directly in app code.
+- **`@backtrade/cache`** (Redis/ioredis), **`@backtrade/queue`** (RabbitMQ), **`@backtrade/storage`** (RustFS via AWS S3 client — `@aws-sdk/client-s3`), **`@backtrade/mailer`** (SMTP), **`@backtrade/logger`** (Pino) — each is the single integration point for its concern. Don't `new Redis()` or `amqplib.connect()` directly in app code.
 - **`@backtrade/eslint-config`**, **`@backtrade/tsconfig`** — shared configs.
 
 ### Cross-cutting flows

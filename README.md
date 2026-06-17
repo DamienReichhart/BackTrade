@@ -71,7 +71,7 @@ BackTrade is a sophisticated trading backtesting platform designed for professio
 - **Email Notifications**: Automated email notifications for account events
 - **Modern UI**: Intuitive React-based interface with interactive candlestick charts
 - **Background Processing**: Asynchronous job processing with RabbitMQ
-- **Object Storage**: MinIO integration for dataset file storage
+- **Object Storage**: RustFS (S3-compatible) integration for dataset file storage
 - **Caching Layer**: Redis-based caching for improved performance
 
 ### Infrastructure Features
@@ -93,19 +93,19 @@ BackTrade is built as a modern, scalable monorepo using **pnpm workspaces** and 
 
 The platform consists of the following services:
 
-| Service               | Description                              | Port (Dev)  |
-| --------------------- | ---------------------------------------- | ----------- |
-| **Frontend**          | React web application served by Nginx    | 5173        |
-| **Backend API**       | Express.js REST API server               | 21799       |
-| **Worker**            | Background job processor for async tasks | -           |
-| **Scheduler**         | Scheduled tasks and queue retry handler  | -           |
-| **PostgreSQL**        | Primary relational database              | 5432        |
-| **Redis**             | Caching and session storage              | 6379        |
-| **ClickHouse**        | Analytics database for time-series data  | 8123, 9002  |
-| **MinIO**             | Object storage for datasets              | 9000, 9001  |
-| **RabbitMQ**          | Message queue for job processing         | 5672, 15672 |
-| **Nginx**             | Reverse proxy (production only)          | 80          |
-| **Cloudflare Tunnel** | Secure remote access (production only)   | -           |
+| Service               | Description                               | Port (Dev)  |
+| --------------------- | ----------------------------------------- | ----------- |
+| **Frontend**          | React web application served by Nginx     | 5173        |
+| **Backend API**       | Express.js REST API server                | 21799       |
+| **Worker**            | Background job processor for async tasks  | -           |
+| **Scheduler**         | Scheduled tasks and queue retry handler   | -           |
+| **PostgreSQL**        | Primary relational database               | 5432        |
+| **Redis**             | Caching and session storage               | 6379        |
+| **ClickHouse**        | Analytics database for time-series data   | 8123, 9002  |
+| **RustFS**            | S3-compatible object storage for datasets | 9000, 9001  |
+| **RabbitMQ**          | Message queue for job processing          | 5672, 15672 |
+| **Nginx**             | Reverse proxy (production only)           | 80          |
+| **Cloudflare Tunnel** | Secure remote access (production only)    | -           |
 
 ### Network Architecture
 
@@ -140,7 +140,7 @@ The production environment uses three isolated Docker networks:
 - **ClickHouse** - Analytics database for time-series data
 - **Redis** (ioredis) - High-performance caching layer
 - **RabbitMQ** - Message queue for asynchronous processing
-- **MinIO** - S3-compatible object storage
+- **RustFS** - S3-compatible object storage
 - **Zod** - Request/response validation
 - **Pino** - Structured logging
 - **Argon2** - Secure password hashing
@@ -213,7 +213,7 @@ docker compose -f docker-dev.yaml up -d
 Initialize the database (run migrations and seed data):
 
 ```bash
-docker compose -f docker-dev.yaml exec dev pnpm --filter @backtrade/data prisma:init
+docker compose -f docker-dev.yaml exec tools pnpm --filter @backtrade/data prisma:init
 ```
 
 Or use the Makefile:
@@ -230,7 +230,7 @@ Once all services are running:
 - **API**: [http://localhost:21799](http://localhost:21799)
 - **API Health Check**: [http://localhost:21799/api/v1/health](http://localhost:21799/api/v1/health)
 - **RabbitMQ Management**: [http://localhost:15672](http://localhost:15672)
-- **MinIO Console**: [http://localhost:9001](http://localhost:9001)
+- **RustFS Console**: [http://localhost:9001](http://localhost:9001)
 
 ---
 
@@ -383,7 +383,7 @@ The production stack includes:
 - **PostgreSQL**: Primary database with persistent storage
 - **Redis**: Caching layer with persistent storage
 - **ClickHouse**: Analytics database with persistent storage
-- **MinIO**: Object storage with persistent storage
+- **RustFS**: S3-compatible object storage with persistent storage
 - **RabbitMQ**: Message queue with persistent storage
 - **Proxy**: Nginx reverse proxy
 - **Cloudflare Tunnel**: Secure remote access
@@ -414,7 +414,7 @@ BackTrade/
 │   ├── utils/                  # Shared utility functions
 │   ├── cache/                  # Redis caching layer
 │   ├── queue/                  # RabbitMQ integration
-│   ├── storage/                # MinIO object storage integration
+│   ├── storage/                # RustFS object storage integration (S3-compatible)
 │   ├── mailer/                 # Email service
 │   ├── logger/                 # Structured logging
 │   ├── eslint-config/          # Shared ESLint configuration

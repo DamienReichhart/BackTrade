@@ -13,10 +13,10 @@ import { ENV } from "../config/env";
  *
  * Configured with:
  * - Secret key from environment
- * - Latest API version (2025-12-15.clover)
+ * - Latest API version (2026-05-27.dahlia)
  * - TypeScript support enabled
  */
 export const stripe = new Stripe(ENV.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-12-15.clover",
+    apiVersion: "2026-05-27.dahlia",
     typescript: true,
 });

@@ -21,7 +21,7 @@ export default function Pricing() {
         <div className={styles.pricing}>
             <Header />
 
-            <main className={styles.main}>
+            <main id="main-content" tabIndex={-1} className={styles.main}>
                 <PricingHero />
                 <PricingCards tiers={tiers} onSelectPlan={handleSelectPlan} />
                 <ComparisonTable data={comparisonData} />

@@ -4,7 +4,7 @@ sequenceDiagram
     participant Postgres as PostgreSQL
     participant Redis as Redis
     participant ClickHouse as ClickHouse
-    participant MinIO as MinIO
+    participant RustFS as RustFS
     participant RabbitMQ as RabbitMQ
     participant Backend as Backend API
     participant Cloudflared as Cloudflared
@@ -53,15 +53,15 @@ sequenceDiagram
     end
 
     rect rgb(255, 200, 255)
-        Note over Docker,MinIO: MinIO Health Check
-        Docker->>MinIO: Health Check (every 30s)
-        MinIO->>MinIO: curl -f http://localhost:9000/minio/health/live
+        Note over Docker,RustFS: RustFS Health Check
+        Docker->>RustFS: Health Check (every 30s)
+        RustFS->>RustFS: curl -f http://localhost:9000/health
         alt HTTP 200
-            MinIO-->>Docker: Exit Code 0
+            RustFS-->>Docker: Exit Code 0
         else Failure
-            MinIO-->>Docker: Exit Code 1
+            RustFS-->>Docker: Exit Code 1
             Docker->>Docker: Retry (3 times)
-            Docker->>MinIO: Restart if failed
+            Docker->>RustFS: Restart if failed
         end
     end
 

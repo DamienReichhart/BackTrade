@@ -42,7 +42,7 @@ graph TB
     subgraph "External Services"
         Redis[(Redis Cache)]
         RabbitMQ[(RabbitMQ Queue)]
-        MinIO[(MinIO Storage)]
+        RustFS[(RustFS Storage)]
         Stripe[Stripe API]
         SMTP[SMTP Server]
     end
@@ -78,7 +78,7 @@ graph TB
     CacheRepo --> Redis
 
     Service --> RabbitMQ
-    Service --> MinIO
+    Service --> RustFS
     Service --> Stripe
     Service --> SMTP
 

@@ -35,6 +35,7 @@ export function AccountSection({ accountId }: AccountSectionProps) {
                     <Input
                         label="Email"
                         type="email"
+                        autoComplete="email"
                         disabled={!isEditing}
                         hasError={!!errors.email}
                         error={errors.email?.message}

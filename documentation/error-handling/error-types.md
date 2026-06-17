@@ -18,7 +18,7 @@ graph TB
         ResourceError[Resource Error<br/>Entity Not Found<br/>Invalid ID]
         BusinessError[Business Logic Error<br/>Invalid Operation<br/>Constraint Violation]
         DatabaseError[Database Error<br/>Query Failure<br/>Connection Error]
-        ExternalError[External Service Error<br/>Stripe, SMTP, MinIO<br/>Network Error]
+        ExternalError[External Service Error<br/>Stripe, SMTP, RustFS<br/>Network Error]
     end
 
     subgraph "Error Handling Flow"

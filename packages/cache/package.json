@@ -28,19 +28,19 @@
         "@backtrade/data": "workspace:*",
         "@backtrade/logger": "workspace:*",
         "@backtrade/types": "workspace:*",
-        "ioredis": "^5.9.2",
-        "zod": "4.3.5"
+        "ioredis": "^5.11.0",
+        "zod": "4.4.3"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@types/jest": "30.0.0",
-        "@types/node": "25.0.9",
-        "globals": "^17.0.0",
-        "jest": "30.2.0",
-        "ts-jest": "^29.4.6",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "8.53.0"
+        "@types/node": "25.9.1",
+        "globals": "^17.6.0",
+        "jest": "30.4.2",
+        "ts-jest": "^29.4.11",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "8.60.0"
     },
     "license": "PROPRIETARY",
     "author": "REICHHART Damien"

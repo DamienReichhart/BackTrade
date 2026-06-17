@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../Button";
+import { SkipLink } from "../SkipLink";
 import { Navigation } from "./Navigation";
+import { MobileMenu } from "./MobileMenu";
 import styles from "./Header.module.css";
 import logoPng from "../../../assets/logo.png";
 
@@ -15,6 +17,7 @@ export function Header() {
 
     return (
         <header className={styles.header}>
+            <SkipLink />
             <div className={styles.container}>
                 <div className={styles.content}>
                     {/* Logo */}
@@ -47,6 +50,9 @@ export function Header() {
                             Get started
                         </Button>
                     </div>
+
+                    {/* Mobile menu (hamburger) */}
+                    <MobileMenu />
                 </div>
             </div>
         </header>

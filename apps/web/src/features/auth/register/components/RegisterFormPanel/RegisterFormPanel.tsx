@@ -28,6 +28,7 @@ export function RegisterFormPanel() {
                     <Input
                         label="Email"
                         type="email"
+                        autoComplete="email"
                         placeholder="you@domain.com"
                         error={errors.email?.message}
                         hasError={!!errors.email}
@@ -38,6 +39,7 @@ export function RegisterFormPanel() {
                     <Input
                         label="Password"
                         type="password"
+                        autoComplete="new-password"
                         error={errors.password?.message}
                         hasError={!!errors.password}
                         {...register("password")}
@@ -47,6 +49,7 @@ export function RegisterFormPanel() {
                     <Input
                         label="Confirm Password"
                         type="password"
+                        autoComplete="new-password"
                         error={errors.confirmPassword?.message}
                         hasError={!!errors.confirmPassword}
                         {...register("confirmPassword")}

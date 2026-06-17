@@ -9,7 +9,7 @@ sequenceDiagram
     participant Postgres as PostgreSQL
     participant Redis as Redis
     participant ClickHouse as ClickHouse
-    participant MinIO as MinIO
+    participant RustFS as RustFS
     participant RabbitMQ as RabbitMQ
     participant Migrate as Migrate Service
     participant Backend as Backend API
@@ -46,7 +46,7 @@ sequenceDiagram
     Docker->>Network: Create frontend Network (192.168.251.0/24)
     Docker->>Network: Create public Network (192.168.252.0/24)
     Docker->>Volumes: Create backtrade_db Volume
-    Docker->>Volumes: Create backtrade_minio_data Volume
+    Docker->>Volumes: Create backtrade_rustfs_data Volume
     Docker->>Volumes: Create backtrade_clickhouse_data Volume
     Docker->>Volumes: Create backtrade_rabbitmq_data Volume
 
@@ -66,10 +66,10 @@ sequenceDiagram
     ClickHouse->>ClickHouse: Run Health Check (wget /ping)
     ClickHouse-->>Docker: Healthy
 
-    Docker->>MinIO: Start Container
-    MinIO->>MinIO: Initialize Object Storage
-    MinIO->>MinIO: Run Health Check (curl /health/live)
-    MinIO-->>Docker: Healthy
+    Docker->>RustFS: Start Container
+    RustFS->>RustFS: Initialize Object Storage
+    RustFS->>RustFS: Run Health Check (curl /health)
+    RustFS-->>Docker: Healthy
 
     Docker->>RabbitMQ: Start Container
     RabbitMQ->>RabbitMQ: Initialize Message Queue

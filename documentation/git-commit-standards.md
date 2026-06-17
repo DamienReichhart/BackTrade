@@ -94,13 +94,13 @@ Based on the BackTrade project structure, the following scopes are recommended:
 
 #### Infrastructure Scopes
 
-| Scope    | Description                                       | Example                                   |
-| -------- | ------------------------------------------------- | ----------------------------------------- |
-| `docker` | Docker configuration, Dockerfiles, docker-compose | `fix(docker): update minio image version` |
-| `k8s`    | Kubernetes manifests and configuration            | `feat(k8s): add HPA for backend service`  |
-| `arch`   | Architecture changes affecting multiple systems   | `feat(arch): introduce SSL for minio`     |
-| `ci`     | CI/CD pipeline configuration                      | `ci: add automated testing workflow`      |
-| `build`  | Build system configuration                        | `build: update turbo configuration`       |
+| Scope    | Description                                       | Example                                        |
+| -------- | ------------------------------------------------- | ---------------------------------------------- |
+| `docker` | Docker configuration, Dockerfiles, docker-compose | `fix(docker): update rustfs image version`     |
+| `k8s`    | Kubernetes manifests and configuration            | `feat(k8s): add HPA for backend service`       |
+| `arch`   | Architecture changes affecting multiple systems   | `feat(arch): migrate object storage to rustfs` |
+| `ci`     | CI/CD pipeline configuration                      | `ci: add automated testing workflow`           |
+| `build`  | Build system configuration                        | `build: update turbo configuration`            |
 
 #### Other Scopes
 
@@ -190,14 +190,14 @@ for compliance requirements on Linux systems.
 ```
 
 ```plaintext
-fix(docker): pin minio image to specific version
+fix(docker): pin rustfs image to specific version
 
-Update minio dockerfile to use version 1.2.3 instead of
+Update rustfs dockerfile to use version 1.2.3 instead of
 latest tag for better reproducibility and stability.
 ```
 
 ```plaintext
-fix(api): correct minio downloadFile return type to Buffer
+fix(api): correct storage downloadFile return type to Buffer
 
 The downloadFile function was incorrectly typed. Update
 implementation and types to ensure it returns Buffer as
@@ -205,11 +205,10 @@ expected by downstream consumers.
 ```
 
 ```plaintext
-feat(arch): introduce SSL support for minio
+feat(arch): migrate object storage server to rustfs
 
-Configure minio with SSL/TLS certificates to enable secure
-communication. This includes certificate generation and
-nginx proxy configuration updates.
+Replace the object storage server with RustFS (S3-compatible)
+and switch the node client to @aws-sdk/client-s3.
 ```
 
 ```plaintext
@@ -231,7 +230,7 @@ users to upload trading datasets. The endpoint includes:
 - File size validation (max 100MB)
 - Content type validation (CSV only)
 - Automatic dataset parsing and storage
-- Integration with MinIO for file storage
+- Integration with RustFS for file storage
 
 Closes #296
 ```

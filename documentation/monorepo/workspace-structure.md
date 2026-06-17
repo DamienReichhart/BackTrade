@@ -19,7 +19,7 @@ graph TB
         UtilsPackage[packages/utils<br/>Utility Functions<br/>Parsing, Validation, Time]
         CachePackage[packages/cache<br/>Redis Cache<br/>Cache Repositories]
         QueuePackage[packages/queue<br/>RabbitMQ<br/>Queue Integration]
-        StoragePackage[packages/storage<br/>MinIO Storage<br/>Object Storage]
+        StoragePackage[packages/storage<br/>RustFS Storage<br/>S3-Compatible Object Storage]
         MailerPackage[packages/mailer<br/>Email Service<br/>SMTP Integration]
         LoggerPackage[packages/logger<br/>Structured Logging<br/>Pino Logger]
         ESLintPackage[packages/eslint-config<br/>ESLint Configuration<br/>Shared Rules]

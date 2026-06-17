@@ -12,7 +12,7 @@ graph TB
         subgraph "Medium Resource Services"
             Worker[Worker Service<br/>Limits: 2 CPU, 8GB RAM<br/>Reservations: 0.5 CPU, 512MB RAM<br/>Logs: 10MB x 5 files]
             Redis[Redis<br/>Limits: 1 CPU, 8GB RAM<br/>Reservations: 0.25 CPU, 512MB RAM<br/>Logs: 10MB x 3 files]
-            MinIO[MinIO<br/>Limits: 1 CPU, 4GB RAM<br/>Reservations: 0.25 CPU, 512MB RAM<br/>Logs: 10MB x 3 files]
+            RustFS[RustFS<br/>Limits: 1 CPU, 4GB RAM<br/>Reservations: 0.25 CPU, 512MB RAM<br/>Logs: 10MB x 3 files]
         end
 
         subgraph "Low Resource Services"
@@ -35,7 +35,7 @@ graph TB
     subgraph "Persistent Storage"
         direction TB
         VolDB[backtrade_db<br/>PostgreSQL Data<br/>Size: Variable]
-        VolMinIO[backtrade_minio_data<br/>MinIO Object Storage<br/>Size: Variable]
+        VolRustFS[backtrade_rustfs_data<br/>RustFS Object Storage<br/>Size: Variable]
         VolClickHouse[backtrade_clickhouse_data<br/>ClickHouse Analytics<br/>Size: Variable]
         VolRabbitMQ[backtrade_rabbitmq_data<br/>RabbitMQ Messages<br/>Size: Variable]
     end
@@ -45,7 +45,7 @@ graph TB
     Postgres --> TotalCPU
     Worker --> TotalCPU
     Redis --> TotalCPU
-    MinIO --> TotalCPU
+    RustFS --> TotalCPU
     Scheduler --> TotalCPU
     Frontend --> TotalCPU
     RabbitMQ --> TotalCPU
@@ -55,13 +55,13 @@ graph TB
     Postgres --> TotalRAM
     Worker --> TotalRAM
     Redis --> TotalRAM
-    MinIO --> TotalRAM
+    RustFS --> TotalRAM
     Scheduler --> TotalRAM
     Frontend --> TotalRAM
     RabbitMQ --> TotalRAM
 
     Postgres --> VolDB
-    MinIO --> VolMinIO
+    RustFS --> VolRustFS
     ClickHouse --> VolClickHouse
     RabbitMQ --> VolRabbitMQ
 
@@ -70,7 +70,7 @@ graph TB
     style Postgres fill:#336791
     style Worker fill:#ff6b6b
     style Redis fill:#dc382d
-    style MinIO fill:#c03
+    style RustFS fill:#c03
     style Scheduler fill:#ff6b6b
     style Frontend fill:#61dafb
     style RabbitMQ fill:#ff6600

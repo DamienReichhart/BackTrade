@@ -5,11 +5,11 @@ graph TB
 
         Upload[File Upload<br/>POST /datasets/:id/file]
         Validation[Validation<br/>Check Dataset Status<br/>Validate File Format]
-        Storage[Storage<br/>Upload to MinIO<br/>datasets/{id}/raw/{filename}]
+        Storage[Storage<br/>Upload to RustFS<br/>datasets/{id}/raw/{filename}]
         QueueSplit[Queue Split Job<br/>Publish DatasetFileSplit]
 
         Split[File Splitting<br/>Worker Process<br/>Split into 10K line parts]
-        PartStorage[Part Storage<br/>Upload parts to MinIO<br/>datasets/{id}/parts/part_N.csv]
+        PartStorage[Part Storage<br/>Upload parts to RustFS<br/>datasets/{id}/parts/part_N.csv]
         QueueProcess[Queue Process Jobs<br/>Publish DatasetPartProcess<br/>For each part]
 
         Process[Part Processing<br/>Worker Process<br/>Parse CSV, Validate Data]
@@ -31,15 +31,15 @@ graph TB
     MetadataUpdate --> Completion
 
     subgraph "Storage Structure"
-        MinIORoot[MinIO Root<br/>datasets bucket]
+        RustFSRoot[RustFS Root<br/>datasets bucket]
         RawFiles[Raw Files<br/>datasets/{datasetId}/raw/]
         PartFiles[Part Files<br/>datasets/{datasetId}/parts/]
     end
 
     Storage --> RawFiles
     PartStorage --> PartFiles
-    RawFiles --> MinIORoot
-    PartFiles --> MinIORoot
+    RawFiles --> RustFSRoot
+    PartFiles --> RustFSRoot
 
     style Upload fill:#4a90e2
     style Split fill:#ffa500

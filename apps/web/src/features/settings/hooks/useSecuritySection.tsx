@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useChangePassword } from "../../../api/hooks/requests/auth";
 import { useAuthStore } from "../../../store/auth";
+import { useToast } from "../../../hooks";
 import {
     ChangePasswordFormSchema,
     type ChangePasswordFormState,
@@ -16,6 +17,7 @@ import {
 export function useSecuritySection() {
     const [success, setSuccess] = useState(false);
     const { user } = useAuthStore();
+    const toast = useToast();
     const { execute, isLoading } = useChangePassword(user?.id.toString() ?? "");
 
     const {
@@ -56,14 +58,14 @@ export function useSecuritySection() {
             });
             setSuccess(true);
             reset();
+            toast.success("Password updated successfully");
         } catch (err) {
-            setError("root", {
-                type: "manual",
-                message:
-                    err instanceof Error
-                        ? err.message
-                        : "Failed to update password",
-            });
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to update password";
+            setError("root", { type: "manual", message });
+            toast.error(message);
         }
     };
 

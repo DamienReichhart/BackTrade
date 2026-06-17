@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { type Session, SESSION_STATUS } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
 import { useSessionCard } from "../../hooks/useSessionCard";
-import { getSessionStatusColorClass } from "../../utils/sessions";
+import { getSessionStatusVariant } from "../../utils/sessions";
 import { getSessionAnalyticsUrl } from "../../../../utils";
+import { Badge } from "../../../../components/Badge";
 import styles from "./SessionCard.module.css";
 
 interface SessionCardProps {
@@ -19,11 +20,6 @@ export function SessionCard({ session }: SessionCardProps) {
     const { instrumentDisplay, sessionName, isLoadingInstrument } =
         useSessionCard(session);
 
-    const getStatusColor = (status: string) => {
-        const colorClass = getSessionStatusColorClass(status);
-        return colorClass ? (styles[colorClass] ?? "") : "";
-    };
-
     const linkRoute =
         session.session_status === SESSION_STATUS.ARCHIVED
             ? getSessionAnalyticsUrl(String(session.id))
@@ -34,11 +30,13 @@ export function SessionCard({ session }: SessionCardProps) {
             <div className={styles.header}>
                 <div className={styles.titleSection}>
                     <h3 className={styles.title}>{sessionName}</h3>
-                    <span
-                        className={`${styles.status} ${getStatusColor(session.session_status)}`}
+                    <Badge
+                        variant={getSessionStatusVariant(
+                            session.session_status
+                        )}
                     >
                         {session.session_status}
-                    </span>
+                    </Badge>
                 </div>
             </div>
 

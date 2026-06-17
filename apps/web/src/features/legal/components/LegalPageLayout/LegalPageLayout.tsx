@@ -40,7 +40,13 @@ export function LegalPageLayout({
                     </p>
                 </header>
 
-                <main className={styles.content}>{children}</main>
+                <main
+                    id="main-content"
+                    tabIndex={-1}
+                    className={styles.content}
+                >
+                    {children}
+                </main>
             </div>
         </div>
     );

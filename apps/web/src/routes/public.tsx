@@ -1,14 +1,17 @@
-import Home from "../features/home/Home";
-import Pricing from "../features/pricing/Pricing";
+import { lazy } from "react";
+import { withSuspense } from "./utils";
+
+const Home = lazy(() => import("../features/home/Home"));
+const Pricing = lazy(() => import("../features/pricing/Pricing"));
 
 export const publicRoutes = [
     {
         path: "/",
         index: true,
-        element: <Home />,
+        element: withSuspense(Home),
     },
     {
         path: "/pricing",
-        element: <Pricing />,
+        element: withSuspense(Pricing),
     },
 ];
