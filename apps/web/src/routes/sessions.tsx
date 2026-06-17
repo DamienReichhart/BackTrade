@@ -1,49 +1,45 @@
-import { AuthenticatedLayout } from "../components";
-import { SessionRunning } from "../features/session";
-import { PositionsList } from "../features/session/positions-list";
-import { TransactionsList } from "../features/session/transactions-list";
-import { SessionAdd } from "../features/session-add";
-import { AnalyticsPage } from "../features/analytics";
+import { lazy } from "react";
+import { withLayout } from "./utils";
+
+const SessionRunning = lazy(() =>
+    import("../features/session").then((m) => ({ default: m.SessionRunning }))
+);
+const PositionsList = lazy(() =>
+    import("../features/session/positions-list").then((m) => ({
+        default: m.PositionsList,
+    }))
+);
+const TransactionsList = lazy(() =>
+    import("../features/session/transactions-list").then((m) => ({
+        default: m.TransactionsList,
+    }))
+);
+const SessionAdd = lazy(() =>
+    import("../features/session-add").then((m) => ({ default: m.SessionAdd }))
+);
+const AnalyticsPage = lazy(() =>
+    import("../features/analytics").then((m) => ({ default: m.AnalyticsPage }))
+);
 
 export const sessionsRoutes = [
     {
         path: "/dashboard/sessions/add",
-        element: (
-            <AuthenticatedLayout>
-                <SessionAdd />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(SessionAdd),
     },
     {
         path: "/dashboard/sessions/:id",
-        element: (
-            <AuthenticatedLayout>
-                <SessionRunning />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(SessionRunning),
     },
     {
         path: "/dashboard/sessions/:id/positions/list",
-        element: (
-            <AuthenticatedLayout>
-                <PositionsList />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(PositionsList),
     },
     {
         path: "/dashboard/sessions/:id/transactions/list",
-        element: (
-            <AuthenticatedLayout>
-                <TransactionsList />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(TransactionsList),
     },
     {
         path: "/dashboard/sessions/:id/analytics",
-        element: (
-            <AuthenticatedLayout>
-                <AnalyticsPage />
-            </AuthenticatedLayout>
-        ),
+        element: withLayout(AnalyticsPage),
     },
 ];

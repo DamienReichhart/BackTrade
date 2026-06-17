@@ -1,0 +1,29 @@
+.fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    min-height: 60vh;
+    width: 100%;
+    color: var(--color-text-secondary);
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-surface-tertiary);
+    border-top-color: var(--color-accent);
+    border-radius: var(--radius-full);
+    animation: routeSpin 0.8s linear infinite;
+}
+
+.label {
+    font-size: var(--font-size-sm);
+}
+
+@keyframes routeSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
