@@ -12,4 +12,5 @@ export { Select } from "./Select";
 export { Icon } from "./Icon";
 export type { IconSize } from "./Icon";
 export { SkipLink } from "./SkipLink";
+export { Skeleton } from "./Skeleton";
 export { ToastContainer } from "./Toast";
