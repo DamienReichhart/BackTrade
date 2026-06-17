@@ -35,6 +35,7 @@
 
 .metricValue {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);

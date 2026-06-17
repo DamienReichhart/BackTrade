@@ -336,6 +336,13 @@ pre {
     font-family: var(--font-mono);
 }
 
+/* Tabular figures: keep numeric columns and live-updating values from
+   shifting horizontally as digits change (prices, P&L, balances, timers). */
+table,
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
 /* Selection */
 ::selection {
     background-color: var(--color-accent);
