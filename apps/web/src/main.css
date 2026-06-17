@@ -356,6 +356,29 @@ pre {
 }
 
 /* ========================================================================
+   REDUCED MOTION
+   ======================================================================== */
+
+/*
+ * Respect the user's "reduce motion" OS setting. Near-instant durations keep
+ * state changes readable while removing spin/pulse/shimmer/slide motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================================================
    UTILITY CLASSES
    ======================================================================== */
 
