@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AuthInitializer } from "./components/AuthInitializer";
+import { ToastContainer } from "./components/Toast";
 import { router } from "./routes";
 import "./main.css";
 
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")!).render(
                 <AuthInitializer>
                     <RouterProvider router={router} />
                 </AuthInitializer>
+                <ToastContainer />
             </QueryClientProvider>
         </ErrorBoundary>
     </StrictMode>
