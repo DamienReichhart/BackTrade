@@ -17,6 +17,6 @@
 .skipLink:focus-visible {
     top: var(--spacing-md);
     color: var(--color-text-inverse);
-    outline: 2px solid var(--color-text-primary);
-    outline-offset: 2px;
+    outline: var(--focus-outline-width) solid var(--color-text-primary);
+    outline-offset: var(--focus-ring-offset);
 }
