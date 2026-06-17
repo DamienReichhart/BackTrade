@@ -1,0 +1,22 @@
+.skipLink {
+    position: fixed;
+    top: calc(-1 * var(--spacing-5xl));
+    left: var(--spacing-md);
+    z-index: var(--z-tooltip);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-accent);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: top var(--transition-fast);
+}
+
+.skipLink:focus,
+.skipLink:focus-visible {
+    top: var(--spacing-md);
+    color: var(--color-text-inverse);
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: 2px;
+}

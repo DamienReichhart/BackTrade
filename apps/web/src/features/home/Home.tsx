@@ -18,7 +18,7 @@ export default function Home() {
         <div className={styles.home}>
             <Header />
 
-            <main className={styles.main}>
+            <main id="main-content" tabIndex={-1} className={styles.main}>
                 <Hero />
                 <FeatureCards />
                 <ProductSection />

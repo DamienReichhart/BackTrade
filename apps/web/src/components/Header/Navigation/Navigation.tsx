@@ -52,7 +52,7 @@ export function Navigation() {
     };
 
     return (
-        <nav className={styles.navigation}>
+        <nav className={styles.navigation} aria-label="Primary">
             <ul className={styles.navList}>
                 {navLinks.map((link) => (
                     <li key={link.label} className={styles.navItem}>
