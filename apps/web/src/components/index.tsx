@@ -9,3 +9,5 @@ export { AuthInitializer } from "./AuthInitializer";
 export { Toggle } from "./Toggle";
 export { ConfirmModal } from "./ConfirmModal";
 export { Select } from "./Select";
+export { Icon } from "./Icon";
+export type { IconSize } from "./Icon";

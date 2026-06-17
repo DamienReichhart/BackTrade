@@ -1,6 +1,7 @@
 import type { PublicUser } from "@backtrade/types";
 import { formatDate } from "@backtrade/utils";
-import { Button } from "../../../../../components";
+import { X } from "lucide-react";
+import { Button, Icon } from "../../../../../components";
 import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
 import {
     getRoleBadgeClassName,
@@ -62,7 +63,7 @@ export function UserDetailsModal({
                         onClick={onClose}
                         aria-label="Close modal"
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

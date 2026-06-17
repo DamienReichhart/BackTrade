@@ -1,6 +1,8 @@
 import type { Dataset } from "@backtrade/types";
 import { formatDate, formatDateTime } from "@backtrade/utils";
+import { X } from "lucide-react";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
 import { DetailItem } from "../DetailItem";
 import styles from "./DatasetDetailsModal.module.css";
@@ -80,7 +82,7 @@ export function DatasetDetailsModal({
                         onClick={onClose}
                         aria-label="Close modal"
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

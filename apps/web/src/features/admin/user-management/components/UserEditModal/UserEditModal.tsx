@@ -1,6 +1,8 @@
 import type { PublicUser } from "@backtrade/types";
+import { X } from "lucide-react";
 import { useUserEditModal } from "../../../hooks";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { Input } from "../../../../../components/Input";
 import { Select } from "../../../../../components/Select";
 import { Checkbox } from "../../../../../components/Checkbox";
@@ -70,7 +72,7 @@ export function UserEditModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

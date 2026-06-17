@@ -1,4 +1,5 @@
-import { Button } from "../../../../../components";
+import { X } from "lucide-react";
+import { Button, Icon } from "../../../../../components";
 import type { Transaction } from "@backtrade/types";
 import { formatDateTime } from "@backtrade/utils";
 import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
@@ -40,7 +41,7 @@ export function TransactionDetailsModal({
                         onClick={onClose}
                         aria-label="Close modal"
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

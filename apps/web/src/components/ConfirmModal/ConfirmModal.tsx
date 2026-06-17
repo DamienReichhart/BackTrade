@@ -1,5 +1,7 @@
+import { X } from "lucide-react";
 import { useModalBehavior } from "../../hooks/useModalBehavior";
 import { Button } from "../Button";
+import { Icon } from "../Icon";
 import styles from "./ConfirmModal.module.css";
 
 interface ConfirmModalProps {
@@ -101,7 +103,7 @@ export function ConfirmModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

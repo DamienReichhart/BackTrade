@@ -1,5 +1,7 @@
 import type { PublicUser } from "@backtrade/types";
+import { X } from "lucide-react";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { ConfirmModal } from "../../../../../components/ConfirmModal";
 import { useSubscriptionManagementModal } from "./hooks";
 import { CreateSubscriptionSection, SubscriptionListView } from "./components";
@@ -92,7 +94,7 @@ export function SubscriptionManagementModal({
                             onClick={onClose}
                             aria-label="Close modal"
                         >
-                            ×
+                            <Icon icon={X} size="md" />
                         </button>
                     </div>
 

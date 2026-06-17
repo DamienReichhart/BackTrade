@@ -1,5 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { Input } from "../../../../../components/Input";
+import { Icon } from "../../../../../components/Icon";
 import { Select } from "../../../../../components/Select";
 import { Button } from "../../../../../components/Button";
 import type { SelectOption } from "../../../../../types/ui";
@@ -96,7 +98,7 @@ export function SearchFilter({
                             onClick={handleClearSearch}
                             aria-label="Clear search"
                         >
-                            ×
+                            <Icon icon={X} size="sm" />
                         </button>
                     )}
                 </div>

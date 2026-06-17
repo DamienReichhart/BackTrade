@@ -11,8 +11,10 @@ import {
     useCreateInstrument,
     useUpdateInstrument,
 } from "../../../../api/hooks/requests/instruments";
+import { X } from "lucide-react";
 import { Button } from "../../../../components/Button";
 import { Input } from "../../../../components/Input";
+import { Icon } from "../../../../components/Icon";
 import styles from "./InstrumentModal.module.css";
 
 /**
@@ -141,7 +143,7 @@ export function InstrumentModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 
