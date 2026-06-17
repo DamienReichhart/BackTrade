@@ -40,7 +40,7 @@ export function useSessionList() {
         return searchParams;
     }, [searchQuery, page, limit, sortField, sortOrder]);
 
-    const { data, isLoading, error } = useSessions(query);
+    const { data, isLoading, error, execute: refetch } = useSessions(query);
 
     const sessions: Session[] = (data as Session[]) ?? [];
 
@@ -85,6 +85,7 @@ export function useSessionList() {
         sessions,
         isLoading,
         error: error as Error | null,
+        refetch,
 
         // Handlers
         handleSearchChange,
