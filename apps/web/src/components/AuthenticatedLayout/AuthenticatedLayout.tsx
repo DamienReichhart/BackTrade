@@ -83,6 +83,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                                     >
                                         <Link
                                             to={item.to}
+                                            aria-current={
+                                                isActive ? "page" : undefined
+                                            }
                                             className={`${styles.navLink} ${
                                                 isActive ? styles.active : ""
                                             }`}
