@@ -54,6 +54,48 @@ export function FileUploadButton({
         fileInputRef.current?.click();
     }, []);
 
+    const uploadFile = useCallback(
+        async (file: File) => {
+            setIsUploading(true);
+            setUploadProgress(0);
+            handleFileSelect(file);
+
+            // Simulate progress (since FormData upload doesn't have native progress)
+            const progressInterval = setInterval(() => {
+                setUploadProgress((prev) => {
+                    if (prev >= 90) {
+                        clearInterval(progressInterval);
+                        return 90;
+                    }
+                    return prev + Math.random() * 15;
+                });
+            }, 200);
+
+            try {
+                const result = await handleUpload(file);
+                clearInterval(progressInterval);
+                setUploadProgress(100);
+
+                if (result) {
+                    // Brief delay to show 100% completion
+                    setTimeout(() => {
+                        onSuccess?.();
+                        resetUpload();
+                        setUploadProgress(0);
+                        setSelectedFileName(null);
+                    }, 300);
+                }
+            } finally {
+                clearInterval(progressInterval);
+                setIsUploading(false);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
+            }
+        },
+        [handleFileSelect, handleUpload, resetUpload, onSuccess]
+    );
+
     const handleFileChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0] ?? null;
@@ -66,47 +108,8 @@ export function FileUploadButton({
                 setSelectedFileName(null);
             }
         },
-        [handleFileSelect]
+        [handleFileSelect, uploadFile]
     );
-
-    const uploadFile = async (file: File) => {
-        setIsUploading(true);
-        setUploadProgress(0);
-        handleFileSelect(file);
-
-        // Simulate progress (since FormData upload doesn't have native progress)
-        const progressInterval = setInterval(() => {
-            setUploadProgress((prev) => {
-                if (prev >= 90) {
-                    clearInterval(progressInterval);
-                    return 90;
-                }
-                return prev + Math.random() * 15;
-            });
-        }, 200);
-
-        try {
-            const result = await handleUpload(file);
-            clearInterval(progressInterval);
-            setUploadProgress(100);
-
-            if (result) {
-                // Brief delay to show 100% completion
-                setTimeout(() => {
-                    onSuccess?.();
-                    resetUpload();
-                    setUploadProgress(0);
-                    setSelectedFileName(null);
-                }, 300);
-            }
-        } finally {
-            clearInterval(progressInterval);
-            setIsUploading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
-        }
-    };
 
     const isProcessing = isLoading || isUploading;
     const showProgress = isProcessing && uploadProgress > 0;

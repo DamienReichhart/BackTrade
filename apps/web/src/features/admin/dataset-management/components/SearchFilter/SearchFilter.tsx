@@ -48,6 +48,14 @@ export function SearchFilter({
 }: SearchFilterProps) {
     const [localSearch, setLocalSearch] = useState(searchQuery);
 
+    // Sync external search changes by adjusting state during render rather than
+    // in an effect (avoids the cascading-render setState-in-effect antipattern).
+    const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
+    if (searchQuery !== prevSearchQuery) {
+        setPrevSearchQuery(searchQuery);
+        setLocalSearch(searchQuery);
+    }
+
     // Debounce search input
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -58,11 +66,6 @@ export function SearchFilter({
 
         return () => clearTimeout(timer);
     }, [localSearch, searchQuery, onSearchChange]);
-
-    // Sync external search changes
-    useEffect(() => {
-        setLocalSearch(searchQuery);
-    }, [searchQuery]);
 
     const handleSearchChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
