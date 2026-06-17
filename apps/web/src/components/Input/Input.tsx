@@ -34,6 +34,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ({ label, error, hasError, className, id, ...props }, ref) => {
         const generatedId = useId();
         const inputId = id ?? `input-${generatedId}`;
+        const errorId = `${inputId}-error`;
+        const isInvalid = hasError === true || Boolean(error);
 
         return (
             <div className={styles.container}>
@@ -45,10 +47,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 <input
                     ref={ref}
                     id={inputId}
-                    className={`${styles.input} ${hasError ? styles.inputError : ""} ${className ?? ""}`}
+                    className={`${styles.input} ${isInvalid ? styles.inputError : ""} ${className ?? ""}`}
+                    aria-invalid={isInvalid || undefined}
+                    aria-describedby={error ? errorId : undefined}
                     {...props}
                 />
-                {error && <span className={styles.error}>{error}</span>}
+                {error && (
+                    <span id={errorId} className={styles.error} role="alert">
+                        {error}
+                    </span>
+                )}
             </div>
         );
     }
