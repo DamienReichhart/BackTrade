@@ -15,13 +15,18 @@ export function getDisplayPnL(position: Position): number | null {
 }
 
 /**
- * Format PnL value for display
+ * Format PnL value for display.
+ *
+ * Prefixes an explicit "+" for gains so the sign (not just color) conveys
+ * direction, keeping P&L readable for colorblind users.
  *
  * @param pnl - PnL value (can be null/undefined)
- * @returns Formatted PnL string with 2 decimal places
+ * @returns Formatted PnL string with 2 decimal places and an explicit sign
  */
 export function formatPnL(pnl: number | null | undefined): string {
-    return Number(pnl ?? 0).toFixed(2);
+    const value = Number(pnl ?? 0);
+    const sign = value > 0 ? "+" : "";
+    return `${sign}${value.toFixed(2)}`;
 }
 
 /**
