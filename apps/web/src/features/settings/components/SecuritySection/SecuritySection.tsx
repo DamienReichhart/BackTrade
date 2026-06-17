@@ -39,6 +39,7 @@ export function SecuritySection() {
                             <Input
                                 label="Current password"
                                 type="password"
+                                autoComplete="current-password"
                                 error={errors.currentPassword?.message}
                                 hasError={!!errors.currentPassword}
                                 {...register("currentPassword")}
@@ -46,6 +47,7 @@ export function SecuritySection() {
                             <Input
                                 label="Confirm new password"
                                 type="password"
+                                autoComplete="new-password"
                                 error={errors.confirmPassword?.message}
                                 hasError={!!errors.confirmPassword}
                                 {...register("confirmPassword")}
@@ -55,6 +57,7 @@ export function SecuritySection() {
                             <Input
                                 label="New password"
                                 type="password"
+                                autoComplete="new-password"
                                 error={errors.newPassword?.message}
                                 hasError={!!errors.newPassword}
                                 {...register("newPassword")}
