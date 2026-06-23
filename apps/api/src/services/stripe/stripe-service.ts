@@ -10,8 +10,10 @@ import { usersCacheRepo } from "../../libs/cache";
 import {
     getPricingTierCodeDisplayLabel,
     type User,
+    type Plan,
     type BillingOverviewResponse,
     type InvoiceListResponse,
+    type PlanChangePreviewResponse,
     type PricingTierCode,
 } from "@backtrade/types";
 import type Stripe from "stripe";
@@ -60,6 +62,22 @@ function extractCard(
 function periodEndIso(sub: Stripe.Subscription): string | null {
     const end = sub.items.data[0]?.current_period_end ?? null;
     return end ? new Date(end * 1000).toISOString() : null;
+}
+
+interface ProrationParent {
+    subscription_item_details?: { proration?: boolean };
+}
+
+/**
+ * Sum the proration line items (in cents) from a preview invoice.
+ */
+function sumProrationLines(preview: Stripe.Invoice): number {
+    return preview.lines.data.reduce((total, line) => {
+        const parent = line.parent as ProrationParent | null | undefined;
+        return parent?.subscription_item_details?.proration === true
+            ? total + line.amount
+            : total;
+    }, 0);
 }
 
 const FREE_OVERVIEW: BillingOverviewResponse = {
@@ -167,9 +185,8 @@ class StripeService extends BaseService {
     async getBillingOverview(user: User): Promise<BillingOverviewResponse> {
         if (!user.stripe_customer_id) return FREE_OVERVIEW;
 
-        const subscription = await subscriptionsRepo.getActiveSubscriptionByUserId(
-            user.id
-        );
+        const subscription =
+            await subscriptionsRepo.getActiveSubscriptionByUserId(user.id);
         if (!subscription) return FREE_OVERVIEW;
 
         const plan = await plansRepo.getPlanById(subscription.plan_id);
@@ -235,6 +252,87 @@ class StripeService extends BaseService {
             hostedUrl: inv.hosted_invoice_url ?? null,
             pdfUrl: inv.invoice_pdf ?? null,
         }));
+    }
+
+    /**
+     * Resolve and validate a paid-to-paid plan change for the user.
+     */
+    private async requirePaidChange(
+        user: User,
+        planId: number
+    ): Promise<{
+        stripeSub: Stripe.Subscription;
+        currentPlan: Plan;
+        targetPlan: Plan;
+        customerId: string;
+    }> {
+        if (!user.stripe_customer_id) {
+            throw new BadRequestError("No active subscription to change.");
+        }
+        const subscription =
+            await subscriptionsRepo.getActiveSubscriptionByUserId(user.id);
+        if (!subscription) {
+            throw new BadRequestError("No active subscription to change.");
+        }
+        const currentPlan = await plansRepo.getPlanById(subscription.plan_id);
+        const targetPlan = await plansRepo.getPlanById(planId);
+        if (!currentPlan) {
+            throw new NotFoundError("Current plan not found");
+        }
+        if (!targetPlan) {
+            throw new NotFoundError("Plan not found or invalid configuration");
+        }
+        if (targetPlan.id === currentPlan.id) {
+            throw new BadRequestError("You are already on this plan.");
+        }
+        if (!targetPlan.stripe_price_id) {
+            throw new NotFoundError("Plan not found or invalid configuration");
+        }
+        const stripeSub = await stripe.subscriptions.retrieve(
+            subscription.stripe_subscription_id
+        );
+        if (!stripeSub.items.data[0]) {
+            throw new BadRequestError("Subscription has no items.");
+        }
+        return {
+            stripeSub,
+            currentPlan,
+            targetPlan,
+            customerId: user.stripe_customer_id,
+        };
+    }
+
+    /**
+     * Preview the proration for switching to a paid plan.
+     */
+    async previewPlanChange(
+        user: User,
+        planId: number
+    ): Promise<PlanChangePreviewResponse> {
+        const { stripeSub, currentPlan, targetPlan, customerId } =
+            await this.requirePaidChange(user, planId);
+
+        const subItem = stripeSub.items.data[0];
+        if (!subItem) {
+            throw new BadRequestError("Subscription has no items.");
+        }
+        const itemId = subItem.id;
+        const preview = await stripe.invoices.createPreview({
+            customer: customerId,
+            subscription: stripeSub.id,
+            subscription_details: {
+                items: [{ id: itemId, price: targetPlan.stripe_price_id }],
+                proration_behavior: "always_invoice",
+            },
+        });
+
+        return {
+            amountDueToday: sumProrationLines(preview) / 100,
+            currency: preview.currency,
+            nextChargeAmount: Number(targetPlan.price),
+            nextChargeDate: periodEndIso(stripeSub) ?? "",
+            isUpgrade: Number(targetPlan.price) > Number(currentPlan.price),
+        };
     }
 
     /**

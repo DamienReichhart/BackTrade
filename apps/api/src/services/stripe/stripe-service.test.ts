@@ -196,3 +196,75 @@ describe("listInvoices", () => {
         });
     });
 });
+
+describe("previewPlanChange", () => {
+    beforeEach(() => {
+        mockedSubs.getActiveSubscriptionByUserId.mockResolvedValue({
+            id: 5,
+            plan_id: 7,
+            stripe_subscription_id: "sub_1",
+        });
+        mockedPlans.getPlanById.mockImplementation((id: number) =>
+            id === 7
+                ? Promise.resolve({ id: 7, code: "TRADER", price: 19 })
+                : Promise.resolve({
+                      id: 8,
+                      code: "EXPERT",
+                      price: 49,
+                      stripe_price_id: "price_expert",
+                  })
+        );
+        mockedStripe.subscriptions.retrieve.mockResolvedValue({
+            id: "sub_1",
+            items: {
+                data: [{ id: "si_1", current_period_end: 1_900_000_000 }],
+            },
+        });
+    });
+
+    it("previews an upgrade with proration", async () => {
+        mockedStripe.invoices.createPreview.mockResolvedValue({
+            currency: "eur",
+            lines: {
+                data: [
+                    {
+                        amount: 3000,
+                        parent: {
+                            subscription_item_details: { proration: true },
+                        },
+                    },
+                    {
+                        amount: 4900,
+                        parent: {
+                            subscription_item_details: { proration: false },
+                        },
+                    },
+                ],
+            },
+        });
+
+        const result = await stripeService.previewPlanChange(paidUser, 8);
+
+        expect(result).toEqual({
+            amountDueToday: 30,
+            currency: "eur",
+            nextChargeAmount: 49,
+            nextChargeDate: new Date(1_900_000_000 * 1000).toISOString(),
+            isUpgrade: true,
+        });
+        expect(mockedStripe.invoices.createPreview).toHaveBeenCalledWith({
+            customer: "cus_123",
+            subscription: "sub_1",
+            subscription_details: {
+                items: [{ id: "si_1", price: "price_expert" }],
+                proration_behavior: "always_invoice",
+            },
+        });
+    });
+
+    it("rejects changing to the current plan", async () => {
+        await expect(
+            stripeService.previewPlanChange(paidUser, 7)
+        ).rejects.toThrow("already on this plan");
+    });
+});
