@@ -268,3 +268,84 @@ describe("previewPlanChange", () => {
         ).rejects.toThrow("already on this plan");
     });
 });
+
+describe("changePlan / cancel / resume", () => {
+    beforeEach(() => {
+        mockedSubs.getActiveSubscriptionByUserId.mockResolvedValue({
+            id: 5,
+            plan_id: 7,
+            stripe_subscription_id: "sub_1",
+        });
+        mockedPlans.getPlanById.mockImplementation((id: number) =>
+            id === 7
+                ? Promise.resolve({ id: 7, code: "TRADER", price: 19 })
+                : Promise.resolve({
+                      id: 8,
+                      code: "EXPERT",
+                      price: 49,
+                      stripe_price_id: "price_expert",
+                  })
+        );
+        mockedStripe.subscriptions.retrieve.mockResolvedValue({
+            id: "sub_1",
+            items: {
+                data: [{ id: "si_1", current_period_end: 1_900_000_000 }],
+            },
+        });
+    });
+
+    it("changePlan updates the subscription item with always_invoice", async () => {
+        mockedStripe.subscriptions.update.mockResolvedValue({
+            status: "active",
+            cancel_at_period_end: false,
+            items: { data: [{ current_period_end: 1_900_000_000 }] },
+        });
+
+        const result = await stripeService.changePlan(paidUser, 8);
+
+        expect(mockedStripe.subscriptions.update).toHaveBeenCalledWith("sub_1", {
+            items: [{ id: "si_1", price: "price_expert" }],
+            proration_behavior: "always_invoice",
+        });
+        expect(result.status).toBe("active");
+        expect(result.cancelAtPeriodEnd).toBe(false);
+    });
+
+    it("cancelSubscription sets cancel_at_period_end true", async () => {
+        mockedStripe.subscriptions.update.mockResolvedValue({
+            status: "active",
+            cancel_at_period_end: true,
+            items: { data: [{ current_period_end: 1_900_000_000 }] },
+        });
+
+        const result = await stripeService.cancelSubscription(paidUser);
+
+        expect(mockedStripe.subscriptions.update).toHaveBeenCalledWith("sub_1", {
+            cancel_at_period_end: true,
+        });
+        expect(result.status).toBe("canceling");
+        expect(result.cancelAtPeriodEnd).toBe(true);
+    });
+
+    it("resumeSubscription sets cancel_at_period_end false", async () => {
+        mockedStripe.subscriptions.update.mockResolvedValue({
+            status: "active",
+            cancel_at_period_end: false,
+            items: { data: [{ current_period_end: 1_900_000_000 }] },
+        });
+
+        const result = await stripeService.resumeSubscription(paidUser);
+
+        expect(mockedStripe.subscriptions.update).toHaveBeenCalledWith("sub_1", {
+            cancel_at_period_end: false,
+        });
+        expect(result.status).toBe("active");
+    });
+
+    it("cancel throws when there is no active subscription", async () => {
+        mockedSubs.getActiveSubscriptionByUserId.mockResolvedValue(null);
+        await expect(
+            stripeService.cancelSubscription(paidUser)
+        ).rejects.toThrow("No active subscription");
+    });
+});

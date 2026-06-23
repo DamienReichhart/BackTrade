@@ -14,6 +14,7 @@ import {
     type BillingOverviewResponse,
     type InvoiceListResponse,
     type PlanChangePreviewResponse,
+    type SubscriptionActionResponse,
     type PricingTierCode,
 } from "@backtrade/types";
 import type Stripe from "stripe";
@@ -78,6 +79,19 @@ function sumProrationLines(preview: Stripe.Invoice): number {
             ? total + line.amount
             : total;
     }, 0);
+}
+
+/**
+ * Map an updated Stripe subscription to the action response shape.
+ */
+function toActionResponse(
+    sub: Stripe.Subscription
+): SubscriptionActionResponse {
+    return {
+        status: deriveBillingStatus(sub.status, sub.cancel_at_period_end),
+        cancelAtPeriodEnd: sub.cancel_at_period_end,
+        currentPeriodEnd: periodEndIso(sub),
+    };
 }
 
 const FREE_OVERVIEW: BillingOverviewResponse = {
@@ -333,6 +347,73 @@ class StripeService extends BaseService {
             nextChargeDate: periodEndIso(stripeSub) ?? "",
             isUpgrade: Number(targetPlan.price) > Number(currentPlan.price),
         };
+    }
+
+    /**
+     * Switch to a different paid plan immediately with proration.
+     */
+    async changePlan(
+        user: User,
+        planId: number
+    ): Promise<SubscriptionActionResponse> {
+        const { stripeSub, targetPlan } = await this.requirePaidChange(
+            user,
+            planId
+        );
+        const subItem = stripeSub.items.data[0];
+        if (!subItem) {
+            throw new BadRequestError("Subscription has no items.");
+        }
+        const updated = await stripe.subscriptions.update(stripeSub.id, {
+            items: [{ id: subItem.id, price: targetPlan.stripe_price_id }],
+            proration_behavior: "always_invoice",
+        });
+        return toActionResponse(updated);
+    }
+
+    /**
+     * Resolve the user's active Stripe subscription or throw.
+     */
+    private async requireActiveStripeSub(
+        user: User
+    ): Promise<Stripe.Subscription> {
+        if (!user.stripe_customer_id) {
+            throw new BadRequestError("No active subscription found.");
+        }
+        const subscription =
+            await subscriptionsRepo.getActiveSubscriptionByUserId(user.id);
+        if (!subscription) {
+            throw new BadRequestError("No active subscription found.");
+        }
+        return stripe.subscriptions.retrieve(
+            subscription.stripe_subscription_id
+        );
+    }
+
+    /**
+     * Schedule cancellation at the end of the current period.
+     */
+    async cancelSubscription(
+        user: User
+    ): Promise<SubscriptionActionResponse> {
+        const stripeSub = await this.requireActiveStripeSub(user);
+        const updated = await stripe.subscriptions.update(stripeSub.id, {
+            cancel_at_period_end: true,
+        });
+        return toActionResponse(updated);
+    }
+
+    /**
+     * Undo a scheduled cancellation.
+     */
+    async resumeSubscription(
+        user: User
+    ): Promise<SubscriptionActionResponse> {
+        const stripeSub = await this.requireActiveStripeSub(user);
+        const updated = await stripe.subscriptions.update(stripeSub.id, {
+            cancel_at_period_end: false,
+        });
+        return toActionResponse(updated);
     }
 
     /**
