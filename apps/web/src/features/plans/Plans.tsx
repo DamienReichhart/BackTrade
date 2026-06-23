@@ -1,34 +1,38 @@
-import { Button } from "../../components";
-import { LoadingState } from "../dashboard/components/LoadingState";
+import { useRef, type RefObject } from "react";
 import { ErrorState } from "../dashboard/components/ErrorState";
-import { CurrentSubscription } from "./components/CurrentSubscription/CurrentSubscription";
-import { SubscriptionList } from "./components/SubscriptionList/SubscriptionList";
-import { PlansList } from "./components/PlanList/PlansList";
-import { usePlansData, useSubscriptionManagement } from "./hooks";
+import { ConfirmModal } from "../../components/ConfirmModal";
+import { Skeleton } from "../../components/Skeleton";
+import { usePlans } from "../../api/hooks/requests/plans";
+import { useCreatePortalSession } from "../../api/hooks/requests/stripe";
+import { usePlansPageData } from "./hooks/usePlansPageData";
+import { usePlanChange } from "./hooks/usePlanChange";
+import { useSubscriptionLifecycle } from "./hooks/useSubscriptionLifecycle";
+import { PlanSummary } from "./components/PlanSummary";
+import { PlanPicker } from "./components/PlanPicker";
+import { PaymentMethod } from "./components/PaymentMethod";
+import { InvoiceList } from "./components/InvoiceList";
 import styles from "./Plans.module.css";
 
 /**
- * Plans page component
- *
- * Displays user subscriptions (current and all) and available plans
+ * Plan management page: current plan + billing summary, plan picker,
+ * payment method, and invoices.
  */
 export function Plans() {
-    const { subscriptions, plans, currentSubscription, isLoading, error } =
-        usePlansData();
+    const { overview, invoices, isLoading, error } = usePlansPageData();
+    const { data: plansData } = usePlans();
+    const { execute: openPortal, isLoading: isOpeningPortal } =
+        useCreatePortalSession();
+    const pickerRef = useRef<HTMLDivElement>(null);
 
-    const { handleChangeSubscription, handleManageSubscriptions, isCreating } =
-        useSubscriptionManagement();
-
-    // Show loading state if either is loading
-    if (isLoading) {
+    if (isLoading || !overview) {
         return (
             <div className={styles.container}>
-                <LoadingState />
+                <Skeleton height={160} />
+                <Skeleton height={280} />
             </div>
         );
     }
 
-    // Show error state if there's an error
     if (error) {
         return (
             <div className={styles.container}>
@@ -38,66 +42,112 @@ export function Plans() {
     }
 
     return (
+        <PlansContent
+            overview={overview}
+            invoices={invoices}
+            plans={plansData ?? []}
+            openPortal={openPortal}
+            isOpeningPortal={isOpeningPortal}
+            pickerRef={pickerRef}
+        />
+    );
+}
+
+interface PlansContentProps {
+    overview: NonNullable<ReturnType<typeof usePlansPageData>["overview"]>;
+    invoices: ReturnType<typeof usePlansPageData>["invoices"];
+    plans: ReturnType<typeof usePlans>["data"];
+    openPortal: ReturnType<typeof useCreatePortalSession>["execute"];
+    isOpeningPortal: boolean;
+    pickerRef: RefObject<HTMLDivElement | null>;
+}
+
+/**
+ * Rendered once the overview is loaded so plan-change hooks always
+ * receive a defined overview.
+ */
+function PlansContent({
+    overview,
+    invoices,
+    plans,
+    openPortal,
+    isOpeningPortal,
+    pickerRef,
+}: PlansContentProps) {
+    const planChange = usePlanChange(overview);
+    const { resume, isResuming } = useSubscriptionLifecycle();
+
+    const goToPortal = async () => {
+        try {
+            const session = await openPortal({});
+            window.location.href = session.url;
+        } catch {
+            /* surfaced by the portal hook caller; no-op here */
+        }
+    };
+
+    const scrollToPicker = () => {
+        pickerRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const busy = planChange.isRedirecting || isOpeningPortal || isResuming;
+
+    return (
         <div className={styles.container}>
-            {/* Header */}
             <header className={styles.header}>
-                <h1 className={styles.title}>Plans & Subscriptions</h1>
-                <Button
-                    variant="outline"
-                    size="medium"
-                    onClick={handleManageSubscriptions}
-                >
-                    Manage Subscriptions
-                </Button>
+                <h1 className={styles.title}>Plans &amp; billing</h1>
             </header>
 
-            {/* Content */}
             <div className={styles.content}>
-                {/* Current Subscription Section */}
-                {currentSubscription && (
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>
-                            Current Subscription
-                        </h2>
-                        <CurrentSubscription
-                            subscription={currentSubscription}
-                            plans={plans}
-                        />
-                    </section>
-                )}
+                <PlanSummary
+                    overview={overview}
+                    onChangePlan={scrollToPicker}
+                    onCancel={planChange.requestCancel}
+                    onResume={resume}
+                    onUpdatePayment={goToPortal}
+                    isBusy={busy}
+                />
 
-                {/* All Subscriptions Section */}
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        All Subscriptions ({subscriptions.length})
-                    </h2>
-                    <SubscriptionList
-                        subscriptions={subscriptions}
-                        plans={plans}
-                        currentSubscriptionId={currentSubscription?.id}
+                <div ref={pickerRef}>
+                    <PlanPicker
+                        plans={plans ?? []}
+                        overview={overview}
+                        onSelectPlan={planChange.selectPlan}
+                        disabled={busy}
                     />
-                </section>
+                </div>
 
-                {/* Available Plans Section */}
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        Available Plans ({plans.length})
-                    </h2>
-                    <PlansList
-                        plans={plans}
-                        currentSubscription={currentSubscription}
-                        isCreating={isCreating}
-                        onChangeSubscription={(planId, planCode, plan) =>
-                            handleChangeSubscription(
-                                planId,
-                                planCode,
-                                currentSubscription?.id,
-                                plan
-                            )
-                        }
-                    />
-                </section>
+                <PaymentMethod
+                    paymentMethod={overview.paymentMethod}
+                    onManage={goToPortal}
+                    disabled={busy}
+                />
+
+                <InvoiceList invoices={invoices} />
+
+                <button
+                    type="button"
+                    className={styles.portalLink}
+                    onClick={goToPortal}
+                    disabled={busy}
+                >
+                    Manage billing in Stripe
+                </button>
             </div>
+
+            {planChange.dialog && (
+                <ConfirmModal
+                    isOpen
+                    title={planChange.dialog.title}
+                    message={planChange.dialog.message}
+                    confirmLabel={planChange.dialog.confirmLabel}
+                    cancelLabel={planChange.dialog.cancelLabel}
+                    confirmVariant={planChange.dialog.confirmVariant}
+                    isLoading={planChange.dialog.isLoading}
+                    onConfirm={planChange.confirm}
+                    onCancel={planChange.dismiss}
+                />
+            )}
         </div>
     );
 }
