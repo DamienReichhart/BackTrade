@@ -69,7 +69,8 @@
         display: none;
     }
 
+    /* Auth actions move into the mobile menu panel */
     .actions {
-        gap: var(--spacing-sm);
+        display: none;
     }
 }

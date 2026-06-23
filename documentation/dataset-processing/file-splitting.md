@@ -3,7 +3,7 @@ sequenceDiagram
     participant Admin
     participant API as Backend API
     participant DatasetsService as Datasets Service
-    participant MinIO as MinIO Storage
+    participant RustFS as RustFS Storage
     participant Queue as RabbitMQ Queue
     participant Worker as Worker Service
     participant SplitProcessor as File Split Processor
@@ -14,8 +14,8 @@ sequenceDiagram
     API->>DatasetsService: uploadDatasetFile(id, file)
 
     DatasetsService->>DatasetsService: Validate Dataset<br/>Check Status, Instrument
-    DatasetsService->>MinIO: Upload File<br/>datasets/{id}/raw/{filename}
-    MinIO-->>DatasetsService: File Uploaded
+    DatasetsService->>RustFS: Upload File<br/>datasets/{id}/raw/{filename}
+    RustFS-->>DatasetsService: File Uploaded
 
     DatasetsService->>DatasetsService: Update Dataset Metadata<br/>file_name, uploaded_at
     DatasetsService->>Queue: Publish DatasetFileSplit Job<br/>{ datasetId, fileName, bucket, path }
@@ -29,16 +29,16 @@ sequenceDiagram
     Queue->>Worker: Consume DatasetFileSplit Job
     Worker->>SplitProcessor: process(jobData)
 
-    SplitProcessor->>MinIO: Download File<br/>datasets/{id}/raw/{filename}
-    MinIO-->>SplitProcessor: File Buffer
+    SplitProcessor->>RustFS: Download File<br/>datasets/{id}/raw/{filename}
+    RustFS-->>SplitProcessor: File Buffer
 
     SplitProcessor->>SplitProcessor: Stream File<br/>Read Line by Line
     SplitProcessor->>SplitProcessor: Accumulate Lines<br/>Max 10,000 lines per part
 
     loop For Each Part (10K lines)
         SplitProcessor->>SplitProcessor: Create Part Content<br/>Join lines with newlines
-        SplitProcessor->>MinIO: Upload Part<br/>datasets/{id}/parts/part_{N}.csv
-        MinIO-->>SplitProcessor: Part Uploaded
+        SplitProcessor->>RustFS: Upload Part<br/>datasets/{id}/parts/part_{N}.csv
+        RustFS-->>SplitProcessor: Part Uploaded
 
         SplitProcessor->>Queue: Publish DatasetPartProcess Job<br/>{ datasetId, partPath, partNumber,<br/>totalParts, instrumentId, timeframe }
         Queue-->>SplitProcessor: Job Queued

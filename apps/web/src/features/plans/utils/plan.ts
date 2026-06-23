@@ -1,13 +1,10 @@
 /**
- * Format plan title for display
- *
- * @param planCode - Plan code (optional)
- * @param planId - Plan ID as fallback
- * @returns Formatted plan title
+ * Label for the change action of a plan relative to the current one.
  */
-export function formatPlanTitle(
-    planCode: string | undefined,
-    planId: number
-): string {
-    return planCode ? planCode.toUpperCase() : `Plan #${planId}`;
+export function changeActionLabel(
+    currentRank: number,
+    targetRank: number
+): "Current plan" | "Upgrade" | "Downgrade" {
+    if (targetRank === currentRank) return "Current plan";
+    return targetRank > currentRank ? "Upgrade" : "Downgrade";
 }

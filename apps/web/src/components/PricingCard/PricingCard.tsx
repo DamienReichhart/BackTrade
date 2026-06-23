@@ -1,5 +1,7 @@
 import type { ButtonVariant } from "@backtrade/types";
+import { Check } from "lucide-react";
 import { Button } from "../Button";
+import { Icon } from "../Icon";
 import styles from "./PricingCard.module.css";
 
 /**
@@ -78,7 +80,11 @@ export function PricingCard({
             <ul className={styles.features}>
                 {features.map((feature, index) => (
                     <li key={index} className={styles.feature}>
-                        <span className={styles.checkmark}>✓</span>
+                        <Icon
+                            icon={Check}
+                            size="sm"
+                            className={styles.checkmark}
+                        />
                         <span className={styles.featureText}>
                             {feature.text}
                         </span>

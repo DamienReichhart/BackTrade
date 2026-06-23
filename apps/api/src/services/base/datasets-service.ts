@@ -533,7 +533,7 @@ class DatasetsService extends BaseService {
     /**
      * Upload a file for a dataset
      *
-     * Uploads the file to MinIO and creates a queue job for processing.
+     * Uploads the file to RustFS (S3) and creates a queue job for processing.
      * Admin-only operation.
      *
      * @param id - Dataset ID
@@ -565,7 +565,7 @@ class DatasetsService extends BaseService {
             throw new NotFoundError("Dataset not found");
         }
 
-        // Build file path in MinIO: datasets/{datasetId}/raw/{filename}
+        // Build file path in storage: datasets/{datasetId}/raw/{filename}
         const filePath = `${numericId}/raw/${originalFileName}`;
 
         this.logger.info(
@@ -575,11 +575,11 @@ class DatasetsService extends BaseService {
                 fileSize: file.length,
                 userId: user.id,
             },
-            "Uploading dataset file to MinIO"
+            "Uploading dataset file to storage"
         );
 
-        // Upload file to MinIO
-        await storageService.upload(ENV.MINIO_DATASETS_BUCKET, filePath, file, {
+        // Upload file to storage
+        await storageService.upload(ENV.S3_DATASETS_BUCKET, filePath, file, {
             contentType: "text/csv",
             metadata: {
                 datasetId: String(numericId),
@@ -589,7 +589,7 @@ class DatasetsService extends BaseService {
 
         this.logger.debug(
             { datasetId: numericId, filePath },
-            "File uploaded to MinIO successfully"
+            "File uploaded to storage successfully"
         );
 
         // Update dataset with file information
@@ -605,7 +605,7 @@ class DatasetsService extends BaseService {
         // Create queue job for file splitting
         const payload: DatasetFileSplitPayload = {
             datasetId: numericId,
-            filePath: `${ENV.MINIO_DATASETS_BUCKET}/${filePath}`,
+            filePath: `${ENV.S3_DATASETS_BUCKET}/${filePath}`,
             instrumentId: dataset.instrument_id,
             timeframe: dataset.timeframe,
         };

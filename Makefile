@@ -4,7 +4,7 @@
 # Variables
 DOCKER_COMPOSE_DEV := docker compose -f docker-dev.yaml
 DOCKER_COMPOSE_PROD := docker compose -f docker-prod.yaml
-DEV_SERVICE := dev
+TOOLS_SERVICE := tools
 API_FILTER := --filter @backtrade/api
 DATABASE_FILTER := --filter @backtrade/data
 PNPM := pnpm
@@ -23,12 +23,12 @@ help: ## Display this help message
 .PHONY: dev
 dev: ## Start development environment (detached mode)
 	@echo "Starting development environment..."
-	$(DOCKER_COMPOSE_DEV) up -d
+	$(DOCKER_COMPOSE_DEV) up -d --remove-orphans
 
 .PHONY: dev-build
 dev-build: ## Build and start development environment
 	@echo "Building and starting development environment..."
-	$(DOCKER_COMPOSE_DEV) up -d --build
+	$(DOCKER_COMPOSE_DEV) up -d --build --remove-orphans
 
 .PHONY: dev-stop
 dev-stop: ## Stop development environment
@@ -44,9 +44,29 @@ dev-down: ## Stop and remove development containers
 dev-logs: ## View development environment logs (follow mode)
 	$(DOCKER_COMPOSE_DEV) logs -f
 
+.PHONY: logs-api logs-web logs-worker logs-scheduler
+logs-api: ## Follow logs for the api service
+	$(DOCKER_COMPOSE_DEV) logs -f api
+logs-web: ## Follow logs for the web service
+	$(DOCKER_COMPOSE_DEV) logs -f web
+logs-worker: ## Follow logs for the worker service
+	$(DOCKER_COMPOSE_DEV) logs -f worker
+logs-scheduler: ## Follow logs for the scheduler service
+	$(DOCKER_COMPOSE_DEV) logs -f scheduler
+
+.PHONY: shell-api shell-web shell-worker shell-scheduler
+shell-api: ## Open a shell in the api service
+	$(DOCKER_COMPOSE_DEV) exec api /bin/sh
+shell-web: ## Open a shell in the web service
+	$(DOCKER_COMPOSE_DEV) exec web /bin/sh
+shell-worker: ## Open a shell in the worker service
+	$(DOCKER_COMPOSE_DEV) exec worker /bin/sh
+shell-scheduler: ## Open a shell in the scheduler service
+	$(DOCKER_COMPOSE_DEV) exec scheduler /bin/sh
+
 .PHONY: dev-shell
-dev-shell: ## Open shell in development container
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) /bin/sh
+dev-shell: ## Open shell in the tools container (run pnpm/prisma here)
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) /bin/sh
 
 .PHONY: dev-restart
 dev-restart: ## Restart development environment
@@ -93,37 +113,45 @@ prod-restart: ## Restart production environment
 .PHONY: db-init
 db-init: ## Initialize database (generate, deploy migrations, and seed)
 	@echo "Initializing database..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:init
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:init
 
 .PHONY: db-generate
 db-generate: ## Generate Prisma client
 	@echo "Generating Prisma client..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:generate
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:generate
 
 .PHONY: db-migrate
 db-migrate: ## Run Prisma migrations in development mode
 	@echo "Running Prisma migrations..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:migrate
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:migrate
 
 .PHONY: db-deploy
 db-deploy: ## Deploy Prisma migrations (production mode)
 	@echo "Deploying Prisma migrations..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:deploy
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:deploy
 
 .PHONY: db-seed
 db-seed: ## Seed database with initial data
 	@echo "Seeding database..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:seed
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:seed
 
 .PHONY: db-studio
 db-studio: ## Open Prisma Studio (database GUI)
 	@echo "Opening Prisma Studio..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:studio
+	$(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:studio
 
 .PHONY: db-reset
 db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "⚠️  WARNING: This will delete all database data!"
-	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset
+	@echo "Run manually: $(DOCKER_COMPOSE_DEV) exec $(TOOLS_SERVICE) $(PNPM) $(DATABASE_FILTER) prisma:reset
+
+# =============================================================================
+# Stripe
+# =============================================================================
+
+.PHONY: stripe-listen
+stripe-listen: ## Forward Stripe webhook events to the local API
+	stripe listen --forward-to http://localhost:21799/api/v1/stripe/webhook
 
 # =============================================================================
 # Dependencies
@@ -139,9 +167,12 @@ install: ## Install all dependencies
 	cp .env.example apps/scheduler/.env
 
 .PHONY: install-dev
-install-dev: dev ## Install dependencies and start dev environment
-	@echo "Installing dependencies and starting dev environment..."
-	$(DOCKER_COMPOSE_DEV) exec $(DEV_SERVICE) $(PNPM) install
+install-dev: dev ## Install dependencies in every dev container (per-container node_modules)
+	@echo "Installing dependencies across dev containers..."
+	@for svc in api web worker scheduler tools; do \
+		echo "  -> $$svc"; \
+		$(DOCKER_COMPOSE_DEV) exec $$svc $(PNPM) install; \
+	done
 
 # =============================================================================
 # Code Quality

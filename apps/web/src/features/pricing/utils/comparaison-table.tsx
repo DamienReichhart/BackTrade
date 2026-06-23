@@ -1,11 +1,18 @@
+import { type ReactNode } from "react";
+import { Check } from "lucide-react";
+import { Icon } from "../../../components/Icon";
 import { type ComparisonTableCellStyles } from "../types";
 
 /**
  * Format cell value for display
  */
-export function formatCellValue(value: string | boolean): string {
+export function formatCellValue(value: string | boolean): ReactNode {
     if (typeof value === "boolean") {
-        return value ? "✓" : "Not included";
+        return value ? (
+            <Icon icon={Check} size="sm" label="Included" />
+        ) : (
+            "Not included"
+        );
     }
     return value;
 }

@@ -26,7 +26,7 @@ export function IndicatorConfigModal({
     isOpen,
     onClose,
 }: IndicatorConfigModalProps) {
-    useModalBehavior(isOpen, onClose);
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     const indicators = useIndicatorSettingsStore((state) => state.indicators);
     const addIndicator = useIndicatorSettingsStore(
@@ -76,6 +76,7 @@ export function IndicatorConfigModal({
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(event) => event.stopPropagation()}
                 role="dialog"

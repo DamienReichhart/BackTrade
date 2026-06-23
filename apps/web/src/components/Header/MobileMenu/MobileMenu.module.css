@@ -1,0 +1,97 @@
+.mobileMenu {
+    /* Hidden on desktop; the desktop Navigation handles those widths. */
+    display: none;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    transition: background-color var(--transition-fast);
+}
+
+.toggle:hover {
+    background-color: var(--color-surface-secondary);
+}
+
+.toggle:focus-visible {
+    outline: var(--focus-outline-width) solid var(--color-accent);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.backdrop {
+    position: fixed;
+    inset: 64px 0 0 0;
+    z-index: var(--z-modal-backdrop);
+    background-color: var(--color-shadow-overlay);
+}
+
+.panel {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background-color: var(--color-dropdown-bg);
+    border-bottom: 1px solid var(--color-border-primary);
+    box-shadow: var(--shadow-lg);
+    animation: panelDown var(--transition-base) ease-out;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.link {
+    display: block;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+}
+
+.link:hover {
+    background-color: var(--color-surface-secondary);
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border-primary);
+}
+
+@keyframes panelDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .mobileMenu {
+        display: block;
+    }
+}

@@ -1,5 +1,7 @@
 import { useMemo } from "react";
+import { X } from "lucide-react";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { Select } from "../../../../../components/Select";
 import { useDatasetCreate } from "../../hooks";
 import { useInstruments } from "../../../../../api/hooks/requests/instruments";
@@ -112,7 +114,7 @@ export function CreateDatasetModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

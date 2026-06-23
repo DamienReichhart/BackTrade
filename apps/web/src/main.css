@@ -134,6 +134,12 @@
     --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Focus & interaction */
+    --focus-ring-width: 3px;
+    --focus-outline-width: 2px;
+    --focus-ring-offset: 2px;
+    --touch-target-min: 44px;
+
     /* Breakpoints (for reference in JS) */
     --breakpoint-sm: 640px;
     --breakpoint-md: 768px;
@@ -330,6 +336,13 @@ pre {
     font-family: var(--font-mono);
 }
 
+/* Tabular figures: keep numeric columns and live-updating values from
+   shifting horizontally as digits change (prices, P&L, balances, timers). */
+table,
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
 /* Selection */
 ::selection {
     background-color: var(--color-accent);
@@ -353,6 +366,29 @@ pre {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-accent);
+}
+
+/* ========================================================================
+   REDUCED MOTION
+   ======================================================================== */
+
+/*
+ * Respect the user's "reduce motion" OS setting. Near-instant durations keep
+ * state changes readable while removing spin/pulse/shimmer/slide motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 /* ========================================================================

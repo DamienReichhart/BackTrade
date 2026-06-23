@@ -1,21 +1,22 @@
 import { type Session, SESSION_STATUS } from "@backtrade/types";
+import { type BadgeVariant } from "../../../components/Badge";
 
 /**
- * Get status color class name
+ * Map a session status to a Badge variant.
  *
  * @param status - Session status
- * @returns CSS class name for status color
+ * @returns Semantic badge variant for the status
  */
-export function getSessionStatusColorClass(status: string): string {
+export function getSessionStatusVariant(status: string): BadgeVariant {
     switch (status) {
         case SESSION_STATUS.RUNNING:
-            return "statusRunning";
+            return "success";
         case SESSION_STATUS.PAUSED:
-            return "statusPaused";
+            return "warning";
         case SESSION_STATUS.ARCHIVED:
-            return "statusArchived";
+            return "neutral";
         default:
-            return "";
+            return "neutral";
     }
 }
 

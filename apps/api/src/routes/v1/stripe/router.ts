@@ -56,4 +56,70 @@ stripeRouter.get(
     stripeController.getCheckoutSession.bind(stripeController)
 );
 
+/**
+ * Billing overview
+ *
+ * GET /api/v1/stripe/billing
+ */
+stripeRouter.get(
+    "/billing",
+    authMiddleware,
+    stripeController.getBillingOverview.bind(stripeController)
+);
+
+/**
+ * Invoices
+ *
+ * GET /api/v1/stripe/invoices
+ */
+stripeRouter.get(
+    "/invoices",
+    authMiddleware,
+    stripeController.listInvoices.bind(stripeController)
+);
+
+/**
+ * Preview a plan change (proration)
+ *
+ * POST /api/v1/stripe/subscription/preview
+ */
+stripeRouter.post(
+    "/subscription/preview",
+    authMiddleware,
+    stripeController.previewPlanChange.bind(stripeController)
+);
+
+/**
+ * Apply a plan change
+ *
+ * POST /api/v1/stripe/subscription/change
+ */
+stripeRouter.post(
+    "/subscription/change",
+    authMiddleware,
+    stripeController.changePlan.bind(stripeController)
+);
+
+/**
+ * Cancel at period end
+ *
+ * POST /api/v1/stripe/subscription/cancel
+ */
+stripeRouter.post(
+    "/subscription/cancel",
+    authMiddleware,
+    stripeController.cancelSubscription.bind(stripeController)
+);
+
+/**
+ * Resume (undo scheduled cancellation)
+ *
+ * POST /api/v1/stripe/subscription/resume
+ */
+stripeRouter.post(
+    "/subscription/resume",
+    authMiddleware,
+    stripeController.resumeSubscription.bind(stripeController)
+);
+
 export default stripeRouter;

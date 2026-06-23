@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth";
 import { useLogout } from "../../api/hooks/requests/auth";
 import { Button } from "../Button";
+import { SkipLink } from "../SkipLink";
 import styles from "./AuthenticatedLayout.module.css";
 import logoPng from "../../../assets/logo.png";
 
@@ -56,6 +57,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
 
     return (
         <div className={styles.layout}>
+            <SkipLink />
             {/* Sidebar */}
             <aside className={styles.sidebar}>
                 <div className={styles.content}>
@@ -70,7 +72,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                     </div>
 
                     {/* Navigation */}
-                    <nav className={styles.navigation}>
+                    <nav className={styles.navigation} aria-label="Primary">
                         <ul className={styles.navList}>
                             {filteredNavItems.map((item) => {
                                 const isActive = location.pathname === item.to;
@@ -81,6 +83,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                                     >
                                         <Link
                                             to={item.to}
+                                            aria-current={
+                                                isActive ? "page" : undefined
+                                            }
                                             className={`${styles.navLink} ${
                                                 isActive ? styles.active : ""
                                             }`}
@@ -108,7 +113,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             </aside>
 
             {/* Main Content */}
-            <main className={styles.main}>{children}</main>
+            <main id="main-content" tabIndex={-1} className={styles.main}>
+                {children}
+            </main>
         </div>
     );
 }

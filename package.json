@@ -19,12 +19,12 @@
         "format:check": "prettier --check ."
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "eslint": "^9.39.2",
-        "prettier": "^3.8.0",
-        "turbo": "^2.7.4",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.53.0"
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.5.0",
+        "prettier": "^3.8.4",
+        "turbo": "^2.9.18",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.62.0"
     },
     "keywords": [],
     "author": "REICHHART Damien",

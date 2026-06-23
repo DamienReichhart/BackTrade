@@ -1,4 +1,5 @@
-import { Button } from "../../../../../components";
+import { X } from "lucide-react";
+import { Button, Icon } from "../../../../../components";
 import type { Transaction } from "@backtrade/types";
 import { formatDateTime } from "@backtrade/utils";
 import { useModalBehavior } from "../../../../../hooks/useModalBehavior";
@@ -18,13 +19,14 @@ export function TransactionDetailsModal({
     isOpen,
     onClose,
 }: TransactionDetailsModalProps) {
-    useModalBehavior(isOpen, onClose);
+    const modalRef = useModalBehavior(isOpen, onClose);
 
     if (!isOpen || !transaction) return null;
 
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div
+                ref={modalRef}
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
@@ -40,7 +42,7 @@ export function TransactionDetailsModal({
                         onClick={onClose}
                         aria-label="Close modal"
                     >
-                        ×
+                        <Icon icon={X} size="md" />
                     </button>
                 </div>
 

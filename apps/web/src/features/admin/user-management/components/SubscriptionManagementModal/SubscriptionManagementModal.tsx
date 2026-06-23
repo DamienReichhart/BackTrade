@@ -1,5 +1,7 @@
 import type { PublicUser } from "@backtrade/types";
+import { X } from "lucide-react";
 import { Button } from "../../../../../components/Button";
+import { Icon } from "../../../../../components/Icon";
 import { ConfirmModal } from "../../../../../components/ConfirmModal";
 import { useSubscriptionManagementModal } from "./hooks";
 import { CreateSubscriptionSection, SubscriptionListView } from "./components";
@@ -36,6 +38,9 @@ export function SubscriptionManagementModal({
     onClose,
 }: SubscriptionManagementModalProps) {
     const {
+        // Refs
+        modalRef,
+
         // Data
         subscriptions,
         isLoading,
@@ -77,6 +82,7 @@ export function SubscriptionManagementModal({
         <>
             <div className={styles.backdrop} onClick={onClose}>
                 <div
+                    ref={modalRef}
                     className={styles.modal}
                     onClick={(e) => e.stopPropagation()}
                     role="dialog"
@@ -92,7 +98,7 @@ export function SubscriptionManagementModal({
                             onClick={onClose}
                             aria-label="Close modal"
                         >
-                            ×
+                            <Icon icon={X} size="md" />
                         </button>
                     </div>
 

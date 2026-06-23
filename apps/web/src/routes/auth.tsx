@@ -1,16 +1,27 @@
-import { Login, Register, ForgotPassword } from "../features/auth";
+import { lazy } from "react";
+import { withSuspense } from "./utils";
+
+const Login = lazy(() =>
+    import("../features/auth").then((m) => ({ default: m.Login }))
+);
+const Register = lazy(() =>
+    import("../features/auth").then((m) => ({ default: m.Register }))
+);
+const ForgotPassword = lazy(() =>
+    import("../features/auth").then((m) => ({ default: m.ForgotPassword }))
+);
 
 export const authRoutes = [
     {
         path: "/signin",
-        element: <Login />,
+        element: withSuspense(Login),
     },
     {
         path: "/signup",
-        element: <Register />,
+        element: withSuspense(Register),
     },
     {
         path: "/forgot-password",
-        element: <ForgotPassword />,
+        element: withSuspense(ForgotPassword),
     },
 ];

@@ -5,7 +5,6 @@ dist
 .turbo
 **/coverage
 .VSCodeCounter
-# MinIO SSL certificates (should not be committed)
-docker/config/minio/certs/*.crt
-docker/config/minio/certs/*.key
-!docker/config/minio/certs/.gitkeep
+
+# Claude Code — keep settings.json + CLAUDE.md shared; ignore per-dev overrides
+.claude/settings.local.json

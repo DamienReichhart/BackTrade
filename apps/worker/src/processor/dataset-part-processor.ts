@@ -33,7 +33,7 @@ class DatasetPartProcessor {
     /**
      * Process a dataset part job
      *
-     * Downloads the part from MinIO, parses the CSV lines,
+     * Downloads the part from storage, parses the CSV lines,
      * and bulk inserts candles into ClickHouse.
      *
      * @param data - Job payload (validated against DatasetPartProcessPayloadSchema)
@@ -73,10 +73,10 @@ class DatasetPartProcessor {
             throw new Error(`Invalid part path format: ${partPath}`);
         }
 
-        // Download part from MinIO
+        // Download part from storage
         this.logger.debug(
             { bucket, objectPath },
-            "Downloading part from MinIO"
+            "Downloading part from storage"
         );
         const partBuffer = await storageService.download(bucket, objectPath);
         const partContent = partBuffer.toString("utf-8");

@@ -53,7 +53,7 @@ class EmailNotificationService extends BaseService {
             template: "welcome" as const,
             emailData: {
                 to: email,
-                subject: "Welcome to BackTrade!",
+                subject: "Welcome to BackTrade",
                 username,
                 dashboardUrl: `${ENV.FRONTEND_URL}/dashboard`,
             },
@@ -254,7 +254,7 @@ class EmailNotificationService extends BaseService {
             template: "password-reset" as const,
             emailData: {
                 to: email,
-                subject: "Reset Your BackTrade Password",
+                subject: "Reset your BackTrade password",
                 username,
                 resetCode,
                 expirationMinutes,

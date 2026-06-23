@@ -6,3 +6,4 @@
 
 export { useModal } from "./useModal";
 export { useModalBehavior } from "./useModalBehavior";
+export { useToast } from "./useToast";

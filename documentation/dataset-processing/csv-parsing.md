@@ -2,7 +2,7 @@
 sequenceDiagram
     participant Worker as Worker Service
     participant PartProcessor as Part Processor
-    participant MinIO as MinIO Storage
+    participant RustFS as RustFS Storage
     participant Parser as CSV Parser
     participant Validator as Data Validator
     participant ClickHouse as ClickHouse
@@ -11,8 +11,8 @@ sequenceDiagram
     Note over Worker,DB: CSV Parsing & Import
 
     Worker->>PartProcessor: process(partData)
-    PartProcessor->>MinIO: Download Part<br/>datasets/{id}/parts/part_{N}.csv
-    MinIO-->>PartProcessor: Part Buffer
+    PartProcessor->>RustFS: Download Part<br/>datasets/{id}/parts/part_{N}.csv
+    RustFS-->>PartProcessor: Part Buffer
 
     PartProcessor->>PartProcessor: Split into Lines<br/>Filter Empty Lines
 
