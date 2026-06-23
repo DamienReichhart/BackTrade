@@ -12,6 +12,7 @@ import type {
     ButtonVariant,
     BadgeVariant,
 } from "@backtrade/types";
+import { PLAN_PRESENTATION } from "../../../config/plans";
 
 /**
  * Pricing tiers configuration
@@ -24,13 +25,10 @@ export const pricingTiers: PricingTier[] = [
         currency: "€",
         period: "/month",
         description: "Start",
-        features: [
-            { text: "1 active sessions", included: true },
-            { text: "Deterministic OHLCV engine", included: true },
-            { text: "Market entries only • immediate fills", included: true },
-            { text: "Fixed spread, slippage, commission", included: true },
-            { text: "Session analytics + JSON export", included: true },
-        ],
+        features: PLAN_PRESENTATION.FREE.features.map((text) => ({
+            text,
+            included: true,
+        })),
         ctaText: "Create account",
         ctaVariant: "outline" as ButtonVariant,
     },
@@ -43,12 +41,10 @@ export const pricingTiers: PricingTier[] = [
         description: "Scale",
         badge: "Most popular",
         badgeVariant: "popular" as BadgeVariant,
-        features: [
-            { text: "10 active sessions", included: true },
-            { text: "All Free features", included: true },
-            { text: "Multi-session run", included: true },
-            { text: "Export equity curve and trades table", included: true },
-        ],
+        features: PLAN_PRESENTATION.TRADER.features.map((text) => ({
+            text,
+            included: true,
+        })),
         ctaText: "Choose Trader",
         ctaVariant: "primary" as ButtonVariant,
         highlighted: true,
@@ -60,11 +56,10 @@ export const pricingTiers: PricingTier[] = [
         currency: "€",
         period: "/month",
         description: "Max",
-        features: [
-            { text: "30 active sessions", included: true },
-            { text: "All Trader features", included: true },
-            { text: "Highest parallelism within quota", included: true },
-        ],
+        features: PLAN_PRESENTATION.EXPERT.features.map((text) => ({
+            text,
+            included: true,
+        })),
         ctaText: "Choose Expert",
         ctaVariant: "primary" as ButtonVariant,
     },

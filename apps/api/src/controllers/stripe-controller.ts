@@ -9,7 +9,11 @@ import type { Request, Response } from "express";
 import { stripeService, webhookService } from "../services/stripe";
 import { logger } from "../libs/pino";
 import BadRequestError from "../errors/web/bad-request-error";
-import { SessionIdParamsSchema } from "@backtrade/types";
+import {
+    SessionIdParamsSchema,
+    ChangePlanRequestSchema,
+    PlanChangePreviewRequestSchema,
+} from "@backtrade/types";
 
 /**
  * Stripe Controller
@@ -103,6 +107,72 @@ class StripeController {
         const session = await stripeService.getCheckoutSession(sessionId);
 
         res.status(200).json(session);
+    }
+
+    /**
+     * GET /stripe/billing
+     */
+    async getBillingOverview(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const overview = await stripeService.getBillingOverview(user);
+        res.status(200).json(overview);
+    }
+
+    /**
+     * GET /stripe/invoices
+     */
+    async listInvoices(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const invoices = await stripeService.listInvoices(user);
+        res.status(200).json(invoices);
+    }
+
+    /**
+     * POST /stripe/subscription/preview
+     */
+    async previewPlanChange(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        let planId: number;
+        try {
+            ({ planId } = PlanChangePreviewRequestSchema.parse(req.body));
+        } catch {
+            throw new BadRequestError("A valid planId is required");
+        }
+        const preview = await stripeService.previewPlanChange(user, planId);
+        res.status(200).json(preview);
+    }
+
+    /**
+     * POST /stripe/subscription/change
+     */
+    async changePlan(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        let planId: number;
+        try {
+            ({ planId } = ChangePlanRequestSchema.parse(req.body));
+        } catch {
+            throw new BadRequestError("A valid planId is required");
+        }
+        const result = await stripeService.changePlan(user, planId);
+        res.status(200).json(result);
+    }
+
+    /**
+     * POST /stripe/subscription/cancel
+     */
+    async cancelSubscription(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const result = await stripeService.cancelSubscription(user);
+        res.status(200).json(result);
+    }
+
+    /**
+     * POST /stripe/subscription/resume
+     */
+    async resumeSubscription(req: Request, res: Response): Promise<void> {
+        const user = req.user!;
+        const result = await stripeService.resumeSubscription(user);
+        res.status(200).json(result);
     }
 
     /**

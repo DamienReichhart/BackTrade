@@ -6,13 +6,10 @@
 
 import type Stripe from "stripe";
 import { stripe } from "../../libs/stripe";
-import {
-    subscriptionsRepo,
-    stripeEventsRepo,
-    plansRepo,
-} from "@backtrade/data";
+import { stripeEventsRepo } from "@backtrade/data";
 import { BaseService } from "../base/base-service";
 import { ENV } from "../../config/env";
+import { upsertSubscriptionFromStripe } from "./subscription-sync";
 
 /**
  * Webhook Service
@@ -126,102 +123,18 @@ class WebhookService extends BaseService {
     }
 
     /**
-     * Sync local subscription with Stripe data
-     * This is the single source of truth for all subscription state changes.
+     * Sync local subscription with Stripe data.
+     * Delegates to the shared upsert so the webhook and the billing
+     * reconciliation fallback stay in lockstep.
      */
     private async syncSubscription(
         stripeSubscription: Stripe.Subscription
     ): Promise<void> {
-        const { id, status, metadata, items, cancel_at } = stripeSubscription;
-
         this.logger.info(
-            { subscriptionId: id, status },
+            { subscriptionId: stripeSubscription.id, status: stripeSubscription.status },
             "Syncing subscription"
         );
-
-        // 1. Identify User and Plan
-        const userId = parseInt(metadata?.userId ?? "0", 10);
-
-        // Handle Plan Change or Initial Setup: Get plan from price ID
-        const firstItem = items.data[0];
-        if (!firstItem) {
-            this.logger.error(
-                { subscriptionId: id },
-                "No items in subscription"
-            );
-            return;
-        }
-
-        const priceId = firstItem.price.id;
-        const plan = await plansRepo.getPlanByStripePriceId(priceId);
-
-        if (!plan) {
-            this.logger.error(
-                { subscriptionId: id, priceId },
-                "Plan not found for price ID"
-            );
-            return;
-        }
-
-        // 2. Map Status
-        const dbStatus = this.mapStripeStatus(status);
-
-        // 3. Map Dates
-        // Stripe SDK v20+ moves these to SubscriptionItem
-        const startDate = new Date(
-            firstItem.current_period_start * 1000
-        ).toISOString();
-        const endDate = new Date(
-            firstItem.current_period_end * 1000
-        ).toISOString();
-
-        // 4. Handle Cancellation
-        // If cancel_at is set (non-null), the subscription is scheduled to cancel.
-        const isCanceling = cancel_at !== null && cancel_at !== undefined;
-
-        // 5. Upsert Subscription
-        const existingSubscription =
-            await subscriptionsRepo.getByStripeSubscriptionId(id);
-
-        if (existingSubscription) {
-            await subscriptionsRepo.updateSubscription(
-                existingSubscription.id,
-                {
-                    status: dbStatus,
-                    plan_id: plan.id, // Support plan upgrades/downgrades
-                    current_period_start: startDate,
-                    current_period_end: endDate,
-                    cancel_at_period_end: isCanceling,
-                }
-            );
-            this.logger.info({ subscriptionId: id }, "Subscription updated");
-        } else {
-            if (!userId) {
-                this.logger.error(
-                    { subscriptionId: id },
-                    "Missing userId in metadata for new subscription"
-                );
-                return;
-            }
-
-            await subscriptionsRepo.createSubscription({
-                user_id: userId,
-                plan_id: plan.id,
-                stripe_subscription_id: id,
-                status: dbStatus,
-                current_period_start: startDate,
-                current_period_end: endDate,
-                cancel_at_period_end: isCanceling,
-            });
-            this.logger.info({ subscriptionId: id }, "Subscription created");
-        }
-    }
-
-    private mapStripeStatus(
-        status: Stripe.Subscription.Status
-    ): "active" | "canceled" {
-        if (status === "active" || status === "trialing") return "active";
-        return "canceled";
+        await upsertSubscriptionFromStripe(stripeSubscription);
     }
 }
 

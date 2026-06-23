@@ -28,5 +28,7 @@ module.exports = {
             "../../packages/types/src"
         ),
         "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+        "\\.(png|jpg|jpeg|gif|svg|webp|avif)$":
+            "<rootDir>/__mocks__/fileMock.cjs",
     },
 };
