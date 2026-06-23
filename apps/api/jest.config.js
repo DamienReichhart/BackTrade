@@ -3,6 +3,9 @@ export default {
     testEnvironment: "node",
     roots: ["<rootDir>/src"],
     testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
+    // Populates schema-satisfying env vars before any module (notably
+    // `src/config/env.ts`) is imported, so tests run without a real `.env`.
+    setupFiles: ["<rootDir>/jest.setup.ts"],
     transform: {
         "^.+\\.ts$": [
             "ts-jest",
