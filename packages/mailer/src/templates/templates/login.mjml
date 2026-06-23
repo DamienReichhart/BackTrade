@@ -1,8 +1,8 @@
 <mjml>
     <mj-head>
-        <mj-title>New Sign-in to BackTrade</mj-title>
+        <mj-title>New sign-in to BackTrade</mj-title>
         <mj-preview
-            >A new sign-in to your BackTrade account was detected</mj-preview
+            >A new sign-in to your BackTrade account was detected.</mj-preview
         >
 
         <!-- Include global styles -->
@@ -10,13 +10,13 @@
     </mj-head>
 
     <mj-body background-color="#0b0f14">
-        <!-- Header -->
-        <mj-section padding="48px 24px 32px 24px">
+        <!-- Masthead -->
+        <mj-section padding="48px 24px 0 24px">
             <mj-column>
-                <mj-text align="center" padding="0">
+                <mj-text padding="0">
                     <span
                         style="
-                            font-size: 28px;
+                            font-size: 24px;
                             font-weight: 600;
                             color: #e6eef5;
                             letter-spacing: -0.5px;
@@ -25,42 +25,46 @@
                         ◈ BackTrade
                     </span>
                 </mj-text>
+                <mj-divider
+                    border-color="rgba(230, 238, 245, 0.1)"
+                    border-width="1px"
+                    padding="20px 0 0 0"
+                />
             </mj-column>
         </mj-section>
 
         <!-- Main Card -->
-        <mj-section padding="0 24px">
+        <mj-section padding="32px 24px 0 24px">
             <mj-column
                 background-color="rgba(230, 238, 245, 0.06)"
-                border-radius="16px"
+                border-radius="12px"
                 padding="40px 32px"
             >
                 <!-- Security badge -->
-                <mj-text align="center" padding="0 0 8px 0">
-                    <span class="badge badge-info">🔐 Security Alert</span>
+                <mj-text padding="0 0 16px 0">
+                    <span class="badge badge-info">Security notice</span>
                 </mj-text>
 
                 <!-- Main heading -->
                 <mj-text
-                    align="center"
-                    font-size="28px"
+                    font-size="24px"
                     font-weight="700"
                     color="#e6eef5"
-                    padding="16px 0 8px 0"
+                    padding="0 0 16px 0"
                     line-height="1.3"
                 >
-                    New sign-in detected
+                    New sign-in to your account
                 </mj-text>
 
-                <!-- Subheading -->
+                <!-- Body -->
                 <mj-text
-                    align="center"
                     font-size="16px"
-                    color="rgba(230, 238, 245, 0.7)"
-                    padding="0 0 32px 0"
+                    color="rgba(230, 238, 245, 0.75)"
+                    padding="0 0 28px 0"
                 >
-                    Hi {{ username }}, we noticed a new sign-in to your
-                    BackTrade account.
+                    Dear {{ username }},<br /><br />
+                    We detected a new sign-in to your BackTrade account. The
+                    details are shown below.
                 </mj-text>
 
                 <!-- Sign-in details label -->
@@ -72,7 +76,7 @@
                     text-transform="uppercase"
                     letter-spacing="1px"
                 >
-                    Sign-in Details
+                    Sign-in details
                 </mj-text>
 
                 <!-- Date & Time -->
@@ -93,7 +97,7 @@
                                     color: rgba(230, 238, 245, 0.5);
                                 "
                             >
-                                Date & Time
+                                Date &amp; Time
                             </td>
                             <td
                                 style="
@@ -175,13 +179,11 @@
 
                 <!-- Confirmation message -->
                 <mj-text
-                    align="center"
                     font-size="15px"
                     color="rgba(230, 238, 245, 0.7)"
                     padding="24px 0 0 0"
                 >
-                    If this was you, no action is needed. You can safely ignore
-                    this email.
+                    If this was you, no action is required.
                 </mj-text>
             </mj-column>
         </mj-section>
@@ -195,36 +197,34 @@
                 padding="24px"
             >
                 <mj-text
-                    align="center"
                     font-size="15px"
                     font-weight="600"
                     color="#ef4444"
                     padding="0 0 12px 0"
                 >
-                    ⚠️ Wasn't you?
+                    Did not recognize this activity?
                 </mj-text>
 
                 <mj-text
-                    align="center"
                     font-size="14px"
                     color="rgba(230, 238, 245, 0.7)"
                     padding="0 0 20px 0"
                 >
-                    If you didn't sign in, your account may be compromised.
-                    Secure it immediately by changing your password.
+                    If you did not sign in, your account may be at risk. We
+                    recommend securing it by changing your password immediately.
                 </mj-text>
 
                 <mj-button
                     href="{{secureAccountUrl}}"
                     background-color="#ef4444"
-                    align="center"
+                    align="left"
                 >
-                    Secure My Account
+                    Secure your account
                 </mj-button>
             </mj-column>
         </mj-section>
 
-        <!-- Security tips -->
+        <!-- Security recommendations -->
         <mj-section padding="24px 24px 0 24px">
             <mj-column
                 background-color="rgba(230, 238, 245, 0.03)"
@@ -232,13 +232,12 @@
                 padding="24px"
             >
                 <mj-text
-                    align="center"
                     font-size="14px"
                     font-weight="600"
                     color="#e6eef5"
                     padding="0 0 16px 0"
                 >
-                    🛡️ Security Tips
+                    Security recommendations
                 </mj-text>
 
                 <mj-text
@@ -246,21 +245,35 @@
                     color="rgba(230, 238, 245, 0.6)"
                     padding="0 0 8px 0"
                 >
-                    • Use a strong, unique password for your account
+                    • Use a strong, unique password for your account.
                 </mj-text>
                 <mj-text
                     font-size="14px"
                     color="rgba(230, 238, 245, 0.6)"
                     padding="0 0 8px 0"
                 >
-                    • Never share your login credentials with anyone
+                    • Never share your login credentials.
                 </mj-text>
                 <mj-text
                     font-size="14px"
                     color="rgba(230, 238, 245, 0.6)"
                     padding="0"
                 >
-                    • Review your account activity regularly
+                    • Review your account activity regularly.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- Sign-off -->
+        <mj-section padding="32px 24px 0 24px">
+            <mj-column>
+                <mj-text
+                    font-size="15px"
+                    color="rgba(230, 238, 245, 0.75)"
+                    padding="0"
+                >
+                    Kind regards,<br />
+                    The BackTrade Team
                 </mj-text>
             </mj-column>
         </mj-section>
@@ -268,16 +281,23 @@
         <!-- Footer -->
         <mj-section padding="32px 24px 48px 24px">
             <mj-column>
+                <mj-divider
+                    border-color="rgba(230, 238, 245, 0.1)"
+                    border-width="1px"
+                    padding="0 0 24px 0"
+                />
                 <mj-text
-                    align="center"
-                    font-size="14px"
+                    font-size="13px"
                     color="rgba(230, 238, 245, 0.5)"
-                    padding="0 0 16px 0"
+                    padding="0 0 12px 0"
                 >
                     This is an automated security notification from BackTrade.
+                    For assistance, contact us at
+                    <a href="mailto:contact@damien-reichhart.fr"
+                        >contact@damien-reichhart.fr</a
+                    >.
                 </mj-text>
                 <mj-text
-                    align="center"
                     font-size="12px"
                     color="rgba(230, 238, 245, 0.3)"
                     padding="0"
