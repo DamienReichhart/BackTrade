@@ -34,25 +34,25 @@
     },
     "dependencies": {
         "@backtrade/types": "workspace:*",
-        "@clickhouse/client": "^1.18.5",
+        "@clickhouse/client": "^1.22.0",
         "@prisma/adapter-pg": "^7.8.0",
         "@prisma/client": "^7.8.0",
-        "pg": "^8.21.0",
+        "pg": "^8.22.0",
         "zod": "4.4.3"
     },
     "devDependencies": {
         "@backtrade/eslint-config": "workspace:*",
         "@backtrade/tsconfig": "workspace:*",
         "@types/jest": "30.0.0",
-        "@types/node": "25.9.1",
+        "@types/node": "26.0.0",
         "@types/pg": "^8.20.0",
-        "globals": "^17.6.0",
+        "globals": "^17.7.0",
         "jest": "30.4.2",
         "prisma": "^7.8.0",
         "ts-jest": "^29.4.11",
-        "tsx": "^4.22.3",
+        "tsx": "^4.22.4",
         "typescript": "^6.0.3",
-        "typescript-eslint": "8.60.0"
+        "typescript-eslint": "8.62.0"
     },
     "prisma": {
         "seed": "tsx prisma/seed/index.ts"
