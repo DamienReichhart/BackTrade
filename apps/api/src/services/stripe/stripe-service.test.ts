@@ -152,3 +152,47 @@ describe("getBillingOverview", () => {
         expect(result.paymentMethod).toBeNull();
     });
 });
+
+describe("listInvoices", () => {
+    it("returns [] when the user has no customer id", async () => {
+        expect(await stripeService.listInvoices(freeUser)).toEqual([]);
+        expect(mockedStripe.invoices.list).not.toHaveBeenCalled();
+    });
+
+    it("maps Stripe invoices to view-models (major units)", async () => {
+        mockedStripe.invoices.list.mockResolvedValue({
+            data: [
+                {
+                    id: "in_1",
+                    number: "BT-001",
+                    created: 1_800_000_000,
+                    amount_paid: 1900,
+                    total: 1900,
+                    currency: "eur",
+                    status: "paid",
+                    hosted_invoice_url: "https://pay/in_1",
+                    invoice_pdf: "https://pdf/in_1",
+                },
+            ],
+        });
+
+        const result = await stripeService.listInvoices(paidUser);
+
+        expect(result).toEqual([
+            {
+                id: "in_1",
+                number: "BT-001",
+                date: new Date(1_800_000_000 * 1000).toISOString(),
+                amount: 19,
+                currency: "eur",
+                status: "paid",
+                hostedUrl: "https://pay/in_1",
+                pdfUrl: "https://pdf/in_1",
+            },
+        ]);
+        expect(mockedStripe.invoices.list).toHaveBeenCalledWith({
+            customer: "cus_123",
+            limit: 24,
+        });
+    });
+});

@@ -11,6 +11,7 @@ import {
     getPricingTierCodeDisplayLabel,
     type User,
     type BillingOverviewResponse,
+    type InvoiceListResponse,
     type PricingTierCode,
 } from "@backtrade/types";
 import type Stripe from "stripe";
@@ -211,6 +212,29 @@ class StripeService extends BaseService {
                     | null
             ),
         };
+    }
+
+    /**
+     * Recent invoices for the user, newest first.
+     */
+    async listInvoices(user: User): Promise<InvoiceListResponse> {
+        if (!user.stripe_customer_id) return [];
+
+        const invoices = await stripe.invoices.list({
+            customer: user.stripe_customer_id,
+            limit: 24,
+        });
+
+        return invoices.data.map((inv) => ({
+            id: inv.id ?? "",
+            number: inv.number ?? null,
+            date: new Date(inv.created * 1000).toISOString(),
+            amount: (inv.amount_paid || inv.total || 0) / 100,
+            currency: inv.currency,
+            status: inv.status ?? "unknown",
+            hostedUrl: inv.hosted_invoice_url ?? null,
+            pdfUrl: inv.invoice_pdf ?? null,
+        }));
     }
 
     /**
