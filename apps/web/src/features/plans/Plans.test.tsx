@@ -30,8 +30,10 @@ jest.mock("./hooks/usePlansPageData", () => ({
     usePlansPageData: () => ({
         overview,
         invoices: [],
-        isLoading: false,
-        error: null,
+        isOverviewLoading: false,
+        overviewError: null,
+        isInvoicesLoading: false,
+        invoicesError: null,
     }),
 }));
 jest.mock("./hooks/usePlanQuota", () => ({

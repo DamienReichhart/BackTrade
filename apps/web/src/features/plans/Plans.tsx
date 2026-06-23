@@ -1,4 +1,5 @@
 import { useRef, type RefObject } from "react";
+import type { BillingOverviewResponse, Invoice, Plan } from "@backtrade/types";
 import { ErrorState } from "../dashboard/components/ErrorState";
 import { ConfirmModal } from "../../components/ConfirmModal";
 import { Skeleton } from "../../components/Skeleton";
@@ -15,48 +16,61 @@ import styles from "./Plans.module.css";
 
 /**
  * Plan management page: current plan + billing summary, plan picker,
- * payment method, and invoices.
+ * payment method, and invoices. The page shell renders immediately; the
+ * billing overview gates the interactive sections, while invoices load and
+ * fail independently.
  */
 export function Plans() {
-    const { overview, invoices, isLoading, error } = usePlansPageData();
+    const {
+        overview,
+        invoices,
+        isOverviewLoading,
+        overviewError,
+        isInvoicesLoading,
+        invoicesError,
+    } = usePlansPageData();
     const { data: plansData } = usePlans();
     const { execute: openPortal, isLoading: isOpeningPortal } =
         useCreatePortalSession();
     const pickerRef = useRef<HTMLDivElement>(null);
 
-    if (isLoading || !overview) {
-        return (
-            <div className={styles.container}>
-                <Skeleton height={160} />
-                <Skeleton height={280} />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className={styles.container}>
-                <ErrorState error={error} />
-            </div>
-        );
-    }
-
     return (
-        <PlansContent
-            overview={overview}
-            invoices={invoices}
-            plans={plansData ?? []}
-            openPortal={openPortal}
-            isOpeningPortal={isOpeningPortal}
-            pickerRef={pickerRef}
-        />
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <h1 className={styles.title}>Plans &amp; billing</h1>
+            </header>
+
+            {isOverviewLoading || !overview ? (
+                <div className={styles.content}>
+                    <Skeleton height={200} />
+                    <Skeleton height={280} />
+                </div>
+            ) : overviewError ? (
+                <div className={styles.content}>
+                    <ErrorState error={overviewError} />
+                </div>
+            ) : (
+                <PlansContent
+                    overview={overview}
+                    invoices={invoices}
+                    isInvoicesLoading={isInvoicesLoading}
+                    invoicesError={invoicesError}
+                    plans={plansData ?? []}
+                    openPortal={openPortal}
+                    isOpeningPortal={isOpeningPortal}
+                    pickerRef={pickerRef}
+                />
+            )}
+        </div>
     );
 }
 
 interface PlansContentProps {
-    overview: NonNullable<ReturnType<typeof usePlansPageData>["overview"]>;
-    invoices: ReturnType<typeof usePlansPageData>["invoices"];
-    plans: ReturnType<typeof usePlans>["data"];
+    overview: BillingOverviewResponse;
+    invoices: Invoice[];
+    isInvoicesLoading: boolean;
+    invoicesError: Error | null;
+    plans: Plan[];
     openPortal: ReturnType<typeof useCreatePortalSession>["execute"];
     isOpeningPortal: boolean;
     pickerRef: RefObject<HTMLDivElement | null>;
@@ -69,6 +83,8 @@ interface PlansContentProps {
 function PlansContent({
     overview,
     invoices,
+    isInvoicesLoading,
+    invoicesError,
     plans,
     openPortal,
     isOpeningPortal,
@@ -76,6 +92,8 @@ function PlansContent({
 }: PlansContentProps) {
     const planChange = usePlanChange(overview);
     const { resume, isResuming } = useSubscriptionLifecycle();
+
+    const isFree = overview.status === "free";
 
     const goToPortal = async () => {
         try {
@@ -93,38 +111,40 @@ function PlansContent({
     const busy = planChange.isRedirecting || isOpeningPortal || isResuming;
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <h1 className={styles.title}>Plans &amp; billing</h1>
-            </header>
+        <div className={styles.content}>
+            <PlanSummary
+                overview={overview}
+                onChangePlan={scrollToPicker}
+                onCancel={planChange.requestCancel}
+                onResume={resume}
+                onUpdatePayment={goToPortal}
+                isBusy={busy}
+            />
 
-            <div className={styles.content}>
-                <PlanSummary
+            <div ref={pickerRef}>
+                <PlanPicker
+                    plans={plans}
                     overview={overview}
-                    onChangePlan={scrollToPicker}
-                    onCancel={planChange.requestCancel}
-                    onResume={resume}
-                    onUpdatePayment={goToPortal}
-                    isBusy={busy}
+                    onSelectPlan={planChange.selectPlan}
+                    disabled={busy}
                 />
+            </div>
 
-                <div ref={pickerRef}>
-                    <PlanPicker
-                        plans={plans ?? []}
-                        overview={overview}
-                        onSelectPlan={planChange.selectPlan}
-                        disabled={busy}
-                    />
-                </div>
-
+            {!isFree && (
                 <PaymentMethod
                     paymentMethod={overview.paymentMethod}
                     onManage={goToPortal}
                     disabled={busy}
                 />
+            )}
 
-                <InvoiceList invoices={invoices} />
+            <InvoiceList
+                invoices={invoices}
+                isLoading={isInvoicesLoading}
+                error={invoicesError}
+            />
 
+            {!isFree && (
                 <button
                     type="button"
                     className={styles.portalLink}
@@ -133,7 +153,7 @@ function PlansContent({
                 >
                     Manage billing in Stripe
                 </button>
-            </div>
+            )}
 
             {planChange.dialog && (
                 <ConfirmModal
