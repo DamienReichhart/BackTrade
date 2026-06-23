@@ -5,13 +5,76 @@
  */
 
 import { stripe } from "../../libs/stripe";
-import { usersRepo, plansRepo } from "@backtrade/data";
+import { usersRepo, plansRepo, subscriptionsRepo } from "@backtrade/data";
 import { usersCacheRepo } from "../../libs/cache";
-import type { User } from "@backtrade/types";
+import {
+    getPricingTierCodeDisplayLabel,
+    type User,
+    type BillingOverviewResponse,
+    type PricingTierCode,
+} from "@backtrade/types";
+import type Stripe from "stripe";
 import { BaseService } from "../base/base-service";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import { ENV } from "../../config/env";
+
+type BillingStatusValue = BillingOverviewResponse["status"];
+
+/**
+ * Map a raw Stripe subscription status + cancel flag to a user-facing status.
+ */
+export function deriveBillingStatus(
+    stripeStatus: string,
+    cancelAtPeriodEnd: boolean
+): BillingStatusValue {
+    if (stripeStatus === "past_due" || stripeStatus === "unpaid") {
+        return "past_due";
+    }
+    if (cancelAtPeriodEnd) return "canceling";
+    if (stripeStatus === "active" || stripeStatus === "trialing") {
+        return "active";
+    }
+    return "free";
+}
+
+/**
+ * Extract a display card from an (expanded) payment method, if present.
+ */
+function extractCard(
+    pm: string | Stripe.PaymentMethod | null | undefined
+): BillingOverviewResponse["paymentMethod"] {
+    if (!pm || typeof pm === "string" || !pm.card) return null;
+    return {
+        brand: pm.card.brand,
+        last4: pm.card.last4,
+        expMonth: pm.card.exp_month,
+        expYear: pm.card.exp_year,
+    };
+}
+
+/**
+ * Period end (epoch seconds) lives on the first subscription item.
+ */
+function periodEndIso(sub: Stripe.Subscription): string | null {
+    const end = sub.items.data[0]?.current_period_end ?? null;
+    return end ? new Date(end * 1000).toISOString() : null;
+}
+
+const FREE_OVERVIEW: BillingOverviewResponse = {
+    status: "free",
+    plan: {
+        code: "FREE",
+        displayName: "Free",
+        price: 0,
+        currency: "eur",
+        maxActiveSessions: 1,
+    },
+    currentPeriodEnd: null,
+    cancelAtPeriodEnd: false,
+    nextCharge: null,
+    paymentMethod: null,
+};
 
 class StripeService extends BaseService {
     constructor() {
@@ -94,6 +157,59 @@ class StripeService extends BaseService {
                 typeof session.customer === "string"
                     ? session.customer
                     : (session.customer?.id ?? null),
+        };
+    }
+
+    /**
+     * Aggregated billing overview for the plan management page.
+     */
+    async getBillingOverview(user: User): Promise<BillingOverviewResponse> {
+        if (!user.stripe_customer_id) return FREE_OVERVIEW;
+
+        const subscription = await subscriptionsRepo.getActiveSubscriptionByUserId(
+            user.id
+        );
+        if (!subscription) return FREE_OVERVIEW;
+
+        const plan = await plansRepo.getPlanById(subscription.plan_id);
+        if (!plan) return FREE_OVERVIEW;
+
+        const stripeSub = await stripe.subscriptions.retrieve(
+            subscription.stripe_subscription_id,
+            { expand: ["default_payment_method"] }
+        );
+
+        const status = deriveBillingStatus(
+            stripeSub.status,
+            stripeSub.cancel_at_period_end
+        );
+        const currentPeriodEnd = periodEndIso(stripeSub);
+        const currency = plan.currency.toLowerCase();
+        const price = Number(plan.price);
+
+        return {
+            status,
+            plan: {
+                code: plan.code,
+                displayName: getPricingTierCodeDisplayLabel(
+                    plan.code as PricingTierCode
+                ),
+                price,
+                currency,
+                maxActiveSessions: plan.max_active_sessions,
+            },
+            currentPeriodEnd,
+            cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
+            nextCharge:
+                status === "active" && currentPeriodEnd
+                    ? { amount: price, currency, date: currentPeriodEnd }
+                    : null,
+            paymentMethod: extractCard(
+                stripeSub.default_payment_method as
+                    | string
+                    | Stripe.PaymentMethod
+                    | null
+            ),
         };
     }
 
