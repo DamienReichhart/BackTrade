@@ -1,1 +1,0 @@
-export { PlansList } from "./PlansList";
