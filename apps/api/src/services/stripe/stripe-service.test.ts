@@ -1,18 +1,34 @@
 jest.mock("../../libs/stripe", () => ({
     stripe: {
-        subscriptions: { retrieve: jest.fn(), update: jest.fn() },
+        subscriptions: { retrieve: jest.fn(), update: jest.fn(), list: jest.fn() },
         invoices: { list: jest.fn(), createPreview: jest.fn() },
     },
 }));
 
 jest.mock("@backtrade/data", () => ({
     usersRepo: { updateUser: jest.fn() },
-    plansRepo: { getPlanById: jest.fn() },
-    subscriptionsRepo: { getActiveSubscriptionByUserId: jest.fn() },
+    plansRepo: { getPlanById: jest.fn(), getPlanByStripePriceId: jest.fn() },
+    subscriptionsRepo: {
+        getActiveSubscriptionByUserId: jest.fn(),
+        getByStripeSubscriptionId: jest.fn(),
+        createSubscription: jest.fn(),
+        updateSubscription: jest.fn(),
+    },
 }));
 
 jest.mock("../../libs/cache", () => ({
     usersCacheRepo: { invalidateCachedUser: jest.fn() },
+}));
+
+jest.mock("../../libs/pino", () => ({
+    logger: {
+        child: () => ({
+            info: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            debug: jest.fn(),
+        }),
+    },
 }));
 
 import { stripe } from "../../libs/stripe";
@@ -21,12 +37,18 @@ import stripeService, { deriveBillingStatus } from "./stripe-service";
 import type { User } from "@backtrade/types";
 
 const mockedStripe = stripe as unknown as {
-    subscriptions: { retrieve: jest.Mock; update: jest.Mock };
+    subscriptions: { retrieve: jest.Mock; update: jest.Mock; list: jest.Mock };
     invoices: { list: jest.Mock; createPreview: jest.Mock };
 };
-const mockedPlans = plansRepo as unknown as { getPlanById: jest.Mock };
+const mockedPlans = plansRepo as unknown as {
+    getPlanById: jest.Mock;
+    getPlanByStripePriceId: jest.Mock;
+};
 const mockedSubs = subscriptionsRepo as unknown as {
     getActiveSubscriptionByUserId: jest.Mock;
+    getByStripeSubscriptionId: jest.Mock;
+    createSubscription: jest.Mock;
+    updateSubscription: jest.Mock;
 };
 
 const freeUser = { id: 1, email: "a@b.co", stripe_customer_id: null } as User;
@@ -66,10 +88,74 @@ describe("getBillingOverview", () => {
         expect(mockedStripe.subscriptions.retrieve).not.toHaveBeenCalled();
     });
 
-    it("returns Free when the user has no active subscription", async () => {
+    it("returns Free when there is no local row and none on Stripe", async () => {
         mockedSubs.getActiveSubscriptionByUserId.mockResolvedValue(null);
+        mockedStripe.subscriptions.list.mockResolvedValue({ data: [] });
         const result = await stripeService.getBillingOverview(paidUser);
         expect(result.status).toBe("free");
+    });
+
+    it("self-heals from Stripe when the local subscription row is missing", async () => {
+        // Missing locally on first read; present after reconciliation.
+        mockedSubs.getActiveSubscriptionByUserId
+            .mockResolvedValueOnce(null)
+            .mockResolvedValueOnce({
+                id: 5,
+                plan_id: 7,
+                stripe_subscription_id: "sub_live",
+            });
+        mockedStripe.subscriptions.list.mockResolvedValue({
+            data: [
+                {
+                    id: "sub_live",
+                    status: "active",
+                    cancel_at: null,
+                    metadata: { userId: "2" },
+                    items: {
+                        data: [
+                            {
+                                price: { id: "price_trader" },
+                                current_period_start: 1,
+                                current_period_end: 1_900_000_000,
+                            },
+                        ],
+                    },
+                },
+            ],
+        });
+        mockedSubs.getByStripeSubscriptionId.mockResolvedValue(null);
+        mockedPlans.getPlanByStripePriceId.mockResolvedValue({ id: 7 });
+        mockedPlans.getPlanById.mockResolvedValue({
+            id: 7,
+            code: "TRADER",
+            price: 19,
+            currency: "EUR",
+            max_active_sessions: 10,
+        });
+        mockedStripe.subscriptions.retrieve.mockResolvedValue({
+            status: "active",
+            cancel_at_period_end: false,
+            items: { data: [{ current_period_end: 1_900_000_000 }] },
+            default_payment_method: null,
+        });
+
+        const result = await stripeService.getBillingOverview(paidUser);
+
+        expect(mockedStripe.subscriptions.list).toHaveBeenCalledWith({
+            customer: "cus_123",
+            status: "active",
+            limit: 1,
+        });
+        expect(mockedSubs.createSubscription).toHaveBeenCalledWith(
+            expect.objectContaining({
+                user_id: 2,
+                plan_id: 7,
+                stripe_subscription_id: "sub_live",
+                status: "active",
+            })
+        );
+        expect(result.status).toBe("active");
+        expect(result.plan.code).toBe("TRADER");
     });
 
     it("builds an active overview from Stripe + DB", async () => {

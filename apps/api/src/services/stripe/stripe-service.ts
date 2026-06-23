@@ -22,6 +22,7 @@ import { BaseService } from "../base/base-service";
 import NotFoundError from "../../errors/web/not-found-error";
 import BadRequestError from "../../errors/web/bad-request-error";
 import { ENV } from "../../config/env";
+import { upsertSubscriptionFromStripe } from "./subscription-sync";
 
 type BillingStatusValue = BillingOverviewResponse["status"];
 
@@ -199,8 +200,18 @@ class StripeService extends BaseService {
     async getBillingOverview(user: User): Promise<BillingOverviewResponse> {
         if (!user.stripe_customer_id) return FREE_OVERVIEW;
 
-        const subscription =
+        let subscription =
             await subscriptionsRepo.getActiveSubscriptionByUserId(user.id);
+
+        // Self-heal: the creation webhook may have been missed or delayed.
+        // If the customer has an active subscription on Stripe but no local
+        // row, reconcile it before reporting the user as Free.
+        if (!subscription) {
+            await this.reconcileActiveSubscription(user);
+            subscription =
+                await subscriptionsRepo.getActiveSubscriptionByUserId(user.id);
+        }
+
         if (!subscription) return FREE_OVERVIEW;
 
         const plan = await plansRepo.getPlanById(subscription.plan_id);
@@ -243,6 +254,28 @@ class StripeService extends BaseService {
                     | null
             ),
         };
+    }
+
+    /**
+     * Reconcile the user's active Stripe subscription into the local DB.
+     *
+     * Fallback for missed/delayed `customer.subscription.created` webhooks:
+     * lists the customer's active Stripe subscriptions and mirrors the first
+     * one locally using the same upsert as the webhook.
+     */
+    private async reconcileActiveSubscription(user: User): Promise<void> {
+        if (!user.stripe_customer_id) return;
+
+        const subscriptions = await stripe.subscriptions.list({
+            customer: user.stripe_customer_id,
+            status: "active",
+            limit: 1,
+        });
+
+        const active = subscriptions.data[0];
+        if (!active) return;
+
+        await upsertSubscriptionFromStripe(active, user.id);
     }
 
     /**
