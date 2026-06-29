@@ -7,7 +7,7 @@
 # database seeding operations.
 # =============================================================================
 
-FROM node:25-alpine as builder
+FROM node:26-alpine as builder
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 # Generate Prisma client (required for migrations)
 RUN cd packages/datas && pnpm prisma:generate
 
-FROM node:25-alpine
+FROM node:26-alpine
 
 # Install pnpm
 RUN npm install -g pnpm

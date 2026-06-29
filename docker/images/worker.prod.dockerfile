@@ -1,4 +1,4 @@
-FROM node:25-alpine as builder
+FROM node:26-alpine as builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN cd packages/datas && pnpm prisma:generate
 
 RUN pnpm build
 
-FROM node:25-alpine
+FROM node:26-alpine
 
 # Install pnpm
 RUN npm install -g pnpm
