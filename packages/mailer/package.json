@@ -38,7 +38,7 @@
         "@backtrade/tsconfig": "workspace:*",
         "@types/jest": "30.0.0",
         "@types/mjml": "^5.0.0",
-        "@types/node": "26.0.0",
+        "@types/node": "26.0.1",
         "@types/nodemailer": "^8.0.1",
         "globals": "^17.7.0",
         "jest": "30.4.2",
