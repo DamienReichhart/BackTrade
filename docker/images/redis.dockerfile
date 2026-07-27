@@ -1,4 +1,4 @@
-FROM redis:8.4.0-alpine
+FROM redis:8.8.1-alpine
 
 # Create entrypoint script that properly substitutes environment variables
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
